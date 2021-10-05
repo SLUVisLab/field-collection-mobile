@@ -1,6 +1,6 @@
 Hamad Khan -
 We worked on making wireframes for the application, as well as discussing the ways in which we might open the survey in webview. We continued familiarizing ourselves with react native as well.
 
-Alexander Juan - 
+Alexander Juan - I first walked through some of the react native tutorials on the react website, then searched for our first solution for opening a survey in app. We wanted to try a simple web view to open the link to the google form, so we settled on the react-native-webview package for our first iterations at least. We then all created some of the first preliminary wireframes for the app and are now working though feedback from the client.
 
 Julia Pratt - 
