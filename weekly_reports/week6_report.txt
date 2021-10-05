@@ -1,1 +1,6 @@
-We worked on making wireframes for the application, as well as discussing the ways in which we might open the survey in webview. We continued 
+Hamad Khan -
+We worked on making wireframes for the application, as well as discussing the ways in which we might open the survey in webview. We continued familiarizing ourselves with react native as well.
+
+Alexander Juan - 
+
+Julia Pratt - 
