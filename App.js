@@ -4,22 +4,26 @@ import { WebView } from 'react-native-webview';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const deviceHeight = Dimensions.get('window').height;
 const deviceWidth = Dimensions.get('window').width;
 
 function HomeScreen({ navigation }) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button
-        title="Go to Camera"
+    <View style={styles.container}>
+      <TouchableOpacity 
+        style={styles.button} 
         onPress={() => navigation.navigate('Camera')}
-        />
-
-      <Button
-        title="Go to FormView"
-        onPress={() => navigation.navigate('FormView')}
-        />
+      >
+        <Text style={styles.text}>Scan QR Code</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('FormView', {type: null, data: 'https://docs.google.com/forms/d/e/1FAIpQLSfIvIoFyEUeNeuH-XpwNBKjojoTINopXElLx8kG95zPR85TiA/viewform?usp=sf_link'})}
+      >
+        <Text style={styles.text}>Go to Form</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -38,8 +42,8 @@ function QRCode({ navigation }) {
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
     // Right now, it just goes to the form view no matter what barcode is scanned
-    navigation.navigate('FormView')
-    // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    navigation.navigate('FormView', {type, data})
+    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
   };
 
   if (hasPermission === null) {
@@ -50,7 +54,7 @@ function QRCode({ navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.cameraview}>
       <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
@@ -60,11 +64,12 @@ function QRCode({ navigation }) {
   );
 }
 
-function FormView({ navigation }) {
+function FormView({ route, navigation }) {
+  const { type, data } = route.params;
   return (
     <View style={{ flex: 1, alignItems: 'flex-end' }}>
       <WebView 
-      source= {{ uri: 'https://docs.google.com/forms/d/e/1FAIpQLSfIvIoFyEUeNeuH-XpwNBKjojoTINopXElLx8kG95zPR85TiA/viewform?usp=sf_link'}}
+      source= {{ uri: data}}
       style={styles.webview}
       javaScriptEnabled={true}
       domStorageEnabled={true}
@@ -92,24 +97,34 @@ function App() {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      flexDirection: 'column',
+      justifyContent: 'center',
+      marginHorizontal: 16,
+    },
+    cameraview: {
+      flex: 1,
       justifyContent: 'center',
     },
-    pageNatureQuest:{
-      flex:1,
-      flexDirection:'column',
-      alignItems:'center',
-    },
-    headerContainer: {
-      width:'100%',
-      backgroundColor:'#ededed',
-      },
-
     webview: {
       flex: 1,
       backgroundColor: 'yellow',
       width: deviceWidth,
       height: deviceHeight
+    },
+    button: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 12,
+      paddingHorizontal: 32,
+      borderRadius: 4,
+      elevation: 3,
+      backgroundColor: 'orange',
+    },
+    text: {
+      fontSize: 16,
+      lineHeight: 21,
+      fontWeight: 'bold',
+      letterSpacing: 0.25,
+      color: 'white',
     }
   }); 
 
