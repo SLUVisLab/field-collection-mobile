@@ -1,14 +1,12 @@
-import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, Button, View, Dimensions } from 'react-native';
-import { WebView } from 'react-native-webview';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import HomeScreen from './screens/HomeScreen';
+import QRCode from './screens/QRCode';
+import FormView from './screens/FormView'
 
-const deviceHeight = Dimensions.get('window').height;
-const deviceWidth = Dimensions.get('window').width;
-
+// The following functions have been moved into their own files in './screens'
+/*
 function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
@@ -27,7 +25,9 @@ function HomeScreen({ navigation }) {
     </View>
   );
 }
+**/
 
+/*
 function QRCode({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
@@ -64,6 +64,9 @@ function QRCode({ navigation }) {
   );
 }
 
+**/
+
+/*
 function FormView({ route, navigation }) {
   const { type, data } = route.params;
   return (
@@ -79,6 +82,7 @@ function FormView({ route, navigation }) {
     </View>
   );
 }
+**/
 
 const Stack = createNativeStackNavigator();
 
@@ -93,39 +97,5 @@ function App() {
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      marginHorizontal: 16,
-    },
-    cameraview: {
-      flex: 1,
-      justifyContent: 'center',
-    },
-    webview: {
-      flex: 1,
-      backgroundColor: 'yellow',
-      width: deviceWidth,
-      height: deviceHeight
-    },
-    button: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingVertical: 12,
-      paddingHorizontal: 32,
-      borderRadius: 4,
-      elevation: 3,
-      backgroundColor: 'orange',
-    },
-    text: {
-      fontSize: 16,
-      lineHeight: 21,
-      fontWeight: 'bold',
-      letterSpacing: 0.25,
-      color: 'white',
-    }
-  }); 
 
 export default App;
