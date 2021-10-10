@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { Text, Button, View, StyleSheet } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import styles from './Styles';
+import styles from '../Styles';
 
 function QRCode({ navigation }) {
     const [hasPermission, setHasPermission] = useState(null);

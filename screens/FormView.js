@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { WebView } from 'react-native-webview';
-import styles from './Styles';
+import styles from '../Styles';
 
 function FormView({ route, navigation }) {
     const { type, data } = route.params;
