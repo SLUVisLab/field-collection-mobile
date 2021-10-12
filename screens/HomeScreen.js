@@ -18,6 +18,18 @@ function HomeScreen({ navigation }) {
         >
           <Text style={styles.text}>Go to Form</Text>
         </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={() => navigation.navigate('FormSelect')}
+        >
+          <Text style={styles.text}>Form Select Screen</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={() => navigation.navigate('FormComplete')}
+        >
+          <Text style={styles.text}>Form Complete Screen</Text>
+        </TouchableOpacity>
       </View>
     );
 }

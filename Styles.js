@@ -34,5 +34,22 @@ export default StyleSheet.create({
       fontWeight: 'bold',
       letterSpacing: 0.25,
       color: 'white',
+    },
+    textdark: {
+      fontSize: 22,
+      lineHeight: 32,
+      fontWeight: 'bold',
+      letterSpacing: 0.25,
+      color: 'black',
+    },
+    picker: {
+      width: deviceWidth*0.925,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 12,
+      paddingHorizontal: 32,
+      padding:10,
+      borderRadius: 4,
+      backgroundColor: 'orange',
     }
   }); 
