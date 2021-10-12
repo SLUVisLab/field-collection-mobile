@@ -1,0 +1,2 @@
+Hamad Khan:
+I hooked up the home screen to the QR code scanning screen. The QR code scanning functionality works as well, and it opens up a webview of what was scanned. I also refactored the code into their own seperate screens. We all worked on completing the slides for the presentation, and thought about how we are going to implement an API for selecting and updating forms in the app.
