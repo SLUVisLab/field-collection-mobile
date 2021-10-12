@@ -17,7 +17,7 @@ function QRCode({ navigation }) {
     const handleBarCodeScanned = ({ type, data }) => {
       setScanned(true);
       // Right now, it just goes to the form view no matter what barcode is scanned
-      navigation.navigate('FormView', {type, data})
+      navigation.navigate('FormSelect', {type, data})
       alert(`Bar code with type ${type} and data ${data} has been scanned!`);
     };
   
