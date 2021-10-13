@@ -3,3 +3,6 @@ I hooked up the home screen to the QR code scanning screen. The QR code scanning
 
 Julia Pratt:
 I tried really hard to make the form select screen and the form complete screen. I had a lot of difficulties with the forms drop down select menu. I need to talk to my group about proper navigation techniques- notably, getting from the form submission screen to the form complete screen. I'm also going to need to think about how to connect the forms API with the form selection screen. Aside from coding I contributed to the slides presentation for our first deliverable talk. 
+
+Alex Juan:
+I implemented google forms in-app with react-native-webview. I troubleshot Julia's form selection screen on iOS, as she only has android. I formatted our app buttons and colors with some simple design principles. I finished the slides for my part of the presenations draft, and we all met to practice our presenation after class time on Tuesday.
