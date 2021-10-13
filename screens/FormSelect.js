@@ -29,6 +29,7 @@ function FormSelect({ navigation }) {
         <Picker.Item label="Form 1" value="Form 1" />
         <Picker.Item label="Form 2" value="Form 2" />
       </Picker>
+      <View style={{height:10}}></View>
 
       <TouchableOpacity
           style={styles.button}
