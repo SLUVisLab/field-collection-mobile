@@ -15,7 +15,7 @@ export default StyleSheet.create({
     },
     webview: {
       flex: 1,
-      backgroundColor: 'yellow',
+      backgroundColor: 'white',
       width: deviceWidth,
       height: deviceHeight
     },
@@ -23,6 +23,7 @@ export default StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
       paddingVertical: 12,
+      marginVertical: 3,
       paddingHorizontal: 32,
       borderRadius: 4,
       elevation: 3,
@@ -38,17 +39,17 @@ export default StyleSheet.create({
     textdark: {
       fontSize: 22,
       lineHeight: 32,
+      paddingVertical: 10,
       fontWeight: 'bold',
       letterSpacing: 0.25,
       color: 'black',
     },
     picker: {
+      height: 175,
       width: deviceWidth*0.925,
-      alignItems: 'center',
       justifyContent: 'center',
       paddingVertical: 12,
       paddingHorizontal: 32,
-      padding:10,
       borderRadius: 4,
       backgroundColor: 'orange',
     }
