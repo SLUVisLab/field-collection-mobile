@@ -7,7 +7,6 @@ export default StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: 'center',
-      marginHorizontal: 16,
     },
     cameraview: {
       flex: 1,
@@ -24,10 +23,20 @@ export default StyleSheet.create({
       justifyContent: 'center',
       paddingVertical: 12,
       marginVertical: 3,
+      marginHorizontal: 16,
       paddingHorizontal: 32,
       borderRadius: 4,
       elevation: 3,
-      backgroundColor: 'orange',
+      backgroundColor: 'rgba(255,172,50,0.85)'
+    },
+    heading: {
+      paddingVertical: 12,
+      marginVertical: 12,
+      marginHorizontal: 16,
+      paddingHorizontal: 32,
+      borderRadius: 4,
+      elevation: 3,
+      backgroundColor: 'rgba(255,172,50,0.85)'
     },
     text: {
       fontSize: 16,
@@ -36,21 +45,22 @@ export default StyleSheet.create({
       letterSpacing: 0.25,
       color: 'white',
     },
-    textdark: {
-      fontSize: 22,
+    textheading: {
+      textAlign: 'center',
+      fontSize: 24,
       lineHeight: 32,
-      paddingVertical: 10,
+      paddingVertical: 5,
       fontWeight: 'bold',
       letterSpacing: 0.25,
-      color: 'black',
+      color: 'rgb(255,255,255)'
     },
     picker: {
       height: 175,
-      width: deviceWidth*0.925,
+      marginHorizontal: 16,
       justifyContent: 'center',
       paddingVertical: 12,
-      paddingHorizontal: 32,
+      paddingHorizontal: 16,
       borderRadius: 4,
-      backgroundColor: 'orange',
+      backgroundColor: 'rgba(255,172,50,0.85)'
     }
   }); 
