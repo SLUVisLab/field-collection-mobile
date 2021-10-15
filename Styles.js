@@ -21,6 +21,7 @@ export default StyleSheet.create({
     button: {
       alignItems: 'center',
       justifyContent: 'center',
+      textAlign: 'center',
       paddingVertical: 12,
       marginVertical: 3,
       marginHorizontal: 16,
@@ -39,6 +40,7 @@ export default StyleSheet.create({
       backgroundColor: 'rgba(255,172,50,0.85)'
     },
     text: {
+      textAlign: 'center',
       fontSize: 16,
       lineHeight: 21,
       fontWeight: 'bold',
