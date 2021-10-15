@@ -21,7 +21,7 @@ function App() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="FormSelect" component={FormSelect} />
         <Stack.Screen options={{headerShown: true}} name="FormView" component={FormView} />
-        <Stack.Screen name="Camera" component={QRCode} />
+        <Stack.Screen options={{headerShown: true}} name="Camera" component={QRCode} />
         <Stack.Screen name="FormComplete" component={FormComplete} />
       </Stack.Navigator>
     </NavigationContainer>

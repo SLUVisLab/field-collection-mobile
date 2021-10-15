@@ -33,16 +33,16 @@ function FormSelect({ navigation }) {
           animationType="slide"
           itemStyle={{ color:"white", fontWeight:"bold", fontSize:20 }}
         >
-          <Picker.Item label="Form 1" value="Form 1" />
-          <Picker.Item label="Form 2" value="Form 2" />
-          <Picker.Item label="Form 3" value="Form 3" />
-          <Picker.Item label="Form 4" value="Form 4" />
+          <Picker.Item label="Form 1" value="https://forms.gle/XV3DD9X7G7fQ2dgC9" />
+          <Picker.Item label="Form 2" value="https://forms.gle/XSaLYtu1hP5tGRyN6" />
+          <Picker.Item label="Form 3" value="https://forms.gle/82XA66DYpHs6M11w6" />
+          <Picker.Item label="Form 4" value="https://forms.gle/EtdCCvVAZMn23osC8" />
         </Picker>
         <View style={{height:10}}></View>
 
         <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('FormView', {type: null, data: 'https://docs.google.com/forms/d/e/1FAIpQLSfIvIoFyEUeNeuH-XpwNBKjojoTINopXElLx8kG95zPR85TiA/viewform?usp=sf_link'})}
+            onPress={() => navigation.navigate('FormView', {type: null, data: selectedForm})}
           >
           <Text style={styles.text}>Go</Text>
         </TouchableOpacity>
