@@ -3,10 +3,10 @@ import { Text, Button, View, StyleSheet } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import styles from '../Styles';
 
-function QRCode({ navigation }) {
+function QRCode({ route, navigation }) {
     const [hasPermission, setHasPermission] = useState(null);
-    const [scanned, setScanned] = useState(false);
-  
+    const [scanned, setScanned] = useState(false),
+    params = route.params;
     useEffect(() => {
       (async () => {
         const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -17,7 +17,8 @@ function QRCode({ navigation }) {
     const handleBarCodeScanned = ({ type, data }) => {
       setScanned(true);
       // Right now, it just goes to the form view no matter what barcode is scanned
-      navigation.navigate('FormSelect', {type, data})
+      console.log(params.selectedSite);
+      navigation.navigate('FormComplete', {selectedSite: params.selectedSite, selectedTask: params.selectedTask})
       alert(`Bar code with type ${type} and data ${data} has been scanned!`);
     };
   

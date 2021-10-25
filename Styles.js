@@ -64,5 +64,5 @@ export default StyleSheet.create({
       paddingHorizontal: 16,
       borderRadius: 4,
       backgroundColor: 'rgba(255,172,50,0.85)'
-    }
+    },
   }); 

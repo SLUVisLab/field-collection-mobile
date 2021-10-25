@@ -6,16 +6,16 @@ import {Picker} from '@react-native-picker/picker';
 
 const data = [
   { id: "", name: "" },
-  { id: "1", name: "Form 100" },
-  { id: "2", name: "Form 2" },
-  { id: "3", name: "Form 3" },
-  { id: "4", name: "Form 4" },
-  { id: "5", name: "Form 5" },
+  { id: "1", name: "Site 1" },
+  { id: "2", name: "Site 2" },
+  { id: "3", name: "Site 3" },
+  { id: "4", name: "Site 4" },
+  { id: "5", name: "Site 5" },
 ];
 
 
-function FormSelect({ navigation }) {
-  const [selectedForm, setSelectedForm] = useState();
+function SiteSelect({ navigation }) {
+  const [selectedSite, setSelectedSite] = useState();
   return (
     <View style={styles.container}>   
       <ImageBackground style={styles.container}
@@ -23,26 +23,26 @@ function FormSelect({ navigation }) {
         <View
             style={styles.heading}
           >
-            <Text style={styles.textheading}>Please select from the list of surveys available</Text>
+            <Text style={styles.textheading}>Please select a site</Text>
         </View>
 
         <Picker
           style={styles.picker}
-          selectedValue={selectedForm}
-          onValueChange={ (itemValue, itemIndex) => setSelectedForm(itemValue)}
+          selectedValue={selectedSite}
+          onValueChange={ (itemValue, itemIndex) => setSelectedSite(itemValue)}
           animationType="slide"
           itemStyle={{ color:"white", fontWeight:"bold", fontSize:20 }}
         >
-          <Picker.Item label="Form 1" value="https://forms.gle/XV3DD9X7G7fQ2dgC9" />
-          <Picker.Item label="Form 2" value="https://forms.gle/XSaLYtu1hP5tGRyN6" />
-          <Picker.Item label="Form 3" value="https://forms.gle/82XA66DYpHs6M11w6" />
-          <Picker.Item label="Form 4" value="https://forms.gle/EtdCCvVAZMn23osC8" />
+          <Picker.Item label="Site 1" value="Site 1" />
+          <Picker.Item label="Site 2" value="Site 2" />
+          <Picker.Item label="Site 3" value="Site 3" />
+          <Picker.Item label="Site 4" value="Site 4" />
         </Picker>
         <View style={{height:10}}></View>
 
         <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('FormView', {type: null, data: selectedForm})}
+            onPress={() => navigation.navigate('TaskSelect', {type: null, selectedSite: selectedSite})}
           >
           <Text style={styles.text}>Go</Text>
         </TouchableOpacity>
@@ -58,4 +58,4 @@ function FormSelect({ navigation }) {
   );
 }
 
-export default FormSelect;
+export default SiteSelect;
