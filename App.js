@@ -2,7 +2,8 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './screens/HomeScreen';
-import FormSelect from './screens/FormSelect'
+import SiteSelect from './screens/SiteSelect';
+import TaskSelect from './screens/TaskSelect'
 import QRCode from './screens/QRCode';
 import FormView from './screens/FormView'
 import FormComplete from './screens/FormComplete'
@@ -19,7 +20,8 @@ function App() {
         }}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="FormSelect" component={FormSelect} />
+        <Stack.Screen name="SiteSelect" component={SiteSelect} />
+        <Stack.Screen name="TaskSelect" component={TaskSelect} />
         <Stack.Screen options={{headerShown: true}} name="FormView" component={FormView} />
         <Stack.Screen options={{headerShown: true}} name="Camera" component={QRCode} />
         <Stack.Screen name="FormComplete" component={FormComplete} />
