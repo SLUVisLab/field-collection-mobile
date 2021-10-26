@@ -4,8 +4,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../Styles';
 
 function FormComplete({ route, navigation }) {
-  const [finished, setFinished] = useState(), params = route.params;
-  console.log(params.selectedSite);
+  const [finished, setFinished] = useState(), 
+  params = route.params;
   return (
     <View style={styles.container}>
       <ImageBackground style={styles.container}
@@ -20,7 +20,7 @@ function FormComplete({ route, navigation }) {
           style={styles.button}
           onPress={() => navigation.navigate('SiteSelect', {type: null, selectedSite: params.selectedSite})}
         >
-          <Text style={styles.text}>Submit {params.selectedTask} for another plot</Text>
+          <Text style={styles.text}>Submit this task for another plot</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.button} 
