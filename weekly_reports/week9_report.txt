@@ -1,0 +1,1 @@
+Alex: I altered our prototype to match the new format discussed with Dr. Stylianou. This required making one new page and making use of route parameters to pass values between the pages.
