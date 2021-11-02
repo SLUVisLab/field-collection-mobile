@@ -1,1 +1,3 @@
 Alex: I altered our prototype to match the new format discussed with Dr. Stylianou. This required making one new page and making use of route parameters to pass values between the pages.
+
+Hamad: I'm working basically trying to find a way to access google sheets through react native. Google provides an api for google sheets access, but i'm currently having problems using libraries in order to access google sheets correctly.
