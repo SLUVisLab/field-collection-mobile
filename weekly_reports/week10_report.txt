@@ -1,0 +1,1 @@
+Hamad: As of now, I have the get request almost complete. There's some formatting issues and i've never used a rest api before so i'm learning how to use all this stuff. I have to learn how to properly format, and learn how to use get, post, put, and delete.
