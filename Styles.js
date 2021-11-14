@@ -65,4 +65,21 @@ export default StyleSheet.create({
       borderRadius: 4,
       backgroundColor: 'rgba(255,172,50,0.85)'
     },
+    GridViewContainer: {
+      flex:1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 100,
+      height: 100,
+      borderRadius: 100 / 2,
+      margin: 5,
+      backgroundColor: 'rgba(255,172,50,1)'
+    },
+    GridViewTextLayout: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      justifyContent: 'center',
+      color: '#fff',
+      padding: 10,
+    },
   }); 

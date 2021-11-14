@@ -18,7 +18,7 @@ function QRCode({ route, navigation }) {
       setScanned(true);
       // Right now, it just goes to the form view no matter what barcode is scanned
       console.log(params.selectedSite);
-      navigation.navigate('FormComplete', {selectedSite: params.selectedSite, selectedTask: params.selectedTask})
+      navigation.navigate('PlotView', {selectedSite: params.selectedSite, selectedTask: params.selectedTask})
       alert(`Bar code with type ${type} and data ${data} has been scanned!`);
     };
   
