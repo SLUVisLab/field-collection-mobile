@@ -13,6 +13,7 @@ class SiteSelect extends Component {
       this.setState({ site: site})
    }
    render() {
+      //console.log(options[this.state.site])
       return (
         <View style={styles.container}>   
           <ImageBackground style={styles.container}
@@ -33,10 +34,9 @@ class SiteSelect extends Component {
               })}   
             </Picker>
             <View style={{height:10}}></View>
-
           <TouchableOpacity
               style={styles.button}
-              onPress={() => this.props.navigation.navigate('TaskSelect', {type: null, selectedSite: this.state.site})}
+              onPress={() => this.props.navigation.navigate('TaskSelect', {currentSite: options[1]})}
             >
             <Text style={styles.text}>Go</Text>
           </TouchableOpacity>

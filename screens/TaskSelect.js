@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import { Text, View, ImageBackground } from 'react-native';
+import { Text, View, ImageBackground, TouchableHighlightBase } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../Styles';
 import {Picker} from '@react-native-picker/picker';
-import { roundToNearestPixel } from 'react-native/Libraries/Utilities/PixelRatio';
 
 // For reference: https://stackoverflow.com/questions/43016624/react-native-apply-array-values-from-state-as-picker-items
 
-var options ={
+var options = {
     "https://forms.gle/XV3DD9X7G7fQ2dgC9": "Task 1",
     "https://forms.gle/XSaLYtu1hP5tGRyN6": "Task 2",
     "https://forms.gle/82XA66DYpHs6M11w6": "Task 3",
@@ -21,7 +20,8 @@ class TaskSelect extends Component {
       this.setState({ task: task})
    }
    render() {
-      const { site } = this.props.route.params;
+      const { currentSite } = this.props.route.params;
+      console.log(currentSite)
       return (
         <View style={styles.container}>   
           <ImageBackground style={styles.container}
@@ -45,7 +45,7 @@ class TaskSelect extends Component {
 
           <TouchableOpacity
               style={styles.button}
-              onPress={() => this.props.navigation.navigate('Camera', {type: null, selectedTask: this.state.task, selectedSite: site})}
+              onPress={() => this.props.navigation.navigate('Camera', {type: null, selectedTask: this.state.task, selectedSite: currentSite})}
             >
             <Text style={styles.text}>Scan Plot</Text>
           </TouchableOpacity>
