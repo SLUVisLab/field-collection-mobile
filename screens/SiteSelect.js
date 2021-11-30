@@ -10,7 +10,7 @@ var options = ["Hamad Khan","Julia Pratt","Alexander Juan","Abby Stylianou","All
 class SiteSelect extends Component {
    state = {site: ''}
    updateSite = (site) => {
-      this.setState({ user: site})
+      this.setState({ site: site})
    }
    render() {
       return (

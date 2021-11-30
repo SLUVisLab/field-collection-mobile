@@ -18,7 +18,7 @@ var options ={
 class TaskSelect extends Component {
    state = {task: ''}
    updateTask = (task) => {
-      this.setState({ user: task})
+      this.setState({ task: task})
    }
    render() {
       const { site } = this.props.route.params;

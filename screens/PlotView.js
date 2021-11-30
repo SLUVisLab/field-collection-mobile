@@ -52,7 +52,7 @@ render() {
 	     		<View style={styles.GridViewContainer}>
 	       			<Text style={styles.GridViewTextLayout} onPress={this.GetGridViewItem.bind(this, item.key)} > {item.key} </Text>
 	     		</View> }
-	 		numColumns={2}
+	 		numColumns={4}
 			/>
 	    	</ImageBackground>
 	    </View>
