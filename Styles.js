@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Image } from 'react-native';
 
 const deviceHeight = Dimensions.get('window').height;
 const deviceWidth = Dimensions.get('window').width;
@@ -66,7 +66,12 @@ export default StyleSheet.create({
       backgroundColor: 'rgba(255,172,50,0.85)'
     },
     GridViewContainer: {
-      flex:1,
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    GridViewIcon: {
+      flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
       width: 100,
@@ -76,10 +81,18 @@ export default StyleSheet.create({
       backgroundColor: 'rgba(255,172,50,1)'
     },
     GridViewTextLayout: {
-      fontSize: 20,
-      fontWeight: 'bold',
       justifyContent: 'center',
-      color: '#fff',
-      padding: 10,
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.25)'
+    },
+    GridViewText: {
+      textAlign: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      fontSize: 16,
+      fontWeight: 'bold',
+      letterSpacing: 0.25,
+      color: 'white',
+      marginRight: 3,
     },
   }); 
