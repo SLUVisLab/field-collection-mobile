@@ -1,13 +1,35 @@
 import React, { Component } from 'react';
-import { Text, View, ImageBackground } from 'react-native';
+import { Text, View, ImageBackground, Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../Styles';
 import { Picker } from '@react-native-picker/picker';
 
+import {ref, set, child, get} from 'firebase/database';
+import db from '../firebase';
+
 // For reference: https://stackoverflow.com/questions/43016624/react-native-apply-array-values-from-state-as-picker-items
+
+// write data to the database
+// set(ref(db, 'users/' + '12345678'), {
+//  username: 'nfgsko',
+//  email: 'julia.vmdskvp;s@yadayada.edu'
+// });
+
+
+const dbRef = ref(db);
+get(child(dbRef, `sites`)).then((snapshot) => {
+  if (snapshot.exists()) {
+    Alert.alert('Data', JSON.stringify(snapshot.val()))
+  } else {
+    Alert.alert('Data', "No data available");
+  }
+}).catch((error) => {
+  Alert.alert('ERROR', error.message);
+});
 
 var options = ["Hamad Khan","Julia Pratt","Alexander Juan","Abby Stylianou","Allison Miller"];
 class SiteSelect extends Component {
+   
    state = {site: ''}
    updateSite = (site) => {
       this.setState({ site: site})
