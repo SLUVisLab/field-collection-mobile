@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { Text, Button, View, StyleSheet } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import { SiteContext } from '../SiteContext';
 import styles from '../Styles';
 
 function QRCode({ route, navigation }) {
@@ -17,8 +18,7 @@ function QRCode({ route, navigation }) {
     const handleBarCodeScanned = ({ type, data }) => {
       setScanned(true);
       // Right now, it just goes to the form view no matter what barcode is scanned
-      console.log(params.selectedSite);
-      navigation.navigate('PlotView', {selectedSite: params.selectedSite, selectedTask: params.selectedTask})
+      navigation.navigate('PlotView')
       alert(`Bar code with type ${type} and data ${data} has been scanned!`);
     };
   
