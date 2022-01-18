@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, ImageBackground, TouchableHighlightBase } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { SiteContext } from '../SiteContext';
 import styles from '../Styles';
 import {Picker} from '@react-native-picker/picker';
 
@@ -20,8 +21,6 @@ class TaskSelect extends Component {
       this.setState({ task: task})
    }
    render() {
-      const { currentSite } = this.props.route.params;
-      console.log(currentSite)
       return (
         <View style={styles.container}>   
           <ImageBackground style={styles.container}
@@ -29,7 +28,7 @@ class TaskSelect extends Component {
             <View
               style={styles.heading}
             >
-            <Text style={styles.textheading}>Please select from the list of tasks available at</Text>
+            <Text style={styles.textheading}>Please select from the list of tasks available at {this.context.selectedSite}</Text>
             </View> 
             <Picker
             style={styles.picker}
@@ -45,7 +44,7 @@ class TaskSelect extends Component {
 
           <TouchableOpacity
               style={styles.button}
-              onPress={() => this.props.navigation.navigate('Camera', {type: null, selectedTask: this.state.task, selectedSite: currentSite})}
+              onPress={() => { this.context.setTask(options[this.state.task]); this.props.navigation.navigate('Camera'); }}
             >
             <Text style={styles.text}>Scan Plot</Text>
           </TouchableOpacity>
@@ -61,4 +60,7 @@ class TaskSelect extends Component {
       )
    }
 }
+
+TaskSelect.contextType = SiteContext;
+
 export default TaskSelect;

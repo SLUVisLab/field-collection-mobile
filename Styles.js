@@ -30,6 +30,12 @@ export default StyleSheet.create({
       elevation: 3,
       backgroundColor: 'rgba(255,172,50,0.85)'
     },
+    bottomView: {
+      paddingVertical: 12,
+      paddingBottom: 10,
+      paddingHorizontal: 5,
+      borderRadius: 50,
+    },
     heading: {
       paddingVertical: 12,
       marginVertical: 12,
@@ -66,7 +72,6 @@ export default StyleSheet.create({
       backgroundColor: 'rgba(255,172,50,0.85)'
     },
     GridViewContainer: {
-      flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -74,8 +79,8 @@ export default StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      width: 100,
-      height: 100,
+      width: 90,
+      height: 90,
       borderRadius: 100 / 2,
       margin: 5,
       backgroundColor: 'rgba(255,172,50,1)'
@@ -95,4 +100,7 @@ export default StyleSheet.create({
       color: 'white',
       marginRight: 3,
     },
+    GridViewRowCol: {
+      marginLeft: 5,
+    }
   }); 
