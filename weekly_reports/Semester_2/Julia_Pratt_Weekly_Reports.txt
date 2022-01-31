@@ -1,3 +1,7 @@
 Week 2 - 1/25/2022
 
 This past week we tried to meet with Dr. Stylianou to get ourselves set up but she ended up needing to go to a meeting. She answered our questions via text format, but I'm still a little cconfused, so I need to fix it so I can ask better/more specific questions. I was reading up more on how data is stored within firebase realtime databases/ firestore databases and I think that given the amount of data I now know we need to store, firestore might be better. I've watched videos on this implementation and I'd like to get started on that this coming week.
+
+Week 3 - 1/31/2022
+
+This week we weren't able to meet with Dr. Stylianou but I drafted an updated project plan and she seems pleased with the plan, which is good. I designed and got the new firestore firebase database running. I also implemented the dynamic generation of a list while reading from the firestore database. woo
