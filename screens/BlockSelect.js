@@ -34,7 +34,7 @@ class BlockSelect extends Component {
             <View style={{height:10}}></View>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => { this.context.setSite(options[this.state.site]); this.props.navigation.navigate('PlotView'); }}
+              onPress={() => { this.context.setBlock(options[this.state.block]); this.props.navigation.navigate('BlockView'); }}
             >
               <Text style={styles.text}>Go</Text>
             </TouchableOpacity>

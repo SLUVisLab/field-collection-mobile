@@ -58,7 +58,7 @@ class SiteSelect extends Component {
             <View style={{height:10}}></View>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => { this.context.setSite(options[this.state.site]); this.props.navigation.navigate('PlotSelect'); }}
+              onPress={() => { this.context.setSite(options[this.state.site]); this.props.navigation.navigate('BlockSelect'); }}
             >
               <Text style={styles.text}>Go</Text>
             </TouchableOpacity>
