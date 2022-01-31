@@ -5,36 +5,12 @@ import { Picker } from '@react-native-picker/picker';
 import { SiteContext } from '../SiteContext';
 import styles from '../Styles';
 
-import {ref, set, child, get} from 'firebase/database';
-import db from '../firebase';
-
-// For reference: https://stackoverflow.com/questions/43016624/react-native-apply-array-values-from-state-as-picker-items
-
-// write data to the database
-// set(ref(db, 'users/' + '12345678'), {
-//  username: 'nfgsko',
-//  email: 'julia.vmdskvp;s@yadayada.edu'
-// });
-
-
-const dbRef = ref(db);
-get(child(dbRef, `sites`)).then((snapshot) => {
-  if (snapshot.exists()) {
-    Alert.alert('Data', JSON.stringify(snapshot.val()))
-  } else {
-    Alert.alert('Data', "No data available");
-  }
-}).catch((error) => {
-  Alert.alert('ERROR', error.message);
-});
-
-var options = ["","Field 1","Field 2","Field 3","Field 4", "Field 5"];
-
-class SiteSelect extends Component {
+var options = ["", "Block 1","Block 2","Block 3","Block 4","Block 5"];
+class BlockSelect extends Component {
    
-   state = {site: ''}
-   updateSite = (site) => {
-      this.setState({ site: site})
+   state = {block: ''}
+   updateBlock = (block) => {
+      this.setState({ block: block})
    }
    render() {
       //console.log(options[this.state.site])
@@ -43,12 +19,12 @@ class SiteSelect extends Component {
           <ImageBackground style={styles.container}
             source={require('../assets/plantField.jpg')}>
             <View style={styles.heading}>
-              <Text style={styles.textheading}>Please select a field site</Text>
+              <Text style={styles.textheading}>Please select from the list of available blocks at {this.context.selectedSite}</Text>
             </View> 
             <Picker
               style={styles.picker}
-              selectedValue={this.state.site}
-              onValueChange={this.updateSite}
+              selectedValue={this.state.block}
+              onValueChange={this.updateBlock}
               animationType="slide"
               itemStyle={{ color:"white", fontWeight:"bold", fontSize:20 }}>
               {options.map((item, index) => {
@@ -58,7 +34,7 @@ class SiteSelect extends Component {
             <View style={{height:10}}></View>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => { this.context.setSite(options[this.state.site]); this.props.navigation.navigate('BlockSelect'); }}
+              onPress={() => { this.context.setBlock(options[this.state.block]); this.props.navigation.navigate('BlockView'); }}
             >
               <Text style={styles.text}>Go</Text>
             </TouchableOpacity>
@@ -75,6 +51,6 @@ class SiteSelect extends Component {
    }
 }
 
-SiteSelect.contextType = SiteContext;
+BlockSelect.contextType = SiteContext;
 
-export default SiteSelect 
+export default BlockSelect 

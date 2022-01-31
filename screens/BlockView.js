@@ -37,7 +37,7 @@ export default class PlotView extends React.Component {
 
     goToForm(item) {
         const { navigate } = this.props.navigation;
-    	navigate('FormView', {type: null, data: item});
+    	navigate('TaskSelect', {type: null, data: item});
     }
 
     render() {
@@ -46,7 +46,7 @@ export default class PlotView extends React.Component {
     			<ImageBackground style={styles.container}
     	         	source={require('../assets/plantField.jpg')}>
 	    	    	<View style={styles.heading}>
-	                	<Text style={styles.textheading}>Plot X, {this.context.selectedTask}</Text>
+	                	<Text style={styles.textheading}>Block {this.context.selectedBlock}</Text>
 	            	</View>
 	            	<ScrollView style={styles.GridViewRowCol}
 	            		horizontal={true}
@@ -73,10 +73,6 @@ export default class PlotView extends React.Component {
 		    			/>
 		    		</ScrollView>
 		    		<View style={styles.bottomView}>
-			    		<TouchableOpacity style={styles.button}
-			    			onPress={() => this.props.navigation.navigate('TaskSelect')}>
-		                	<Text style={styles.text}>New Task</Text>
-		            	</TouchableOpacity>
 		            	<TouchableOpacity style={styles.button}
 			    			onPress={() => this.props.navigation.navigate('Camera')}>
 		                	<Text style={styles.text}>New Plot</Text>
