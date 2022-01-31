@@ -4,40 +4,33 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SiteContext } from '../SiteContext';
 import styles from '../Styles';
 
-export default class PlotView extends React.Component {
+export default class BlockView extends React.Component {
 
     constructor(props) {
     	super();
 
     	this.state = {
+            numColumns: 3,
+
+            numRows: 3,
+
         	GridListItems: [
-            	{ key: "Plant1", url: 'https://docs.google.com/forms/d/e/1FAIpQLScgcGUPmOHeMXARUQR6JusG0nHWdoDazscBUwajP3Z9x7tMsQ/viewform?usp=pp_url&entry.1022705470=1&entry.95574452=1'},
-            	{ key: "Plant2", url: 'https://docs.google.com/forms/d/e/1FAIpQLScgcGUPmOHeMXARUQR6JusG0nHWdoDazscBUwajP3Z9x7tMsQ/viewform?usp=pp_url&entry.1022705470=1&entry.95574452=2'},
-            	{ key: "Plant3", url: 'https://docs.google.com/forms/d/e/1FAIpQLScgcGUPmOHeMXARUQR6JusG0nHWdoDazscBUwajP3Z9x7tMsQ/viewform?usp=pp_url&entry.1022705470=1&entry.95574452=3'},
-            	{ key: "Plant4", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-            	{ key: "Plant5", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant6", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant7", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant8", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-            	{ key: "Plant9", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant10", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant11", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant12", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-            	{ key: "Plant13", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant14", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant15", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant16", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-            	{ key: "Plant17", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant18", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant19", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
-                { key: "Plant20", url: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'},
+            	{ key: 'Plant1', species: 'daisy', row: 3, column: 1, alive: 1 },
+                { key: 'Plant2', species: '1,2', row: 1, column: 2, alive: 0 },
+                { key: 'Plant3', species: 'potato', row: 1, column: 3, alive: 1 },
+                { key: 'Plant4', species: 'daisy', row: 2, column: 1, alive: 1 },
+                { key: 'Plant5', species: 'strawberry', row: 2, column: 3, alive: 1 },
+                { key: 'Plant6', species: '3,3', row: 3, column: 3, alive: 0 },
+                { key: 'Plant7', species: 'daisy', row: 3, column: 2, alive: 1 },
+                { key: 'Plant8', species: '3,1', row: 1, column: 1, alive: 1 },
+                { key: 'Plant9', species: '2,2', row: 2, column: 2, alive: 1 },
         	]
         };
     }
 
     goToForm(item) {
         const { navigate } = this.props.navigation;
-    	navigate('TaskSelect', {type: null, data: item});
+    	navigate('FormView', {type: null, data: item});
     }
 
     render() {
@@ -46,36 +39,32 @@ export default class PlotView extends React.Component {
     			<ImageBackground style={styles.container}
     	         	source={require('../assets/plantField.jpg')}>
 	    	    	<View style={styles.heading}>
-	                	<Text style={styles.textheading}>Block {this.context.selectedBlock}</Text>
+	                	<Text style={styles.textheading}>{this.context.selectedSite}, {this.context.selectedBlock}</Text>
 	            	</View>
 	            	<ScrollView style={styles.GridViewRowCol}
 	            		horizontal={true}
 	            		> 
 		    		    <FlatList
-		    	 			data={ this.state.GridListItems }
-		    	 			renderItem={ ({item}) =>
+		    	 			data={ (this.state.GridListItems.sort((a, b) => a.column-(b.column)).sort((a, b) => a.row-(b.row))) }
+		    	 			renderItem={ ({item, index}) =>
 		                    <View style = {styles.GridViewContainer}>
-		        	     		<View style={styles.GridViewIcon}>
-		                            <Image
-		                                style={{                      
-		                                width: '60%',
-		                                height: undefined,
-		                                aspectRatio: 1,                      
-		                                }}
-		                                source={require("../assets/plantIcon.png")}
-		                            />
-		        	     		</View> 
+		        	     		<View style={(item.alive) ? styles.GridViewIcon : styles.GridViewDeadIcon}>
+                                    {item.alive
+		                                ? <Text style={styles.textheading} onPress={() => this.props.navigation.navigate('TaskSelect')}>{(Math.floor(index/this.state.numColumns))+1}x{(index % this.state.numColumns)+1}</Text>
+                                        : <Text style={styles.textheading} onPress={() => this.props.navigation.navigate('TaskSelect')}>DEAD</Text>
+                                    }
+		        	     		</View>
 		                        <View style={styles.GridViewTextLayout}>
-		                            <Text style={styles.GridViewText} onPress={this.goToForm.bind(this, item.url)} > {item.key} </Text>
+		                            <Text style={styles.GridViewText}> {item.species} </Text>
 		                        </View>
 		                    </View>}
-		    	 			numColumns={5}
+		    	 			numColumns={this.state.numColumns}
 		    			/>
 		    		</ScrollView>
 		    		<View style={styles.bottomView}>
 		            	<TouchableOpacity style={styles.button}
 			    			onPress={() => this.props.navigation.navigate('Camera')}>
-		                	<Text style={styles.text}>New Plot</Text>
+		                	<Text style={styles.text}>New Block</Text>
 		            	</TouchableOpacity>
 	            	</View>
     	    	</ImageBackground>
@@ -84,4 +73,4 @@ export default class PlotView extends React.Component {
     }
 }
 
-PlotView.contextType = SiteContext;
+BlockView.contextType = SiteContext;
