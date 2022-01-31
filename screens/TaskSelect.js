@@ -44,7 +44,7 @@ class TaskSelect extends Component {
 
           <TouchableOpacity
               style={styles.button}
-              onPress={() => { this.context.setTask(options[this.state.task]); this.props.navigation.navigate('Camera'); }}
+              onPress={() => { this.context.setTask(options[this.state.task]);}}
             >
             <Text style={styles.text}>Scan Plot</Text>
           </TouchableOpacity>

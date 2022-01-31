@@ -37,7 +37,7 @@ export default class PlotView extends React.Component {
 
     goToForm(item) {
         const { navigate } = this.props.navigation;
-    	navigate('FormView', {type: null, data: item});
+    	navigate('TaskSelect', {type: null, data: item});
     }
 
     render() {
@@ -73,10 +73,6 @@ export default class PlotView extends React.Component {
 		    			/>
 		    		</ScrollView>
 		    		<View style={styles.bottomView}>
-			    		<TouchableOpacity style={styles.button}
-			    			onPress={() => this.props.navigation.navigate('TaskSelect')}>
-		                	<Text style={styles.text}>New Task</Text>
-		            	</TouchableOpacity>
 		            	<TouchableOpacity style={styles.button}
 			    			onPress={() => this.props.navigation.navigate('Camera')}>
 		                	<Text style={styles.text}>New Plot</Text>

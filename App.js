@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SiteContext } from './SiteContext'
 import HomeScreen from './screens/HomeScreen';
 import SiteSelect from './screens/SiteSelect';
+import PlotSelect from './screens/PlotSelect';
 import TaskSelect from './screens/TaskSelect';
 import QRCode from './screens/QRCode';
 import FormView from './screens/FormView';
@@ -59,6 +60,7 @@ class App extends React.Component {
           >
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="SiteSelect" component={SiteSelect} />
+            <Stack.Screen name="PlotSelect" component={PlotSelect} />
             <Stack.Screen name="TaskSelect" component={TaskSelect} />
             <Stack.Screen options={{headerShown: true}} name="FormView" component={FormView} />
             <Stack.Screen options={{headerShown: true}} name="Camera" component={QRCode} />

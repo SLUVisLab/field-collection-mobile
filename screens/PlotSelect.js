@@ -5,32 +5,8 @@ import { Picker } from '@react-native-picker/picker';
 import { SiteContext } from '../SiteContext';
 import styles from '../Styles';
 
-import {ref, set, child, get} from 'firebase/database';
-import db from '../firebase';
-
-// For reference: https://stackoverflow.com/questions/43016624/react-native-apply-array-values-from-state-as-picker-items
-
-// write data to the database
-// set(ref(db, 'users/' + '12345678'), {
-//  username: 'nfgsko',
-//  email: 'julia.vmdskvp;s@yadayada.edu'
-// });
-
-
-const dbRef = ref(db);
-get(child(dbRef, `sites`)).then((snapshot) => {
-  if (snapshot.exists()) {
-    Alert.alert('Data', JSON.stringify(snapshot.val()))
-  } else {
-    Alert.alert('Data', "No data available");
-  }
-}).catch((error) => {
-  Alert.alert('ERROR', error.message);
-});
-
-var options = ["Field 1","Field 2","Field 3","Field 4","Field 5"];
-
-class SiteSelect extends Component {
+var options = ["Plot 1","Plot 2","Plot 3","Plot 4","Plot 5"];
+class PlotSelect extends Component {
    
    state = {site: ''}
    updateSite = (site) => {
@@ -43,7 +19,7 @@ class SiteSelect extends Component {
           <ImageBackground style={styles.container}
             source={require('../assets/plantField.jpg')}>
             <View style={styles.heading}>
-              <Text style={styles.textheading}>Please select a field site</Text>
+              <Text style={styles.textheading}>Please select from the list of available plots at {this.context.selectedSite}</Text>
             </View> 
             <Picker
               style={styles.picker}
@@ -58,7 +34,7 @@ class SiteSelect extends Component {
             <View style={{height:10}}></View>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => { this.context.setSite(options[this.state.site]); this.props.navigation.navigate('PlotSelect'); }}
+              onPress={() => { this.context.setSite(options[this.state.site]); this.props.navigation.navigate('PlotView'); }}
             >
               <Text style={styles.text}>Go</Text>
             </TouchableOpacity>
@@ -75,6 +51,6 @@ class SiteSelect extends Component {
    }
 }
 
-SiteSelect.contextType = SiteContext;
+PlotSelect.contextType = SiteContext;
 
-export default SiteSelect 
+export default PlotSelect 
