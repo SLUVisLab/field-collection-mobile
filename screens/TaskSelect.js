@@ -46,7 +46,14 @@ class TaskSelect extends Component {
               style={styles.button}
               onPress={() => this.props.navigation.navigate("FormView", {type: null, data: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'})}
             >
-            <Text style={styles.text}>Fill out form</Text>
+            <Text style={styles.text}>Fill Out Form</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+              style={styles.button}
+              onPress={() => this.props.navigation.navigate("BlockView")}
+            >
+            <Text style={styles.text}>Select New Plant</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

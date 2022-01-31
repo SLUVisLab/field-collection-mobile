@@ -85,6 +85,16 @@ export default StyleSheet.create({
       margin: 5,
       backgroundColor: 'rgba(255,172,50,1)'
     },
+    GridViewDeadIcon: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 90,
+      height: 90,
+      borderRadius: 100 / 2,
+      margin: 5,
+      backgroundColor: 'rgba(255,0,0,1)'
+    },
     GridViewTextLayout: {
       justifyContent: 'center',
       alignItems: 'center',
