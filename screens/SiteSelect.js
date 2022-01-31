@@ -28,7 +28,7 @@ get(child(dbRef, `sites`)).then((snapshot) => {
   Alert.alert('ERROR', error.message);
 });
 
-var options = ["Field 1","Field 2","Field 3","Field 4","Field 5"];
+var options = ["","Field 1","Field 2","Field 3","Field 4", "Field 5"];
 
 class SiteSelect extends Component {
    

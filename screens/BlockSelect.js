@@ -5,12 +5,12 @@ import { Picker } from '@react-native-picker/picker';
 import { SiteContext } from '../SiteContext';
 import styles from '../Styles';
 
-var options = ["Plot 1","Plot 2","Plot 3","Plot 4","Plot 5"];
-class PlotSelect extends Component {
+var options = ["", "Block 1","Block 2","Block 3","Block 4","Block 5"];
+class BlockSelect extends Component {
    
-   state = {site: ''}
-   updateSite = (site) => {
-      this.setState({ site: site})
+   state = {block: ''}
+   updateBlock = (block) => {
+      this.setState({ block: block})
    }
    render() {
       //console.log(options[this.state.site])
@@ -19,12 +19,12 @@ class PlotSelect extends Component {
           <ImageBackground style={styles.container}
             source={require('../assets/plantField.jpg')}>
             <View style={styles.heading}>
-              <Text style={styles.textheading}>Please select from the list of available plots at {this.context.selectedSite}</Text>
+              <Text style={styles.textheading}>Please select from the list of available blocks at {this.context.selectedSite}</Text>
             </View> 
             <Picker
               style={styles.picker}
-              selectedValue={this.state.site}
-              onValueChange={this.updateSite}
+              selectedValue={this.state.block}
+              onValueChange={this.updateBlock}
               animationType="slide"
               itemStyle={{ color:"white", fontWeight:"bold", fontSize:20 }}>
               {options.map((item, index) => {
@@ -51,6 +51,6 @@ class PlotSelect extends Component {
    }
 }
 
-PlotSelect.contextType = SiteContext;
+BlockSelect.contextType = SiteContext;
 
-export default PlotSelect 
+export default BlockSelect 

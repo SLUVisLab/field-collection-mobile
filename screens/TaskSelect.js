@@ -28,7 +28,7 @@ class TaskSelect extends Component {
             <View
               style={styles.heading}
             >
-            <Text style={styles.textheading}>Please select from the list of tasks available at {this.context.selectedSite}</Text>
+            <Text style={styles.textheading}>Please select from the list of tasks available from {this.context.selectedSite}, {this.context.selectedBlock}</Text>
             </View> 
             <Picker
             style={styles.picker}
@@ -44,9 +44,9 @@ class TaskSelect extends Component {
 
           <TouchableOpacity
               style={styles.button}
-              onPress={() => { this.context.setTask(options[this.state.task]);}}
+              onPress={() => this.props.navigation.navigate("FormView", {type: null, data: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'})}
             >
-            <Text style={styles.text}>Scan Plot</Text>
+            <Text style={styles.text}>Fill out form</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

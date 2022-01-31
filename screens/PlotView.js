@@ -46,7 +46,7 @@ export default class PlotView extends React.Component {
     			<ImageBackground style={styles.container}
     	         	source={require('../assets/plantField.jpg')}>
 	    	    	<View style={styles.heading}>
-	                	<Text style={styles.textheading}>Plot X, {this.context.selectedTask}</Text>
+	                	<Text style={styles.textheading}>Block {this.context.selectedBlock}</Text>
 	            	</View>
 	            	<ScrollView style={styles.GridViewRowCol}
 	            		horizontal={true}
