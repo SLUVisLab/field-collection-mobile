@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View, ImageBackground, TouchableHighlightBase } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { SiteContext } from '../SiteContext';
 import styles from '../Styles';
 import {Picker} from '@react-native-picker/picker';
 
@@ -28,7 +27,7 @@ class TaskSelect extends Component {
             <View
               style={styles.heading}
             >
-            <Text style={styles.textheading}>Please select from the list of tasks available from {this.context.selectedSite}, {this.context.selectedBlock}</Text>
+            <Text style={styles.textheading}>Please select from the list of tasks available from {global.selectedSite}, {global.selectedBlock}</Text>
             </View> 
             <Picker
             style={styles.picker}
@@ -67,7 +66,5 @@ class TaskSelect extends Component {
       )
    }
 }
-
-TaskSelect.contextType = SiteContext;
 
 export default TaskSelect;

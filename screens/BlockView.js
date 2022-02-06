@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import { Text, View, ImageBackground, FlatList, Image, ScrollView } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { SiteContext } from '../SiteContext';
 import styles from '../Styles';
 
 export default class BlockView extends React.Component {
@@ -39,7 +38,7 @@ export default class BlockView extends React.Component {
     			<ImageBackground style={styles.container}
     	         	source={require('../assets/plantField.jpg')}>
 	    	    	<View style={styles.heading}>
-	                	<Text style={styles.textheading}>{this.context.selectedSite}, {this.context.selectedBlock}</Text>
+	                	<Text style={styles.textheading}>{global.selectedSite}, {global.selectedBlock}</Text>
 	            	</View>
 	            	<ScrollView style={styles.GridViewRowCol}
 	            		horizontal={true}
@@ -72,5 +71,3 @@ export default class BlockView extends React.Component {
         );
     }
 }
-
-BlockView.contextType = SiteContext;
