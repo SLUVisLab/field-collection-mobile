@@ -1,3 +1,5 @@
 Week 1: I added a context to the app, so we can store variables and methods in a global scope (we were passing them between screens before). I also modified plot view to include row and column labels.
 
 Week 2: I redid PlotView to prepare for linking up with database connection. Added functionality for different plant species as well as dead plants. Then, I changed everything from 'plot' to 'block' since apparently that's what we're calling it now.
+
+Week 3: I realized I messed everything up by using context, so the database connection didn't work. I redid everything using global variables instead and hopefully it's working now.
