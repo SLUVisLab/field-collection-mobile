@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SiteContext } from './SiteContext'
 import HomeScreen from './screens/HomeScreen';
 import SiteSelect from './screens/SiteSelect';
 import BlockSelect from './screens/BlockSelect';
@@ -18,58 +17,31 @@ class App extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      selectedSite: 'NULL',
-      selectedBlock: 'NULL',
-      selectedTask: 'NULL',
-      selectedPlant: 'NULL',
-    }
-  }
-
-  setSite = (site) => {
-    this.setState({selectedSite: site})
-  }
-
-  setBlock = (block) => {
-    this.setState({selectedBlock: block})
-  }
-
-  setTask = (task) => {
-    this.setState({selectedTask: task})
+    global.selectedSite = 'NULL';
+    global.selectedBlock = 'NULL';
+    global.selectedTask = 'NULL';
+    global.selectedPlant = 'NULL';
   }
 
   render() {
     return (
-      <SiteContext.Provider
-        value={
-          {
-            selectedSite: this.state.selectedSite,
-            selectedBlock: this.state.selectedBlock,
-            selectedTask: this.state.selectedTask,
-            setSite: this.setSite,
-            setBlock: this.setBlock,
-            setTask: this.setTask
-          }
-        }
-      >
-        <NavigationContainer>
-          <Stack.Navigator 
-            initialRouteName="Home"
-            screenOptions={{
-              headerShown: false
-            }}
-          >
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="SiteSelect" component={SiteSelect} />
-            <Stack.Screen name="BlockSelect" component={BlockSelect} />
-            <Stack.Screen name="TaskSelect" component={TaskSelect} />
-            <Stack.Screen options={{headerShown: true}} name="FormView" component={FormView} />
-            <Stack.Screen options={{headerShown: true}} name="Camera" component={QRCode} />
-            <Stack.Screen options={{headerShown: true}} name="BlockView" component={BlockView} />
-            <Stack.Screen name="FormComplete" component={FormComplete} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SiteContext.Provider>
+      <NavigationContainer>
+        <Stack.Navigator 
+          initialRouteName="Home"
+          screenOptions={{
+            headerShown: false
+          }}
+        >
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="SiteSelect" component={SiteSelect} />
+          <Stack.Screen name="BlockSelect" component={BlockSelect} />
+          <Stack.Screen name="TaskSelect" component={TaskSelect} />
+          <Stack.Screen options={{headerShown: true}} name="FormView" component={FormView} />
+          <Stack.Screen options={{headerShown: true}} name="Camera" component={QRCode} />
+          <Stack.Screen options={{headerShown: true}} name="BlockView" component={BlockView} />
+          <Stack.Screen name="FormComplete" component={FormComplete} />
+        </Stack.Navigator>
+      </NavigationContainer>
     );
   }
 }

@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { Text, Button, View, StyleSheet } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { SiteContext } from '../SiteContext';
 import styles from '../Styles';
 
 function QRCode({ route, navigation }) {

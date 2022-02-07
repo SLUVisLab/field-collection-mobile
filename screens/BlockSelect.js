@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Text, View, ImageBackground, Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
-import { SiteContext } from '../SiteContext';
 import styles from '../Styles';
 
 var options = ["", "Block 1","Block 2","Block 3","Block 4","Block 5"];
@@ -19,7 +18,7 @@ class BlockSelect extends Component {
           <ImageBackground style={styles.container}
             source={require('../assets/plantField.jpg')}>
             <View style={styles.heading}>
-              <Text style={styles.textheading}>Please select from the list of available blocks at {this.context.selectedSite}</Text>
+              <Text style={styles.textheading}>Please select from the list of available blocks at {global.selectedSite}</Text>
             </View> 
             <Picker
               style={styles.picker}
@@ -34,7 +33,7 @@ class BlockSelect extends Component {
             <View style={{height:10}}></View>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => { this.context.setBlock(options[this.state.block]); this.props.navigation.navigate('BlockView'); }}
+              onPress={() => { global.selectedBlock=(options[this.state.block]); this.props.navigation.navigate('BlockView'); }}
             >
               <Text style={styles.text}>Go</Text>
             </TouchableOpacity>
@@ -50,7 +49,5 @@ class BlockSelect extends Component {
       )
    }
 }
-
-BlockSelect.contextType = SiteContext;
 
 export default BlockSelect 
