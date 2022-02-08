@@ -5,3 +5,7 @@ This past week we tried to meet with Dr. Stylianou to get ourselves set up but s
 Week 3 - 1/31/2022
 
 This week we weren't able to meet with Dr. Stylianou but I drafted an updated project plan and she seems pleased with the plan, which is good. I designed and got the new firestore firebase database running. I also implemented the dynamic generation of a list while reading from the firestore database. woo
+
+Week 4 - 2/8/2022
+
+Just some more work with the connection of firebase firestore and the app. A lot of failures on my end- alex was mvp this week in that his worked!
