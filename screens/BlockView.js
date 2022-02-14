@@ -49,7 +49,10 @@ export default class BlockView extends React.Component {
 		                    <View style = {styles.GridViewContainer}>
 		        	     		<View style={(item.alive) ? styles.GridViewIcon : styles.GridViewDeadIcon}>
                                     {item.alive
-		                                ? <Text style={styles.textheading} onPress={() => this.props.navigation.navigate('TaskSelect')}>{(Math.floor(index/this.state.numColumns))+1}x{(index % this.state.numColumns)+1}</Text>
+		                                ? <Text style={styles.textheading} onPress={() => {global.selectedRow=Math.floor(index/this.state.numColumns)+1;
+										global.selectedColumn=(index%this.state.numColumns)+1;
+										this.props.navigation.navigate('TaskSelect')}}>
+											{(Math.floor(index/this.state.numColumns))+1}x{(index % this.state.numColumns)+1}</Text>
                                         : <Text style={styles.textheading} onPress={() => this.props.navigation.navigate('TaskSelect')}>DEAD</Text>
                                     }
 		        	     		</View>

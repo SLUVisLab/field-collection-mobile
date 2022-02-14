@@ -19,6 +19,33 @@ class TaskSelect extends Component {
    updateTask = (task) => {
       this.setState({ task: task})
    }
+
+   getString(url) {
+     var first = true;
+     var result = ''
+     var queue = [global.selectedSite, global.selectedBlock.slice(-1), global.selectedRow, global.selectedColumn];
+     for (var i = 0; i < url.length; i++) {
+       if (url[i] == '=') {
+         if (first) {
+            result += '=';
+            first = false;
+            continue;
+         } else {
+           result += '=';
+           while (i < url.length && url[i+1] != '&') {
+             console.log(url[i]);
+             i++;
+           }
+           result += queue.shift();
+           continue;
+         }
+       }
+      result += url[i];
+     }
+      console.log(result);
+      return result;
+   }
+
    render() {
       return (
         <View style={styles.container}>   
@@ -43,7 +70,7 @@ class TaskSelect extends Component {
 
           <TouchableOpacity
               style={styles.button}
-              onPress={() => this.props.navigation.navigate("FormView", {type: null, data: 'https://docs.google.com/spreadsheets/d/1QxCk3aqvCFH-5X4OWYPcuK7v0Hf4iyc8g6wsUtKklb8/edit#gid=0'})}
+              onPress={() => this.props.navigation.navigate("FormView", {type: null, data: this.getString('https://docs.google.com/forms/d/e/1FAIpQLSfbcDaOvhbHZDjiI5Chxk-RVm5lZwo6H8uyTGmytSxknVqZfg/viewform?usp=pp_url&entry.1993918266=Eureka&entry.954462119=1&entry.471766027=2&entry.308383014=3')})}
             >
             <Text style={styles.text}>Fill Out Form</Text>
           </TouchableOpacity>
