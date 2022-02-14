@@ -21,6 +21,8 @@ class App extends React.Component {
     global.selectedBlock = 'NULL';
     global.selectedTask = 'NULL';
     global.selectedPlant = 'NULL';
+    global.selectedRow = 'NULL';
+    global.selectedColumn = 'NULL';
   }
 
   render() {
