@@ -1,4 +1,4 @@
-Fritts, 1/15:  Terrific detail in your reports.  Keep it up.  :)  
+Fritts, 2/15:  Terrific detail in your reports.  Keep it up.  :)  
                Please upload new Gantt chart, and would like to see it include preliminary Deliverable #4 timeline.
 
 Week 1: I added a context to the app, so we can store variables and methods in a global scope (we were passing them between screens before). I also modified plot view to include row and column labels.
