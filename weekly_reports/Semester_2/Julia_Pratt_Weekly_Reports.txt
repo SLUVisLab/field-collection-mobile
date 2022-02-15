@@ -9,3 +9,7 @@ This week we weren't able to meet with Dr. Stylianou but I drafted an updated pr
 Week 4 - 2/8/2022
 
 Just some more work with the connection of firebase firestore and the app. A lot of failures on my end- alex was mvp this week in that his worked!
+
+Week 5 - 2/15/2022
+
+I connected (successfully) two more screens and attempted (so far unsuccessful) the connection of the last two screens. Am hoping to get that done before Thursday (when we meet with Dr. Stylianou).
