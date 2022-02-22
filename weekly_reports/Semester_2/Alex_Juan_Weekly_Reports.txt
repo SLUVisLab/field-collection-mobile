@@ -8,3 +8,5 @@ Week 2: I redid PlotView to prepare for linking up with database connection. Add
 Week 3: I realized I messed everything up by using context, so the database connection didn't work. I redid everything using global variables instead and hopefully it's working now.
 
 Week 4: I began working out the finer details of how to prefill Google Forms links. We met and I explained how to do that to Hamad & Julia, then we delegated tasks. We gave Hamad the task of writing a function to prefill links while I will be filling out the database with actual plant records.
+
+Week 5: I worked on the domain model. I also upladed a few blocks of plant data to the database with some python. Python is so much easier then react js.
