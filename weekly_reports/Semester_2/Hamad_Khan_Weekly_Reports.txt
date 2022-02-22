@@ -1,6 +1,5 @@
 Fritts, 2/15:  Fabulous detail in your reports.  Keep it up.  :)
                Please upload new Gantt chart, and would like to see it include preliminary Deliverable #4 timeline.
-
 Week 1/2: I worked on understanding firestore, and also going through the logistics of our app again. We currently have a lot of question marks surrounding our app, and we need to solve these questions before moving forward basically. Our immediate goal is to figure out how we're going to get the data from the fields to the database in an efficient manner. Specifically, we currently have an excel spreadsheet of dimensions of the field in real life, and we need to find a way to store that in a db.
 
 Week 3: I reorganized all of the screens on the app. Previously, we were doing Site->Task->Camera->Plotview->Form, now the flow is Site->Block->PlotView->Task->Form. We did away with the camera, because we thought that it was an unecessary thing in the app. It's quite easy just to select the block you are in, because in real life the blocks are all labeled. When I was reorganizing the screens, I noticed that our data flow is funky, so my next week's goal will be to work on that, and hopefully have everything put together.
@@ -8,3 +7,6 @@ Week 3: I reorganized all of the screens on the app. Previously, we were doing S
 Week 4: Our main goal for this past week ended up being to fix context. Previously, we were using context to help us with data flow throughout the app. However, when changes were added to SiteSelect in order to connect to the database, context broke and thus we had trouble moving data. I tried to get sitecontext to work, but was unsuccessful. Instead, Juan fixed it by just using global variables instead.
 
 Week 5: I mainly hooked up things in BlockView and TaskSelect. Firstly, I made sure that we were recording the plant rows and columns. Then, I parsed the google surveys url so that we can generate pre-filled links correctly.
+
+Week 6: I have been working on cleaning up code. I did not make a ton of progress this past week, but I have added linting.
+
