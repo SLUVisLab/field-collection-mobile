@@ -16,3 +16,7 @@ Just some more work with the connection of firebase firestore and the app. A lot
 Week 5 - 2/15/2022
 
 I connected (successfully) two more screens and attempted (so far unsuccessful) the connection of the last two screens. Am hoping to get that done before Thursday (when we meet with Dr. Stylianou).
+
+Week 6 - 2/22/2022
+
+I connected (succcessfully) one more screen and am trying so hard to get this last stupid screen hooked up. Annoying as heck.
