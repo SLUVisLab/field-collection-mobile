@@ -43,7 +43,6 @@ function TaskSelect ({route, navigation}) {
         } else {
           result += '=';
           while (i < url.length && url[i+1] != '&') {
-            console.log(url[i]);
             i++;
           }
           result += queue.shift();
@@ -52,11 +51,8 @@ function TaskSelect ({route, navigation}) {
       }
      result += url[i];
     }
-     console.log(result);
      return result;
   }
-
-
 
   useEffect( () => {
     const jsonFromDB = []
@@ -65,8 +61,8 @@ function TaskSelect ({route, navigation}) {
         snapshot.docs.forEach( (doc) => {
           jsonFromDB.push({url:doc.data().url, name:doc.id})
         })
-        setTaskList(jsonFromDB);
         parseJson(jsonFromDB);
+        setTaskList(jsonFromDB);
       })
       .catch( (e) => alert(e))
   }, [])
