@@ -3,7 +3,6 @@ import { Text, View, ImageBackground, Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
 import styles from '../Styles';
-
 import {doc, collection, query, where, getDoc, getDocs} from 'firebase/firestore';
 import db from '../firebase';
 
@@ -13,7 +12,7 @@ function SiteSelect ({ route, navigation })  {
   const [siteList, setSiteList] = useState([]);
   const colRef = collection(db, 'fieldsites')
   const [site, setSite] = useState('');
-  var options = ["Hamad Khan","J Pratt","Alexander Juan","Abby Stylianou","Allison Miller"];
+
 
   const updateSite = (sitename) => {
     setSite(sitename);
