@@ -23,6 +23,7 @@ class App extends React.Component {
     global.selectedPlant = 'NULL';
     global.selectedRow = 'NULL';
     global.selectedColumn = 'NULL';
+    global.selectedUrl = 'NULL';
   }
 
   render() {
