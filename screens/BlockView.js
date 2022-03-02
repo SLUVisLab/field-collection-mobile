@@ -12,6 +12,32 @@ function BlockView ({route, navigation}) {
 	const colRef = collection(db, 'fieldsites', global.selectedSite, 'blocks', global.selectedBlock, 'plants')
 	const docRef = doc(db, 'fieldsites', global.selectedSite, 'blocks', global.selectedBlock)
 
+  function getUrl(url) {
+    var first = true;
+    var result = ''
+    var queue = [global.selectedSite, global.selectedBlock.slice(-1), global.selectedRow, global.selectedColumn];
+    for (var i = 0; i < url.length; i++) {
+      if (url[i] == '=') {
+        if (first) {
+           result += '=';
+           first = false;
+           continue;
+        } else {
+          result += '=';
+          while (i < url.length && url[i+1] != '&') {
+            i++;
+          }
+          result += queue.shift();
+          continue;
+        }
+      }
+     result += url[i];
+    }
+    
+    console.log(result);
+    return result;
+  }
+
 	useEffect(() => {
 		const getResult = async() => {
 			const docSnap = await getDoc(docRef)
@@ -51,7 +77,7 @@ function BlockView ({route, navigation}) {
 			<ImageBackground style={styles.container}
 				source={require('../assets/plantField.jpg')}>
 				<View style={styles.heading}>
-					<Text style={styles.textheading}>{global.selectedSite}, {global.selectedBlock}</Text>
+					<Text style={styles.textheading}>Site: {global.selectedSite}, Block: {global.selectedBlock}</Text>
 				</View>
 				<ScrollView style={styles.GridViewRowCol}
 					horizontal={true}
@@ -62,7 +88,7 @@ function BlockView ({route, navigation}) {
 						<View style = {styles.GridViewContainer}>
 							<View style={(item.alive) ? styles.GridViewIcon : styles.GridViewDeadIcon}>
 								{item.alive
-									? <Text style={styles.textheading} onPress={() => {global.selectedRow = Math.floor(index/numColumns)+1; global.selectedColumn = Math.floor(index%numColumns)+1;global.selectedSpecies=(item.species); navigation.navigate('TaskSelect')}}>{(Math.floor(index/numColumns))+1}x{(index % numColumns)+1}</Text>
+									? <Text style={styles.textheading} onPress={() => {global.selectedRow = Math.floor(index/numColumns)+1; global.selectedColumn = Math.floor(index%numColumns)+1;global.selectedSpecies=(item.species); navigation.navigate("FormView", {type: null, data: getUrl(global.selectedUrl)});}}>{(Math.floor(index/numColumns))+1}x{(index % numColumns)+1}</Text>
 									: <Text style={styles.textheading} onPress={() => {global.selectedSpecies=(item.species); navigation.navigate('TaskSelect');}}>DEAD</Text>
 								}
 							</View>
