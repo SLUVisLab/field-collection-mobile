@@ -10,6 +10,7 @@ import db from '../firebase';
 // For reference: https://stackoverflow.com/questions/43016624/react-native-apply-array-values-from-state-as-picker-items
 var options = {};
 
+
 function TaskSelect ({route, navigation}) {
   const [taskList, setTaskList] = useState([]);
   const [task, setTask] = useState('');
@@ -24,6 +25,30 @@ function TaskSelect ({route, navigation}) {
     for (var i = 0; i < jsonObject.length; i++) {
       options[jsonObject[i].url] = jsonObject[i].name;
     }
+  }
+
+  function getString(url) {
+    var first = true;
+    var result = ''
+    var queue = [global.selectedSite, global.selectedBlock.slice(-1), global.selectedRow, global.selectedColumn];
+    for (var i = 0; i < url.length; i++) {
+      if (url[i] == '=') {
+        if (first) {
+           result += '=';
+           first = false;
+           continue;
+        } else {
+          result += '=';
+          while (i < url.length && url[i+1] != '&') {
+            i++;
+          }
+          result += queue.shift();
+          continue;
+        }
+      }
+     result += url[i];
+    }
+     return result;
   }
 
   useEffect( () => {
@@ -61,7 +86,7 @@ function TaskSelect ({route, navigation}) {
         <View style={{height:10}}></View>
       <TouchableOpacity
           style={styles.button}
-          onPress={() => {console.log(getString(task)); global.selectedUrl = task; global.selectedTask=(taskList[task]); navigation.navigate("BlockSelect")}}
+          onPress={() => {global.selectedUrl = task; global.selectedTask=(taskList[task]); navigation.navigate("BlockSelect")}}
         >
         <Text style={styles.text}>Go</Text>
       </TouchableOpacity>
