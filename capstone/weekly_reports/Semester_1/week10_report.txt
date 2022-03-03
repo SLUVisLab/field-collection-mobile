@@ -1,0 +1,5 @@
+Hamad: As of now, I have the get request almost complete. There's some formatting issues and i've never used a rest api before so i'm learning how to use all this stuff. I have to learn how to properly format, and learn how to use get, post, put, and delete.
+
+Alex: I am currently assiting Hamad with the setup and connection of the google sheet API. We are making good progress but still far from our goal.
+
+Julia: I have been working to facilitate the connection of the picker and the API. I will soon begin working with Hamad to connect the two.
