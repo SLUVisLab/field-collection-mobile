@@ -24,3 +24,7 @@ I connected (succcessfully) one more screen and am trying so hard to get this la
 Week 7 - 3/1/2022
 
 Successfully connected the last screen on branch fullconnect! There was a stupid dumb annoying error but Hamad fixed it, thanks Hamad. I was too frustrated to figure it out. Worked with MJ, Dr. Stylianou, and my team to come up with ideas for how to proceed with our app and make the most people happy. (we won't be able to do everything, so we need to prioritize)
+
+Week 11 - 3/27/2022
+
+We met to discuss final plans for the app. The current task that I'm working on is reading survey results from a Google Sheets into the database. This looks challenging, but there are quite a few resources. Looks like I'll need to make a script throught the Google Scripts service and connect it to the Google firestore service.
