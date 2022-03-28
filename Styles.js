@@ -82,8 +82,18 @@ export default StyleSheet.create({
       width: 90,
       height: 90,
       borderRadius: 100 / 2,
-      margin: 5,
+      margin: 8,
       backgroundColor: 'rgba(255,172,50,1)'
+    },
+    GridViewDoneIcon: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 90,
+      height: 90,
+      borderRadius: 100 / 2,
+      margin: 8,
+      backgroundColor: 'rgba(0,0,0,0.5)'
     },
     GridViewDeadIcon: {
       flex: 1,
@@ -92,12 +102,14 @@ export default StyleSheet.create({
       width: 90,
       height: 90,
       borderRadius: 100 / 2,
-      margin: 5,
+      margin: 8,
       backgroundColor: 'rgba(255,0,0,1)'
     },
     GridViewTextLayout: {
       justifyContent: 'center',
       alignItems: 'center',
+      width: 90,
+      height: 20,
       backgroundColor: 'rgba(0,0,0,0.25)'
     },
     GridViewText: {
@@ -112,5 +124,6 @@ export default StyleSheet.create({
     },
     GridViewRowCol: {
       marginLeft: 5,
+      backgroundColor: 'rgba(0,0,0,0.1)'
     }
   }); 

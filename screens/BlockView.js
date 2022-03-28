@@ -6,11 +6,28 @@ import styles from '../Styles';
 import {doc, collection, getDoc, getDocs} from 'firebase/firestore';
 import db from '../firebase';
 
+//create your forceUpdate hook
+function useForceUpdate(){
+    const [value, setValue] = useState(0); // integer state
+    return () => setValue(value => value + 1); // update the state to force render
+}
+
+function updateDone() {
+	var i, j;
+    for (i = 0; i < 100; ++i) {
+    	for (j = 0; j < 100; ++j) {
+        	global.isDone[i][j] = 0;
+        }
+    }
+}
+
 function BlockView ({route, navigation}) {
 	const [numColumns, setNumColumns] = useState("");
+	const [numRows, setNumRows] = useState("");
 	const [GridListItems, setGridListItems] = useState([]);
-	const colRef = collection(db, 'fieldsites', global.selectedSite, 'blocks', global.selectedBlock, 'plants')
-	const docRef = doc(db, 'fieldsites', global.selectedSite, 'blocks', global.selectedBlock)
+	const colRef = collection(db, 'fieldsites', global.selectedSite, 'blocks', global.selectedBlock, 'plants');
+	const docRef = doc(db, 'fieldsites', global.selectedSite, 'blocks', global.selectedBlock);
+	const forceUpdate = useForceUpdate();
 
   function getUrl(url) {
     var first = true;
@@ -34,7 +51,6 @@ function BlockView ({route, navigation}) {
      result += url[i];
     }
     
-    console.log(result);
     return result;
   }
 
@@ -42,7 +58,8 @@ function BlockView ({route, navigation}) {
 		const getResult = async() => {
 			const docSnap = await getDoc(docRef)
 			if(docSnap.exists()){
-				setNumColumns(docSnap.data().columns)
+				setNumColumns(docSnap.data().columns);
+				setNumRows(docSnap.data().rows);
 			} else {
 				alert("Error. Cannot find document.")
 			}
@@ -67,39 +84,47 @@ function BlockView ({route, navigation}) {
 			.catch( (e) => alert(e))
 	}, [])
 
-    // const goToForm = (item) => {
-    //     const { navigate } = navigation;
-    // 	navigate('FormView', {type: null, data: item});
-    // }
-
 	return (
 		<View style={styles.container}>  
 			<ImageBackground style={styles.container}
 				source={require('../assets/plantField.jpg')}>
 				<View style={styles.heading}>
-					<Text style={styles.textheading}>Site: {global.selectedSite}, Block: {global.selectedBlock}</Text>
+					<Text style={styles.textheading}>{global.selectedSite}, Block {global.selectedBlock}</Text>
 				</View>
 				<ScrollView style={styles.GridViewRowCol}
 					horizontal={true}
 					> 
 					<FlatList
-						data={ (GridListItems.sort((a, b) => a.column-(b.column)).sort((a, b) => a.row-(b.row))) }
+						data={ (GridListItems.sort((a, b) => a.column-(b.column)).sort((a, b) => (b.row-a.row))) }
 						renderItem={ ({item, index}) =>
 						<View style = {styles.GridViewContainer}>
-							<View style={(item.alive) ? styles.GridViewIcon : styles.GridViewDeadIcon}>
+							<View style={(item.alive) 
+											? global.isDone[item.row][item.column] == 1
+												? styles.GridViewDoneIcon
+												: styles.GridViewIcon
+											: styles.GridViewDeadIcon
+										}>
 								{item.alive
-									? <Text style={styles.textheading} onPress={() => {global.selectedRow = Math.floor(index/numColumns)+1; global.selectedColumn = Math.floor(index%numColumns)+1;global.selectedSpecies=(item.species); navigation.navigate("FormView", {type: null, data: getUrl(global.selectedUrl)});}}>{(Math.floor(index/numColumns))+1}x{(index % numColumns)+1}</Text>
+									? <Text style={styles.textheading} onPress={() => {global.selectedRow = (item.row); global.selectedColumn = (item.column); global.selectedSpecies=(item.species); global.isDone[item.row][item.column] = 1; forceUpdate(); navigation.navigate("FormView", {type: null, data: getUrl(global.selectedUrl)})}}>{item.column},{item.row}</Text>
 									: <Text style={styles.textheading} onPress={() => {global.selectedSpecies=(item.species); navigation.navigate('TaskSelect');}}>DEAD</Text>
 								}
 							</View>
 							<View style={styles.GridViewTextLayout}>
-								<Text style={styles.GridViewText}> {item.species} </Text>
+								{global.isDone[item.row][item.column] == 1
+									? <Text style={styles.GridViewText}> Done </Text>
+									: <Text style={styles.GridViewText}> Not Done </Text>
+								}
 							</View>
 						</View>}
 						numColumns={numColumns}
 						key={numColumns}
 					/>
 				</ScrollView>
+				<TouchableOpacity style={styles.heading} onPress={() => {updateDone(); forceUpdate(); navigation.navigate("BlockSelect")}}>
+					<Text style={styles.textheading}>Finish Walk</Text>
+				</TouchableOpacity>
+				<View style={styles.bottomView}>
+				</View>
 			</ImageBackground>
 		</View>
 	)

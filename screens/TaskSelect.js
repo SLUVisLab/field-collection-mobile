@@ -52,7 +52,7 @@ function TaskSelect ({route, navigation}) {
   }
 
   useEffect( () => {
-    const jsonFromDB = []
+    const jsonFromDB = ['']
     getDocs(colRef)
       .then( (snapshot) => {
         snapshot.docs.forEach( (doc) => {
