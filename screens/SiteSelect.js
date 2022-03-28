@@ -19,7 +19,7 @@ function SiteSelect ({ route, navigation })  {
   }
 
   useEffect( () => {
-    const getSitesFromFirestore = [];
+    const getSitesFromFirestore = [''];
     getDocs(colRef)
       .then( (snapshot) => {
         snapshot.docs.forEach( (doc) => {

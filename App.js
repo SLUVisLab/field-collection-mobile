@@ -24,6 +24,7 @@ class App extends React.Component {
     global.selectedRow = 'NULL';
     global.selectedColumn = 'NULL';
     global.selectedUrl = 'NULL';
+    global.isDone = Array(100).fill(0).map(row => new Array(100).fill(0))
   }
 
   render() {
