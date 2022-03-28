@@ -10,5 +10,6 @@ Week 5: I mainly hooked up things in BlockView and TaskSelect. Firstly, I made s
 
 Week 6: I have been working on cleaning up code. I did not make a ton of progress this past week, but I have added linting.
 
-Week 6: I fixed the fullconnect branch. We were getting an error on the app before. Now, I will be merging everything into the main branch.
+Week 7: I fixed the fullconnect branch. We were getting an error on the app before. Now, I will be merging everything into the main branch.
 
+Week 11: I will just be researching how to build the app. We want to get the app in the hands of the researchers fairly soon, so we can iterate on the feedback.
