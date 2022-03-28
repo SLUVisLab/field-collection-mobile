@@ -50,7 +50,7 @@ function SiteSelect ({ route, navigation })  {
         <View style={{height:10}}></View>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => {global.selectedSite=(siteList[site]); navigation.navigate('BlockSelect'); }}
+          onPress={() => {global.selectedSite=(siteList[site]); navigation.navigate('TaskSelect'); }}
         >
           <Text style={styles.text}>Go</Text>
         </TouchableOpacity>
