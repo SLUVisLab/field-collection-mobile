@@ -42,7 +42,7 @@ class App extends React.Component {
           <Stack.Screen name="TaskSelect" component={TaskSelect} />
           <Stack.Screen options={{headerShown: true}} name="FormView" component={FormView} />
           <Stack.Screen options={{headerShown: true}} name="Camera" component={QRCode} />
-          <Stack.Screen options={{headerShown: true}} name="BlockView" component={BlockView} />
+          <Stack.Screen options={{headerShown: true, headerBackVisible: false}} name="BlockView" component={BlockView} />
           <Stack.Screen name="FormComplete" component={FormComplete} />
         </Stack.Navigator>
       </NavigationContainer>

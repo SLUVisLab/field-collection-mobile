@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import { Text, View, ImageBackground, FlatList, Image, ScrollView } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { Text, View, ImageBackground, Animated, Dimensions, FlatList, Image, ScrollView, SafeAreaView } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../Styles';
 
@@ -22,6 +22,9 @@ function updateDone() {
 }
 
 function BlockView ({route, navigation}) {
+	const [active, setActive] = useState(false);
+	let transformX = useRef(new Animated.Value(0)).current;
+	const [mode, setMode] = useState(false);
 	const [numColumns, setNumColumns] = useState("");
 	const [numRows, setNumRows] = useState("");
 	const [GridListItems, setGridListItems] = useState([]);
@@ -53,6 +56,27 @@ function BlockView ({route, navigation}) {
     
     return result;
   }
+
+  const rotationX = transformX.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, Dimensions.get('screen').width*0.45]
+  })
+
+  useEffect(() => {
+    if (active) {
+      Animated.timing(transformX, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true
+      }).start()
+    } else {
+      Animated.timing(transformX, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true
+      }).start()
+    }
+  }, [active]);
 
 	useEffect(() => {
 		const getResult = async() => {
@@ -91,35 +115,90 @@ function BlockView ({route, navigation}) {
 				<View style={styles.heading}>
 					<Text style={styles.textheading}>{global.selectedSite}, Block {global.selectedBlock}</Text>
 				</View>
-				<ScrollView style={styles.GridViewRowCol}
-					horizontal={true}
-					> 
-					<FlatList
-						data={ (GridListItems.sort((a, b) => a.column-(b.column)).sort((a, b) => (b.row-a.row))) }
-						renderItem={ ({item, index}) =>
-						<View style = {styles.GridViewContainer}>
-							<View style={(item.alive) 
-											? global.isDone[item.row][item.column] == 1
-												? styles.GridViewDoneIcon
-												: styles.GridViewIcon
-											: styles.GridViewDeadIcon
-										}>
-								{item.alive
-									? <Text style={styles.textheading} onPress={() => {global.selectedRow = (item.row); global.selectedColumn = (item.column); global.selectedSpecies=(item.species); global.isDone[item.row][item.column] = 1; forceUpdate(); navigation.navigate("FormView", {type: null, data: getUrl(global.selectedUrl)})}}>{item.column},{item.row}</Text>
-									: <Text style={styles.textheading} onPress={() => {global.selectedSpecies=(item.species); navigation.navigate('TaskSelect');}}>DEAD</Text>
-								}
-							</View>
-							<View style={styles.GridViewTextLayout}>
-								{global.isDone[item.row][item.column] == 1
-									? <Text style={styles.GridViewText}> Done </Text>
-									: <Text style={styles.GridViewText}> Not Done </Text>
-								}
-							</View>
-						</View>}
-						numColumns={numColumns}
-						key={numColumns}
-					/>
-				</ScrollView>
+				<SafeAreaView style={styles.SlideButtonContainer}>
+					<View style={styles.SlideButtonInnerContainer}>
+		        <Animated.View
+		          style={{
+		          	position: 'absolute',
+					      height: 50 - 2*2,
+					      top: 2,
+					      bottom: 2,
+					      borderRadius: 10,
+					      width: Dimensions.get('screen').width*0.45,
+					      backgroundColor: 'rgba(255,172,50,0.85)',
+		            transform: [
+              		{
+                		translateX: rotationX
+              		}
+            		],
+		          }}
+		        >
+		        </Animated.View>
+		        <TouchableOpacity style={styles.SlideButtonButton} onPress={() => {setActive(false); setMode(false)}}>
+		          <Text style = {styles.text}>
+		            Walk
+		        	</Text>
+		        </TouchableOpacity>
+		        <TouchableOpacity style={styles.SlideButtonButton} onPress={() => {setActive(true); setMode(true)}}>
+		          <Text style = {styles.text}>
+		            Info
+		        	</Text>
+		        </TouchableOpacity>
+		      </View>
+	      </SafeAreaView>
+	      {mode
+					?	<ScrollView style={styles.GridViewRowCol}
+							horizontal={true}
+							> 
+							<FlatList
+								data={ (GridListItems.sort((a, b) => a.column-(b.column)).sort((a, b) => (b.row-a.row))) }
+								renderItem={ ({item, index}) =>
+								<View style = {styles.GridViewContainer}>
+									<View style={(item.alive) 
+													? styles.GridViewInfo
+													: styles.GridViewDeadInfo
+									}>
+										<View style={styles.GridViewInfoTextLayout}>
+											<Text style={styles.GridViewInfoText}>{item.column},{item.row}{'\n'}{(item.species.split(" "))[0]}{'\n'}{(item.species.split(" "))[1]}{'\n'}Days Since: 0{'\n'}Last: 0</Text>
+										</View>
+									</View>
+									<View style={styles.GridViewTextLayoutClear}>
+									</View>
+								</View>}
+								numColumns={numColumns}
+								key={numColumns}
+							/>
+						</ScrollView>
+					:	<ScrollView style={styles.GridViewRowCol}
+							horizontal={true}
+							> 
+							<FlatList
+								data={ (GridListItems.sort((a, b) => a.column-(b.column)).sort((a, b) => (b.row-a.row))) }
+								renderItem={ ({item, index}) =>
+								<View style = {styles.GridViewContainer}>
+									<View style={(item.alive) 
+													? global.isDone[item.row][item.column] == 1
+														? styles.GridViewDoneIcon
+														: styles.GridViewIcon
+													: styles.GridViewDeadIcon
+												}>
+										{item.alive
+											? <Text style={styles.textheading} onPress={() => {global.selectedRow = (item.row); global.selectedColumn = (item.column); global.selectedSpecies=(item.species); setTimeout(() => {global.isDone[item.row][item.column] = 1; forceUpdate();}, 500); navigation.navigate("FormView", {type: null, data: getUrl(global.selectedUrl)})}}>{item.column},{item.row}</Text>
+											: <Text style={styles.textheading} onPress={() => {global.selectedSpecies=(item.species); navigation.navigate('TaskSelect');}}>DEAD</Text>
+										}
+									</View>
+									<View style={styles.GridViewTextLayout}>
+										{global.isDone[item.row][item.column] == 1
+											? <Text style={styles.GridViewText}> Done </Text>
+											: <Text style={styles.GridViewText}> Not Done </Text>
+										}
+									</View>
+								</View>}
+								numColumns={numColumns}
+								key={numColumns}
+							/>
+						</ScrollView>
+				}
 				<TouchableOpacity style={styles.heading} onPress={() => {updateDone(); forceUpdate(); navigation.navigate("BlockSelect")}}>
 					<Text style={styles.textheading}>Finish Walk</Text>
 				</TouchableOpacity>

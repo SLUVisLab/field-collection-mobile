@@ -105,12 +105,44 @@ export default StyleSheet.create({
       margin: 8,
       backgroundColor: 'rgba(255,0,0,1)'
     },
+    GridViewInfo: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 90,
+      height: 90,
+      margin: 8,
+      backgroundColor: 'rgba(255,172,50,1)'
+    },
+    GridViewDeadInfo: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 90,
+      height: 90,
+      margin: 8,
+      backgroundColor: 'rgba(255,0,0,1)'
+    },
     GridViewTextLayout: {
       justifyContent: 'center',
       alignItems: 'center',
       width: 90,
       height: 20,
       backgroundColor: 'rgba(0,0,0,0.25)'
+    },
+    GridViewInfoTextLayout: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 90,
+      height: 90,
+      backgroundColor: 'rgba(0,0,0,0)'
+    },
+    GridViewTextLayoutClear: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 90,
+      height: 20,
+      backgroundColor: 'rgba(0,0,0,0)'
     },
     GridViewText: {
       textAlign: 'center',
@@ -122,8 +154,46 @@ export default StyleSheet.create({
       color: 'white',
       marginRight: 3,
     },
+    GridViewInfoText: {
+      textAlign: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+      fontSize: 12,
+      fontWeight: 'bold',
+      letterSpacing: 0.25,
+      lineHeight: 16,
+      color: 'white',
+    },
     GridViewRowCol: {
-      marginLeft: 5,
       backgroundColor: 'rgba(0,0,0,0.1)'
-    }
+    },
+    SlideButtonContainer: {
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.1)',
+    },
+    SlideButtonInnerContainer: {
+      flexDirection: 'row',
+      position: 'relative',
+      height: 50,
+      width: Dimensions.get('screen').width*0.9,
+      margin:8,
+      borderRadius: 10,
+      backgroundColor: 'rgba(0,0,0,0.25)',
+      marginHorizontal: 5
+    },
+    SlideButton: {
+      position: 'absolute',
+      height: 50 - 2*2,
+      top: 2,
+      bottom: 2,
+      borderRadius: 10,
+      width: Dimensions.get('screen').width*0.45,
+      backgroundColor: 'rgba(255,172,50,0.85)',
+    },
+    SlideButtonButton: {
+      flex: 1,
+      width: Dimensions.get('screen').width*0.45,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
   }); 
