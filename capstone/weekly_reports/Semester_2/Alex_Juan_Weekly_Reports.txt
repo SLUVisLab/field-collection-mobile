@@ -14,3 +14,5 @@ Week 5: I worked on the domain model. I also upladed a few blocks of plant data 
 Week 6: I arranged a meeting with MJ (client) so we can finally figure out what we are actually making. I also worked on fully connecting the database throughout the app.
 
 Week 11: Since the last report I have updated plant icons to change dynamically to indicate when you have completed a survey for a plant. We are currently attempting to plan a time to test with end users.
+
+Week 12: We met with Danforth Center people and got great suggestions! I took these and designed a new "info" section for the app so users can see details about the plant they're surveying as they're doing it.
