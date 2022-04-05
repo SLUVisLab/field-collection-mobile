@@ -8,7 +8,7 @@ import {doc, collection, query, where, getDoc, getDocs} from 'firebase/firestore
 import db from '../firebase';
 
 // For reference: https://stackoverflow.com/questions/43016624/react-native-apply-array-values-from-state-as-picker-items
-var options = {};
+var options = [];
 
 
 function TaskSelect ({route, navigation}) {
@@ -22,8 +22,9 @@ function TaskSelect ({route, navigation}) {
   //const q = query(colRef, where("allow", "array-contains", global.selectedSpecies));
 
   function parseJson(jsonObject) {
-    for (var i = 0; i < jsonObject.length; i++) {
-      options[jsonObject[i].url] = jsonObject[i].name;
+    options[0] = (['',''])
+    for (var i = 1; i <= jsonObject.length; i++) {
+      options[i] = ([jsonObject[i-1].name, jsonObject[i-1].url])
     }
   }
 
@@ -52,7 +53,7 @@ function TaskSelect ({route, navigation}) {
   }
 
   useEffect( () => {
-    const jsonFromDB = ['']
+    const jsonFromDB = []
     getDocs(colRef)
       .then( (snapshot) => {
         snapshot.docs.forEach( (doc) => {
@@ -63,6 +64,7 @@ function TaskSelect ({route, navigation}) {
       })
       .catch( (e) => alert(e))
   }, [])
+
 
   return (
     <View style={styles.container}>   
@@ -79,14 +81,14 @@ function TaskSelect ({route, navigation}) {
         onValueChange={updateTask}
         animationType="slide"
         itemStyle={{ color:"white", fontWeight:"bold", fontSize:20 }}>
-          {Object.keys(taskList).map((key) => {
-                return (<Picker.Item label={taskList[key]} value={key} key={key}/>) //if you have a bunch of keys value pair
-              })}
+          {taskList.map((item, index) => {
+            return (< Picker.Item label={item[0]} value={index} key={index} />);
+          })}   
         </Picker>
         <View style={{height:10}}></View>
       <TouchableOpacity
           style={styles.button}
-          onPress={() => {global.selectedUrl = task; global.selectedTask=(taskList[task]); navigation.navigate("BlockSelect")}}
+          onPress={() => {global.selectedUrl = taskList[task][1]; global.selectedTask=taskList[task][0]; navigation.navigate("BlockSelect")}}
         >
         <Text style={styles.text}>Go</Text>
       </TouchableOpacity>

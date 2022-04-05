@@ -18,7 +18,8 @@ function BlockSelect ({route, navigation}) {
   }
 
   useEffect( () => {
-    const getBlocksFromFirestore = [''];
+    const getBlocksFromFirestore = [];
+    getBlocksFromFirestore.push('');
     getDocs(colRef)
       .then( (snapshot) => {
         snapshot.docs.forEach( (doc) => {
