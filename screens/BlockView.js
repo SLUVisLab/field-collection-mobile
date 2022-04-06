@@ -35,7 +35,7 @@ function BlockView ({route, navigation}) {
   function getUrl(url) {
     var first = true;
     var result = ''
-    var queue = [global.selectedSite, global.selectedBlock.slice(-1), global.selectedRow, global.selectedColumn];
+    var queue = global.selectedSite+"_"+global.selectedBlock.slice(-1)+"_"+global.selectedRow+"_"+global.selectedColumn;
     for (var i = 0; i < url.length; i++) {
       if (url[i] == '=') {
         if (first) {
@@ -47,7 +47,7 @@ function BlockView ({route, navigation}) {
           while (i < url.length && url[i+1] != '&') {
             i++;
           }
-          result += queue.shift();
+          result += queue;
           continue;
         }
       }
