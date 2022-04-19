@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, ScrollView, ActivityIndicator, Linking, ImageBa
 import { Card } from "react-native-paper";
 import FetchData from "../FetchData";
 
-export default function SheetScreen() {
+export default function SheetScreen({route, navigation}) {
   const [value, setValue] = useState();
   useEffect(() => {
     let data = async () => {
@@ -41,13 +41,13 @@ export default function SheetScreen() {
           <Card.Content style={styles.content}>
             <Text style={styles.title}>Form URL:</Text>
             <Text style={styles.paragraph}>
-              {!data[2] ? "Not Provided" : <Text style={{color: 'blue'}} onPress={() => Linking.openURL(data[2])}> Form URL </Text>}
+              {!data[2] ? "Not Provided" : <Text style={{color: 'blue'}} onPress={() => navigation.navigate("WebView", {type: null, data: data[2]})}> Form URL </Text>}
             </Text>
           </Card.Content>
           <Card.Content style={styles.content}>
             <Text style={styles.title}>Response URL:</Text>
             <Text style={styles.paragraph}>
-              {!data[3] ? "Not Provided" : <Text style={{color: 'blue'}} onPress={() => Linking.openURL(data[3])}> Sheets URL </Text>}
+              {!data[3] ? "Not Provided" : <Text style={{color: 'blue'}} onPress={() => navigation.navigate("WebView", {type: null, data: data[3]})}> Sheets URL </Text>}
             </Text>
           </Card.Content>
         </Card>
