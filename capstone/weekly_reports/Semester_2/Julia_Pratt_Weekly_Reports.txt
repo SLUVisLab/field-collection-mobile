@@ -28,3 +28,7 @@ Successfully connected the last screen on branch fullconnect! There was a stupid
 Week 11 - 3/27/2022
 
 We met to discuss final plans for the app. The current task that I'm working on is reading survey results from a Google Sheets into the database. This looks challenging, but there are quite a few resources. Looks like I'll need to make a script throught the Google Scripts service and connect it to the Google firestore service.
+
+Week 13 - 4/19/2022
+
+Worked with Hamad and Alex to determine final steps for getting the app into production. Built a script to automate transfer of data from Google Sheets to the database (keep track of tasks, forms urls, forms results urls, etc). Determined it will not be best to build forms results into the database- work with Hamad to have app read from forms as needed.
