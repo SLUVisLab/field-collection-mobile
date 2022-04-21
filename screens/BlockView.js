@@ -183,7 +183,7 @@ function BlockView ({route, navigation}) {
 													: styles.GridViewDeadIcon
 												}>
 										{item.alive
-											? <Text style={styles.textheading} onPress={() => {global.selectedRow = (item.row); global.selectedColumn = (item.column); global.selectedSpecies=(item.species); setTimeout(() => {global.isDone[item.row][item.column] = 1; forceUpdate();}, 500); navigation.navigate("FormView", {type: null, data: getUrl(global.selectedUrl)})}}>{item.column},{item.row}</Text>
+											? <Text style={styles.textheading} onPress={() => {global.selectedRow = (item.row); global.selectedColumn = (item.column); global.selectedSpecies=(item.species); setTimeout(() => {global.isDone[item.row][item.column] = 1; forceUpdate();}, 500); navigation.navigate("WebView", {type: null, data: getUrl(global.selectedUrl)})}}>{item.column},{item.row}</Text>
 											: <Text style={styles.textheading} onPress={() => {global.selectedSpecies=(item.species); navigation.navigate('TaskSelect');}}>DEAD</Text>
 										}
 									</View>
