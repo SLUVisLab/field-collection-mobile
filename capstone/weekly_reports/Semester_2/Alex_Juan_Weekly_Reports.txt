@@ -16,3 +16,5 @@ Week 6: I arranged a meeting with MJ (client) so we can finally figure out what 
 Week 11: Since the last report I have updated plant icons to change dynamically to indicate when you have completed a survey for a plant. We are currently attempting to plan a time to test with end users.
 
 Week 12: We met with Danforth Center people and got great suggestions! I took one of these and designed a new "info" section for the app so users can see details about the plant they're surveying as they're doing it.
+
+Week 13: I updated all the forms and surveys in the database, and added responses for all the forms. Now the app is fully functional (albeit with meaningless surveys)
