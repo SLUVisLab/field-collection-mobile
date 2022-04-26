@@ -13,3 +13,10 @@ Week 6: I have been working on cleaning up code. I did not make a ton of progres
 Week 7: I fixed the fullconnect branch. We were getting an error on the app before. Now, I will be merging everything into the main branch.
 
 Week 11: I will just be researching how to build the app. We want to get the app in the hands of the researchers fairly soon, so we can iterate on the feedback.
+
+Week 12: I was injured so I didn't do anything.
+
+Week 13: We talked about finalizing the app, finishing touches.
+
+Week 14: I implemented the screen where researchers are able to view the forms and google sheets.
+
