@@ -2,7 +2,7 @@
   "expo": {
     "name": "BII-Manual-Phenotyper",
     "slug": "BII-Manual-Phenotyper",
-    "version": "1.1.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -18,13 +18,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.astylianou.bii-manual-phenotyper"
+      "bundleIdentifier": "com.astylianou.bii-phenotyper"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.astylianou.bii-phenotyper"
     },
     "web": {
       "favicon": "./assets/favicon.png"

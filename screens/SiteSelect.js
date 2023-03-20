@@ -30,14 +30,14 @@ function SiteSelect ({ route, navigation })  {
       })
       .catch((e) => alert(e))
   }, [])
-   
+
   return (
-    <View style={styles.container}>   
+    <View style={styles.container}>
       <ImageBackground style={styles.container}
         source={require('../assets/plantField.jpg')}>
         <View style={styles.heading}>
           <Text style={styles.textheading}>Please select a site</Text>
-        </View> 
+        </View>
         <Picker
           style={styles.picker}
           selectedValue={site}
@@ -46,7 +46,7 @@ function SiteSelect ({ route, navigation })  {
           itemStyle={{ color:"white", fontWeight:"bold", fontSize:20 }}>
           {siteList.map((item, index) => {
             return (< Picker.Item label={item} value={index} key={index} />);
-          })}   
+          })}
         </Picker>
         <View style={{height:10}}></View>
         <TouchableOpacity

@@ -67,14 +67,14 @@ function TaskSelect ({route, navigation}) {
 
 
   return (
-    <View style={styles.container}>   
+    <View style={styles.container}>
       <ImageBackground style={styles.container}
         source={require('../assets/plantField.jpg')}>
         <View
           style={styles.heading}
         >
         <Text style={styles.textheading}>Please select from the list of tasks available at {global.selectedSite} </Text>
-        </View> 
+        </View>
         <Picker
         style={styles.picker}
         selectedValue={task}
@@ -83,7 +83,7 @@ function TaskSelect ({route, navigation}) {
         itemStyle={{ color:"white", fontWeight:"bold", fontSize:20 }}>
           {taskList.map((item, index) => {
             return (< Picker.Item label={item[0]} value={index} key={index} />);
-          })}   
+          })}
         </Picker>
         <View style={{height:10}}></View>
       <TouchableOpacity

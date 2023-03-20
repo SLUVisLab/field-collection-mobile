@@ -53,7 +53,7 @@ function BlockView ({route, navigation}) {
       }
      result += url[i];
     }
-    
+
     return result;
   }
 
@@ -109,7 +109,7 @@ function BlockView ({route, navigation}) {
 	}, [])
 
 	return (
-		<View style={styles.container}>  
+		<View style={styles.container}>
 			<ImageBackground style={styles.container}
 				source={require('../assets/plantField.jpg')}>
 				<View style={styles.heading}>
@@ -149,12 +149,12 @@ function BlockView ({route, navigation}) {
 	      {mode
 					?	<ScrollView style={styles.GridViewRowCol}
 							horizontal={true}
-							> 
+							>
 							<FlatList
 								data={ (GridListItems.sort((a, b) => a.column-(b.column)).sort((a, b) => (b.row-a.row))) }
 								renderItem={ ({item, index}) =>
 								<View style = {styles.GridViewContainer}>
-									<View style={(item.alive) 
+									<View style={(item.alive)
 													? styles.GridViewInfo
 													: styles.GridViewDeadInfo
 									}>
@@ -171,19 +171,19 @@ function BlockView ({route, navigation}) {
 						</ScrollView>
 					:	<ScrollView style={styles.GridViewRowCol}
 							horizontal={true}
-							> 
+							>
 							<FlatList
 								data={ (GridListItems.sort((a, b) => a.column-(b.column)).sort((a, b) => (b.row-a.row))) }
 								renderItem={ ({item, index}) =>
 								<View style = {styles.GridViewContainer}>
-									<View style={(item.alive) 
+									<View style={(item.alive)
 													? global.isDone[item.row][item.column] == 1
 														? styles.GridViewDoneIcon
 														: styles.GridViewIcon
 													: styles.GridViewDeadIcon
 												}>
 										{item.alive
-											? <Text style={styles.textheading} onPress={() => {global.selectedRow = (item.row); global.selectedColumn = (item.column); global.selectedSpecies=(item.species); setTimeout(() => {global.isDone[item.row][item.column] = 1; forceUpdate();}, 500); navigation.navigate("WebView", {type: null, data: getUrl(global.selectedUrl)})}}>{item.column},{item.row}</Text>
+											? <Text style={styles.GridViewInfoText} onPress={() => {global.selectedRow = (item.row); global.selectedColumn = (item.column); global.selectedSpecies=(item.species); setTimeout(() => {global.isDone[item.row][item.column] = 1; forceUpdate();}, 500); navigation.navigate("WebView", {type: null, data: getUrl(global.selectedUrl)})}}>Row: {item.row} Col: {item.column}{'\n'}{(item.species)}</Text>
 											: <Text style={styles.textheading} onPress={() => {global.selectedSpecies=(item.species); navigation.navigate('TaskSelect');}}>DEAD</Text>
 										}
 									</View>

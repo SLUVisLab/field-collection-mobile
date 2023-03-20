@@ -13,6 +13,9 @@
     "production": {
       "ios": {
         "cocoapods" : "1.11.2"
+      },
+      "android": {
+        "buildType": "apk"
       }
     }
   },
