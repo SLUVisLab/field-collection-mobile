@@ -1,22 +1,30 @@
 {
   "cli": {
-    "version": ">= 0.48.2"
+    "version": ">= 3.9.2",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "simulator": true,
+        "resourceClass": "m-medium"
+      },
+      "channel": "development"
     },
-    "preview": {
-      "distribution": "internal"
+    "distribution": {
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "channel": "distribution"
     },
     "production": {
       "ios": {
-        "cocoapods" : "1.11.2"
+        "resourceClass": "m-medium"
       },
-      "android": {
-        "buildType": "apk"
-      }
+      "channel": "production"
     }
   },
   "submit": {
