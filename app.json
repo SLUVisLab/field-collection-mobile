@@ -4,7 +4,7 @@
     "slug": "BII-Manual-Phenotyper",
     "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/ios-icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

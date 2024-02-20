@@ -10,15 +10,15 @@ function HomeScreen({ navigation }) {
           source={require('../assets/plantField.jpg')}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('SiteSelect')}
+            onPress={() => navigation.navigate('#')}
           >
-            <Text style={styles.text}>Start New Walk</Text>
+            <Text style={styles.text}>Start Survey</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('SheetScreen')}
+            onPress={() => navigation.navigate('SurveyList')}
           >
-            <Text style={styles.text}>Edit Surveys</Text>
+            <Text style={styles.text}>Manage Surveys</Text>
           </TouchableOpacity>
         </ImageBackground>
       </View>

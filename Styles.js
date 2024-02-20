@@ -19,8 +19,6 @@ export default StyleSheet.create({
       height: deviceHeight
     },
     button: {
-      alignItems: 'center',
-      justifyContent: 'center',
       textAlign: 'center',
       paddingVertical: 12,
       marginVertical: 3,
@@ -196,4 +194,20 @@ export default StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center'
     },
+    divider: {
+      height: 1,
+      marginVertical: 10,
+    },
+    horizontalLine: {
+      borderBottomColor: 'black',
+      borderBottomWidth: 1,
+      width: deviceWidth * 0.9, // Set width to 90% of the screen width
+      alignSelf: 'center', // Align the line to the center horizontally
+      marginVertical: 10,
+    },
+    headerText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 5,
+    }
   }); 
