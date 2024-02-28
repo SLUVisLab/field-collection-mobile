@@ -3,13 +3,17 @@ import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../Styles';
 
+
 const SurveyName = ({ navigation }) => {
   const [surveyName, setSurveyName] = useState('');
 
   const handleDone = () => {
     // You can perform actions here when the "Done" button is pressed
     console.log('Survey Name:', surveyName);
-    navigation.navigate("SurveyBuilder")
+    
+    navigation.navigate("SurveyBuilder", {
+        name: surveyName
+      });
     // You can navigate to another screen or perform other actions as needed
   };
 

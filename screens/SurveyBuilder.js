@@ -1,9 +1,30 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import styles from '../Styles';
 
-const SurveyBuilder = ({ navigation }) => {
-  const lastCompleted = 'N/A'; // Default value is N/A
+import { useSurveyDesign } from '../contexts/SurveyDesignContext';
+
+const SurveyBuilder = ({ route, navigation }) => {
+
+  const { surveyDesign, setName, addTask } = useSurveyDesign();
+
+  // Change the title dynamically
+  const nav = useNavigation();
+
+  React.useLayoutEffect(() => {
+    // Get survey name from previous view and set to context
+    setName(route.params.name)
+
+    nav.setOptions({
+      title: route.params.name, // Set the new title here
+    });
+  }, [navigation]);
+
+
+  // TODO: remove this whole property as it doesnt really make sense and could only be updated from another context
+  const lastCompleted = surveyDesign.lastSubmitted ? surveyDesign.lastSubmitted : "N/A";
+
 
   const handleCollections = () => {
     // Navigation logic to navigate to Collections screen
