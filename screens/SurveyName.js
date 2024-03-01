@@ -12,7 +12,7 @@ const SurveyName = ({ navigation }) => {
     console.log('Survey Name:', surveyName);
     
     navigation.navigate("SurveyBuilder", {
-        name: surveyName
+        name: String(surveyName)
       });
     // You can navigate to another screen or perform other actions as needed
   };

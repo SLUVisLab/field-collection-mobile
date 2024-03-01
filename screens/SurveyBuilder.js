@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../Styles';
 
@@ -13,7 +13,7 @@ const SurveyBuilder = ({ route, navigation }) => {
   const nav = useNavigation();
 
   React.useLayoutEffect(() => {
-    // Get survey name from previous view and set to context
+    // Get survey name from previous view and save to survey context
     setName(route.params.name)
 
     nav.setOptions({
@@ -36,10 +36,25 @@ const SurveyBuilder = ({ route, navigation }) => {
     navigation.navigate('TaskSelector');
   };
 
-  const handleDone = () => {
-    // Navigation logic to navigate to New Task screen
-    // navigation.navigate('NewTask');
+  // Function to handle item press
+  const handleEditTask = (task) => {
+    navigation.navigate('TaskSetup', { taskTypeID: task.constructor.typeID, taskID: task.taskID });
   };
+
+  const handleDone = () => {
+    // Save the survey to tsv?
+  };
+
+  //create list element
+  const renderTaskItem = ({ item }) => (
+    <TouchableOpacity onPress={() => handleEditTask(item)}>
+      <View style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
+        <Text>{item.taskDisplayName}</Text>
+        <Text>{item.constructor.typeDisplayName}</Text>
+        <Text>{item.constructor.typeID}</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
@@ -61,6 +76,12 @@ const SurveyBuilder = ({ route, navigation }) => {
       >
         <Text style={styles.text}>New Task</Text>
       </TouchableOpacity>
+      <FlatList
+        data={surveyDesign.tasks}
+        renderItem={renderTaskItem}
+        keyExtractor={(item) => item.taskID.toString()}
+      />
+
       <TouchableOpacity
         style={styles.button}
         onPress={handleDone}

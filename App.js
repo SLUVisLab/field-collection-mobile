@@ -22,6 +22,7 @@ import TaskShortText from './screens/TaskShortText';
 import Collections from './screens/Collections';
 import CollectionName from './screens/CollectionName';
 import ItemName from './screens/ItemName';
+import TaskSetup from './screens/TaskSetup';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,10 +65,12 @@ class App extends React.Component {
             <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="Collections" component={Collections} />
             <Stack.Screen options={{headerShown: true, title: 'New Collection',}} name="CollectionName" component={CollectionName} />
             <Stack.Screen options={{headerShown: true, title: 'New Item',}} name="ItemName" component={ItemName} />
+            <Stack.Screen options={{headerShown: true}} name="TaskSetup" component={TaskSetup} />
             <Stack.Screen options={{headerShown: true}} name="WebView" component={WebView} />
             <Stack.Screen options={{headerShown: true}} name="Camera" component={QRCode} />
             <Stack.Screen options={{headerShown: true, headerBackVisible: false}} name="BlockView" component={BlockView} />
             <Stack.Screen name="FormComplete" component={FormComplete} />
+
           </Stack.Navigator>
         </SurveyDesignProvider>
       </NavigationContainer>
