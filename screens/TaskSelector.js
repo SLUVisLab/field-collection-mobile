@@ -11,15 +11,6 @@ const TaskSelector = ({ navigation }) => {
 
   const tasks = [PhotoTask, TextTask];
 
-  const CustomComponent = () => {
-    return (
-      <View>
-        <Text>Hello 2</Text>
-      </View>
-    );
-  };
-
-
   // this is currently not working. Dynamic importing of task modules.
   // TODO: Fix me later
   // useEffect(() => {

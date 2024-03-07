@@ -2,15 +2,33 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../Styles';
+import SurveyCollection from '../utils/SurveyCollection';
+import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 
-const CollectionName = ({ navigation }) => {
+
+const CollectionName = ({ route, navigation }) => {
+
+    // Initialize the survey design context
+    const { surveyDesign, addCollection, addNestedCollectionByID } = useSurveyDesign();
+
     const [collectionName, setCollectionName] = useState('');
-  
+
+    const parentID = route.params && route.params.parentID ? route.params.parentID : null;
+    console.log(parentID)
+
     const handleDone = () => {
-      // You can perform actions here when the "Done" button is pressed
-      console.log('Collection Name:', collectionName);
-      navigation.navigate("Collections")
-      // You can navigate to another screen or perform other actions as needed
+
+      let newCollection = new SurveyCollection(collectionName, parentID)
+
+      // TODO: Combine these methods into one
+      if (parentID) {
+        addNestedCollectionByID(parentID, newCollection)
+      } else {
+        addCollection(newCollection)
+      }
+      
+      navigation.navigate("Collection")
+
     };
   
     return (

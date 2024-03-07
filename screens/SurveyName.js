@@ -8,13 +8,11 @@ const SurveyName = ({ navigation }) => {
   const [surveyName, setSurveyName] = useState('');
 
   const handleDone = () => {
-    // You can perform actions here when the "Done" button is pressed
     console.log('Survey Name:', surveyName);
     
     navigation.navigate("SurveyBuilder", {
         name: String(surveyName)
       });
-    // You can navigate to another screen or perform other actions as needed
   };
 
   return (

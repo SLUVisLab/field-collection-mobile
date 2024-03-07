@@ -4,20 +4,27 @@ import { useNavigation } from '@react-navigation/native';
 import styles from '../Styles';
 
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
+import { useFileContext } from '../contexts/FileContext';
 
 const SurveyBuilder = ({ route, navigation }) => {
 
   const { surveyDesign, setName, addTask } = useSurveyDesign();
+  const { convertSurveyToXLSX } = useFileContext();
+
+  // Get survey name from previous view and save to survey context
+  
 
   // Change the title dynamically
   const nav = useNavigation();
 
   React.useLayoutEffect(() => {
-    // Get survey name from previous view and save to survey context
-    setName(route.params.name)
+    // setName(route.params.name)
+
+    setName("test")
 
     nav.setOptions({
-      title: route.params.name, // Set the new title here
+      // title: route.params.name // Set the new title here
+      title: "test"
     });
   }, [navigation]);
 
@@ -28,7 +35,7 @@ const SurveyBuilder = ({ route, navigation }) => {
 
   const handleCollections = () => {
     // Navigation logic to navigate to Collections screen
-    navigation.navigate('Collections');
+    navigation.navigate('Collection');
   };
 
   const handleNewTask = () => {
@@ -42,7 +49,9 @@ const SurveyBuilder = ({ route, navigation }) => {
   };
 
   const handleDone = () => {
-    // Save the survey to tsv?
+    console.log("Called method to save survey")
+    console.log(surveyDesign)
+    convertSurveyToXLSX(surveyDesign)
   };
 
   //create list element

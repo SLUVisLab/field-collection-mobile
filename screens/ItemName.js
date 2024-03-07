@@ -2,15 +2,30 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../Styles';
+import SurveyItem from '../utils/SurveyItem';
+import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 
-const ItemName = ({ navigation }) => {
+
+const ItemName = ({ route, navigation }) => {
+
+    // Initialize the survey design context
+    const { surveyDesign, addItemToCollection} = useSurveyDesign();
+
+    const { parentID } = route.params || { parentID: null };
+
     const [itemName, setItemName] = useState('');
   
     const handleDone = () => {
-      // You can perform actions here when the "Done" button is pressed
-      console.log('Item Name:', itemName);
-      navigation.navigate("Collections")
-      // You can navigate to another screen or perform other actions as needed
+
+      console.log('item Name:', itemName);
+      console.log('parentID:', parentID);
+
+      let newItem = new SurveyItem(itemName)
+
+      addItemToCollection(parentID, newItem)
+
+      navigation.navigate("Collection", { collectionID: parentID })
+
     };
   
     return (

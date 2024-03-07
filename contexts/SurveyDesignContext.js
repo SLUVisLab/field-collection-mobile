@@ -1,19 +1,30 @@
 import React, { createContext, useState, useContext } from 'react';
 import Task from '../tasks/Task'
+import SurveyCollection from '../utils/SurveyCollection';
+import SurveyItem from '../utils/SurveyItem';
 
 const SurveyDesignContext = createContext();
 
 export const SurveyDesignProvider = ({ children }) => {
-  const [surveyDesign, setSurveyDesign] = useState({
+  // Define the initial state
+  const initialState = {
     name: null,
     lastSubmitted: null,
     collections: [],
     tasks: []
-  });
+  };
+
+  // Define state to hold the survey design
+  const [surveyDesign, setSurveyDesign] = useState(initialState);
+
+  // Method to clear the survey design state
+  const clearSurveyDesign = () => {
+    setSurveyDesign(initialState);
+  };
 
   // Set survey name
   const setName = (name) => {
-    if (name instanceof String) {
+    if (typeof name === 'string') {
       setSurveyDesign((prevData) => ({
         ...prevData,
         name: name
@@ -53,10 +64,87 @@ export const SurveyDesignProvider = ({ children }) => {
     const task = surveyDesign.tasks.find(task => task.taskID === taskID);
     return task !== undefined ? task : null;
   }
+
+  // Add Collection to survey
+  const addCollection = (newCollection) => {
+    if (newCollection instanceof SurveyCollection) {
+      setSurveyDesign((prevData) => ({
+        ...prevData,
+        collections: [...prevData.collections, newCollection]
+      }));
+    } else {
+      console.error("Only instances of type Collection are accepted.");
+    }
+  };
+
+  // Find collection by ID
+  const findCollectionByID = (id) => {
+    // Define a recursive function to search for the collection by ID
+    const searchCollection = (collections) => {
+      for (const collection of collections) {
+        // Check if the current collection ID matches the provided ID
+        if (collection.ID === id) {
+          return collection;
+        }
+        // If the current collection has subcollections, recursively search them
+        if (collection.subCollections && collection.subCollections.length > 0) {
+          const foundCollection = searchCollection(collection.subCollections);
+          if (foundCollection) {
+            return foundCollection;
+          }
+        }
+      }
+      // If no matching collection is found, return null
+      return null;
+    };
   
+    // Start the search from the top-level collections in surveyDesign
+    return searchCollection(surveyDesign.collections);
+  };
+
+  // Add collection to subcollections array by parent ID
+  const addNestedCollectionByID = (parentID, newCollection) => {
+
+    console.log("Adding subcollection to:")
+    console.log(parentID)
+
+    const parentCollection = findCollectionByID(parentID);
+    if (parentCollection) {
+      parentCollection.subCollections.push(newCollection);
+      setSurveyDesign({ ...surveyDesign });
+    } else {
+      console.error("Parent collection not found");
+    }
+  };
+
+  // Add item to collections array by parent ID
+  const addItemToCollection = (parentID, newItem) => {
+    const parentCollection = findCollectionByID(parentID);
+    if (parentCollection) {
+      parentCollection.items.push(newItem);
+      setSurveyDesign({ ...surveyDesign });
+    } else {
+      console.error("Parent collection not found");
+    }
+  };
+
 
   return (
-    <SurveyDesignContext.Provider value={{ surveyDesign, setName, addTask, updateTask, getTaskByID }}>
+    <SurveyDesignContext.Provider 
+      value={{
+          surveyDesign,
+          setSurveyDesign,
+          setName,
+          addTask,
+          updateTask,
+          getTaskByID,
+          addCollection,
+          findCollectionByID,
+          addNestedCollectionByID,
+          addItemToCollection,
+          clearSurveyDesign 
+      }}
+    >
       {children}
     </SurveyDesignContext.Provider>
   );
