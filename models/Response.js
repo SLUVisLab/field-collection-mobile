@@ -10,12 +10,13 @@ class Response extends Realm.Object {
             date_recorded: 'date',
             collection: 'string',
             meta_collection: 'string?',
-            data: { type: 'Dictionary', objectType: 'Mixed' },
+            data: "string{}",
             survey: {
                 type: 'linkingObjects',
                 objectType: 'Survey',
                 property: 'responses',
               }
+            
         },
         primaryKey: '_id'
     }

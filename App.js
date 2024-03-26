@@ -6,6 +6,7 @@ import { FileProvider } from './contexts/FileContext';
 import { RealmProvider } from '@realm/react';
 
 import Survey from './models/Survey';
+import Response from './models/Response';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -27,6 +28,17 @@ import CollectionName from './screens/CollectionName';
 import ItemName from './screens/ItemName';
 import TaskSetup from './screens/TaskSetup';
 
+// Define your configuration options
+const realmConfig = {
+  schema: [Response, Survey],
+  deleteRealmIfMigrationNeeded: true,  // SET TO FLASE IN PRODUCITON!!!!
+  schemaVersion: 2,
+  migration: (oldRealm, newRealm) => {
+    // Migration logic goes here
+  },
+  // Other configuration options can be set here as needed
+};
+
 const Stack = createNativeStackNavigator();
 
 class App extends React.Component {
@@ -46,7 +58,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <RealmProvider schema = {[Survey, Response]}>
+      <RealmProvider {...realmConfig}>
         <NavigationContainer>
           <FileProvider>
             <SurveyDesignProvider>
