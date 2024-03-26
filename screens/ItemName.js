@@ -24,7 +24,7 @@ const ItemName = ({ route, navigation }) => {
 
       addItemToCollection(parentID, newItem)
 
-      navigation.navigate("Collection", { collectionID: parentID })
+      navigation.navigate("CollectionDesignList", { collectionID: parentID })
 
     };
   

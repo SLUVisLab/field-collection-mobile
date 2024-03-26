@@ -27,7 +27,7 @@ const CollectionName = ({ route, navigation }) => {
         addCollection(newCollection)
       }
       
-      navigation.navigate("Collection")
+      navigation.navigate("CollectionDesignList")
 
     };
   

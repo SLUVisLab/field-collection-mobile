@@ -7,7 +7,7 @@ class Response extends Realm.Object {
             _id: 'int',
             item_name: 'string',
             item_id: 'int',
-            date_recorded: 'date',
+            date: 'date',
             collection: 'string',
             meta_collection: 'string?',
             data: "string{}",

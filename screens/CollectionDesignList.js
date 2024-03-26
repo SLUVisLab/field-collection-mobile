@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import styles from '../Styles';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 
-const Collection = ({ route, navigation }) => {
+const CollectionDesignList = ({ route, navigation }) => {
   // Initialize the survey design context
   const { surveyDesign, addCollection, findCollectionByID } = useSurveyDesign();
 
@@ -41,7 +41,7 @@ const Collection = ({ route, navigation }) => {
         {surveyDesign.collections.map((item) => (
           <TouchableOpacity
             key={item.ID}
-            onPress={() => navigation.navigate('Collection', { collectionID: item.ID })}
+            onPress={() => navigation.navigate('CollectionDesignList', { collectionID: item.ID })}
           >
             <Text>{item.name}</Text>
           </TouchableOpacity>
@@ -107,7 +107,7 @@ const Collection = ({ route, navigation }) => {
           {collection.subCollections.map((subcollection) => (
             <TouchableOpacity
               key={subcollection.ID}
-              onPress={() => navigation.navigate('Collection', { collectionID: subcollection.ID })}
+              onPress={() => navigation.navigate('CollectionDesignList', { collectionID: subcollection.ID })}
             >
               <Text>{subcollection.name}</Text>
             </TouchableOpacity>
@@ -130,4 +130,4 @@ const Collection = ({ route, navigation }) => {
   );
 };
 
-export default Collection;
+export default CollectionDesignList;

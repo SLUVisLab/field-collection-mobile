@@ -4,7 +4,7 @@ import { useFileContext } from '../contexts/FileContext';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext'
 import styles from '../Styles';
 
-const SurveyList = ({ navigation }) => {
+const SurveyDesignList = ({ navigation }) => {
   const { surveyFiles, convertXLSXToSurvey } = useFileContext(); // Access surveyFiles from FileContext
 
   const { clearSurveyDesign, setSurveyDesign } = useSurveyDesign()
@@ -48,4 +48,4 @@ const SurveyList = ({ navigation }) => {
   );
 };
 
-export default SurveyList;
+export default SurveyDesignList;

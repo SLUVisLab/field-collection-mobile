@@ -19,11 +19,11 @@ import WebView from './screens/WebView';
 import BlockView from './screens/BlockView';
 import FormComplete from './screens/FormComplete';
 import SheetScreen from './screens/SheetScreen';
-import SurveyList from './screens/SurveyList';
+import SurveyDesignList from './screens/SurveyDesignList';
 import SurveyName from './screens/SurveyName';
 import SurveyBuilder from './screens/SurveyBuilder';
 import TaskSelector from './screens/TaskSelector';
-import Collection from './screens/Collection';
+import CollectionDesignList from './screens/CollectionDesignList';
 import CollectionName from './screens/CollectionName';
 import ItemName from './screens/ItemName';
 import TaskSetup from './screens/TaskSetup';
@@ -73,12 +73,12 @@ class App extends React.Component {
                 <Stack.Screen name="BlockSelect" component={BlockSelect} />
                 <Stack.Screen name="TaskSelect" component={TaskSelect} />
                 <Stack.Screen options={{headerShown: true}} name="SheetScreen" component={SheetScreen} />
-                <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyList" component={SurveyList} />
+                <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyDesignList" component={SurveyDesignList} />
                 <Stack.Screen options={{headerShown: true, title: 'New Survey',}} name="SurveyName" component={SurveyName} />
                 <Stack.Screen options={{headerShown: true, title: 'Flower Photos',}} name="SurveyBuilder" component={SurveyBuilder} />
                 <Stack.Screen options={{headerShown: true, title: 'Tasks',}} name="TaskSelector" component={TaskSelector} />
 
-                <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="Collection" component={Collection} />
+                <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionDesignList" component={CollectionDesignList} />
                 <Stack.Screen options={{headerShown: true, title: 'New Collection',}} name="CollectionName" component={CollectionName} />
                 <Stack.Screen options={{headerShown: true, title: 'New Item',}} name="ItemName" component={ItemName} />
                 <Stack.Screen options={{headerShown: true}} name="TaskSetup" component={TaskSetup} />

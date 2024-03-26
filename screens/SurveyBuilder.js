@@ -33,7 +33,7 @@ const SurveyBuilder = ({ route, navigation }) => {
 
   const handleCollections = () => {
     // Navigation logic to navigate to Collections screen
-    navigation.navigate('Collection');
+    navigation.navigate('CollectionDesignList');
   };
 
   const handleNewTask = () => {
