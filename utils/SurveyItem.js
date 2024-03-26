@@ -1,14 +1,13 @@
 
 
 class SurveyItem {
-    constructor(name) {
-      this.ID = Date.now();
+    constructor(name, id= null) {
+      if (id && id.trim() !== '') {
+        this.ID = id;
+      } else {
+        this.ID = Date.now();
+      }
       this.name = name;
-      //this.tasks = []
-
-      // task = {
-      //  complete: Boolean,
-      // }
     }
 
   }

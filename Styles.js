@@ -209,5 +209,21 @@ export default StyleSheet.create({
       fontSize: 18,
       fontWeight: 'bold',
       marginBottom: 5,
-    }
+    },
+    textInput: {
+      backgroundColor: 'white',
+      width: '90%',
+      borderRadius: 10,
+      padding: 10,
+      marginVertical: 5,
+      alignSelf: 'center',
+    },
+    inputLabelContainer: {
+      width: '90%',
+      alignSelf: 'center', // Center the container horizontally
+      marginBottom: 5, // Add some spacing between the label and the input field
+    },
+    inputLabel: {
+      fontWeight: 'bold', // Make the text slightly bold
+    },
   }); 

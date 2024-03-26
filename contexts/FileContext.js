@@ -145,7 +145,7 @@ export const FileProvider = ({ children }) => {
             console.log(newSurveyState)
     
             // Extract data from the workbook and reconstruct survey design object
-            // tasks
+            // tasks ****************************
 
             const firstSheetName = workbook.SheetNames[0]; // Get the name of the first sheet
             const firstSheet = workbook.Sheets[firstSheetName]; // Get the first sheet object
@@ -165,21 +165,177 @@ export const FileProvider = ({ children }) => {
             
                 // Create a new Task instance and add it to the tasks array
                 console.log("creating new task")
-                console.log(taskID, taskDisplayName, dataLabel, instructions)
+                console.log(taskType, taskID, taskDisplayName, dataLabel, instructions)
+
+                let newTask;
 
                 if (taskType == 1) {
-                    let task = new PhotoTask(taskID, taskDisplayName, dataLabel, instructions);
+                    newTask = new PhotoTask(taskID, taskDisplayName, dataLabel, instructions);
                 } else if (taskType == 2) {
-                    let task = new TextTask(taskID, taskDisplayName, dataLabel, instructions);
+                    newTask = new TextTask(taskID, taskDisplayName, dataLabel, instructions);
                 } else {
                     console.log("Unknown task type")
                 }
-                
-                console.log("adding task to survey")
-                newSurveyState.tasks.push(task);
-            }
 
+                console.log("adding task to survey")
+                newSurveyState.tasks.push(newTask);
+            }
+            console.log("Tasks added....")
             console.log(newSurveyState)
+
+            // COLLECTIONS/SUBCOLLECTIONS/ITEMS ****************************
+
+            for (let i = 1; i < workbook.SheetNames.length; i++) {
+                const sheetName = workbook.SheetNames[i];
+                const worksheet = workbook.Sheets[sheetName];
+
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                console.log(jsonData)
+
+                console.log(sheetName)
+                console.log(worksheet["rows"])
+            
+                // Create a new Collection instance
+                let currentCollection = new SurveyCollection(sheetName)
+
+                console.log("current collection ID")
+                console.log(currentCollection.ID)
+                
+                // This sheet contains subcollections
+                console.log("Checking for subcollections.....")
+                if (worksheet['A2'] && worksheet['A2'].v && worksheet['A2'].v != 'None'){
+                    
+                    console.log("subcollections found...")
+                    // create a new subcollection
+                    let currentSubCollection = null;
+
+                    let i = 0;
+                    for (const row in worksheet) {
+                        if (i === 0) {
+                            console.log("skipping first row")
+                            i++;
+                            continue;
+                        }
+                        console.log("looping through sheet rows...")
+                        // found indicator of new subcollection
+
+                        //subcollection address
+                        let addr = XLSX.utils.encode_cell({r:i, c:0});
+
+                        console.log(addr)
+                        // console.log(worksheet[addr].v)
+
+                        if (worksheet[addr] && worksheet[addr].v) {
+
+                            console.log("new subcollection found...")
+
+                            // if the existing subcollection is not empty, add it to the collection before creating a new one
+                            if(currentSubCollection){
+                                console.log("subcollection is not empty..")
+                                currentCollection.subCollections.push(currentSubCollection)
+                            }
+
+                            console.log("creating new subcollection....")
+                            currentSubCollection = new SurveyCollection(worksheet[addr].v, currentCollection.ID)
+
+                        } else {
+                            console.log("creating new item...")
+                            //create a new item
+                            let itemIDAddr = XLSX.utils.encode_cell({r:i, c:1});
+                            let itemNameAddr = XLSX.utils.encode_cell({r:i, c:2});
+
+                            if((worksheet[itemIDAddr] && worksheet[itemIDAddr].v) && (worksheet[itemNameAddr] && worksheet[itemNameAddr].v)) {
+
+                                console.log(itemNameAddr)
+
+                                let itemName = worksheet[itemNameAddr].v
+                                let itemID = worksheet[itemIDAddr].v
+
+                                console.log(itemName)
+
+                                let newItem = new SurveyItem(itemName)
+
+                                console.log("adding new item to subcollection....")
+
+                                currentSubCollection.items.push(newItem)
+                            } else {
+                                console.log("No more rows found")
+                                continue;
+                            }
+                        }
+
+                        i++;
+                    }
+                    
+                    
+
+                // This sheet does not contain subcollection
+                } else {
+                    console.log("No subcollections present")
+                    let i = 0;
+                    for (const row in worksheet) {
+                        if (i === 0) {
+                            console.log("skipping first row")
+                            i++;
+                            continue;
+                        }
+                        console.log("creating new item...")
+                            //create a new item
+                            let itemIDAddr = XLSX.utils.encode_cell({r:i, c:1});
+                            let itemNameAddr = XLSX.utils.encode_cell({r:i, c:2});
+
+                            if((worksheet[itemIDAddr] && worksheet[itemIDAddr].v) && (worksheet[itemNameAddr] && worksheet[itemNameAddr].v)) {
+
+                                console.log(itemNameAddr)
+
+                                let itemName = worksheet[itemNameAddr].v
+                                let itemID = worksheet[itemIDAddr].v
+
+                                console.log(itemName)
+
+                                let newItem = new SurveyItem(itemName)
+
+                                console.log("adding new item to subcollection....")
+
+                                currentSubCollection.items.push(newItem)
+                            } else {
+                                console.log("No more rows found")
+                                continue;
+                            }
+                    }
+                    i++;
+                }
+
+                    // Add the finished collection to the newSurveySate after each sheet has been read
+                    newSurveyState.collections.push(currentCollection)
+                }
+
+                console.log(newSurveyState)
+
+                // // Iterate through each row in the sheet
+                // for (const row in worksheet) {
+                //     // Extract cell value
+                //     const cellValue = worksheet[row].v;
+            
+                //     // Check if the row contains a subcollection name
+                //     if (cellValue && cellValue !== 'subcollection') {
+                //         // Create a new subcollection
+                //         const newSubcollection = { name: cellValue, items: [] };
+            
+                //         // Add the subcollection to the current collection
+                //         currentCollection.subCollections.push(newSubcollection);
+                //     } else if (cellValue !== 'subcollection') {
+                //         // Create a new item
+                //         const newItem = { itemID: worksheet[++row].v, itemName: worksheet[++row].v };
+            
+                //         // Add the item to the last subcollection
+                //         currentCollection.subCollections[currentCollection.subCollections.length - 1].items.push(newItem);
+                //     }
+                // }
+            
+                // // Add the current collection to the collections array
+                // collections.push(currentCollection);
             
             
     
@@ -190,6 +346,10 @@ export const FileProvider = ({ children }) => {
             return null;
         }
     };
+
+    const ImportXLSXFile = (file) => {
+
+    }
 
 
     // Value to be provided by the context

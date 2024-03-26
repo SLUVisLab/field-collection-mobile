@@ -20,13 +20,11 @@ const SurveyBuilder = ({ route, navigation }) => {
   React.useLayoutEffect(() => {
     // setName(route.params.name)
 
-    setName("test")
-
     nav.setOptions({
       // title: route.params.name // Set the new title here
-      title: "test"
+      title: surveyDesign.name
     });
-  }, [navigation]);
+  }, [surveyDesign]);
 
 
   // TODO: remove this whole property as it doesnt really make sense and could only be updated from another context

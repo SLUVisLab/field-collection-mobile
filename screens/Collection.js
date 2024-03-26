@@ -25,19 +25,6 @@ const Collection = ({ route, navigation }) => {
     });
   }, [navigation, collection]);
 
-  //Scenario 1: New Base Level Collection
-  // if (!surveyDesign.collections.length && !collectionID) {
-  //   return (
-  //     <View>
-  //       <Text>CASE 0</Text>
-  //       <TouchableOpacity
-  //         onPress={() => navigation.navigate('CollectionName')}
-  //       >
-  //         <Text>Add Collection</Text>
-  //       </TouchableOpacity>
-  //     </View>
-  //   );
-  // }
 
   // This is not very clean code, but basically conforms to the following convention:
   // A collection can contain nested sub-collections OR individual survey items, NOT both.
@@ -50,7 +37,7 @@ const Collection = ({ route, navigation }) => {
   if (!collectionID) {
     return (
       <View>
-        <Text>CASE 1</Text>
+        {/* <Text>CASE 1</Text> */}
         {surveyDesign.collections.map((item) => (
           <TouchableOpacity
             key={item.ID}
@@ -75,7 +62,7 @@ const Collection = ({ route, navigation }) => {
     if (!collection.subCollections.length && !collection.items.length && !collection.parent) {
       return (
         <View>
-          <Text>CASE 2.1</Text>
+          {/* <Text>CASE 2.1</Text> */}
           <TouchableOpacity
             onPress={() => navigation.navigate('ItemName', {parentID: collectionID})}
           >
@@ -94,7 +81,7 @@ const Collection = ({ route, navigation }) => {
     if(collection.items.length || collection.parent ){
       return (
         <View>
-          <Text>CASE 2.2</Text>
+          {/* <Text>CASE 2.2</Text> */}
           {collection.items.map((item) => (
             <TouchableOpacity
               key={item.ID}
@@ -116,7 +103,7 @@ const Collection = ({ route, navigation }) => {
     if(collection.subCollections.length) {
       return (
         <View>
-          <Text>CASE 2.3</Text>
+          {/* <Text>CASE 2.3</Text> */}
           {collection.subCollections.map((subcollection) => (
             <TouchableOpacity
               key={subcollection.ID}

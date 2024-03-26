@@ -33,9 +33,11 @@ const CollectionName = ({ route, navigation }) => {
   
     return (
       <View style={styles.container}>
-        <Text style={styles.label}>Collection Name</Text>
+        <View style={styles.inputLabelContainer}>
+            <Text style={styles.inputLabel}>Collection Name:</Text>
+        </View>
         <TextInput
-          style={styles.input}
+          style={styles.textInput}
           onChangeText={text => setCollectionName(text)}
           value={collectionName}
           placeholder="Enter item name"

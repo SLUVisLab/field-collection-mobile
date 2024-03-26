@@ -61,23 +61,32 @@ const TextSetup = ({navigation, taskID}) => {
     return (
         <View>
             <View>
-                <Text>Display Name:</Text>
+                <View style={styles.inputLabelContainer}>
+                    <Text style={styles.inputLabel}>Display Name:</Text>
+                </View>
                 <TextInput
+                    style={styles.textInput}
                     value={displayName}
                     onChangeText={setDisplayName}
                 />
             </View>
             
             <View>
-                <Text>Data Label:</Text>
+                <View style={styles.inputLabelContainer}>
+                    <Text style={styles.inputLabel}>Data Label:</Text>
+                </View>
                 <TextInput
+                    style={styles.textInput}
                     value={dataLabel}
                     onChangeText={setDataLabel}
                 />
             </View>
             <View>
-                <Text>Instructions:</Text>
+                <View style={styles.inputLabelContainer}>
+                    <Text style={styles.inputLabel}>Instructions:</Text>
+                </View>
                 <TextInput
+                    style={styles.textInput}
                     value={instructions}
                     onChangeText={setInstructions}
                 />

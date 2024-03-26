@@ -30,9 +30,11 @@ const ItemName = ({ route, navigation }) => {
   
     return (
       <View style={styles.container}>
-        <Text style={styles.label}>Item Name</Text>
+        <View style={styles.inputLabelContainer}>
+            <Text style={styles.inputLabel}>Item Name:</Text>
+        </View>
         <TextInput
-          style={styles.input}
+          style={styles.textInput}
           onChangeText={text => setItemName(text)}
           value={itemName}
           placeholder="Enter item name"
