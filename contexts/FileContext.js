@@ -7,6 +7,10 @@ import TextTask from '../tasks/text/TextTask'
 import SurveyCollection from '../utils/SurveyCollection';
 import SurveyItem from '../utils/SurveyItem';
 
+// NOTE: This file is an excellent candidate for refactoring! Sorry, the
+// first pass at getting this to work got pretty messy.
+
+
 // Create a new context for file operations
 const FileContext = createContext();
 
@@ -45,11 +49,11 @@ export const FileProvider = ({ children }) => {
 
         // Add data to the main tab
         const mainSheetData = [
-            ['TaskTypeID', 'TaskID', 'TaskDisplayName', 'DataLabel', 'Instructions']
+            ['TaskTypeID', 'TaskType', 'TaskID', 'TaskDisplayName', 'DataLabel', 'Instructions']
         ];
 
         surveyDesign.tasks.forEach(task => {
-            mainSheetData.push([task.constructor.typeID, task.taskID, task.taskDisplayName, task.dataLabel, task.instructions]);
+            mainSheetData.push([task.constructor.typeID, task.constructor.typeDisplayName, task.taskID, task.taskDisplayName, task.dataLabel, task.instructions]);
         });
 
         // Convert data to sheet format
@@ -68,9 +72,8 @@ export const FileProvider = ({ children }) => {
             // No subcollections
             if (!collection.subCollections || collection.subCollections.length === 0){
                 
-                collectionData.push(['None', '', ''])
                 collection.items.forEach(item => {
-                    collectionData.push(['', item.ID, item.name]); // Push empty value in subsequent iterations
+                    collectionData.push(['', item.ID, item.name]);
                 });
 
             //With Subcollections
@@ -93,12 +96,8 @@ export const FileProvider = ({ children }) => {
         });
 
         const xlsxContent = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' });
-        console.log('XLSX Content:', xlsxContent);
 
         const base64Content = encode(xlsxContent);
-        console.log('Base64 Content:', base64Content);
-
-
 
         // Write XLSX content to file
         try {
@@ -113,8 +112,6 @@ export const FileProvider = ({ children }) => {
     const convertXLSXToSurvey = async (fileName, setSurveyDesign) => {
         try {
             // Read XLSX content
-            
-
             const filePath = FileSystem.documentDirectory + '/' + fileName;
 
             console.log(filePath)
@@ -158,14 +155,15 @@ export const FileProvider = ({ children }) => {
                 
                 // Extract data from the row
                 const taskType = row[0]
-                const taskID = row[1]; // Assuming TaskID is in the second column (index 1)
-                const taskDisplayName = row[2]; // Assuming TaskDisplayName is in the third column (index 2)
-                const dataLabel = row[3]; // Assuming DataLabel is in the fourth column (index 3)
-                const instructions = row[4]; // Assuming Instructions is in the fifth column (index 4)
+                const taskTypeName = row[1]
+                const taskID = row[2];
+                const taskDisplayName = row[3];
+                const dataLabel = row[4];
+                const instructions = row[5];
             
                 // Create a new Task instance and add it to the tasks array
                 console.log("creating new task")
-                console.log(taskType, taskID, taskDisplayName, dataLabel, instructions)
+                console.log(taskType, taskTypeName, taskID, taskDisplayName, dataLabel, instructions)
 
                 let newTask;
 
@@ -194,50 +192,55 @@ export const FileProvider = ({ children }) => {
                 console.log(jsonData)
 
                 console.log(sheetName)
-                console.log(worksheet["rows"])
+                console.log(worksheet["rows"]) // prints undefined
             
                 // Create a new Collection instance
                 let currentCollection = new SurveyCollection(sheetName)
 
                 console.log("current collection ID")
                 console.log(currentCollection.ID)
-                
+
+
+                // *****************************************************
                 // This sheet contains subcollections
                 console.log("Checking for subcollections.....")
-                if (worksheet['A2'] && worksheet['A2'].v && worksheet['A2'].v != 'None'){
+                if (worksheet['A2'] && worksheet['A2'].v != null && worksheet['A2'].v !== '' )  {
                     
                     console.log("subcollections found...")
                     // create a new subcollection
                     let currentSubCollection = null;
 
+                    console.log("looping through rows...")
+
                     let i = 0;
                     for (const row in worksheet) {
+                        console.log("row:", row)
+                        console.log("i:", i)
+
                         if (i === 0) {
                             console.log("skipping first row")
                             i++;
                             continue;
                         }
-                        console.log("looping through sheet rows...")
-                        // found indicator of new subcollection
+                       
+                        // Check for indicator of new subcollection
+                        let subCollectionAddr = XLSX.utils.encode_cell({r:i, c:0});
 
-                        //subcollection address
-                        let addr = XLSX.utils.encode_cell({r:i, c:0});
-
-                        console.log(addr)
-                        // console.log(worksheet[addr].v)
-
-                        if (worksheet[addr] && worksheet[addr].v) {
+                        if (worksheet[subCollectionAddr] && worksheet[subCollectionAddr].v && worksheet[subCollectionAddr] != '') {
 
                             console.log("new subcollection found...")
+                            console.log(subCollectionAddr)
+                            console.log(worksheet[subCollectionAddr].v)
 
                             // if the existing subcollection is not empty, add it to the collection before creating a new one
                             if(currentSubCollection){
                                 console.log("subcollection is not empty..")
                                 currentCollection.subCollections.push(currentSubCollection)
+                                currentSubCollection = null //just for good measure
                             }
 
                             console.log("creating new subcollection....")
-                            currentSubCollection = new SurveyCollection(worksheet[addr].v, currentCollection.ID)
+                            currentSubCollection = new SurveyCollection(worksheet[subCollectionAddr].v, currentCollection.ID)
 
                         } else {
                             console.log("creating new item...")
@@ -253,15 +256,18 @@ export const FileProvider = ({ children }) => {
                                 let itemID = worksheet[itemIDAddr].v
 
                                 console.log(itemName)
-
+                                
+                                console.log("creating instance of survey item...")
                                 let newItem = new SurveyItem(itemName)
 
                                 console.log("adding new item to subcollection....")
-
+        
                                 currentSubCollection.items.push(newItem)
                             } else {
                                 console.log("No more rows found")
-                                continue;
+                                currentCollection.subCollections.push(currentSubCollection) //dont forget to add the current sub coll to the array
+
+                                break;
                             }
                         }
 
@@ -269,42 +275,47 @@ export const FileProvider = ({ children }) => {
                     }
                     
                     
-
-                // This sheet does not contain subcollection
+                // ******************************************
+                // This sheet does not contain subcollections
                 } else {
                     console.log("No subcollections present")
                     let i = 0;
                     for (const row in worksheet) {
+                        console.log("row:", row)
+                        console.log("i:", i)
                         if (i === 0) {
                             console.log("skipping first row")
                             i++;
                             continue;
                         }
                         console.log("creating new item...")
-                            //create a new item
-                            let itemIDAddr = XLSX.utils.encode_cell({r:i, c:1});
-                            let itemNameAddr = XLSX.utils.encode_cell({r:i, c:2});
+                        //create a new item
+                        let itemIDAddr = XLSX.utils.encode_cell({r:i, c:1});
+                        let itemNameAddr = XLSX.utils.encode_cell({r:i, c:2});
 
-                            if((worksheet[itemIDAddr] && worksheet[itemIDAddr].v) && (worksheet[itemNameAddr] && worksheet[itemNameAddr].v)) {
+                        if((worksheet[itemIDAddr] && worksheet[itemIDAddr].v) && (worksheet[itemNameAddr] && worksheet[itemNameAddr].v)) {
 
-                                console.log(itemNameAddr)
+                            console.log(itemNameAddr)
 
-                                let itemName = worksheet[itemNameAddr].v
-                                let itemID = worksheet[itemIDAddr].v
+                            let itemName = worksheet[itemNameAddr].v
+                            let itemID = worksheet[itemIDAddr].v
 
-                                console.log(itemName)
+                            console.log(itemName)
+                            console.log(itemID)
 
-                                let newItem = new SurveyItem(itemName)
+                            console.log("creating instance of survey item...")
+                            let newItem = new SurveyItem(itemName)
 
-                                console.log("adding new item to subcollection....")
+                            console.log("adding new item to collection")
 
-                                currentSubCollection.items.push(newItem)
-                            } else {
-                                console.log("No more rows found")
-                                continue;
-                            }
+                            currentCollection.items.push(newItem)
+                        } else {
+                            console.log("No more rows found")
+                            break;
+                        }
+                        i++;
                     }
-                    i++;
+                    
                 }
 
                     // Add the finished collection to the newSurveySate after each sheet has been read
@@ -312,32 +323,6 @@ export const FileProvider = ({ children }) => {
                 }
 
                 console.log(newSurveyState)
-
-                // // Iterate through each row in the sheet
-                // for (const row in worksheet) {
-                //     // Extract cell value
-                //     const cellValue = worksheet[row].v;
-            
-                //     // Check if the row contains a subcollection name
-                //     if (cellValue && cellValue !== 'subcollection') {
-                //         // Create a new subcollection
-                //         const newSubcollection = { name: cellValue, items: [] };
-            
-                //         // Add the subcollection to the current collection
-                //         currentCollection.subCollections.push(newSubcollection);
-                //     } else if (cellValue !== 'subcollection') {
-                //         // Create a new item
-                //         const newItem = { itemID: worksheet[++row].v, itemName: worksheet[++row].v };
-            
-                //         // Add the item to the last subcollection
-                //         currentCollection.subCollections[currentCollection.subCollections.length - 1].items.push(newItem);
-                //     }
-                // }
-            
-                // // Add the current collection to the collections array
-                // collections.push(currentCollection);
-            
-            
     
             setSurveyDesign(newSurveyState)
 
@@ -351,6 +336,8 @@ export const FileProvider = ({ children }) => {
 
     }
 
+// *****************************************************************
+// configuration stuff
 
     // Value to be provided by the context
     const value = {

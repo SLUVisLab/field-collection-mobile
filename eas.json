@@ -9,7 +9,8 @@
       "distribution": "internal",
       "ios": {
         "simulator": true,
-        "resourceClass": "m-medium"
+        "resourceClass": "m-medium",
+        "cocoapods": "1.15.2"
       },
       "channel": "development"
     },
