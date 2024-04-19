@@ -43,6 +43,7 @@
     "react-native-webview": "11.26.0",
     "realm": "^12.6.2",
     "tsv": "^0.2.0",
+    "uuid": "^9.0.1",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Button, TouchableOpacity, StyleSheet } from 'react-native';
 import styles from '../Styles';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 
@@ -15,8 +15,23 @@ const CollectionDesignList = ({ route, navigation }) => {
   // Find the collection associated with the provided ID
   const collection = collectionID ? findCollectionByID(collectionID) : null;
 
+
+
   if(collection){
     console.log("Collection Found")
+
+    // navigation.setOptions({
+    //   headerLeft: () => (
+    //     <Button
+    //       onPress={() => {
+    //         navigation.navigate('CollectionDesignList')
+    //       }}
+    //       title="< Collections"
+    //     />
+    //   ),
+    // });
+
+
   }
 
   React.useLayoutEffect(() => {
@@ -41,7 +56,7 @@ const CollectionDesignList = ({ route, navigation }) => {
         {surveyDesign.collections.map((item) => (
           <TouchableOpacity
             key={item.ID}
-            onPress={() => navigation.navigate('CollectionDesignList', { collectionID: item.ID })}
+            onPress={() => navigation.push('CollectionDesignList', { collectionID: item.ID })}
           >
             <Text>{item.name}</Text>
           </TouchableOpacity>
@@ -58,7 +73,8 @@ const CollectionDesignList = ({ route, navigation }) => {
   // Scenario 2: Specific Collection or subCollection
   if (collection) {
 
-    //Scenario 2.1: No subcollections or Items present
+    //Scenario 2.1: IF No subcollections or Items present
+    // THEN both item and collection buttons should be shown
     if (!collection.subCollections.length && !collection.items.length && !collection.parent) {
       return (
         <View>
@@ -77,7 +93,8 @@ const CollectionDesignList = ({ route, navigation }) => {
       );
     }
     
-    //Scenario 2.2: Items exist OR this is an empty subcollection
+    //Scenario 2.2: IF Items exist OR this is an empty subcollection
+    // THEN only item buttons should be shown.
     if(collection.items.length || collection.parent ){
       return (
         <View>
@@ -85,7 +102,7 @@ const CollectionDesignList = ({ route, navigation }) => {
           {collection.items.map((item) => (
             <TouchableOpacity
               key={item.ID}
-              onPress={() => navigation.navigate('ItemName', { itemID: item.ID })}
+              onPress={() => navigation.navigate('ItemName', { item: item })}
             >
               <Text>{item.name}</Text>
             </TouchableOpacity>
@@ -99,7 +116,8 @@ const CollectionDesignList = ({ route, navigation }) => {
       )
     }
     
-    // Scenario 2.3: subcollections Exist
+    // Scenario 2.3: IF subcollections exist
+    // THEN only collection buttons should be shown
     if(collection.subCollections.length) {
       return (
         <View>
@@ -107,7 +125,7 @@ const CollectionDesignList = ({ route, navigation }) => {
           {collection.subCollections.map((subcollection) => (
             <TouchableOpacity
               key={subcollection.ID}
-              onPress={() => navigation.navigate('CollectionDesignList', { collectionID: subcollection.ID })}
+              onPress={() => navigation.push('CollectionDesignList', { collectionID: subcollection.ID })}
             >
               <Text>{subcollection.name}</Text>
             </TouchableOpacity>

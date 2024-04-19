@@ -11,9 +11,16 @@ const ItemName = ({ route, navigation }) => {
     // Initialize the survey design context
     const { surveyDesign, addItemToCollection} = useSurveyDesign();
 
-    const { parentID } = route.params || { parentID: null };
+    const { parentID, item } = route.params || { parentID: null, item: null };
 
     const [itemName, setItemName] = useState('');
+
+    React.useLayoutEffect(() => {
+      navigation.setOptions({
+        title: item ? item.name : 'New Item',
+      });
+      setItemName(item.name);
+    }, [navigation]);
   
     const handleDone = () => {
 

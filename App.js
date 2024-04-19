@@ -29,6 +29,7 @@ import CollectionList from './screens/CollectionList';
 import CollectionName from './screens/CollectionName';
 import ItemName from './screens/ItemName';
 import TaskSetup from './screens/TaskSetup';
+import TaskAction from './screens/TaskAction';
 
 // Define your configuration options
 const realmConfig = {
@@ -80,7 +81,7 @@ class App extends React.Component {
                 <Stack.Screen options={{headerShown: true, title: 'New Survey',}} name="SurveyName" component={SurveyName} />
                 <Stack.Screen options={{headerShown: true, title: 'Flower Photos',}} name="SurveyBuilder" component={SurveyBuilder} />
                 <Stack.Screen options={{headerShown: true, title: 'Tasks',}} name="TaskSelector" component={TaskSelector} />
-
+                <Stack.Screen options={{headerShown: true, title: 'Task Action',}} name="TaskAction" component={TaskAction} />
                 <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionDesignList" component={CollectionDesignList} />
                 <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionList" component={CollectionList} />
                 <Stack.Screen options={{headerShown: true, title: 'New Collection',}} name="CollectionName" component={CollectionName} />

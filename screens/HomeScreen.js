@@ -5,11 +5,6 @@ import styles from '../Styles';
 
 function HomeScreen({ navigation }) {
 
-  const handleDone = () => {
-
-    console.log('LOG LOG LOG LOG LOG');
-    
-  };
     return (
       <View style={styles.container}>
         <ImageBackground style={styles.container}
@@ -26,12 +21,7 @@ function HomeScreen({ navigation }) {
           >
             <Text style={styles.text}>Manage Surveys</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleDone}
-          >
-            <Text style={styles.text}>LOG LOG LOG</Text>
-          </TouchableOpacity>
+
         </ImageBackground>
       </View>
     );

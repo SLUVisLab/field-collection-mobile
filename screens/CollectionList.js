@@ -33,33 +33,34 @@ const CollectionList = ({ route, navigation }) => {
   // a. collection/item, item, item
   // b. collection/subcollection1/item item item, /subcollection2/item, item, item
 
-  // Scenario 1: New Base Level Collection
+  // Scenario 1:Base Level Collection
   if (!collectionID) {
     return (
       <View>
-        {surveyDesign.collections.map((item) => (
+        {surveyDesign.collections.map((collection) => (
           <TouchableOpacity
-            key={item.ID}
-            onPress={() => navigation.navigate('CollectionList', { collectionID: item.ID })}
+            key={collection.ID}
+            onPress={() => navigation.navigate('CollectionList', { collectionID: collection.ID })}
           >
-            <Text>{item.name}</Text>
+            <Text>{collection.name}</Text>
           </TouchableOpacity>
         ))}
       </View>
     );
   }
   if (collection) {  
-    //Scenario 2.2: Items exist OR this is an empty subcollection
-    if(collection.items.length || collection.parent ){
+    //Scenario 2.2: Items exist
+    if(collection.items.length){
       return (
         <View>
           {/* <Text>CASE 2.2</Text> */}
           {collection.items.map((item) => (
             <TouchableOpacity
               key={item.ID}
-              onPress={() => navigation.navigate('ItemName', { itemID: item.ID })}
+              onPress={() => navigation.navigate('TaskAction', { itemID: item.ID, collectionID: collection.ID })}
             >
               <Text>{item.name}</Text>
+              <Text>{item.ID}</Text>
             </TouchableOpacity>
           ))}
         </View>

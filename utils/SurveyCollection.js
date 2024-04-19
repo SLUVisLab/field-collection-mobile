@@ -1,10 +1,10 @@
-import SurveyItem from './SurveyItem'
+import { v4 as uuidv4 } from 'uuid';
 
 class SurveyCollection {
     constructor(name, parent = null, id = null) {
 
     //TODO: Persist collection ID's when converting to and from xlsx
-      this.ID = Math.floor(Math.random() * 1000000000000);
+      this.ID = uuidv4();
       this.name = name;
       this.subCollections = [];
       this.parent = parent;
