@@ -19,7 +19,9 @@ const ItemName = ({ route, navigation }) => {
       navigation.setOptions({
         title: item ? item.name : 'New Item',
       });
-      setItemName(item.name);
+      if(item) {
+        setItemName(item.name);
+      }
     }, [navigation]);
   
     const handleDone = () => {

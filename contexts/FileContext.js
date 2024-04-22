@@ -19,94 +19,104 @@ export const FileProvider = ({ children }) => {
   
     const [surveyFiles, setSurveyFiles] = useState([]);
 
-    useEffect(() => {
-        const loadSurveyFiles = async () => {
-          try {
-            // Get the list of files in the document directory
-            const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
-      
-            const xlsxFiles = files.filter((file) => file.endsWith('.xlsx'));
-            setSurveyFiles(xlsxFiles);
+    const loadSurveyFiles = async () => {
+        try {
+          // Get the list of files in the document directory
+          const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
+    
+          const xlsxFiles = files.filter((file) => file.endsWith('.xlsx'));
+          setSurveyFiles(xlsxFiles);
 
-          } catch (error) {
-            console.error('Error loading survey files:', error);
-          }
-        };
-      
+        } catch (error) {
+          console.error('Error loading survey files:', error);
+        }
+      };
+
+    useEffect(() => {
         // Load survey files when the component mounts
         loadSurveyFiles();
-      }, [convertSurveyToXLSX]);
+      }, []);
 
     // Method to write xlsx content to file
     const convertSurveyToXLSX = async (surveyDesign) => {
 
-        const fileName = surveyDesign.name.replace(/\s/g, '_') + '.xlsx';
-        const filePath = FileSystem.documentDirectory + '/' + fileName; // Full file path
+        return new Promise(async (resolve, reject) => {
 
-        console.log(fileName)
+            const fileName = surveyDesign.name.replace(/\s/g, '_') + '.xlsx';
+            const filePath = FileSystem.documentDirectory + '/' + fileName; // Full file path
 
-        const workbook = XLSX.utils.book_new();
+            console.log(fileName)
 
-        // Add data to the main tab
-        const mainSheetData = [
-            ['TaskTypeID', 'TaskType', 'TaskID', 'TaskDisplayName', 'DataLabel', 'Instructions']
-        ];
+            const workbook = XLSX.utils.book_new();
 
-        surveyDesign.tasks.forEach(task => {
-            mainSheetData.push([task.constructor.typeID, task.constructor.typeDisplayName, task.taskID, task.taskDisplayName, task.dataLabel, task.instructions]);
-        });
-
-        // Convert data to sheet format
-        const mainSheet = XLSX.utils.aoa_to_sheet(mainSheetData);
-
-        // Add the main sheet to the workbook
-        XLSX.utils.book_append_sheet(workbook, mainSheet, 'Tasks');
-
-        // Add tabs for each collection
-        surveyDesign.collections.forEach(collection => {
-            
-            const collectionData = [
-                ['Subcollection', 'ItemID', 'Item']
+            // Add data to the main tab
+            const mainSheetData = [
+                ['TaskTypeID', 'TaskType', 'TaskID', 'TaskDisplayName', 'DataLabel', 'Instructions']
             ];
 
-            // No subcollections
-            if (!collection.subCollections || collection.subCollections.length === 0){
-                
-                collection.items.forEach(item => {
-                    collectionData.push(['', item.ID, item.name]);
-                });
-
-            //With Subcollections
-            } else {
-                
-                collection.subCollections.forEach(subCollection => {
-                    collectionData.push([subCollection.name, '', ''])
-
-                    subCollection.items.forEach(item => {
-                        collectionData.push(['', item.ID, item.name])
-                    })
-                })
-            }
+            surveyDesign.tasks.forEach(task => {
+                mainSheetData.push([task.constructor.typeID, task.constructor.typeDisplayName, task.taskID, task.taskDisplayName, task.dataLabel, task.instructions]);
+            });
 
             // Convert data to sheet format
-            const collectionSheet = XLSX.utils.aoa_to_sheet(collectionData);
+            const mainSheet = XLSX.utils.aoa_to_sheet(mainSheetData);
 
-            // Add the collection sheet to the workbook
-            XLSX.utils.book_append_sheet(workbook, collectionSheet, collection.name);
-        });
+            // Add the main sheet to the workbook
+            XLSX.utils.book_append_sheet(workbook, mainSheet, 'Tasks');
 
-        const xlsxContent = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' });
+            // Add tabs for each collection
+            surveyDesign.collections.forEach(collection => {
+                
+                const collectionData = [
+                    ['Subcollection', 'ItemID', 'Item']
+                ];
 
-        const base64Content = encode(xlsxContent);
+                // No subcollections
+                if (!collection.subCollections || collection.subCollections.length === 0){
+                    
+                    collection.items.forEach(item => {
+                        collectionData.push(['', item.ID, item.name]);
+                    });
 
-        // Write XLSX content to file
-        try {
-            console.log('File Path:', filePath);
-            await FileSystem.writeAsStringAsync(filePath, base64Content, { encoding: FileSystem.EncodingType.Base64 });
-            console.log('XLSX file saved:', filePath);
-        } catch (error) {
-            console.error('Error writing XLSX file:', error);
-        }
+                //With Subcollections
+                } else {
+                    
+                    collection.subCollections.forEach(subCollection => {
+                        collectionData.push([subCollection.name, '', ''])
+
+                        subCollection.items.forEach(item => {
+                            collectionData.push(['', item.ID, item.name])
+                        })
+                    })
+                }
+
+                // Convert data to sheet format
+                const collectionSheet = XLSX.utils.aoa_to_sheet(collectionData);
+
+                // Add the collection sheet to the workbook
+                XLSX.utils.book_append_sheet(workbook, collectionSheet, collection.name);
+            });
+
+            const xlsxContent = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' });
+
+            const base64Content = encode(xlsxContent);
+
+            // Write XLSX content to file
+            try {
+                console.log('File Path:', filePath);
+                await FileSystem.writeAsStringAsync(filePath, base64Content, { encoding: FileSystem.EncodingType.Base64 });
+                console.log('XLSX file saved:', filePath);
+
+                // When the file is fully written, call resolve()
+                resolve();
+
+            } catch (error) {
+                console.error('Error writing XLSX file:', error);
+                reject(error)
+            }
+        
+        
+    });
     };
 
     const convertXLSXToSurvey = async (fileName, setSurveyDesign) => {
@@ -342,6 +352,7 @@ export const FileProvider = ({ children }) => {
     // Value to be provided by the context
     const value = {
         surveyFiles,
+        loadSurveyFiles,
         convertSurveyToXLSX,
         convertXLSXToSurvey
     };

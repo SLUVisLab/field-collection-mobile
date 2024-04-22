@@ -1,7 +1,9 @@
 import React from 'react';
 import Realm from "realm";
 
-import { SurveyDesignProvider } from "./contexts/SurveyDesignContext"
+import Toast from 'react-native-toast-message';
+
+import { SurveyDesignProvider } from "./contexts/SurveyDesignContext";
 import { FileProvider } from './contexts/FileContext';
 import { RealmProvider } from '@realm/react';
 
@@ -91,12 +93,16 @@ class App extends React.Component {
                 <Stack.Screen options={{headerShown: true}} name="Camera" component={QRCode} />
                 <Stack.Screen options={{headerShown: true, headerBackVisible: false}} name="BlockView" component={BlockView} />
                 <Stack.Screen name="FormComplete" component={FormComplete} />
-
+                
+                
               </Stack.Navigator>
+              
             </SurveyDesignProvider>
           </FileProvider>
         </NavigationContainer>
+        <Toast ref={(ref) => Toast.setRef(ref)} />
       </RealmProvider>
+      
     );
   }
 }

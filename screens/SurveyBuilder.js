@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 import styles from '../Styles';
 
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
@@ -9,7 +10,7 @@ import { useFileContext } from '../contexts/FileContext';
 const SurveyBuilder = ({ route, navigation }) => {
 
   const { surveyDesign, setName, addTask } = useSurveyDesign();
-  const { convertSurveyToXLSX } = useFileContext();
+  const { convertSurveyToXLSX, loadSurveyFiles } = useFileContext();
 
   // Get survey name from previous view and save to survey context
   
@@ -46,10 +47,23 @@ const SurveyBuilder = ({ route, navigation }) => {
     navigation.navigate('TaskSetup', { taskTypeID: task.constructor.typeID, taskID: task.taskID });
   };
 
-  const handleDone = () => {
+  const handleDone = async () => {
     console.log("Called method to save survey")
     console.log(surveyDesign)
-    convertSurveyToXLSX(surveyDesign)
+    await convertSurveyToXLSX(surveyDesign);
+    loadSurveyFiles()
+
+    Toast.show({
+      type: 'success',
+      position: 'bottom',
+      text1: 'Survey Saved Successfully',
+      visibilityTime: 1000,
+      autoHide: true,
+      topOffset: 30,
+      bottomOffset: 40,
+    });
+
+    navigation.navigate('Home')
   };
 
   //create list element
