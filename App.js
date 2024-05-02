@@ -33,6 +33,7 @@ import CollectionName from './screens/CollectionName';
 import ItemName from './screens/ItemName';
 import TaskSetup from './screens/TaskSetup';
 import TaskAction from './screens/TaskAction';
+import SubmitSurvey from './screens/SubmitSurvey';
 
 // Define your configuration options
 const realmConfig = {
@@ -83,7 +84,8 @@ class App extends React.Component {
                   <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyDesignList" component={SurveyDesignList} />
                   <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyList" component={SurveyList} />
                   <Stack.Screen options={{headerShown: true, title: 'New Survey',}} name="SurveyName" component={SurveyName} />
-                  <Stack.Screen options={{headerShown: true, title: 'Flower Photos',}} name="SurveyBuilder" component={SurveyBuilder} />
+                  <Stack.Screen options={{headerShown: true, title: 'Survey',}} name="SurveyBuilder" component={SurveyBuilder} />
+                  <Stack.Screen options={{headerShown: true, title: 'Summary',}} name="SubmitSurvey" component={SubmitSurvey} />
                   <Stack.Screen options={{headerShown: true, title: 'Tasks',}} name="TaskSelector" component={TaskSelector} />
                   <Stack.Screen options={{headerShown: true, title: 'Task Action',}} name="TaskAction" component={TaskAction} />
                   <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionDesignList" component={CollectionDesignList} />
