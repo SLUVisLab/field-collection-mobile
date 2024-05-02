@@ -343,11 +343,10 @@ export const FileProvider = ({ children }) => {
     };
 
     const ImportXLSXFile = (file) => {
-
+        // handle importing xlsx files
+        return null;
     }
 
-// *****************************************************************
-// configuration stuff
 
     // Value to be provided by the context
     const value = {

@@ -1,20 +1,26 @@
 import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useFileContext } from '../contexts/FileContext';
-import { useSurveyDesign } from '../contexts/SurveyDesignContext'
+import { useSurveyDesign } from '../contexts/SurveyDesignContext';
+import { useSurveyData } from '../contexts/SurveyDataContext';
 import styles from '../Styles';
 
 const SurveyList = ({ navigation }) => {
   const { surveyFiles, convertXLSXToSurvey } = useFileContext(); // Access surveyFiles from FileContext
 
-  const { clearSurveyDesign, setSurveyDesign } = useSurveyDesign()
+  const { surveyDesign, clearSurveyDesign, setSurveyDesign } = useSurveyDesign()
+  const { newSurvey } = useSurveyData()
 
   const handleLoadSurvey = (filePath) => {
     
+    // Clear the current survey layout in the surveyDesignContext
     clearSurveyDesign();
 
+    // Load a new survey layout from xlsx file
     convertXLSXToSurvey(filePath, setSurveyDesign);
 
+    // Create a new surveyData instance with data from the surveyDesign
+    newSurvey(surveyDesign)
 
     navigation.navigate('CollectionList');
   };

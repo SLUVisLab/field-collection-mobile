@@ -2,10 +2,12 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import styles from '../Styles';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
+import { useSurveyData } from '../contexts/SurveyDataContext';
 
 const CollectionList = ({ route, navigation }) => {
   // Initialize the survey design context
   const { surveyDesign, addCollection, findCollectionByID } = useSurveyDesign();
+  const { itemHasObservation } = useSurveyData()
 
   const { collectionID } = route.params || { collectionID: null };
 
@@ -33,7 +35,7 @@ const CollectionList = ({ route, navigation }) => {
   // a. collection/item, item, item
   // b. collection/subcollection1/item item item, /subcollection2/item, item, item
 
-  // Scenario 1:Base Level Collection
+  // Scenario 1:Base Level Collections
   if (!collectionID) {
     return (
       <View>
@@ -59,8 +61,7 @@ const CollectionList = ({ route, navigation }) => {
               key={item.ID}
               onPress={() => navigation.navigate('TaskAction', { itemID: item.ID, collectionID: collection.ID })}
             >
-              <Text>{item.name}</Text>
-              <Text>{item.ID}</Text>
+              <Text style={{ color: itemHasObservation(item.ID) ? 'green' : 'black' }}>{item.name}</Text>
             </TouchableOpacity>
           ))}
         </View>

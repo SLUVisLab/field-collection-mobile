@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
-import styles from '../Styles';
 import PhotoAction from '../tasks/photo/PhotoAction';
 import TextAction from '../tasks/text/TextAction';
 
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
+import { useSurveyData } from '../contexts/SurveyDataContext';
 
 const TaskAction = ({ route, navigation }) => {
 
     const {surveyDesign, getTaskByID, findCollectionByID} = useSurveyDesign();
+    const { addObservation } = useSurveyData()
 
     const {itemID, collectionID} = route.params;
 
@@ -19,22 +20,54 @@ const TaskAction = ({ route, navigation }) => {
     const [task, setTask] = useState(surveyDesign.tasks[currentTaskIndex]);
     const [currentItem, setCurrentItem] = useState(collection.items[currentItemIndex]);
 
+    const [observationData, setObservationData] = useState({});
+
     useEffect(() => {
+        // all items in this collection have been completed
         if (currentItemIndex >= collection.items.length) {
             navigation.push('CollectionList', { collectionID: collectionID });
+        // or they havent. move to next item. index incremented elsewhere
         } else {
             setCurrentItem(collection.items[currentItemIndex]);
         }
     }, [currentItemIndex]);
 
     useEffect(() => {
+        // all tasks for this item have been completed. move to the next item
         if (currentTaskIndex >= surveyDesign.tasks.length) {
+            // save data for this item
+            itemCompleted();
+
             setCurrentItemIndex(currentItemIndex + 1);
             setCurrentTaskIndex(0);
+
+        // continue to the next task for this item (index has been incremented by onComplete function)
         } else {
             setTask(surveyDesign.tasks[currentTaskIndex]);
         }
     }, [currentTaskIndex]);
+
+    const taskCompleted = (data) => {
+        console.log(data)
+
+        // Add the new key-value pair to the object
+        setObservationData(prevObservationData => ({
+            ...prevObservationData,
+            ...data
+        }));
+
+        setCurrentTaskIndex(currentTaskIndex + 1)
+    }
+
+    const itemCompleted = () => {
+        console.log("saving observation: ", observationData)
+        //save the observatio data to the survey data context
+        addObservation(observationData, currentItem, collection, surveyDesign);
+
+        //clear the observation data object for the next item.
+        setObservationData({});
+
+    }
 
     let renderedComponent;
     const taskTypeID = task.constructor.typeID;
@@ -42,17 +75,17 @@ const TaskAction = ({ route, navigation }) => {
 
     switch(taskTypeID){
         case 1:
-            renderedComponent = <PhotoAction navigation = { navigation } taskID = { taskID } onComplete={() => setCurrentTaskIndex(currentTaskIndex + 1)} itemName={currentItem.name} />;
+            renderedComponent = <PhotoAction navigation = { navigation } task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
             break;
         case 2:
-            renderedComponent = <TextAction navigation = { navigation } taskID = { taskID } onComplete={() => setCurrentTaskIndex(currentTaskIndex + 1)} itemName={currentItem.name} />;
+            renderedComponent = <TextAction navigation = { navigation } task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} />;
             break;
         default:
             renderedComponent = <Text>Error Loading Component</Text>
     }
 
     return (
-        <View>
+        <View style={{ height: '100%' }}>
             {renderedComponent}
         </View>
     );

@@ -46,6 +46,7 @@
     "plugins": [
       [
         "expo-build-properties",
+
         {
           "ios": {
             "useFrameworks": "static"
@@ -56,6 +57,14 @@
         "expo-barcode-scanner",
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access camera."
+        }
+      ],
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": [
+            "Camera"
+          ]
         }
       ]
     ],

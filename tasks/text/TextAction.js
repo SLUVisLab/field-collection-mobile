@@ -5,21 +5,34 @@ import styles from '../../Styles';
 
 
 
-const TextAction = ({ navigation, onComplete, itemName }) => {
+const TextAction = ({ navigation, onComplete, task, item }) => {
+
+    const [data, setData] = useState('');
 
     useEffect(() => {
-        navigation.setOptions({ title: 'Text' });
+        navigation.setOptions({ title: task.taskDisplayName });
     }, []);
 
     const handleDone = () => {
 
-        onComplete();
+        onComplete({ [task.dataLabel]: data });
   
       };
 
     return (
         <View>
-        <Text>{itemName}</Text>
+        <Text>{item.name}</Text>
+        <View>
+            <View style={styles.inputLabelContainer}>
+                <Text style={styles.inputLabel}>{task.dataLabel}</Text>
+            </View>
+            <TextInput
+                style={styles.textInput}
+                value={data}
+                onChangeText={setData}
+            />
+        </View>
+        <Text>{task.instructions}</Text>
         <TouchableOpacity
               style={styles.button}
               onPress={handleDone}
