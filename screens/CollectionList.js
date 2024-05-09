@@ -24,6 +24,13 @@ const CollectionList = ({ route, navigation }) => {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       title: collection ? collection.name : 'Collections',
+      headerRight: () => (
+        <TouchableOpacity onPress={() => {
+          navigation.navigate('SubmitSurvey')
+        }}>
+          <Text style={styles.headerButton}>Survey</Text>
+        </TouchableOpacity>
+      ),
     });
   }, [navigation, collection]);
 

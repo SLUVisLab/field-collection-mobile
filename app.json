@@ -33,7 +33,8 @@
       },
       "permissions": [
         "android.permission.CAMERA"
-      ]
+      ],
+      "package": "com.sluvislab.BIIManualPhenotyper"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -46,11 +47,18 @@
     "plugins": [
       [
         "expo-build-properties",
-
         {
           "ios": {
             "useFrameworks": "static"
           }
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
         }
       ],
       [

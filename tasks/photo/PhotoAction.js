@@ -1,185 +1,139 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Modal } from 'react-native';
-import { RNCamera } from 'react-native-camera';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Text, Modal, TouchableOpacity, Button } from 'react-native';
+import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
-import { check, PERMISSIONS, RESULTS, request } from 'react-native-permissions';
+// import { check, PERMISSIONS, RESULTS, request } from 'react-native-permissions';
 
-import { TouchableOpacity } from 'react-native-gesture-handler';
+// import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 
 const PhotoAction = ({ navigation, onComplete, task, item, collection }) => {
 
-  useEffect(() => {
-    const requestCameraPermission = async () => {
-      const platformCameraPermission = Platform.select({
-        android: PERMISSIONS.ANDROID.CAMERA,
-        ios: PERMISSIONS.IOS.CAMERA,
-      });
+  const [facing, setFacing] = useState('back');
+  const [permission, requestPermission] = Camera.useCameraPermissions();
 
-      try {
-        const result = await check(platformCameraPermission);
-
-        if (result === RESULTS.DENIED) {
-          const requestResult = await request(platformCameraPermission);
-
-          if (requestResult === RESULTS.GRANTED) {
-            console.log('You can use the camera');
-          } else {
-            console.log('Permission denied');
-          }
-        } else if (result === RESULTS.GRANTED) {
-          console.log('You can use the camera');
-        }
-      } catch (error) {
-        console.log('Permission check error:', error);
-      }
-    };
-
-    requestCameraPermission();
-  }, []);
 
   const [showInstructions, setShowInstructions] = useState(false);
 
-  const takePicture = async (camera, item, collection) => {
-    console.log("take picture...")
-    const options = { quality: 0.5, base64: true };
-    const data = await camera.takePictureAsync(options);
-  
-    // Sanitize names by replacing spaces with underscores
-    const itemName = item.name.replace(/ /g, '_');
-    const collectionName = collection.name.replace(/ /g, '_');
-  
-    // Define the directory
-    const dir = `${FileSystem.documentDirectory}images/`;
-  
-    // Create the directory if it doesn't exist
-    if (!(await FileSystem.getInfoAsync(dir)).exists) {
-      await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
+  // let camera_instance;
+  const cameraRef = useRef(null);
+
+  // const onCameraReady = (cameraObject) => {
+  //   camera_instance = cameraObject;
+  // };
+
+  const takePicture = async () => {
+    console.log("Button pressed!")
+    if (cameraRef.current) {
+      console.log("camera instance found!")
+      const options = { quality: 0.5, base64: true };
+      const data = await cameraRef.current.takePictureAsync(options);
+      console.log(data.uri);
+      onComplete({ [task.dataLabel]: data.uri });
+    } else {
+      console.log("camera instance not found!")
     }
-  
-    // Define the path
-    const path = `${dir}${itemName}_${collectionName}_${new Date().toISOString()}.jpg`;
-  
-    // Write the data to filesystem
-    FileSystem.writeAsStringAsync(path, data.base64, { encoding: FileSystem.EncodingType.Base64 })
-    .then(() => {
-      console.log('Image saved to', path);
-      onComplete();
-    })
-      .catch((error) => console.log('Save image error:', error));
   };
 
-  const fakePicture = async (item, collection) => {
-    console.log("fake picture...")
-    console.log(item)
-    console.log(collection)
-  
-    onComplete({ [task.dataLabel]: "sample/path/to/image/data"})
-  };
+  if (!permission) {
+    // Camera permissions are still loading.
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    // Camera permissions are not granted yet.
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
+
+  function toggleCameraFacing() {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
 
   return (
-    <View style={styles.cameraContainer}>
-
-      <View style={styles.info}>
-        <Text style={styles.text}>{item.name}</Text>
-        <Text style={styles.text}>{collection.name}</Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <View style={styles.emptyView}></View>
-        <TouchableOpacity style={styles.capture} onPress={() => fakePicture(item, collection)}>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.helpButton} onPress={() => setShowInstructions(true)}>
-          <Text style={styles.buttonText}>?</Text>
-        </TouchableOpacity>
-      </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showInstructions}
-        onRequestClose={() => {
-          setShowInstructions(false);
-        }}
+    <View style={styles.container}>
+      <Camera 
+        ref={cameraRef}
+        style={styles.camera} 
+        type={facing === 'back' ? Camera.Constants.Type.back : Camera.Constants.Type.front}  
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>{task.instructions}</Text>
-
-            <TouchableOpacity
-              style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
-              onPress={() => {
-                setShowInstructions(false);
-              }}
-            >
-              <Text style={styles.textStyle}>Hide Instructions</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.info}>
+          <Text style={styles.text}>{collection.name}</Text>
+          <Text style={styles.text}>{item.name}</Text>
         </View>
-      </Modal>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
+            <Text style={styles.text}>Flip Camera</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.captureButton} onPress={() => takePicture()}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.helpButton} onPress={() => setShowInstructions(true)}>
+            <Text style={styles.buttonText}>?</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showInstructions}
+          onRequestClose={() => {
+            setShowInstructions(false);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>{task.instructions}</Text>
 
-      {/* <RNCamera
-        style={styles.preview}
-        type={RNCamera.Constants.Type.back}
-        captureAudio={false}
-      >
-        {({ camera, status }) => {
-          if (status !== 'READY') return <View style={styles.loading} />;
-          return (
-            <View style={styles.overlay}>
-              <View style={styles.info}>
-                <Text style={styles.text}>{item.name}</Text>
-                <Text style={styles.text}>{collection.name}</Text>
-              </View>
-              <View style={styles.buttonContainer}>
-                <View style={styles.emptyView}></View>
-                <TouchableOpacity style={styles.capture} onPress={() => fakePicture(item, collection)}>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.helpButton} onPress={() => setShowInstructions(true)}>
-                  <Text style={styles.buttonText}>?</Text>
-                </TouchableOpacity>
-              </View>
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={showInstructions}
-                onRequestClose={() => {
+              <TouchableOpacity
+                style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+                onPress={() => {
                   setShowInstructions(false);
                 }}
               >
-                <View style={styles.centeredView}>
-                  <View style={styles.modalView}>
-                    <Text style={styles.modalText}>{task.instructions}</Text>
-
-                    <TouchableOpacity
-                      style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
-                      onPress={() => {
-                        setShowInstructions(false);
-                      }}
-                    >
-                      <Text style={styles.textStyle}>Hide Instructions</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </Modal>
+                <Text style={styles.textStyle}>Hide Instructions</Text>
+              </TouchableOpacity>
             </View>
-          );
-        }}
-      </RNCamera> */}
+          </View>
+        </Modal>
+      </Camera>
     </View>
   );
   };
 
   const styles = StyleSheet.create({
-    cameraContainer: {
+    container: {
       flex: 1,
-      backgroundColor: 'black',
+      justifyContent: 'center',
+    },
+    captureButton: {
+      backgroundColor: 'red',
+      borderRadius: 50,
+      width: 100,
+      height: 100,
       justifyContent: 'center',
       alignItems: 'center',
+      borderWidth: 2,
+      borderColor: 'white',
     },
-    emptyView: { //this helps to center the red capture button for some reason?
-      width: '20%'
+    camera: {
+      flex: 1,
+    },
+    buttonContainer: {
+      position: 'absolute',
+      bottom: 40,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      padding: 10,
+    },
+    flipButton: {
+
+      justifyContent: 'center',
     },
     text: {
       color: 'white',
@@ -189,25 +143,10 @@ const PhotoAction = ({ navigation, onComplete, task, item, collection }) => {
       top: 10,
       left: 10
     },
-    buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      position: 'absolute',
-      bottom: 30,
-      width: '100%',
-    },
-    capture: {
-      
-      borderWidth: 2,
-      borderColor: 'white',
-      backgroundColor: 'red',
-      borderRadius: 50,
-      height: 100,
-      width: 100,
-      alignSelf: 'center'
-    },
     helpButton: {
+      felx: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
       backgroundColor: 'white',
       paddingHorizontal: 20,
       paddingVertical: 10,
@@ -248,16 +187,6 @@ const PhotoAction = ({ navigation, onComplete, task, item, collection }) => {
       padding: 10,
       elevation: 2
     },
-    textStyle: {
-      color: "white",
-      fontWeight: "bold",
-      textAlign: "center"
-    },
-    modalText: {
-      marginBottom: 15,
-      textAlign: "center"
-    }
-
-});
+  });
   
   export default PhotoAction;

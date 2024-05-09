@@ -9,6 +9,14 @@ const SubmitSurvey = ({ route, navigation }) => {
   const { surveyDesign, addCollection, findCollectionByID } = useSurveyDesign();
   const { itemHasObservation } = useSurveyData()
 
+  // Get main collection
+
+  // Get any subcollections
+
+  // Get items
+
+  // run itemhasobservation for all items
+
     return (
         <View>
 
