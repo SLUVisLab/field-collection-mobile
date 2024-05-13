@@ -61,13 +61,29 @@ export const SurveyDataProvider = ({ children }) => {
     newObservation["collectionName"] = collection.name;
     newObservation["collectionID"] = collection.ID;
     newObservation["surveyName"] = survey.name;
+    // newObservation["surveyID"] = survey.ID; //implement me
 
     console.log("New Observation: ", newObservation)
 
-    setSurveyData((prevData) => ({
-    ...prevData,
-    observations: [...prevData.observations, newObservation]
-    }));
+    setSurveyData((prevData) => {
+      // Check if an observation for this item already exists
+      const existingIndex = prevData.observations.findIndex(obs => obs.itemID === item.ID);
+
+      if (existingIndex !== -1) {
+          // If it exists, update it
+          const updatedObservations = [...prevData.observations];
+          updatedObservations[existingIndex] = newObservation;
+          return { ...prevData, observations: updatedObservations };
+      } else {
+          // If it doesn't exist, add it
+          return { ...prevData, observations: [...prevData.observations, newObservation] };
+      }
+    });
+
+    // setSurveyData((prevData) => ({
+    // ...prevData,
+    // observations: [...prevData.observations, newObservation]
+    // }));
   };
 
   const updateObservation = (updatedObs) => {
@@ -81,11 +97,13 @@ export const SurveyDataProvider = ({ children }) => {
 
   const getObservationByItemID = (itemID) => {
     const observation = surveyData.observations.find(obs => obs.itemID === itemID);
+    print("Get observation by ID=: " + observation )
     return observation !== undefined ? observation : null;
   }
 
   const itemHasObservation = (itemID)=> {
     const observation = surveyData.observations.find(obs => obs.itemID === itemID);
+    console.log("Item has observation: " + observation)
     return observation !== undefined ? true : false;
   }
 

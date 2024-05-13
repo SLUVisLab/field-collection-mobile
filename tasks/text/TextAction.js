@@ -5,13 +5,21 @@ import styles from '../../Styles';
 
 
 
-const TextAction = ({ navigation, onComplete, task, item }) => {
+const TextAction = ({ navigation, existingData, onComplete, task, item }) => {
 
     const [data, setData] = useState('');
 
     useEffect(() => {
         navigation.setOptions({ title: task.taskDisplayName });
     }, []);
+
+    useEffect(() => {
+        if(task && task.dataLabel && existingData[task.dataLabel]) {
+            console.log("existing text task data found")
+    
+            setData(existingData[task.dataLabel])
+        }
+    }, [task, existingData]);
 
     const handleDone = () => {
 

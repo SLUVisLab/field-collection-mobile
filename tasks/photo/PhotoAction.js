@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, Modal, TouchableOpacity, Button } from 'react-native';
+import { View, StyleSheet, Text, Modal, TouchableOpacity, Button, SafeAreaView, Image } from 'react-native';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 // import { check, PERMISSIONS, RESULTS, request } from 'react-native-permissions';
@@ -8,20 +8,35 @@ import * as FileSystem from 'expo-file-system';
 
 
 
-const PhotoAction = ({ navigation, onComplete, task, item, collection }) => {
+const PhotoAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
 
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = Camera.useCameraPermissions();
-
-
   const [showInstructions, setShowInstructions] = useState(false);
+  const [photo, setPhoto] = useState();
+  const [photoURI, setPhotoURI] = useState();
 
   // let camera_instance;
   const cameraRef = useRef(null);
 
-  // const onCameraReady = (cameraObject) => {
-  //   camera_instance = cameraObject;
-  // };
+  const retrieveImage = async (uri) => {
+    const imageBase64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+    return imageBase64;
+  };
+
+  useEffect(() => {
+    if(task && task.dataLabel && existingData[task.dataLabel]) {
+      console.log("existing photo task data found")
+      
+      const fetchImage = async () => {
+        const img = await retrieveImage(existingData[task.dataLabel]);
+        setPhotoURI(existingData[task.dataLabel])
+        setPhoto(img);
+    };
+
+    fetchImage();
+    }
+  }, [task, existingData]);
 
   const takePicture = async () => {
     console.log("Button pressed!")
@@ -29,8 +44,9 @@ const PhotoAction = ({ navigation, onComplete, task, item, collection }) => {
       console.log("camera instance found!")
       const options = { quality: 0.5, base64: true };
       const data = await cameraRef.current.takePictureAsync(options);
+      setPhoto(data.base64);
+      setPhotoURI(data.uri)
       console.log(data.uri);
-      onComplete({ [task.dataLabel]: data.uri });
     } else {
       console.log("camera instance not found!")
     }
@@ -53,6 +69,27 @@ const PhotoAction = ({ navigation, onComplete, task, item, collection }) => {
 
   function toggleCameraFacing() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
+
+  if(photo) {
+    let savePhoto = () => {
+      onComplete({ [task.dataLabel]: photoURI });
+      setPhoto(undefined);
+      setPhotoURI(undefined);
+    };
+
+    let discardPhoto = () => {
+      setPhoto(undefined)
+      setPhotoURI(undefined)
+    };
+
+    return(
+      <SafeAreaView style = {styles.container}>
+        <Image style={styles.imagePreview} source = {{uri: "data:image/jpg;base64," + photo}} />
+        <Button title='save' onPress={savePhoto} />
+        <Button title='discard' onPress={discardPhoto} />
+      </SafeAreaView>
+    )
   }
 
   return (
@@ -109,6 +146,11 @@ const PhotoAction = ({ navigation, onComplete, task, item, collection }) => {
     container: {
       flex: 1,
       justifyContent: 'center',
+    },
+    imagePreview: {
+      alignSelf: 'stretch',
+      flex: 1,
+
     },
     captureButton: {
       backgroundColor: 'red',

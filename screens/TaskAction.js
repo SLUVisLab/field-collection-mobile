@@ -9,7 +9,7 @@ import { useSurveyData } from '../contexts/SurveyDataContext';
 const TaskAction = ({ route, navigation }) => {
 
     const {surveyDesign, getTaskByID, findCollectionByID} = useSurveyDesign();
-    const { addObservation } = useSurveyData()
+    const { addObservation, getObservationByItemID } = useSurveyData()
 
     const {itemID, collectionID} = route.params;
 
@@ -47,8 +47,17 @@ const TaskAction = ({ route, navigation }) => {
         }
     }, [currentTaskIndex]);
 
+    useEffect(() => {
+        console.log("Checking for existing data...")
+        existingData = getObservationByItemID(currentItem.ID)
+        if(existingData){
+            console.log("Found existing data...")
+            console.log(existingData)
+            setObservationData(existingData)
+        }
+    }, [currentItem]);
+
     const taskCompleted = (data) => {
-        console.log(data)
 
         // Add the new key-value pair to the object
         setObservationData(prevObservationData => ({
@@ -60,9 +69,10 @@ const TaskAction = ({ route, navigation }) => {
     }
 
     const itemCompleted = () => {
-        console.log("saving observation: ", observationData)
         //save the observatio data to the survey data context
         addObservation(observationData, currentItem, collection, surveyDesign);
+        console.log("OBSERVATION RECEIVED")
+        console.log(observationData)
 
         //clear the observation data object for the next item.
         setObservationData({});
@@ -75,10 +85,10 @@ const TaskAction = ({ route, navigation }) => {
 
     switch(taskTypeID){
         case 1:
-            renderedComponent = <PhotoAction navigation = { navigation } task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
+            renderedComponent = <PhotoAction navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
             break;
         case 2:
-            renderedComponent = <TextAction navigation = { navigation } task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} />;
+            renderedComponent = <TextAction navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} />;
             break;
         default:
             renderedComponent = <Text>Error Loading Component</Text>
