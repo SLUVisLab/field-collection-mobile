@@ -15,14 +15,6 @@ import Response from './models/Response';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './screens/HomeScreen';
-import SiteSelect from './screens/SiteSelect';
-import BlockSelect from './screens/BlockSelect';
-import TaskSelect from './screens/TaskSelect';
-import QRCode from './screens/QRCode';
-import WebView from './screens/WebView';
-import BlockView from './screens/BlockView';
-import FormComplete from './screens/FormComplete';
-import SheetScreen from './screens/SheetScreen';
 import SurveyDesignList from './screens/SurveyDesignList';
 import SurveyList from './screens/SurveyList';
 import SurveyName from './screens/SurveyName';
@@ -78,10 +70,6 @@ class App extends React.Component {
                   }}
                 >
                   <Stack.Screen name="Home" component={HomeScreen} />
-                  <Stack.Screen name="SiteSelect" component={SiteSelect} />
-                  <Stack.Screen name="BlockSelect" component={BlockSelect} />
-                  <Stack.Screen name="TaskSelect" component={TaskSelect} />
-                  <Stack.Screen options={{headerShown: true}} name="SheetScreen" component={SheetScreen} />
                   <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyDesignList" component={SurveyDesignList} />
                   <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyList" component={SurveyList} />
                   <Stack.Screen options={{headerShown: true, title: 'New Survey',}} name="SurveyName" component={SurveyName} />
@@ -94,11 +82,6 @@ class App extends React.Component {
                   <Stack.Screen options={{headerShown: true, title: 'New Collection',}} name="CollectionName" component={CollectionName} />
                   <Stack.Screen options={{headerShown: true, title: 'New Item',}} name="ItemName" component={ItemName} />
                   <Stack.Screen options={{headerShown: true}} name="TaskSetup" component={TaskSetup} />
-                  <Stack.Screen options={{headerShown: true}} name="WebView" component={WebView} />
-                  <Stack.Screen options={{headerShown: true}} name="Camera" component={QRCode} />
-                  <Stack.Screen options={{headerShown: true, headerBackVisible: false}} name="BlockView" component={BlockView} />
-                  <Stack.Screen name="FormComplete" component={FormComplete} />
-                  
                   
                 </Stack.Navigator>
               </SurveyDataProvider>
