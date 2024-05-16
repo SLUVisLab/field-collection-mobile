@@ -2,11 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Modal, TouchableOpacity, Button, SafeAreaView, Image } from 'react-native';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
-// import { check, PERMISSIONS, RESULTS, request } from 'react-native-permissions';
-
-// import { TouchableOpacity } from 'react-native-gesture-handler';
-
-
 
 const PhotoAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
 

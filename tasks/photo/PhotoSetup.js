@@ -33,23 +33,28 @@ const PhotoSetup = ({navigation, taskID}) => {
       }, []);
 
     const handleSave = () => {
-        //TODO: Make real ID's
-        
-        if(taskID){
-            // Update existing task in the survey context
-            newPhotoTask = new PhotoTask(taskID, displayName, dataLabel, instructions)
-            updateTask(newPhotoTask)
-
-        } else {
-            // Add new task to the survey context
-            let newTaskID = Date.now()
-            newPhotoTask = new PhotoTask(newTaskID, displayName, dataLabel, instructions)
-            addTask(newPhotoTask)
-        }
-
-        //return to the survey builder page
-        navigation.navigate('SurveyBuilder');
-
+    let newPhotoTask;
+    let isSuccess;
+    
+    if(taskID){
+        newPhotoTask = new PhotoTask(taskID, displayName, dataLabel, instructions)
+        isSuccess = updateTask(newPhotoTask);
+    } else {
+        let newTaskID = Date.now()
+        newPhotoTask = new PhotoTask(newTaskID, displayName, dataLabel, instructions)
+        isSuccess = addTask(newPhotoTask);
+    }
+    
+    if (!isSuccess) {
+        Alert.alert(
+        "Error",
+        "Duplicate dataLabel or taskDisplayName. Each task must have a unique dataLabel and taskDisplayName."
+        );
+        return;
+    }
+    
+    // Only navigate away if the operation was successful
+    navigation.navigate('SurveyBuilder');
     };
 
     // Change the title dynamically

@@ -69,10 +69,9 @@ const SurveyBuilder = ({ route, navigation }) => {
   //create list element
   const renderTaskItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleEditTask(item)}>
-      <View style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
-        <Text>{item.taskDisplayName}</Text>
+      <View style={styles.taskItemButton}>
+        <Text style={styles.boldText}>{item.taskDisplayName}</Text>
         <Text>{item.constructor.typeDisplayName}</Text>
-        <Text>{item.constructor.typeID}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -107,7 +106,7 @@ const SurveyBuilder = ({ route, navigation }) => {
         style={styles.button}
         onPress={handleDone}
       >
-        <Text style={styles.text}>Done</Text>
+        <Text style={styles.text}>Save</Text>
       </TouchableOpacity>
     </View>
   );

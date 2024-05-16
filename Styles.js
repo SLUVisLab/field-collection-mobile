@@ -226,4 +226,38 @@ export default StyleSheet.create({
     inputLabel: {
       fontWeight: 'bold', // Make the text slightly bold
     },
+    surveyItemButton: {
+      textAlign: 'left',
+      paddingVertical: 12,
+      marginVertical: 3,
+      marginHorizontal: 16,
+      paddingHorizontal: 32,
+      borderRadius: 3,
+      elevation: 3,
+      backgroundColor: 'white'
+    },
+    surveyCollectionButton: {
+      textAlign: 'left',
+      paddingVertical: 12,
+      marginVertical: 3,
+      marginHorizontal: 16,
+      paddingHorizontal: 32,
+      borderRadius: 3,
+      elevation: 3,
+      backgroundColor: 'white',
+    },
+    taskItemButton: {
+      textAlign: 'left',
+      paddingVertical: 12,
+      marginVertical: 3,
+      marginHorizontal: 16,
+      paddingHorizontal: 32,
+      borderRadius: 3,
+      elevation: 3,
+      backgroundColor: 'white',
+    },
+    boldText: {
+      fontWeight: 'bold',
+    }
+
   }); 

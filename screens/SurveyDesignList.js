@@ -9,11 +9,13 @@ const SurveyDesignList = ({ navigation }) => {
 
   const { clearSurveyDesign, setSurveyDesign } = useSurveyDesign()
 
-  const handleLoadSurvey = (filePath) => {
+  const handleLoadSurvey = async (filePath) => {
     
     clearSurveyDesign();
 
-    convertXLSXToSurvey(filePath, setSurveyDesign);
+    const surveyDesignFromFile = await convertXLSXToSurvey(filePath);
+
+    setSurveyDesign(surveyDesignFromFile);
 
 
     navigation.navigate('SurveyBuilder', { path: filePath });

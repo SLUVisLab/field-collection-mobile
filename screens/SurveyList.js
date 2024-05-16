@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useFileContext } from '../contexts/FileContext';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import { useSurveyData } from '../contexts/SurveyDataContext';
@@ -9,20 +9,56 @@ const SurveyList = ({ navigation }) => {
   const { surveyFiles, convertXLSXToSurvey } = useFileContext(); // Access surveyFiles from FileContext
 
   const { surveyDesign, clearSurveyDesign, setSurveyDesign } = useSurveyDesign()
-  const { newSurvey } = useSurveyData()
+  const { newSurvey, loadFromStash, setSurveyData, surveyData } = useSurveyData()
 
-  const handleLoadSurvey = (filePath) => {
+  const handleLoadSurvey = async (filePath) => {
     
     // Clear the current survey layout in the surveyDesignContext
     clearSurveyDesign();
 
-    // Load a new survey layout from xlsx file
-    convertXLSXToSurvey(filePath, setSurveyDesign);
+    // Load a survey layout from xlsx file
+    const surveyDesignFromFile = await convertXLSXToSurvey(filePath);
 
-    // Create a new surveyData instance with data from the surveyDesign
-    newSurvey(surveyDesign)
+    // set the surveyDesign context -- it's used to navigate through the survey layout
+    setSurveyDesign(surveyDesignFromFile);
 
-    navigation.navigate('CollectionList');
+    // Check for existing or unfinished survey data
+    const existingSurveyData = await loadFromStash(surveyDesignFromFile.name); // use the value that is already loaded (surveyDesignFromFile)
+
+    if (existingSurveyData) {
+      console.log(existingSurveyData)
+      Alert.alert(
+        "Existing Survey Data Found",
+        "Do you want to load the existing survey data or discard it?",
+        [
+          {
+            text: "Discard",
+            onPress: () => {
+              // Discard the existing data and start a new survey
+              newSurvey(surveyDesign);
+              navigation.navigate('CollectionList');
+            },
+            style: "cancel"
+          },
+          {
+            text: "Load",
+            onPress: () => {
+              // Load the existing data
+              setSurveyData(existingSurveyData);
+              navigation.navigate('CollectionList');
+            }
+          }
+        ]
+      );
+    } else {
+
+      // Create a new surveyData instance with data from the surveyDesign
+      //TODO -- These two things must always match, and do not have a method of enforcement. FIX
+
+      newSurvey(surveyDesignFromFile)
+      navigation.navigate('CollectionList');
+    }
+
   };
 
   return (

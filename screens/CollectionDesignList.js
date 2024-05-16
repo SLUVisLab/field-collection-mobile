@@ -15,25 +15,6 @@ const CollectionDesignList = ({ route, navigation }) => {
   // Find the collection associated with the provided ID
   const collection = collectionID ? findCollectionByID(collectionID) : null;
 
-
-
-  if(collection){
-    console.log("Collection Found")
-
-    // navigation.setOptions({
-    //   headerLeft: () => (
-    //     <Button
-    //       onPress={() => {
-    //         navigation.navigate('CollectionDesignList')
-    //       }}
-    //       title="< Collections"
-    //     />
-    //   ),
-    // });
-
-
-  }
-
   React.useLayoutEffect(() => {
     navigation.setOptions({
       title: collection ? collection.name : 'Collections',
@@ -55,6 +36,7 @@ const CollectionDesignList = ({ route, navigation }) => {
         {/* <Text>CASE 1</Text> */}
         {surveyDesign.collections.map((item) => (
           <TouchableOpacity
+            style={styles.surveyCollectionButton}
             key={item.ID}
             onPress={() => navigation.push('CollectionDesignList', { collectionID: item.ID })}
           >
@@ -62,6 +44,7 @@ const CollectionDesignList = ({ route, navigation }) => {
           </TouchableOpacity>
         ))}
         <TouchableOpacity
+          style={styles.surveyCollectionButton}
           onPress={() => navigation.navigate('CollectionName')}
         >
           <Text>Add Collection</Text>
@@ -80,11 +63,13 @@ const CollectionDesignList = ({ route, navigation }) => {
         <View>
           {/* <Text>CASE 2.1</Text> */}
           <TouchableOpacity
+            style={styles.surveyCollectionButton}
             onPress={() => navigation.navigate('ItemName', {parentID: collectionID})}
           >
             <Text>Add Item</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            style={styles.surveyCollectionButton}
             onPress={() => navigation.navigate('CollectionName', { parentID: collectionID })}
           >
             <Text>Add Collection</Text>
@@ -101,6 +86,7 @@ const CollectionDesignList = ({ route, navigation }) => {
           {/* <Text>CASE 2.2</Text> */}
           {collection.items.map((item) => (
             <TouchableOpacity
+              style={styles.surveyItemButton}
               key={item.ID}
               onPress={() => navigation.navigate('ItemName', { item: item })}
             >
@@ -108,6 +94,7 @@ const CollectionDesignList = ({ route, navigation }) => {
             </TouchableOpacity>
           ))}
           <TouchableOpacity
+            style={styles.surveyItemButton}
             onPress={() => navigation.navigate('ItemName', { parentID: collectionID })}
           >
             <Text>Add Item</Text>
@@ -124,6 +111,7 @@ const CollectionDesignList = ({ route, navigation }) => {
           {/* <Text>CASE 2.3</Text> */}
           {collection.subCollections.map((subcollection) => (
             <TouchableOpacity
+              style={styles.surveyCollectionButton}
               key={subcollection.ID}
               onPress={() => navigation.push('CollectionDesignList', { collectionID: subcollection.ID })}
             >
@@ -131,6 +119,7 @@ const CollectionDesignList = ({ route, navigation }) => {
             </TouchableOpacity>
           ))}
           <TouchableOpacity
+            style={styles.surveyCollectionButton}
             onPress={() => navigation.navigate('CollectionName', { parentID: collectionID })}
           >
             <Text>Add Collection</Text>

@@ -1,6 +1,8 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const SurveyDataContext = createContext();
 
 export const SurveyDataProvider = ({ children }) => {
@@ -102,6 +104,7 @@ export const SurveyDataProvider = ({ children }) => {
   }
 
   const itemHasObservation = (itemID)=> {
+    console.log(itemID);
     const observation = surveyData.observations.find(obs => obs.itemID === itemID);
     console.log("Item has observation: " + observation)
     return observation !== undefined ? true : false;
@@ -129,22 +132,57 @@ export const SurveyDataProvider = ({ children }) => {
     setID(newId);
 
     setInProgress(true)
-    
+    console.log("NEW SURVEY NAMED: ")
+    console.log(surveyDesign.name)
     setName(surveyDesign.name)
     
     setStartTime(Date.now())
-
-    console.log("New Survey Data Instance: ", surveyData)
-
     //TODO: Handle Collections and Tasks
     // Keep in mind -- what about future surveys that dont have predefined collections?
     // would it be better to wait until survey submission to include these?
 
   }
 
-  const saveForLater = () => {
-    //TODO: implement me
-    return null;
+  const stashForLater = async (surveyData) => {
+    if (surveyData && surveyData.surveyName) {
+      try {
+        const jsonValue = JSON.stringify(surveyData)
+        console.log("Saving survery to:")
+        console.log(`@surveyData_${surveyData.surveyName.replace(/\s/g, '_')}`)
+        await AsyncStorage.setItem(`@surveyData_${surveyData.surveyName.replace(/\s/g, '_')}`, jsonValue)
+        console.log("saved progress..")
+      } catch (e) {
+        // saving error
+        console.log("STASH FOR LATER")
+        console.log(e);
+      }
+    }
+  }
+
+    // Save the survey data whenever it changes
+    useEffect(() => {
+      console.log("Calling Stash For Later")
+      stashForLater(surveyData);
+    }, [surveyData.observations]);
+
+  const loadFromStash = async (surveyName) => {
+    try {
+      console.log("Loading survey from: ")
+
+      console.log(`@surveyData_${surveyName.replace(/\s/g, '_')}`)
+      //TODO: This throws an error when opening a new survey. Because name is null 
+
+      const jsonValue = await AsyncStorage.getItem(`@surveyData_${surveyName.replace(/\s/g, '_')}`)
+      
+      console.log("loading stashed survey...")
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+      
+
+    } catch(e) {
+      // loading error
+      console.log("LOAD FROM STASH")
+      console.log(e);
+    }
   }
 
 
@@ -164,7 +202,8 @@ export const SurveyDataProvider = ({ children }) => {
           itemHasObservation,
           addCollection,
           addTask,
-          newSurvey
+          newSurvey,
+          loadFromStash,
       }}
     >
       {children}

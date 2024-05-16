@@ -119,7 +119,7 @@ export const FileProvider = ({ children }) => {
     });
     };
 
-    const convertXLSXToSurvey = async (fileName, setSurveyDesign) => {
+    const convertXLSXToSurvey = async (fileName) => {
         try {
             // Read XLSX content
             const filePath = FileSystem.documentDirectory + '/' + fileName;
@@ -264,11 +264,13 @@ export const FileProvider = ({ children }) => {
 
                                 let itemName = worksheet[itemNameAddr].v
                                 let itemID = worksheet[itemIDAddr].v
-
+                                
+                                console.log("NAME AND ID:")
                                 console.log(itemName)
+                                console.log(itemID)
                                 
                                 console.log("creating instance of survey item...")
-                                let newItem = new SurveyItem(itemName)
+                                let newItem = new SurveyItem(itemName, itemID)
 
                                 console.log("adding new item to subcollection....")
         
@@ -309,12 +311,13 @@ export const FileProvider = ({ children }) => {
 
                             let itemName = worksheet[itemNameAddr].v
                             let itemID = worksheet[itemIDAddr].v
-
+                            
+                            console.log("NAME AND ID:")
                             console.log(itemName)
                             console.log(itemID)
 
                             console.log("creating instance of survey item...")
-                            let newItem = new SurveyItem(itemName)
+                            let newItem = new SurveyItem(itemName, itemID)
 
                             console.log("adding new item to collection")
 
@@ -333,8 +336,10 @@ export const FileProvider = ({ children }) => {
                 }
 
                 console.log(newSurveyState)
+
+            return newSurveyState
     
-            setSurveyDesign(newSurveyState)
+            // setSurveyDesign(newSurveyState)
 
         } catch (error) {
             console.error('Error converting XLSX to survey:', error);

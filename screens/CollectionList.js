@@ -28,7 +28,7 @@ const CollectionList = ({ route, navigation }) => {
         <TouchableOpacity onPress={() => {
           navigation.navigate('SubmitSurvey')
         }}>
-          <Text style={styles.headerButton}>Survey</Text>
+          <Text style={styles.headerButton}>Submit</Text>
         </TouchableOpacity>
       ),
     });
@@ -49,7 +49,8 @@ const CollectionList = ({ route, navigation }) => {
         {surveyDesign.collections.map((collection) => (
           <TouchableOpacity
             key={collection.ID}
-            onPress={() => navigation.navigate('CollectionList', { collectionID: collection.ID })}
+            onPress={() => navigation.push('CollectionList', { collectionID: collection.ID })}
+            style={styles.surveyCollectionButton}
           >
             <Text>{collection.name}</Text>
           </TouchableOpacity>
@@ -65,10 +66,14 @@ const CollectionList = ({ route, navigation }) => {
           {/* <Text>CASE 2.2</Text> */}
           {collection.items.map((item) => (
             <TouchableOpacity
+              style={[
+                styles.surveyItemButton,
+                { borderColor: itemHasObservation(item.ID) ? 'green' : 'transparent', borderWidth: 1.5 }
+              ]}
               key={item.ID}
               onPress={() => navigation.navigate('TaskAction', { itemID: item.ID, collectionID: collection.ID })}
             >
-              <Text style={{ color: itemHasObservation(item.ID) ? 'green' : 'black' }}>{item.name}</Text>
+              <Text>{item.name}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -82,8 +87,9 @@ const CollectionList = ({ route, navigation }) => {
           {/* <Text>CASE 2.3</Text> */}
           {collection.subCollections.map((subcollection) => (
             <TouchableOpacity
+              style={styles.surveyCollectionButton}
               key={subcollection.ID}
-              onPress={() => navigation.navigate('CollectionList', { collectionID: subcollection.ID })}
+              onPress={() => navigation.push('CollectionList', { collectionID: subcollection.ID })}
             >
               <Text>{subcollection.name}</Text>
             </TouchableOpacity>
