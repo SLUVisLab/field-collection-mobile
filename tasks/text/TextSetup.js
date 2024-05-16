@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../../Styles';
 import TextTask from './TextTask';
@@ -8,7 +8,7 @@ import { useSurveyDesign } from '../../contexts/SurveyDesignContext';
 const TextSetup = ({navigation, taskID}) => {
 
     // initialize the survey desgin context
-    const { surveyDesign, setName, addTask, updateTask, getTaskByID } = useSurveyDesign();
+    const { surveyDesign, setName, addTask, updateTask, getTaskByID, deleteTask } = useSurveyDesign();
 
     const [displayName, setDisplayName] = useState('');
     const [dataLabel, setDataLabel] = useState('');
@@ -32,17 +32,27 @@ const TextSetup = ({navigation, taskID}) => {
 
     const handleSave = () => {
         //TODO: Make real ID's
+        let isSuccess;
+        let newTextTask;
         
         if(taskID){
             // Update existing task in the survey context
             newTextTask = new TextTask(taskID, displayName, dataLabel, instructions)
-            updateTask(newTextTask)
+            isSuccess = updateTask(newTextTask);
 
         } else {
             // Add new task to the survey context
             let newTaskID = Date.now()
             newTextTask = new TextTask(newTaskID, displayName, dataLabel, instructions)
-            addTask(newTextTask)
+            isSuccess = addTask(newTextTask);
+        }
+
+        if (!isSuccess) {
+            Alert.alert(
+            "Error",
+            "Duplicate Data Label or Display Name. Each task must have a unique Data Label and Display Name."
+            );
+            return;
         }
 
         //return to the survey builder page
@@ -50,11 +60,16 @@ const TextSetup = ({navigation, taskID}) => {
 
     };
 
+    const handleDelete = () => {
+        deleteTask(taskID);
+        navigation.navigate('SurveyBuilder');
+    };
+
     // Change the title dynamically
     const nav = useNavigation();
     React.useLayoutEffect(() => {
         nav.setOptions({
-            title: "New Photo Task", // Set the new title here
+            title: "New Text Task", // Set the new title here
         });
     }, []);
 
@@ -91,10 +106,20 @@ const TextSetup = ({navigation, taskID}) => {
                     onChangeText={setInstructions}
                 />
             </View>
-            <Button
-                title="Save"
+            <TouchableOpacity
+                style={styles.button}
                 onPress={handleSave}
-            />
+            >
+                <Text style={styles.text}>Save</Text>
+            </TouchableOpacity>
+            {taskID && (
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleDelete}
+                >
+                    <Text style={styles.text}>Delete</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

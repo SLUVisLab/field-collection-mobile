@@ -36,58 +36,56 @@ export const SurveyDesignProvider = ({ children }) => {
 
   // Add Task to survey
   const addTask = (newTask) => {
-    if (newTask instanceof Task) {
-      let isDuplicate;
-      setSurveyDesign((prevData) => {
-        isDuplicate = prevData.tasks.some(task => 
-          task.dataLabel === newTask.dataLabel || task.taskDisplayName === newTask.taskDisplayName
-        );
-  
-        if (isDuplicate) {
-          console.error("Duplicate dataLabel or taskDisplayName. Each task must have a unique dataLabel and taskDisplayName.");
-          return prevData;
-        }
-  
-        return {
-          ...prevData,
-          tasks: [...prevData.tasks, newTask]
-        };
-      });
-      return !isDuplicate;
-    } else {
-      console.error("Invalid task type. Only instances of type Task are accepted.");
-      return false;
-    }
+
+    let isDuplicate;
+    setSurveyDesign((prevData) => {
+      isDuplicate = prevData.tasks.some(task => 
+        task.dataLabel === newTask.dataLabel || task.taskDisplayName === newTask.taskDisplayName
+      );
+
+      if (isDuplicate) {
+        console.error("Duplicate dataLabel or taskDisplayName. Each task must have a unique dataLabel and taskDisplayName.");
+        return prevData;
+      }
+
+      return {
+        ...prevData,
+        tasks: [...prevData.tasks, newTask]
+      };
+    });
+    return !isDuplicate;
   };
 
   // Update Task in survey
   const updateTask = (updatedTask) => {
-    if (updatedTask instanceof Task) {
-      let isDuplicate;
-      setSurveyDesign((prevData) => {
-        isDuplicate = prevData.tasks.some(task =>
-          task.taskID !== updatedTask.taskID && 
-          (task.dataLabel === updatedTask.dataLabel || task.taskDisplayName === updatedTask.taskDisplayName)
-        );
-  
-        if (isDuplicate) {
-          console.error("Duplicate dataLabel or taskDisplayName. Each task must have a unique dataLabel and taskDisplayName.");
-          return prevData;
-        }
-  
-        return {
-          ...prevData,
-          tasks: prevData.tasks.map(task =>
-            task.taskID === updatedTask.taskID ? updatedTask : task
-          )
-        };
-      });
-      return !isDuplicate;
-    } else {
-      console.error("Invalid task type. Only instances of type Task are accepted.");
-      return false;
-    }
+    let isDuplicate;
+    setSurveyDesign((prevData) => {
+      isDuplicate = prevData.tasks.some(task =>
+        task.taskID !== updatedTask.taskID && 
+        (task.dataLabel === updatedTask.dataLabel || task.taskDisplayName === updatedTask.taskDisplayName)
+      );
+
+      if (isDuplicate) {
+        console.error("Duplicate dataLabel or taskDisplayName. Each task must have a unique dataLabel and taskDisplayName.");
+        return prevData;
+      }
+
+      return {
+        ...prevData,
+        tasks: prevData.tasks.map(task =>
+          task.taskID === updatedTask.taskID ? updatedTask : task
+        )
+      };
+    });
+    return !isDuplicate;
   };
+
+  const deleteTask = (taskID) => {
+    setSurveyDesign((prevData) => ({
+      ...prevData,
+      tasks: prevData.tasks.filter(task => task.taskID !== taskID)
+    }));
+  }
 
   const getTaskByID = (taskID) => {
     const task = surveyDesign.tasks.find(task => task.taskID === taskID);
@@ -166,6 +164,7 @@ export const SurveyDesignProvider = ({ children }) => {
           setName,
           addTask,
           updateTask,
+          deleteTask,
           getTaskByID,
           addCollection,
           findCollectionByID,

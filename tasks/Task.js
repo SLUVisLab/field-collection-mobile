@@ -8,6 +8,8 @@ class Task {
   
     static typeID;
     static typeDisplayName;
+    static typeDescription;
+    static typeIcon;
     static typeSetupViewPath;
     static typeActionViewPath;
   }

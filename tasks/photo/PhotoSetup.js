@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../../Styles';
 import PhotoTask from './PhotoTask';
@@ -8,7 +8,7 @@ import { useSurveyDesign } from '../../contexts/SurveyDesignContext';
 const PhotoSetup = ({navigation, taskID}) => {
 
     // initialize the survey desgin context
-    const { surveyDesign, setName, addTask, updateTask, getTaskByID } = useSurveyDesign();
+    const { surveyDesign, setName, addTask, updateTask, getTaskByID, deleteTask } = useSurveyDesign();
 
     const [displayName, setDisplayName] = useState('');
     const [dataLabel, setDataLabel] = useState('');
@@ -33,28 +33,33 @@ const PhotoSetup = ({navigation, taskID}) => {
       }, []);
 
     const handleSave = () => {
-    let newPhotoTask;
-    let isSuccess;
+        let newPhotoTask;
+        let isSuccess;
+        
+        if(taskID){
+            newPhotoTask = new PhotoTask(taskID, displayName, dataLabel, instructions)
+            isSuccess = updateTask(newPhotoTask);
+        } else {
+            let newTaskID = Date.now()
+            newPhotoTask = new PhotoTask(newTaskID, displayName, dataLabel, instructions)
+            isSuccess = addTask(newPhotoTask);
+        }
+        
+        if (!isSuccess) {
+            Alert.alert(
+            "Error",
+            "Duplicate Data Label or Display Name. Each task must have a unique Data Label and Display Name."
+            );
+            return;
+        }
     
-    if(taskID){
-        newPhotoTask = new PhotoTask(taskID, displayName, dataLabel, instructions)
-        isSuccess = updateTask(newPhotoTask);
-    } else {
-        let newTaskID = Date.now()
-        newPhotoTask = new PhotoTask(newTaskID, displayName, dataLabel, instructions)
-        isSuccess = addTask(newPhotoTask);
-    }
-    
-    if (!isSuccess) {
-        Alert.alert(
-        "Error",
-        "Duplicate dataLabel or taskDisplayName. Each task must have a unique dataLabel and taskDisplayName."
-        );
-        return;
-    }
-    
-    // Only navigate away if the operation was successful
-    navigation.navigate('SurveyBuilder');
+        // Only navigate away if the operation was successful
+        navigation.navigate('SurveyBuilder');
+    };
+
+    const handleDelete = () => {
+        deleteTask(taskID);
+        navigation.navigate('SurveyBuilder');
     };
 
     // Change the title dynamically
@@ -98,10 +103,20 @@ const PhotoSetup = ({navigation, taskID}) => {
                     onChangeText={setInstructions}
                 />
             </View>
-            <Button
-                title="Save"
+            <TouchableOpacity
+                style={styles.button}
                 onPress={handleSave}
-            />
+            >
+                <Text style={styles.text}>Save</Text>
+            </TouchableOpacity>
+            {taskID && (
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleDelete}
+                >
+                    <Text style={styles.text}>Delete</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

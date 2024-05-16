@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, Button, TouchableOpacity, StyleSheet } from 'react-native';
 import styles from '../Styles';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 
 const CollectionDesignList = ({ route, navigation }) => {
@@ -44,10 +46,11 @@ const CollectionDesignList = ({ route, navigation }) => {
           </TouchableOpacity>
         ))}
         <TouchableOpacity
-          style={styles.surveyCollectionButton}
+          style={localStyles.addButton}
           onPress={() => navigation.navigate('CollectionName')}
         >
-          <Text>Add Collection</Text>
+          <Ionicons name="add-circle-outline" size={24} color="black" />
+          <Text style = {localStyles.addText}>Add Collection</Text>
         </TouchableOpacity>
       </View>
     );
@@ -63,16 +66,18 @@ const CollectionDesignList = ({ route, navigation }) => {
         <View>
           {/* <Text>CASE 2.1</Text> */}
           <TouchableOpacity
-            style={styles.surveyCollectionButton}
+            style={localStyles.addButton}
             onPress={() => navigation.navigate('ItemName', {parentID: collectionID})}
           >
-            <Text>Add Item</Text>
+            <Ionicons name="add-circle-outline" size={24} color="black" />
+            <Text style = {localStyles.addText}>Add Item</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.surveyCollectionButton}
+            style={localStyles.addButton}
             onPress={() => navigation.navigate('CollectionName', { parentID: collectionID })}
           >
-            <Text>Add Collection</Text>
+            <Ionicons name="add-circle-outline" size={24} color="black" />
+            <Text style = {localStyles.addText}>Add Collection</Text>
           </TouchableOpacity>
         </View>
       );
@@ -94,10 +99,11 @@ const CollectionDesignList = ({ route, navigation }) => {
             </TouchableOpacity>
           ))}
           <TouchableOpacity
-            style={styles.surveyItemButton}
+            style={localStyles.addButton}
             onPress={() => navigation.navigate('ItemName', { parentID: collectionID })}
           >
-            <Text>Add Item</Text>
+            <Ionicons name="add-circle-outline" size={24} color="black" />
+            <Text style = {localStyles.addText}>Add Item</Text>
           </TouchableOpacity>
         </View>
       )
@@ -119,10 +125,11 @@ const CollectionDesignList = ({ route, navigation }) => {
             </TouchableOpacity>
           ))}
           <TouchableOpacity
-            style={styles.surveyCollectionButton}
+            style={localStyles.addButton}
             onPress={() => navigation.navigate('CollectionName', { parentID: collectionID })}
           >
-            <Text>Add Collection</Text>
+            <Ionicons name="add-circle-outline" size={24} color="black" />
+            <Text style = {localStyles.addText}>Add Collection</Text>
           </TouchableOpacity>
         </View>
       );
@@ -136,5 +143,26 @@ const CollectionDesignList = ({ route, navigation }) => {
     </View>
   );
 };
+
+const localStyles = StyleSheet.create({
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    textAlign: 'left',
+    paddingVertical: 12,
+    marginVertical: 34,
+    marginHorizontal: 16,
+    paddingHorizontal: 12,
+    borderRadius: 3,
+    elevation: 3,
+    backgroundColor: 'white',
+  },
+  addText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 4,
+  }
+
+});
 
 export default CollectionDesignList;

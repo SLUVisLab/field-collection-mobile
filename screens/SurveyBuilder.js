@@ -69,9 +69,12 @@ const SurveyBuilder = ({ route, navigation }) => {
   //create list element
   const renderTaskItem = ({ item }) => (
     <TouchableOpacity onPress={() => handleEditTask(item)}>
-      <View style={styles.taskItemButton}>
-        <Text style={styles.boldText}>{item.taskDisplayName}</Text>
-        <Text>{item.constructor.typeDisplayName}</Text>
+      <View style={localStyles.taskItemButton}>
+        {React.createElement(item.constructor.typeIcon, { style: localStyles.taskIcon, size: 28 })}
+        <View style = {localStyles.info}>
+          <Text style={localStyles.taskName}>{item.taskDisplayName}</Text>
+          <Text style={localStyles.taskDescription}>{item.constructor.typeDisplayName}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -111,5 +114,33 @@ const SurveyBuilder = ({ route, navigation }) => {
     </View>
   );
 };
+
+const localStyles = StyleSheet.create({
+  taskItemButton: {
+    textAlign: 'left',
+    paddingVertical: 12,
+    marginVertical: 3,
+    marginHorizontal: 16,
+    paddingHorizontal: 24,
+    borderRadius: 3,
+    elevation: 3,
+    backgroundColor: 'white',
+    flexDirection: 'row',
+  },
+  taskName: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  taskDescription: {
+    marginLeft: 10,
+  },
+  taskIcon: {
+    justifyContent: 'center',
+  },
+  info: {
+    flexDirection: 'column'
+  },
+});
 
 export default SurveyBuilder;

@@ -246,16 +246,6 @@ export default StyleSheet.create({
       elevation: 3,
       backgroundColor: 'white',
     },
-    taskItemButton: {
-      textAlign: 'left',
-      paddingVertical: 12,
-      marginVertical: 3,
-      marginHorizontal: 16,
-      paddingHorizontal: 32,
-      borderRadius: 3,
-      elevation: 3,
-      backgroundColor: 'white',
-    },
     boldText: {
       fontWeight: 'bold',
     }
