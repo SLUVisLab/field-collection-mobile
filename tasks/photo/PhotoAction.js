@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Modal, TouchableOpacity, Button, SafeAreaView, Image } from 'react-native';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
+import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 
 const PhotoAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
@@ -95,12 +96,12 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
         type={facing === 'back' ? Camera.Constants.Type.back : Camera.Constants.Type.front}  
       >
         <View style={styles.info}>
-          <Text style={styles.text}>{collection.name}</Text>
-          <Text style={styles.text}>{item.name}</Text>
+          <Text style={styles.infoText}>{collection.name}</Text>
+          <Text style={styles.infoText}>{item.name}</Text>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
+            <Ionicons name="camera-reverse" size={58} color="white" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.captureButton} onPress={() => takePicture()}>
           </TouchableOpacity>
@@ -165,15 +166,19 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
       bottom: 40,
       flexDirection: 'row',
       justifyContent: 'space-between',
+      alignItems: 'flex-end',
       width: '100%',
       padding: 10,
     },
     flipButton: {
-
       justifyContent: 'center',
+      alignItems: 'center',
+      // marginTop: 20
     },
-    text: {
+    infoText: {
       color: 'white',
+      fontWeight: 'bold',
+      fontSize: 22,
     },
     info: {
       position: 'absolute',
@@ -181,15 +186,16 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
       left: 10
     },
     helpButton: {
-      felx: 1,
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: 'white',
       paddingHorizontal: 20,
-      paddingVertical: 10,
+      // paddingVertical: 10,
       borderRadius: 5,
-      margin: 10,
-      marginTop: 50
+      margin: 5,
+      height: 50,
+      width: 50,
+      // marginTop: 50
     },
     buttonText: {
       color: 'black',
