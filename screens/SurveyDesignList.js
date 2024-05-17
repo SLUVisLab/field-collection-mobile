@@ -25,7 +25,7 @@ const SurveyDesignList = ({ navigation }) => {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('SurveyName')}
+        onPress={() => navigation.navigate('NewSurvey')}
       >
         <Text style={styles.text}>New Survey</Text>
       </TouchableOpacity>

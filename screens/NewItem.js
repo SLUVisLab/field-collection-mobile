@@ -6,7 +6,7 @@ import SurveyItem from '../utils/SurveyItem';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 
 
-const ItemName = ({ route, navigation }) => {
+const NewItem = ({ route, navigation }) => {
 
     // Initialize the survey design context
     const { surveyDesign, addItemToCollection} = useSurveyDesign();
@@ -58,4 +58,4 @@ const ItemName = ({ route, navigation }) => {
     );
   };
   
-  export default ItemName;
+  export default NewItem;

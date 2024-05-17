@@ -62,6 +62,9 @@ export const SurveyDataProvider = ({ children }) => {
     newObservation["itemID"] = item.ID;
     newObservation["collectionName"] = collection.name;
     newObservation["collectionID"] = collection.ID;
+    if (collection.parent) {
+      newObservation["parentCollection"] = collection.parent;
+    }
     newObservation["surveyName"] = survey.name;
     // newObservation["surveyID"] = survey.ID; //implement me
 
@@ -82,12 +85,9 @@ export const SurveyDataProvider = ({ children }) => {
       }
     });
 
-    // setSurveyData((prevData) => ({
-    // ...prevData,
-    // observations: [...prevData.observations, newObservation]
-    // }));
   };
 
+  //TODO: Does this get used?
   const updateObservation = (updatedObs) => {
     setSurveyData((prevData) => ({
     ...prevData,
@@ -132,12 +132,14 @@ export const SurveyDataProvider = ({ children }) => {
     setID(newId);
 
     setInProgress(true)
-    console.log("NEW SURVEY NAMED: ")
-    console.log(surveyDesign.name)
     setName(surveyDesign.name)
+
+    for(task of surveyDesign.tasks) {
+      addTask[task]
+    }
     
     setStartTime(Date.now())
-    //TODO: Handle Collections and Tasks
+    //TODO: Handle Collections
     // Keep in mind -- what about future surveys that dont have predefined collections?
     // would it be better to wait until survey submission to include these?
 
@@ -153,7 +155,7 @@ export const SurveyDataProvider = ({ children }) => {
         console.log("saved progress..")
       } catch (e) {
         // saving error
-        console.log("STASH FOR LATER")
+        console.log("Stash For Later Failed: ")
         console.log(e);
       }
     }
@@ -161,7 +163,6 @@ export const SurveyDataProvider = ({ children }) => {
 
     // Save the survey data whenever it changes
     useEffect(() => {
-      console.log("Calling Stash For Later")
       stashForLater(surveyData);
     }, [surveyData.observations]);
 
@@ -180,7 +181,7 @@ export const SurveyDataProvider = ({ children }) => {
 
     } catch(e) {
       // loading error
-      console.log("LOAD FROM STASH")
+      console.log("Load From Stash Failed: ")
       console.log(e);
     }
   }

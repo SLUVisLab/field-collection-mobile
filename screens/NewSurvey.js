@@ -5,7 +5,7 @@ import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import styles from '../Styles';
 
 
-const SurveyName = ({ navigation }) => {
+const NewSurvey = ({ navigation }) => {
   
   const [surveyName, setSurveyName] = useState('');
 
@@ -72,4 +72,4 @@ const SurveyName = ({ navigation }) => {
   );
 };
 
-export default SurveyName;
+export default NewSurvey;

@@ -18,7 +18,7 @@ const SubmitSurvey = ({ route, navigation }) => {
     if (collection.items.length > 0) {
       // Process items
       totalItems = collection.items.length;
-      itemsWithObservations = collection.items.filter(item => itemHasObservation(item)).length;
+      itemsWithObservations = collection.items.filter(item => itemHasObservation(item.ID)).length;
     } else {
       // Process subcollections
       subCollections = collection.subCollections.map(subCollection => checkItemsInCollection(subCollection));

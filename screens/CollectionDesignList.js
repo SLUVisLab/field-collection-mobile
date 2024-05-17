@@ -67,7 +67,7 @@ const CollectionDesignList = ({ route, navigation }) => {
           {/* <Text>CASE 2.1</Text> */}
           <TouchableOpacity
             style={localStyles.addButton}
-            onPress={() => navigation.navigate('ItemName', {parentID: collectionID})}
+            onPress={() => navigation.navigate('NewItem', {parentID: collectionID})}
           >
             <Ionicons name="add-circle-outline" size={24} color="black" />
             <Text style = {localStyles.addText}>Add Item</Text>
@@ -93,14 +93,14 @@ const CollectionDesignList = ({ route, navigation }) => {
             <TouchableOpacity
               style={styles.surveyItemButton}
               key={item.ID}
-              onPress={() => navigation.navigate('ItemName', { item: item })}
+              onPress={() => navigation.navigate('NewItem', { item: item })}
             >
               <Text>{item.name}</Text>
             </TouchableOpacity>
           ))}
           <TouchableOpacity
             style={localStyles.addButton}
-            onPress={() => navigation.navigate('ItemName', { parentID: collectionID })}
+            onPress={() => navigation.navigate('NewItem', { parentID: collectionID })}
           >
             <Ionicons name="add-circle-outline" size={24} color="black" />
             <Text style = {localStyles.addText}>Add Item</Text>
