@@ -25,9 +25,13 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
       console.log("existing photo task data found")
       
       const fetchImage = async () => {
-        const img = await retrieveImage(existingData[task.dataLabel]);
-        setPhotoURI(existingData[task.dataLabel])
-        setPhoto(img);
+        try {
+          const img = await retrieveImage(existingData[task.dataLabel]);
+          setPhotoURI(existingData[task.dataLabel])
+          setPhoto(img);
+        } catch (error) {
+          console.log("Retrieve image failed: ", error)
+        }
     };
 
     fetchImage();

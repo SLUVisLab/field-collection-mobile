@@ -186,6 +186,20 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
+  const deleteFromStash = async (surveyName) => {
+    try {
+      console.log("Deleting survey from stash: ");
+      console.log(`@surveyData_${surveyName.replace(/\s/g, '_')}`);
+      await AsyncStorage.removeItem(`@surveyData_${surveyName.replace(/\s/g, '_')}`);
+      console.log("Deleted stashed survey...");
+    } catch(e) {
+      // deletion error
+      console.log("Delete From Stash Failed: ");
+      console.log(e);
+    }
+
+  }
+
 
   return (
     <SurveyDataContext.Provider 
@@ -205,6 +219,7 @@ export const SurveyDataProvider = ({ children }) => {
           addTask,
           newSurvey,
           loadFromStash,
+          deleteFromStash,
       }}
     >
       {children}

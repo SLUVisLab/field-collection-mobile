@@ -9,7 +9,7 @@ const SurveyList = ({ navigation }) => {
   const { surveyFiles, convertXLSXToSurvey } = useFileContext(); // Access surveyFiles from FileContext
 
   const { surveyDesign, clearSurveyDesign, setSurveyDesign } = useSurveyDesign()
-  const { newSurvey, loadFromStash, setSurveyData, surveyData } = useSurveyData()
+  const { newSurvey, loadFromStash, setSurveyData, surveyData, deleteFromStash } = useSurveyData()
 
   const handleLoadSurvey = async (filePath) => {
     
@@ -35,6 +35,7 @@ const SurveyList = ({ navigation }) => {
             text: "Discard",
             onPress: () => {
               // Discard the existing data and start a new survey
+              deleteFromStash(surveyDesignFromFile.name)
               newSurvey(surveyDesign);
               navigation.navigate('CollectionList');
             },

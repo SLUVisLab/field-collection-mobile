@@ -7,7 +7,7 @@ import { useSurveyData } from '../contexts/SurveyDataContext';
 
 const SubmitSurvey = ({ route, navigation }) => {
   const { surveyDesign, addCollection, findCollectionByID } = useSurveyDesign();
-  const { itemHasObservation } = useSurveyData()
+  const { itemHasObservation, surveyData } = useSurveyData()
 
   // Recursive function to check items in collections and subcollections
   const checkItemsInCollection = (collection) => {
@@ -52,6 +52,8 @@ const SubmitSurvey = ({ route, navigation }) => {
 
   return (
     <View>
+      <Text style={localStyles.header}>{surveyDesign.name}</Text>
+      <Text>Started at: {surveyData.startTime}</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={handleSubmit}
@@ -83,6 +85,11 @@ const localStyles = StyleSheet.create({
   subCollection: {
     marginLeft: 20,
   },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  }
 
 });
 

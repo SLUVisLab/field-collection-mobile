@@ -4,6 +4,8 @@ import styles from '../Styles';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import { useSurveyData } from '../contexts/SurveyDataContext';
 
+import { MaterialIcons } from '@expo/vector-icons';
+
 const CollectionList = ({ route, navigation }) => {
   // Initialize the survey design context
   const { surveyDesign, addCollection, findCollectionByID } = useSurveyDesign();
@@ -28,7 +30,7 @@ const CollectionList = ({ route, navigation }) => {
         <TouchableOpacity onPress={() => {
           navigation.navigate('SubmitSurvey')
         }}>
-          <Text style={styles.headerButton}>Submit</Text>
+          <MaterialIcons name="save-alt" size={42} color="black" />
         </TouchableOpacity>
       ),
     });
