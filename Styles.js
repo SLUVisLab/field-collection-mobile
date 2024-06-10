@@ -248,6 +248,17 @@ export default StyleSheet.create({
     },
     boldText: {
       fontWeight: 'bold',
-    }
+    },
+    spacer: {
+      height: 40, // or whatever standard amount of space you want
+    },
+
+    loginWrapperTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      marginBottom: 60,
+    },
+
 
   }); 

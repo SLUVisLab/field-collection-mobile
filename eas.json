@@ -23,13 +23,21 @@
       },
       "channel": "development-simulator"
     },
-    "preview": {
+    "testing": {
       "distribution": "internal",
       "ios": {
         "resourceClass": "m-medium",
         "cocoapods": "1.15.2"
       },
-      "channel": "development"
+      "channel": "testing"
+    },
+    "distribution": {
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium",
+        "cocoapods": "1.15.2"
+      },
+      "channel": "distribution"
     },
     "production": {
       "ios": {

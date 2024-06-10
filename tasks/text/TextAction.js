@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, Modal } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { View, TextInput, Button, StyleSheet, Text, Modal, TouchableOpacity } from 'react-native';
+// import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../../Styles';
 
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { View, TextInput, Button, StyleSheet, Text, TouchableOpacity } from 'react-native';
+// import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../Styles';
 import SurveyCollection from '../utils/SurveyCollection';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
