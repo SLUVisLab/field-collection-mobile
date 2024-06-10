@@ -39,7 +39,7 @@ const SaveSurvey = ({ route, navigation }) => {
     Toast.show({
       type: 'success',
       position: 'bottom',
-      text1: 'Survey Submitted Successfully',
+      text1: 'Survey Saved Successfully',
       visibilityTime: 1000,
       autoHide: true,
       topOffset: 30,
