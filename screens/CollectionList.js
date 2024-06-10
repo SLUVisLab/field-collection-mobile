@@ -28,7 +28,7 @@ const CollectionList = ({ route, navigation }) => {
       title: collection ? collection.name : 'Collections',
       headerRight: () => (
         <TouchableOpacity onPress={() => {
-          navigation.navigate('SubmitSurvey')
+          navigation.navigate('SaveSurvey')
         }}>
           <MaterialIcons name="save-alt" size={42} color="black" />
         </TouchableOpacity>

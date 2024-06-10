@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 import styles from '../Styles';
+import Toast from 'react-native-toast-message';
 import { useEmailPasswordAuth, AuthOperationName } from '@realm/react';
 
 const Register = () => {
@@ -14,15 +15,21 @@ const Register = () => {
         if (result.success && result.operation === AuthOperationName.Register) {
             console.log("registration successful")
             logIn({email, password});
+            
+        } else {
+            console.log("registration failed")
+            Toast.show({
+              type: 'failure',
+              position: 'bottom',
+              text1: 'Registration Failed',
+              visibilityTime: 1000,
+              autoHide: true,
+              topOffset: 30,
+              bottomOffset: 40,
+            });
         }
 
-        if (result.operation === AuthOperationName.LogIn) {
-            if (result.success) {
-                console.log('Login successful');
-            } else {
-                console.log('Login failed');
-            }
-        }
+        
 
     }, [result, logIn, email, password]);
 

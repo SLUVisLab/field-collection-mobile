@@ -28,7 +28,7 @@ import CollectionName from './screens/CollectionName';
 import NewItem from './screens/NewItem';
 import TaskSetup from './screens/TaskSetup';
 import TaskAction from './screens/TaskAction';
-import SubmitSurvey from './screens/SubmitSurvey';
+import SaveSurvey from './screens/SaveSurvey';
 
 // Fallback log in component that's defined in another file.
 import LoginWrapper from './screens/LoginWrapper';
@@ -83,7 +83,7 @@ class App extends React.Component {
                       <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyList" component={SurveyList} />
                       <Stack.Screen options={{headerShown: true, title: 'New Survey',}} name="NewSurvey" component={NewSurvey} />
                       <Stack.Screen options={{headerShown: true, title: 'Survey',}} name="SurveyBuilder" component={SurveyBuilder} />
-                      <Stack.Screen options={{headerShown: true, title: 'Summary',}} name="SubmitSurvey" component={SubmitSurvey} />
+                      <Stack.Screen options={{headerShown: true, title: 'Summary',}} name="SaveSurvey" component={SaveSurvey} />
                       <Stack.Screen options={{headerShown: true, title: 'Tasks',}} name="TaskSelector" component={TaskSelector} />
                       <Stack.Screen options={{headerShown: true, title: 'Task Action',}} name="TaskAction" component={TaskAction} />
                       <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionDesignList" component={CollectionDesignList} />
