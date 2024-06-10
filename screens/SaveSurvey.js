@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import { useSurveyData } from '../contexts/SurveyDataContext';
 
-const SubmitSurvey = ({ route, navigation }) => {
+const SaveSurvey = ({ route, navigation }) => {
   const { surveyDesign, addCollection, findCollectionByID } = useSurveyDesign();
   const { itemHasObservation, surveyData } = useSurveyData()
 
@@ -153,4 +153,4 @@ const localStyles = StyleSheet.create({
 
 });
 
-export default SubmitSurvey;
+export default SaveSurvey;
