@@ -44,7 +44,7 @@ Scan the QR Code below and follow the provided instructions. On Android 8.0 and 
 
 #### Download Android
 <div style="margin: 20px 0;">
-  <img src="assets/android_download.png" alt="iOS Register" style="width: 40%;">
+  <img src="assets/android_download.png" alt="iOS Register" style="width: 20%;">
 </div>
 
 ### iOS
@@ -56,14 +56,14 @@ Apple requires that iOS devices are registered using their IMEI code before inst
 
 #### Register iOS
 <div style="margin: 20px 0;">
-  <img src="assets/ios_register.png" alt="iOS Register" style="width: 40%;">
+  <img src="assets/ios_register.png" alt="iOS Register" style="width: 20%;">
 </div>
 
 #### Download iOS
 Once the above steps are complete and the app developer has included your device's IMEI number, you can download and install the app by scanning this QR Code:
 
 <div style="margin: 20px 0;">
-  <img src="assets/ios_download.png" alt="iOS Download" style="width: 40%;">
+  <img src="assets/ios_download.png" alt="iOS Download" style="width: 20%;">
 </div>
 
 ### Registration and Login
@@ -117,7 +117,7 @@ If you encounter a bug or have a suggestion for an improvement, please share it!
 2. Contact the app developer directly
 
 <div align="center" style="margin: 20px 0;">
-  <img src="assets/issues.png" alt="issue tracker" style="width: 60%;">
+  <img src="assets/issues.png" alt="issue tracker" style="width: 70%;">
 </div>
 
 ## Contact
