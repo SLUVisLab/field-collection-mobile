@@ -27,7 +27,7 @@
 
 The data collection app is designed to help collect and organize various types of data by leveraging the capabilities of mobile devices. The app is intended to work **offline-first**, with various organizational layouts of items being observed and recorded, and to **store data in a central cloud database**.
 
-## Key Terms
+### Key Terms
 
 - **Item:** The individual unit of study. This can represent a singular object or a grouping of objects depending on use-case.
 - **Collection/Subcollection:** Items can be grouped into collections. Collections can also contain nested collections up to 1 level deep which are referred to as subcollections. Valid setups would include `collection/[item, item, item]` or `collection/subcollection1/[item, item, item]`.
