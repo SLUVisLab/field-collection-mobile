@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/banner.jpg" alt="Banner" style="width: 100%;">
+  <img src="assets/li_kernza_banner.jpg" alt="Banner" style="width: 100%;">
 </div>
 
 # User Guide
