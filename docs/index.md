@@ -41,7 +41,7 @@ The data collection app is designed to help collect and organize various types o
 ### Android
 Scan the QR Code below and follow the provided instructions. On Android 8.0 and higher, you may need to navigate to the 'Install unkown apps' system settings screen to enable app installations from a particular location (i.e. your web browser)
 
-#### Download iOS
+#### Download Android
 <div style="margin: 20px 0;">
   <img src="assets/android_download.png" alt="iOS Register" style="width: 40%;">
 </div>
