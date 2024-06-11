@@ -42,7 +42,21 @@ The data collection app is designed to help collect and organize various types o
 ![Android](assets/android.jpg)
 
 ### iOS
-![iOS](assets/ios.jpg)
+Apple requires that iOS devices are registered using their IMEI code before installing software from outside the app store. To register your device:
+
+1. Scan the QR code below and follow the provided instructions.
+2. Contact the app developer and let them know you have registered a new device.
+3. If you have not done so already, enable developer mode on your device. [Learn how to enable developer mode](https://docs.expo.dev/guides/ios-developer-mode/).
+
+<div align="center">
+  <img src="assets/ios_register.png" alt="iOS Register">
+</div>
+
+Once the above steps are complete and the app developer has included your device's IMEI number, you can download and install the app by scanning this QR Code:
+
+<div align="center">
+  <img src="assets/ios_download.png" alt="iOS Download">
+</div>
 
 ### Registration and Login
 ![Registration and Login](assets/registration_and_login.jpg)
