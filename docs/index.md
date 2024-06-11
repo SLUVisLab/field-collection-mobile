@@ -11,7 +11,7 @@
     - [Android](#android)
     - [iOS](#ios)
     - [Registration and Login](#registration-and-login)
-3. [Creating a Survey](#creating-a-survey)
+3. [Managing Surveys](#managing-surveys)
     - [Collections, Subcollections, and Items](#collections-subcollections-and-items)
     - [Tasks](#tasks)
     - [Creating Surveys with Spreadsheets](#creating-surveys-with-spreadsheets)
@@ -66,9 +66,16 @@ Once the above steps are complete and the app developer has included your device
 </div>
 
 ### Registration and Login
-![Registration and Login](assets/registration_and_login.jpg)
+Email and password based login is required to use the app. When first using the app, click the 'register' button to register a new account. You should automatically be logged in upon successful registration. 
 
-## Creating a Survey
+Some features like password resetting and account recovery are not implemented yet. Contact app developer for account support.
+
+## Managing Surveys
+
+The app supports creating and editing surveys using the **in-app GUI** as well as using **excel spreasheets in .xlsx format**. Spreadsheets can be uploaded to the app and will be processed into surveys. See [Creating Surveys with Spreadsheets](#creating-surveys-with-spreadsheets) for more details.
+
+Select 'Manage Surveys' from the home screen to edit an existing survey or create a new one. when creating a new survey, you'll be prompted to enter a name for your survey.
+
 ### Collections, Subcollections, and Items
 ![Collections, Subcollections, and Items](assets/collections_subcollections_items.jpg)
 
@@ -103,4 +110,11 @@ print("this is some code")
 ```
 
 ## Bug Reporting and Suggesting Improvements
-![Bug Reporting](assets/downloading_data.jpg)
+If you encounter a bug or have a suggestion for an improvement, please share it! You can...
+
+1. Contact the app developer directly
+2. [Create a new issue in the Github repository](https://github.com/SLUVisLab/field-collection-mobile/issues).
+
+<div style="margin: 20px 0;">
+  <img src="assets/issues.png" alt="issue tracker" style="width: 40%;">
+</div>
