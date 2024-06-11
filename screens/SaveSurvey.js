@@ -9,7 +9,7 @@ import { useSurveyData } from '../contexts/SurveyDataContext';
 
 const SaveSurvey = ({ route, navigation }) => {
   const { surveyDesign, addCollection, findCollectionByID } = useSurveyDesign();
-  const { itemHasObservation, surveyData } = useSurveyData()
+  const { itemHasObservation, surveyData, setSurveyComplete, saveForUpload, deleteFromStash  } = useSurveyData()
 
   // Recursive function to check items in collections and subcollections
   const checkItemsInCollection = (collection) => {
@@ -36,6 +36,14 @@ const SaveSurvey = ({ route, navigation }) => {
   };
 
   const handleSubmit = () => {
+
+    // Set the survey as complete
+    setSurveyComplete(true);
+
+    saveForUpload();
+
+    deleteFromStash(surveyDesign.name);
+
     Toast.show({
       type: 'success',
       position: 'bottom',
@@ -92,7 +100,7 @@ const SaveSurvey = ({ route, navigation }) => {
         style={styles.button}
         onPress={handleSubmit}
         >
-        <Text style={styles.text}>Submit Survey</Text>
+        <Text style={styles.text}>Save Survey</Text>
       </TouchableOpacity>
       <View style={styles.horizontalLine} />
       <Text style={styles.headerText}>Breakdown</Text>

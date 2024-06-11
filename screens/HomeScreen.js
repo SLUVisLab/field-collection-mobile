@@ -21,6 +21,12 @@ function HomeScreen({ navigation }) {
           >
             <Text style={styles.text}>Manage Surveys</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('UploadSurveys')}
+          >
+            <Text style={styles.text}>Upload Surveys</Text>
+          </TouchableOpacity>
 
         </ImageBackground>
       </View>

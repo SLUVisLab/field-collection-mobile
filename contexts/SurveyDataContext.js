@@ -9,9 +9,10 @@ export const SurveyDataProvider = ({ children }) => {
   // Define the initial state
   const initialState = {
     ID: null,
-    surveyInProgress: false,
+    surveyComplete: false,
     surveyName: null,
     startTime: null,
+    stopTime: null,
     tasks: [],
     collections: [],
     observations: []
@@ -40,10 +41,10 @@ export const SurveyDataProvider = ({ children }) => {
     }));
   }
 
-  const setInProgress = (bool) => {
+  const setSurveyComplete = (bool) => {
     setSurveyData((prevData) => ({
     ...prevData,
-    surveyInProgress: bool
+    surveyComplete: bool
     }));
   };
 
@@ -62,6 +63,7 @@ export const SurveyDataProvider = ({ children }) => {
     newObservation["itemID"] = item.ID;
     newObservation["collectionName"] = collection.name;
     newObservation["collectionID"] = collection.ID;
+    newObservation["timestamp"] = Date.now();
     if (collection.parent) {
       newObservation["parentCollection"] = collection.parent;
     }
@@ -130,8 +132,6 @@ export const SurveyDataProvider = ({ children }) => {
     
     let newId = uuidv4();
     setID(newId);
-
-    setInProgress(true)
     setName(surveyDesign.name)
 
     for(task of surveyDesign.tasks) {
@@ -166,6 +166,8 @@ export const SurveyDataProvider = ({ children }) => {
       stashForLater(surveyData);
     }, [surveyData.observations]);
 
+
+  // Should only load surveys that don't have surveyComplete set to true
   const loadFromStash = async (surveyName) => {
     try {
       console.log("Loading survey from: ")
@@ -176,9 +178,16 @@ export const SurveyDataProvider = ({ children }) => {
       const jsonValue = await AsyncStorage.getItem(`@surveyData_${surveyName.replace(/\s/g, '_')}`)
       
       console.log("loading stashed survey...")
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-      
 
+      if (jsonValue != null) {
+        const parsedValue = JSON.parse(jsonValue);
+        // Check if the survey is incomplete
+        if (parsedValue.surveyComplete === false) {
+          return parsedValue;
+        }
+      }
+      return null;
+      
     } catch(e) {
       // loading error
       console.log("Load From Stash Failed: ")
@@ -197,9 +206,93 @@ export const SurveyDataProvider = ({ children }) => {
       console.log("Delete From Stash Failed: ");
       console.log(e);
     }
-
   }
 
+  const saveForUpload = async () => {
+    if (surveyData && surveyData.surveyName) {
+      try {
+        const jsonValue = JSON.stringify(surveyData)
+        console.log("Saving survery to:")
+        console.log(`@savedSurvey_${surveyData.surveyName.replace(/\s/g, '_')}_${Date.now()}`)
+        await AsyncStorage.setItem(`@savedSurvey_${surveyData.surveyName.replace(/\s/g, '_')}_${Date.now()}`, jsonValue)
+        console.log("saved survey data...")
+      } catch (e) {
+        // saving error
+        console.log("Saved Failed: ")
+        console.log(e);
+      }
+    }
+  }
+
+  const listAllSavedSurveys = async () => {
+
+    try {
+      // Get all keys
+      const keys = await AsyncStorage.getAllKeys();
+  
+      // Filter keys related to saved surveys
+      const surveyKeys = keys.filter(key => key.startsWith('@savedSurvey_'));
+      
+      // Get all saved survey data
+      const results = await AsyncStorage.multiGet(surveyKeys);
+  
+      // Parse each saved survey data and extract the desired properties
+      const savedSurveys = results.map(result => {
+        const survey = JSON.parse(result[1]);
+        return {
+          key: result[0],
+          surveyName: survey.surveyName,
+          completed: survey.stopTime,
+          count: survey.observations.length
+        };
+      });
+  
+      return savedSurveys;
+    } catch(e) {
+      // loading error
+      console.log("List All Saved Surveys Failed: ")
+      console.log(e);
+    }
+  }
+
+  const uploadSurvey = async (storageKey) => {
+    console.log("called upload survey");
+    console.log(storageKey);
+  
+    try {
+      // Get the survey data from storage
+      const jsonValue = await AsyncStorage.getItem(storageKey);
+      const surveyData = JSON.parse(jsonValue);
+  
+      console.log(surveyData);
+  
+      // check if any data in observations is a file (image, video, audio, etc)
+          // check if any data in observations is a file (image, video, audio, etc)
+      const fileKeys = [];
+      surveyData.observations.forEach(observation => {
+        Object.keys(observation).forEach(key => {
+          const value = observation[key];
+          if (typeof value === 'string' && (value.endsWith('.jpg') || value.endsWith('.png') || value.endsWith('.mp4') || value.endsWith('.mp3'))) {
+            fileKeys.push({ observationID: observation.ID, key });
+          }
+        });
+      });
+    
+    console.log("File Keys: ")
+    console.log(fileKeys);
+
+
+      // upload the files to the firebase storage server
+      // replace the file path in the observation with the new url
+  
+      // make sure the survey object is in the correct format for the mongodb server
+  
+      // upload the survey object to the mongodb server
+    } catch (e) {
+      console.log("Upload Survey Failed: ");
+      console.log(e);
+    }
+  }
 
   return (
     <SurveyDataContext.Provider 
@@ -209,7 +302,7 @@ export const SurveyDataProvider = ({ children }) => {
           clearSurveyData,
           setName,
           setID,
-          setInProgress,
+          setSurveyComplete,
           setStartTime,
           addObservation,
           updateObservation,
@@ -220,6 +313,10 @@ export const SurveyDataProvider = ({ children }) => {
           newSurvey,
           loadFromStash,
           deleteFromStash,
+          listAllSavedSurveys,
+          saveForUpload,
+          uploadSurvey,
+
       }}
     >
       {children}
