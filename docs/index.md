@@ -23,6 +23,7 @@
 5. [Uploading Data](#uploading-data)
 6. [Downloading Data](#downloading-data)
 7. [Bug Reporting and Suggesting Improvements](#bug-reporting-and-suggesting-improvements)
+8. [Contact](#contact)
 
 ## Overview
 **NOTE:** The app is currently in its first beta release and full of bugs and opportunities for improvements. Please see the section on reporting bugs or suggesting improvements for more information on contributing.
@@ -112,9 +113,13 @@ print("this is some code")
 ## Bug Reporting and Suggesting Improvements
 If you encounter a bug or have a suggestion for an improvement, please share it! You can...
 
-1. Contact the app developer directly
-2. [Create a new issue in the Github repository](https://github.com/SLUVisLab/field-collection-mobile/issues).
+1. [Create a new issue in the Github repository](https://github.com/SLUVisLab/field-collection-mobile/issues). (Recommended)
+2. Contact the app developer directly
 
-<div style="margin: 20px 0;">
-  <img src="assets/issues.png" alt="issue tracker" style="width: 40%;">
+<div align="center" style="margin: 20px 0;">
+  <img src="assets/issues.png" alt="issue tracker" style="width: 60%;">
 </div>
+
+## Contact
+
+Contact Austin Carnahan on NRR-BII Slack or at austin.carnahan@slu.edu with questions or suggestions!
