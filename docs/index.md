@@ -50,14 +50,14 @@ Apple requires that iOS devices are registered using their IMEI code before inst
 
 #### Register iOS
 <div align="center" style="margin: 20px 0;">
-  <img src="assets/ios_register.png" alt="iOS Register" style="width: 70%;">
+  <img src="assets/ios_register.png" alt="iOS Register" style="width: 40%;">
 </div>
 
 #### Download iOS
 Once the above steps are complete and the app developer has included your device's IMEI number, you can download and install the app by scanning this QR Code:
 
 <div align="center" style="margin: 20px 0;">
-  <img src="assets/ios_download.png" alt="iOS Download" style="width: 70%;">
+  <img src="assets/ios_download.png" alt="iOS Download" style="width: 40%;">
 </div>
 
 ### Registration and Login
