@@ -2,6 +2,8 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { basename } from 'path';
 
 const SurveyDataContext = createContext();
 
@@ -255,6 +257,85 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
+  const uploadToStorage = async (path) => {
+    try {
+
+      const storage = getStorage();
+      const projectRef = ref(storage, 'beta-group');
+      const imagesRef = ref(projectRef, 'images');
+
+      // strip everything but filename
+      const fileName = basename(path);
+      
+      // create a reference in the storage server
+      const fileRef = ref(imagesRef, path);
+
+      
+
+      const metadata = {
+        contentType: 'image/jpeg'
+      };
+
+
+      
+
+      // upload the file to the storage server
+
+
+      const new_path =  "";
+      return new_path;
+    } catch (e) {
+      console.log("Upload to Storage Failed: ");
+      console.log(e);
+    }
+
+    return null;
+  }
+
+  const isMedia = (value) => {
+     const mediaExtensions = ['.jpg', '.png', '.mp4', '.mp3'];
+     
+     if (typeof value === 'string' && mediaExtensions.some(ext => value.endsWith(ext))) {
+        return true;
+      }
+      return false;
+  }
+
+  const handleMediaItems = async (survey) => {
+    try {
+      // Create a copy of the survey to avoid mutating the original object
+      const newSurvey = { ...survey };
+  
+      // Iterate over each observation
+      for (let i = 0; i < newSurvey.observations.length; i++) {
+        const observation = newSurvey.observations[i];
+  
+        // Check each key/value pair
+        for (const key in observation) {
+          if (observation.hasOwnProperty(key)) {
+            const value = observation[key];
+  
+            // If the value is a media item
+            if (isMedia(value)) {
+              // Upload the file to the firebase storage server
+              const url = await uploadToStorage(value);
+  
+              // Replace the file path in the observation with the new url
+              observation[key] = url;
+            }
+          }
+        }
+      }
+  
+      return newSurvey;
+    } catch (e) {
+      console.log("Handle Media Failed: ");
+      console.log(e);
+    }
+  
+    return null;
+  }
+
   const uploadSurvey = async (storageKey) => {
     console.log("called upload survey");
     console.log(storageKey);
@@ -265,22 +346,10 @@ export const SurveyDataProvider = ({ children }) => {
       const surveyData = JSON.parse(jsonValue);
   
       console.log(surveyData);
-  
-      // check if any data in observations is a file (image, video, audio, etc)
-          // check if any data in observations is a file (image, video, audio, etc)
-      const fileKeys = [];
-      surveyData.observations.forEach(observation => {
-        Object.keys(observation).forEach(key => {
-          const value = observation[key];
-          if (typeof value === 'string' && (value.endsWith('.jpg') || value.endsWith('.png') || value.endsWith('.mp4') || value.endsWith('.mp3'))) {
-            fileKeys.push({ observationID: observation.ID, key });
-          }
-        });
-      });
-    
-    console.log("File Keys: ")
-    console.log(fileKeys);
 
+      const newSurvey = handleMediaItems(surveyData);
+
+      console.log(newSurvey);
 
       // upload the files to the firebase storage server
       // replace the file path in the observation with the new url
