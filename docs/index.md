@@ -21,6 +21,8 @@
     - [Saving a Survey](#saving-a-survey)
     - [Leaving a Survey Before You're Finished](#leaving-a-survey-before-youre-finished)
 5. [Uploading Data](#uploading-data)
+6. [Downloading Data](#downloading-data)
+7. [Bug Reporting and Suggesting Improvements](#bug-reporting-and-suggesting-improvements)
 
 ## Overview
 **NOTE:** The app is currently in its first beta release and full of bugs and opportunities for improvements. Please see the section on reporting bugs or suggesting improvements for more information on contributing.
@@ -78,3 +80,6 @@ The data collection app is designed to help collect and organize various types o
 print("this is some code")
 
 ```
+
+## Bug Reporting and Suggesting Improvements
+![Bug Reporting](assets/downloading_data.jpg)
