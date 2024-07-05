@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import styles from '../Styles';
 import Toast from 'react-native-toast-message';
 import ProgressBar from 'react-native-progress/Bar';
@@ -12,11 +13,18 @@ import { useSurveyData } from '../contexts/SurveyDataContext';
 const UploadSurveys = ({ route, navigation }) => {
 
     const { listAllSavedSurveys, uploadSurvey } = useSurveyData()
-
     const [surveys, setSurveys] = useState([]);
+    const [isConnected, setIsConnected] = useState(true);
 
     useEffect(() => {
-        console.log("useEffect called");
+        
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+            if (!state.isConnected) {
+                Alert.alert("Offline", "Uploads are disabled while offline.");
+            }
+        });
+
         const fetchSurveys = async () => {
           console.log("fetchSurveys called");
           const savedSurveys = await listAllSavedSurveys();
@@ -24,19 +32,28 @@ const UploadSurveys = ({ route, navigation }) => {
         };
     
         fetchSurveys();
-      }, []);
+
+        return () => unsubscribe();
+    }, []);
 
     const uploadHandler = (storageKey) => {
-    // Handle upload
-    console.log("called upload handler");
-    console.log(storageKey);
-    
-    uploadSurvey(storageKey)
-        
+        if (!isConnected) {
+            Toast.show({
+                type: 'error',
+                text1: 'You are offline',
+                text2: 'Please connect to the internet to upload surveys.'
+            });
+            return;
+        }
+        console.log("called upload handler");
+        console.log(storageKey);
+
+        uploadSurvey(storageKey);
     };
 
   return (
     <View style={localStyles.wrapper}>
+        {!isConnected && <Text style={localStyles.networkWarning}>No Network Connection: Upload Not Available</Text>}
         <Text style={localStyles.title}>Ready for Upload</Text>
         {surveys.length === 0 ? (
             <Text>No Completed Surveys Found</Text>
@@ -70,6 +87,11 @@ const localStyles = StyleSheet.create({
         borderColor: '#000',
         padding: 10,
         margin: 5,
+    },
+    networkWarning: {
+        color: 'red',
+        fontWeight: 'bold',
+        marginBottom: 10,
     },
 
 });

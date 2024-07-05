@@ -2,8 +2,8 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { basename } from 'path';
+import {ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import {storage, auth} from '../firebase';
 
 const SurveyDataContext = createContext();
 
@@ -257,38 +257,83 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
-  const uploadToStorage = async (path) => {
-    try {
+  const uploadToMediaStorage = async (path) => {
+    if(auth.currentUser) {
+      try {
 
-      const storage = getStorage();
-      const projectRef = ref(storage, 'beta-group');
-      const imagesRef = ref(projectRef, 'images');
+        // get the image file
+        console.log("fetching image: ", path)
+        const response = await fetch(path); //THIS IS WHERE THE ERROR IS
+        const blob = await response.blob();
 
-      // strip everything but filename
-      const fileName = basename(path);
-      
-      // create a reference in the storage server
-      const fileRef = ref(imagesRef, path);
+        const projectRef = ref(storage, 'beta-group');
+        const imagesRef = ref(projectRef, 'images');
 
-      
+        // strip everything but filename
+        const parts = path.split('/');
+        const fileName = parts[parts.length - 1];
+        console.log("Filename: ", fileName);
+  
+        // create a reference in the storage server
+        const fileRef = ref(imagesRef, fileName);
+        
+        const metadata = {
+          contentType: 'image/jpeg'
+        };
 
-      const metadata = {
-        contentType: 'image/jpeg'
-      };
+        const uploadTask = uploadBytesResumable(fileRef, blob, metadata);
+        
+        const new_path = null;
 
+        console.log("starting upload...")
+        uploadTask.on('state_changed',
+          (snapshot) => {
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+            switch (snapshot.state) {
+              case 'paused':
+                console.log('Upload is paused');
+                break;
+              case 'running':
+                console.log('Upload is running');
+                break;
+            }
+          }, 
+          (error) => {
+            // A full list of error codes is available at
+            // https://firebase.google.com/docs/storage/web/handle-errors
+            switch (error.code) {
+              case 'storage/unauthorized':
+                console.log("Unauthorized: ", error.code)
+                // User doesn't have permission to access the object
+                break;
+              case 'storage/canceled':
+                // User canceled the upload
+                console.log("Canceled: ", error.code)
+                break;
+              case 'storage/unknown':
+                // Unknown error occurred, inspect error.serverResponse
+                console.log("Unknown: ", error.code)
+                break;
+            }
+          }, 
+          () => {
+            // Upload completed successfully, now we can get the download URL
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              console.log('File available at', downloadURL);
+              return downloadURL;
+            });
+          }
+        );
 
-      
-
-      // upload the file to the storage server
-
-
-      const new_path =  "";
-      return new_path;
-    } catch (e) {
-      console.log("Upload to Storage Failed: ");
-      console.log(e);
+      } catch (e) {
+        console.log("Upload to Media Storage Failed: ");
+        console.error(e);
+      }
+    } else {
+      console.log('User is not authenticated. Cannot upload file.');
     }
-
     return null;
   }
 
@@ -318,7 +363,8 @@ export const SurveyDataProvider = ({ children }) => {
             // If the value is a media item
             if (isMedia(value)) {
               // Upload the file to the firebase storage server
-              const url = await uploadToStorage(value);
+              console.log("Uploading media item!");
+              const url = await uploadToMediaStorage(value);
   
               // Replace the file path in the observation with the new url
               observation[key] = url;
@@ -330,7 +376,7 @@ export const SurveyDataProvider = ({ children }) => {
       return newSurvey;
     } catch (e) {
       console.log("Handle Media Failed: ");
-      console.log(e);
+      console.error(e);
     }
   
     return null;
@@ -345,11 +391,12 @@ export const SurveyDataProvider = ({ children }) => {
       const jsonValue = await AsyncStorage.getItem(storageKey);
       const surveyData = JSON.parse(jsonValue);
   
-      console.log(surveyData);
+      // console.log(surveyData);
 
-      const newSurvey = handleMediaItems(surveyData);
-
-      console.log(newSurvey);
+      const processedSurvey = handleMediaItems(surveyData);
+      
+      console.log("Processed Survey: ")
+      console.log(processedSurvey);
 
       // upload the files to the firebase storage server
       // replace the file path in the observation with the new url
@@ -359,7 +406,7 @@ export const SurveyDataProvider = ({ children }) => {
       // upload the survey object to the mongodb server
     } catch (e) {
       console.log("Upload Survey Failed: ");
-      console.log(e);
+      console.error(e);
     }
   }
 
