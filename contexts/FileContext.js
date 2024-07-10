@@ -205,7 +205,7 @@ export const FileProvider = ({ children }) => {
                 console.log(worksheet["rows"]) // prints undefined
             
                 // Create a new Collection instance
-                let currentCollection = new SurveyCollection(sheetName)
+                let currentCollection = new SurveyCollection({name: sheetName})
 
                 console.log("current collection ID")
                 console.log(currentCollection.ID)
@@ -250,7 +250,7 @@ export const FileProvider = ({ children }) => {
                             }
 
                             console.log("creating new subcollection....")
-                            currentSubCollection = new SurveyCollection(worksheet[subCollectionAddr].v, currentCollection.ID)
+                            currentSubCollection = new SurveyCollection({name: worksheet[subCollectionAddr].v, parentId: currentCollection.ID, parentName: currentCollection.name})
 
                         } else {
                             console.log("creating new item...")

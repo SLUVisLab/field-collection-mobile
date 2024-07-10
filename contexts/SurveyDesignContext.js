@@ -137,6 +137,7 @@ export const SurveyDesignProvider = ({ children }) => {
 
     const parentCollection = findCollectionByID(parentID);
     if (parentCollection) {
+      newCollection.parent = parentCollection.ID;
       parentCollection.subCollections.push(newCollection);
       setSurveyDesign({ ...surveyDesign });
     } else {

@@ -40,7 +40,7 @@ const SaveSurvey = ({ route, navigation }) => {
     // Set the survey as complete
     setSurveyComplete(true);
 
-    saveForUpload();
+    saveForUpload(surveyDesign);
 
     deleteFromStash(surveyDesign.name);
 

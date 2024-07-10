@@ -6,13 +6,15 @@ import {AppProvider, UserProvider} from '@realm/react';
 
 import Toast from 'react-native-toast-message';
 
+import 'react-native-get-random-values'
+
 import { SurveyDesignProvider } from "./contexts/SurveyDesignContext";
 import { SurveyDataProvider } from "./contexts/SurveyDataContext";
 import { FileProvider } from './contexts/FileContext';
 import { RealmProvider } from '@realm/react';
 
-import Survey from './models/Survey';
-import Response from './models/Response';
+import SurveyResults from './models/SurveyResults';
+// import Observation from './models/Observation';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -35,15 +37,15 @@ import UploadSurveys from './screens/UploadSurveys';
 import LoginWrapper from './screens/LoginWrapper';
 
 // Define your configuration options
-const realmConfig = {
-  schema: [Response, Survey],
-  deleteRealmIfMigrationNeeded: true,  // SET TO FLASE IN PRODUCITON!!!!
-  schemaVersion: 2,
-  migration: (oldRealm, newRealm) => {
-    // Migration logic goes here
-  },
-  // Other configuration options can be set here as needed
-};
+// const realmConfig = {
+//   schema: [SurveyResults, Observation],
+//   deleteRealmIfMigrationNeeded: true,  // SET TO FLASE IN PRODUCITON!!!!
+//   schemaVersion: 3,
+//   migration: (oldRealm, newRealm) => {
+//     // Migration logic goes here
+//   },
+//   // Other configuration options can be set here as needed
+// };
 
 const APP_ID = 'data-collection-0-pybsrtz';
 
@@ -68,7 +70,12 @@ class App extends React.Component {
     return (
       <AppProvider id={APP_ID}>
         <UserProvider fallback={LoginWrapper}>
-          <RealmProvider {...realmConfig}>
+        {/* <RealmProvider {...realmConfig}> */}
+          <RealmProvider
+          schema={[SurveyResults]}
+          sync={{
+            flexible: true,
+          }}>
             <NavigationContainer>
               <FileProvider>
                 <SurveyDesignProvider>

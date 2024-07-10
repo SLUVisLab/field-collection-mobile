@@ -5,6 +5,8 @@ import styles from '../Styles';
 import Toast from 'react-native-toast-message';
 import ProgressBar from 'react-native-progress/Bar';
 import { format } from 'date-fns';
+import {useRealm} from '@realm/react';
+import 'react-native-get-random-values'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,6 +17,8 @@ const UploadSurveys = ({ route, navigation }) => {
     const { listAllSavedSurveys, uploadSurvey } = useSurveyData()
     const [surveys, setSurveys] = useState([]);
     const [isConnected, setIsConnected] = useState(true);
+
+    const realm = useRealm();
 
     useEffect(() => {
         
@@ -36,7 +40,7 @@ const UploadSurveys = ({ route, navigation }) => {
         return () => unsubscribe();
     }, []);
 
-    const uploadHandler = (storageKey) => {
+    const uploadHandler = async (storageKey) => {
         if (!isConnected) {
             Toast.show({
                 type: 'error',
@@ -47,8 +51,12 @@ const UploadSurveys = ({ route, navigation }) => {
         }
         console.log("called upload handler");
         console.log(storageKey);
-
-        uploadSurvey(storageKey);
+        try {
+            await uploadSurvey(storageKey, realm); // Pass Realm instance to the function
+            console.log("Upload successful");
+        } catch (error) {
+            console.error("Upload failed", error);
+        }
     };
 
   return (

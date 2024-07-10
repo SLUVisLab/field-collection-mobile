@@ -9,16 +9,30 @@ import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 const CollectionName = ({ route, navigation }) => {
 
     // Initialize the survey design context
-    const { surveyDesign, addCollection, addNestedCollectionByID } = useSurveyDesign();
+    const { surveyDesign, addCollection, addNestedCollectionByID, findCollectionByID } = useSurveyDesign();
 
     const [collectionName, setCollectionName] = useState('');
 
     const parentID = route.params && route.params.parentID ? route.params.parentID : null;
+    const parentName = route.params && route.params.parentName ? route.params.parentName : null;
+
+    console.log("Collection Name:")
+    console.log(collectionName)
+    console.log("Parent ID:")
     console.log(parentID)
+    console.log("Parent Name:")
+    console.log(parentName)
 
     const handleDone = () => {
 
-      let newCollection = new SurveyCollection(collectionName, parentID)
+      let newCollection = new SurveyCollection({
+        name: collectionName,
+        parentId: parentID,
+        parentName: parentName
+      });
+
+      console.log("New Collection:")
+      console.log(newCollection)
 
       // TODO: Combine these methods into one
       if (parentID) {

@@ -4,6 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import {storage, auth} from '../firebase';
+// import {useRealm} from '@realm/react';
+import {BSON} from 'realm';
+// import Observation from '../models/Observation';
+import SurveyResults from '../models/SurveyResults';
 
 const SurveyDataContext = createContext();
 
@@ -57,18 +61,27 @@ export const SurveyDataProvider = ({ children }) => {
     }));
   };
 
-  const addObservation = (data, item, collection, survey) => {
-    let newObservation = data;
+  const setStopTime = (dt) => {
 
+    console.log("Setting stop time: " + dt)
+    setSurveyData((prevData) => ({
+    ...prevData,
+    stopTime: dt
+    }));
+  };
+
+  const addObservation = (data, item, collection, survey) => {
+    let newObservation = {};
+
+    newObservation["data"] = data;
     newObservation["ID"] = uuidv4();
     newObservation["itemName"] = item.name;
     newObservation["itemID"] = item.ID;
     newObservation["collectionName"] = collection.name;
     newObservation["collectionID"] = collection.ID;
+    newObservation["parentCollectionName"] = collection.parentName ? collection.parentName : null;
+    newObservation["parentCollectionID"] = collection.parentId ? collection.parentId : null; 
     newObservation["timestamp"] = Date.now();
-    if (collection.parent) {
-      newObservation["parentCollection"] = collection.parent;
-    }
     newObservation["surveyName"] = survey.name;
     // newObservation["surveyID"] = survey.ID; //implement me
 
@@ -141,6 +154,7 @@ export const SurveyDataProvider = ({ children }) => {
     }
     
     setStartTime(Date.now())
+  
     //TODO: Handle Collections
     // Keep in mind -- what about future surveys that dont have predefined collections?
     // would it be better to wait until survey submission to include these?
@@ -210,8 +224,25 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
-  const saveForUpload = async () => {
+  const saveForUpload = async (surveyDesign) => {
+
+    console.log("SAVING FOR UPLOAD...")
     if (surveyData && surveyData.surveyName) {
+      try {
+        surveyData.collections = [...surveyDesign.collections];
+        surveyData.tasks = [...surveyDesign.tasks];
+      } catch(e) {
+        console.log("Failed to add collections and tasks to survey data: ", e);
+      }
+
+
+      console.log("SETTING STOP TIME")
+
+      surveyData.stopTime = Date.now();
+
+      console.log("Survey Data: ") 
+      console.log(surveyData)
+
       try {
         const jsonValue = JSON.stringify(surveyData)
         console.log("Saving survery to:")
@@ -220,7 +251,7 @@ export const SurveyDataProvider = ({ children }) => {
         console.log("saved survey data...")
       } catch (e) {
         // saving error
-        console.log("Saved Failed: ")
+        console.log("Save Failed: ")
         console.log(e);
       }
     }
@@ -257,12 +288,31 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
+  const deleteUploadedLocalMedia = async (key) => {
+    try {
+
+    } catch(e) { 
+      // deletion error
+      console.log("Delete Uploaded Image Failed: ")
+    }
+  }
+
+  const deleteUploadedLocalSurveyData = async (key) => {
+
+    try {
+
+    } catch(e) { 
+      // deletion error
+      console.log("Delete Uploaded Survey Failed: ")
+    }
+  }
+
+
   const uploadToMediaStorage = async (path) => {
     if(auth.currentUser) {
       try {
 
         // get the image file
-        console.log("fetching image: ", path)
         const response = await fetch(path); //THIS IS WHERE THE ERROR IS
         const blob = await response.blob();
 
@@ -282,50 +332,49 @@ export const SurveyDataProvider = ({ children }) => {
         };
 
         const uploadTask = uploadBytesResumable(fileRef, blob, metadata);
-        
-        const new_path = null;
 
-        console.log("starting upload...")
-        uploadTask.on('state_changed',
-          (snapshot) => {
-            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log('Upload is ' + progress + '% done');
-            switch (snapshot.state) {
-              case 'paused':
-                console.log('Upload is paused');
-                break;
-              case 'running':
-                console.log('Upload is running');
-                break;
+        return new Promise((resolve, reject) => {
+          uploadTask.on('state_changed',
+            (snapshot) => {
+              // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              console.log('Upload is ' + progress + '% done');
+              switch (snapshot.state) {
+                case 'paused':
+                  console.log('Upload is paused');
+                  break;
+                case 'running':
+                  console.log('Upload is running');
+                  break;
+              }
+            }, 
+            (error) => {
+              // A full list of error codes is available at
+              // https://firebase.google.com/docs/storage/web/handle-errors
+              switch (error.code) {
+                case 'storage/unauthorized':
+                  console.log("Unauthorized: ", error.code)
+                  // User doesn't have permission to access the object
+                  reject(error);
+                case 'storage/canceled':
+                  // User canceled the upload
+                  console.log("Canceled: ", error.code)
+                  reject(error);
+                case 'storage/unknown':
+                  // Unknown error occurred, inspect error.serverResponse
+                  console.log("Unknown: ", error.code)
+                  reject(error);
+              }
+            }, 
+            () => {
+              // Upload completed successfully, now we can get the download URL
+              getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                console.log('File uploaded');
+                resolve(downloadURL);
+              });
             }
-          }, 
-          (error) => {
-            // A full list of error codes is available at
-            // https://firebase.google.com/docs/storage/web/handle-errors
-            switch (error.code) {
-              case 'storage/unauthorized':
-                console.log("Unauthorized: ", error.code)
-                // User doesn't have permission to access the object
-                break;
-              case 'storage/canceled':
-                // User canceled the upload
-                console.log("Canceled: ", error.code)
-                break;
-              case 'storage/unknown':
-                // Unknown error occurred, inspect error.serverResponse
-                console.log("Unknown: ", error.code)
-                break;
-            }
-          }, 
-          () => {
-            // Upload completed successfully, now we can get the download URL
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              console.log('File available at', downloadURL);
-              return downloadURL;
-            });
-          }
-        );
+          );
+        });
 
       } catch (e) {
         console.log("Upload to Media Storage Failed: ");
@@ -334,10 +383,10 @@ export const SurveyDataProvider = ({ children }) => {
     } else {
       console.log('User is not authenticated. Cannot upload file.');
     }
-    return null;
   }
 
   const isMedia = (value) => {
+    console.log("Checking if media: ", value)
      const mediaExtensions = ['.jpg', '.png', '.mp4', '.mp3'];
      
      if (typeof value === 'string' && mediaExtensions.some(ext => value.endsWith(ext))) {
@@ -349,31 +398,42 @@ export const SurveyDataProvider = ({ children }) => {
   const handleMediaItems = async (survey) => {
     try {
       // Create a copy of the survey to avoid mutating the original object
-      const newSurvey = { ...survey };
+      const processedSurvey = { ...survey };
+      const localMediaPaths = [];
   
       // Iterate over each observation
-      for (let i = 0; i < newSurvey.observations.length; i++) {
-        const observation = newSurvey.observations[i];
+      for (let i = 0; i < processedSurvey.observations.length; i++) {
+        const observation = processedSurvey.observations[i];
+
+        const data = observation.data;
   
         // Check each key/value pair
-        for (const key in observation) {
-          if (observation.hasOwnProperty(key)) {
-            const value = observation[key];
+        for (const key in data) {
+          if (data.hasOwnProperty(key)) {
+            const value = data[key];
   
             // If the value is a media item
             if (isMedia(value)) {
               // Upload the file to the firebase storage server
               console.log("Uploading media item!");
               const url = await uploadToMediaStorage(value);
-  
+              
+              // Save the path to the localMediaPaths array
+              // This will be used to delete the files after the survey is uploaded
+              localMediaPaths.push(value);
+
               // Replace the file path in the observation with the new url
-              observation[key] = url;
+              console.log("URL: ", url)
+              data[key] = url;
             }
           }
         }
       }
-  
-      return newSurvey;
+
+      console.log("New Survey: ", processedSurvey);
+
+      return { processedSurvey, localMediaPaths };
+
     } catch (e) {
       console.log("Handle Media Failed: ");
       console.error(e);
@@ -382,32 +442,63 @@ export const SurveyDataProvider = ({ children }) => {
     return null;
   }
 
-  const uploadSurvey = async (storageKey) => {
-    console.log("called upload survey");
-    console.log(storageKey);
-  
-    try {
-      // Get the survey data from storage
-      const jsonValue = await AsyncStorage.getItem(storageKey);
-      const surveyData = JSON.parse(jsonValue);
-  
-      // console.log(surveyData);
+  const uploadSurvey = async (storageKey, realm) => {
+    return new Promise(async (resolve, reject) => {
 
-      const processedSurvey = handleMediaItems(surveyData);
-      
-      console.log("Processed Survey: ")
-      console.log(processedSurvey);
+      let mediaPaths;
 
-      // upload the files to the firebase storage server
-      // replace the file path in the observation with the new url
-  
-      // make sure the survey object is in the correct format for the mongodb server
-  
-      // upload the survey object to the mongodb server
-    } catch (e) {
-      console.log("Upload Survey Failed: ");
-      console.error(e);
-    }
+      try {
+
+        // This listener will be called when the realm has been updated
+        // It handles cleanup tasks after the survey has been uploaded
+        realm.addListener('change', realmChangedListener = () => {
+          console.log("Data saved to local Realm");
+          console.log(storageKey)
+          console.log("MEDIA")
+          console.log(mediaPaths)
+          realm.removeAllListeners();
+          resolve("Survey uploaded successfully");
+        });
+      } catch (error) {
+        console.error(
+          `An exception was thrown within change listeners: ${error}`
+        );
+      }
+
+      try {
+        const jsonValue = await AsyncStorage.getItem(storageKey);
+        const surveyData = JSON.parse(jsonValue);
+        const {processedSurvey, localMediaPaths} = await handleMediaItems(surveyData);
+        console.log(localMediaPaths);
+        console.log(processedSurvey);
+
+        mediaPaths = localMediaPaths;
+        
+        console.log("Uploading survey to Realm: ");
+        console.log(processedSurvey['collections']);
+        console.log(processedSurvey['tasks']);
+        realm.write(() => {
+          realm.create('SurveyResults', {
+            _id: new BSON.ObjectId(),
+            name: processedSurvey["surveyName"],
+            dateStarted: new Date(processedSurvey["startTime"]),
+            dateCompleted: new Date(processedSurvey["stopTime"]),
+            tasks: processedSurvey["tasks"],
+            collections: processedSurvey["collections"],
+            observations: processedSurvey["observations"]
+          });
+
+        });
+
+        
+        
+
+      } catch (error) {
+        console.error("Upload Survey Failed:", error);
+        realm.removeAllListeners();
+        reject(error);
+      }
+    });
   }
 
   return (

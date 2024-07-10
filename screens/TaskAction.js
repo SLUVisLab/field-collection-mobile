@@ -70,6 +70,9 @@ const TaskAction = ({ route, navigation }) => {
 
     const itemCompleted = () => {
         //save the observatio data to the survey data context
+        console.log("SAVING OBSERVATION")
+        console.log(collection)
+        console.log(collection.parent)
         addObservation(observationData, currentItem, collection, surveyDesign);
         console.log("OBSERVATION RECEIVED")
         console.log(observationData)

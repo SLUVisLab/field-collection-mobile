@@ -74,7 +74,7 @@ const CollectionDesignList = ({ route, navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={localStyles.addButton}
-            onPress={() => navigation.navigate('CollectionName', { parentID: collectionID })}
+            onPress={() => navigation.navigate('CollectionName', { parentID: collection.ID, parentName: collection.name})}
           >
             <Ionicons name="add-circle-outline" size={24} color="black" />
             <Text style = {localStyles.addText}>Add Collection</Text>
@@ -126,7 +126,7 @@ const CollectionDesignList = ({ route, navigation }) => {
           ))}
           <TouchableOpacity
             style={localStyles.addButton}
-            onPress={() => navigation.navigate('CollectionName', { parentID: collectionID })}
+            onPress={() => navigation.navigate('CollectionName', { parentID: collection.ID, parentName: collection.name })}
           >
             <Ionicons name="add-circle-outline" size={24} color="black" />
             <Text style = {localStyles.addText}>Add Collection</Text>
