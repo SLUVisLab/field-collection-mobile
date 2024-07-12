@@ -1,25 +1,56 @@
-import React, { useContext } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useFileContext } from '../contexts/FileContext';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext'
 import styles from '../Styles';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const SurveyDesignList = ({ navigation }) => {
-  const { surveyFiles, convertXLSXToSurvey } = useFileContext(); // Access surveyFiles from FileContext
+  const { surveyFiles, convertXLSXToSurvey, deleteSurveyFile } = useFileContext(); // Access surveyFiles from FileContext
 
   const { clearSurveyDesign, setSurveyDesign } = useSurveyDesign()
 
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  const toggleEditMode = () => setIsEditMode(!isEditMode);
+
+  // Function to exit edit mode
+  const exitEditMode = () => {
+    if (isEditMode) {
+      setIsEditMode(false);
+    }
+  };
+
   const handleLoadSurvey = async (filePath) => {
-    
     clearSurveyDesign();
-
     const surveyDesignFromFile = await convertXLSXToSurvey(filePath);
-
     setSurveyDesign(surveyDesignFromFile);
-
-
     navigation.navigate('SurveyBuilder', { path: filePath });
   };
+
+  const handleDeleteSurvey = (filePath) => {
+    console.log('Delete survey:', filePath);
+    Alert.alert(
+      'Delete Survey',
+      'Are you sure you want to delete this survey?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: () => {
+            // Delete the survey file
+            // Add your code here to delete the file
+            deleteSurveyFile(filePath);
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -39,15 +70,52 @@ const SurveyDesignList = ({ navigation }) => {
         return (
           <TouchableOpacity
             key={index}
-            style={styles.button}
-            onPress={() => handleLoadSurvey(filePath)}
+            style={[styles.button, localStyles.surveyButton, isEditMode && localStyles.editMode]}
+            onPress={() => !isEditMode && handleLoadSurvey(filePath)}
+            onLongPress={toggleEditMode}
           >
-            <Text style={styles.text}>{surveyName}</Text>
+            <View style={localStyles.buttonContentContainer}>
+              <Text style={[{ flex: 1 }, styles.text]}>{surveyName}</Text>
+              {isEditMode && (
+                <TouchableOpacity
+                  style={[localStyles.deleteButton, { marginLeft: 'auto' }]} // Adjust positioning as needed
+                  onPress={(e) => {
+                    e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
+                    handleDeleteSurvey(filePath);
+                  }}
+                >
+                  <Ionicons name="close-circle" size={24} color="red" />
+                </TouchableOpacity>
+              )}
+            </View>
           </TouchableOpacity>
         );
       })}
     </View>
   );
 };
+
+const localStyles = StyleSheet.create({
+  buttonContentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flex: 1,
+  },
+  surveyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  editMode: {
+    borderWidth: 1, // Adds a border to the button
+    borderColor: 'rgba(0,0,0,0.2)', // Darkly shaded border color
+    shadowColor: '#000', // Shadow color for iOS
+    shadowOffset: { width: 0, height: 2 }, // Shadow position for iOS
+    shadowOpacity: 0.25, // Shadow opacity for iOS
+    shadowRadius: 3.84, // Shadow blur radius for iOS
+    elevation: 5, // Elevation for Android to create shadow
+  },
+
+});
 
 export default SurveyDesignList;

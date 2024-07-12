@@ -14,8 +14,10 @@ const SurveyBuilder = ({ route, navigation }) => {
   const { surveyDesign, setName, addTask, deleteTaskByID } = useSurveyDesign();
   const { convertSurveyToXLSX, loadSurveyFiles } = useFileContext();
   
-  const [isEditMode, setIsEditMode] = useState(false);
+  
   const [hasUnsavedChanges, setHasUnsavedChanges] = React.useState(false);
+
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const toggleEditMode = () => setIsEditMode(!isEditMode);
 

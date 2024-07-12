@@ -352,13 +352,32 @@ export const FileProvider = ({ children }) => {
         return null;
     }
 
+    const deleteSurveyFile = async (fileName) => {
+        try {
+            // Construct the file URI using the document directory and the file name
+            const fileUri = FileSystem.documentDirectory + fileName;
+    
+            // Delete the file
+            await FileSystem.deleteAsync(fileUri);
+    
+            // Optionally, update your application state as necessary
+            // For example, remove the file from the surveyFiles state
+            loadSurveyFiles();
+    
+            console.log(`${fileName} has been deleted successfully.`);
+        } catch (error) {
+            console.error('Error deleting survey file:', error);
+        }
+    };
+
 
     // Value to be provided by the context
     const value = {
         surveyFiles,
         loadSurveyFiles,
         convertSurveyToXLSX,
-        convertXLSXToSurvey
+        convertXLSXToSurvey,
+        deleteSurveyFile,
     };
 
     // Render the context provider with children

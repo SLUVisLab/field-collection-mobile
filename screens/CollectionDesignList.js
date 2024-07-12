@@ -215,11 +215,11 @@ const CollectionDesignList = ({ route, navigation }) => {
 };
 
 const localStyles = StyleSheet.create({
-  buttonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
+  // buttonContainer: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   justifyContent: 'space-between',
+  // },
   buttonContentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
