@@ -1,19 +1,30 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import styles from '../Styles';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import { useFileContext } from '../contexts/FileContext';
+import { se } from 'date-fns/locale';
 
 const SurveyBuilder = ({ route, navigation }) => {
 
-  const { surveyDesign, setName, addTask } = useSurveyDesign();
+  const { surveyDesign, setName, addTask, deleteTaskByID } = useSurveyDesign();
   const { convertSurveyToXLSX, loadSurveyFiles } = useFileContext();
-
-  // Get survey name from previous view and save to survey context
   
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = React.useState(false);
+
+  const toggleEditMode = () => setIsEditMode(!isEditMode);
+
+  // Function to exit edit mode
+  const exitEditMode = () => {
+    if (isEditMode) {
+      setIsEditMode(false);
+    }
+  };
 
   // Change the title dynamically
   const nav = useNavigation();
@@ -27,9 +38,28 @@ const SurveyBuilder = ({ route, navigation }) => {
     });
   }, [surveyDesign]);
 
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    if (isMounted.current) {
+      // Component is mounted, which means this is not the first render
+      setHasUnsavedChanges(true);
+    } else {
+      // Component has just mounted, so we skip setting unsaved changes
+      isMounted.current = true;
+    }
+  }, [surveyDesign]);
+
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = (action) => {
+        
+        if (!hasUnsavedChanges) {
+          // If there are no unsaved changes, allow navigation
+          navigation.dispatch(action);
+          return false; // No need to show the alert
+        }
+
         Alert.alert(
           'Discard changes?',
           'You have unsaved changes. Are you sure you want to discard them and leave the screen?',
@@ -39,7 +69,10 @@ const SurveyBuilder = ({ route, navigation }) => {
               text: 'Discard',
               style: 'destructive',
               // If the user confirms, allow the back action
-              onPress: () => navigation.dispatch(action),
+              onPress: () => {
+                setHasUnsavedChanges(false);
+                navigation.dispatch(action)
+              },
             },
           ],
           { cancelable: false },
@@ -51,6 +84,10 @@ const SurveyBuilder = ({ route, navigation }) => {
 
       // Add event listener for the beforeRemove event
       const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+        if (!hasUnsavedChanges) {
+          // If there are no unsaved changes, do nothing
+          return;
+        }
         // Prevent the default behavior of removing the screen
         e.preventDefault();
 
@@ -59,12 +96,8 @@ const SurveyBuilder = ({ route, navigation }) => {
       });
 
       return unsubscribe;
-    }, [navigation])
+    }, [navigation, hasUnsavedChanges])
   );
-
-
-  // TODO: remove this whole property as it doesnt really make sense and could only be updated from another context
-  const lastCompleted = surveyDesign.lastSubmitted ? surveyDesign.lastSubmitted : "N/A";
 
 
   const handleCollections = () => {
@@ -87,6 +120,7 @@ const SurveyBuilder = ({ route, navigation }) => {
     console.log(surveyDesign)
     await convertSurveyToXLSX(surveyDesign);
     loadSurveyFiles()
+    setHasUnsavedChanges(false);
 
     Toast.show({
       type: 'success',
@@ -101,22 +135,43 @@ const SurveyBuilder = ({ route, navigation }) => {
     navigation.navigate('Home')
   };
 
+  const handleDeleteTask = (taskID) => {
+    console.log("Called method to delete task")
+    console.log(taskID)
+    deleteTaskByID(taskID);
+  }
+
   //create list element
   const renderTaskItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handleEditTask(item)}>
+    <TouchableOpacity
+      key={item.taskID} 
+      onPress={() => !isEditMode && handleEditTask(item)}
+      onLongPress={toggleEditMode}
+      
+    >
       <View style={localStyles.taskItemButton}>
         {React.createElement(item.constructor.typeIcon, { style: localStyles.taskIcon, size: 28 })}
         <View style = {localStyles.info}>
           <Text style={localStyles.taskName}>{item.taskDisplayName}</Text>
           <Text style={localStyles.taskDescription}>{item.constructor.typeDisplayName}</Text>
         </View>
+        {isEditMode && (
+          <TouchableOpacity
+            style={[localStyles.deleteButton, { marginLeft: 'auto' }]} // Adjust positioning as needed
+            onPress={(e) => {
+              e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
+              handleDeleteTask(item.taskID);
+            }}
+          >
+            <Ionicons name="close-circle" size={24} color="red" />
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.lastCompletedText}>Last completed: {lastCompleted}</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={handleCollections}

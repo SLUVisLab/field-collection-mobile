@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Button, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import styles from '../Styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -7,12 +7,35 @@ import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 
 const CollectionDesignList = ({ route, navigation }) => {
   // Initialize the survey design context
-  const { surveyDesign, addCollection, findCollectionByID } = useSurveyDesign();
+  const { surveyDesign, addCollection, findCollectionByID, deleteTaskByID, deleteCollectionByID, deleteItemFromCollection } = useSurveyDesign();
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  const toggleEditMode = () => setIsEditMode(!isEditMode);
+
+  // Function to exit edit mode
+  const exitEditMode = () => {
+    if (isEditMode) {
+      setIsEditMode(false);
+    }
+  };
+
+  const handleDeleteCollection = (collectionID) => {
+    if (isEditMode) {
+      console.log('Deleting collection with ID: ', collectionID);
+      deleteCollectionByID(collectionID);
+    }
+  };
+
+  const handleDeleteItem = (collectionID, itemID) => {
+    if (isEditMode) {
+      console.log('Deleting item with ID: ', itemID);
+      console.log('From collection with ID: ', collectionID);
+      deleteItemFromCollection(collectionID, itemID);
+    }
+  };
+  
 
   const { collectionID } = route.params || { collectionID: null };
-
-  console.log("Collection ID:")
-  console.log(collectionID)
 
   // Find the collection associated with the provided ID
   const collection = collectionID ? findCollectionByID(collectionID) : null;
@@ -34,25 +57,41 @@ const CollectionDesignList = ({ route, navigation }) => {
   // Scenario 1: New Base Level Collection
   if (!collectionID) {
     return (
-      <View>
-        {/* <Text>CASE 1</Text> */}
-        {surveyDesign.collections.map((item) => (
+      <TouchableWithoutFeedback onPress={exitEditMode}>
+        <View style={{ flex: 1 }}>
+          {/* <Text>CASE 1</Text> */}
+          {surveyDesign.collections.map((collection) => (
+              <TouchableOpacity
+                style={[localStyles.surveyCollectionButton, isEditMode && localStyles.editMode]}
+                key={collection.ID}
+                onLongPress={toggleEditMode}
+                onPress={() => !isEditMode && navigation.push('CollectionDesignList', { collectionID: collection.ID })}
+              >
+                <View style={localStyles.buttonContentContainer}>
+                  <Text style={{ flex: 1 }}>{collection.name}</Text>
+                  {isEditMode && (
+                    <TouchableOpacity
+                      style={[localStyles.deleteButton, { marginLeft: 'auto' }]} // Adjust positioning as needed
+                      onPress={(e) => {
+                        e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
+                        handleDeleteCollection(collection.ID);
+                      }}
+                    >
+                      <Ionicons name="close-circle" size={24} color="red" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </TouchableOpacity>
+          ))}
           <TouchableOpacity
-            style={styles.surveyCollectionButton}
-            key={item.ID}
-            onPress={() => navigation.push('CollectionDesignList', { collectionID: item.ID })}
+            style={localStyles.addButton}
+            onPress={() => !isEditMode && navigation.navigate('CollectionName')}
           >
-            <Text>{item.name}</Text>
+            <Ionicons name="add-circle-outline" size={24} color="black" />
+            <Text style = {localStyles.addText}>Add Collection</Text>
           </TouchableOpacity>
-        ))}
-        <TouchableOpacity
-          style={localStyles.addButton}
-          onPress={() => navigation.navigate('CollectionName')}
-        >
-          <Ionicons name="add-circle-outline" size={24} color="black" />
-          <Text style = {localStyles.addText}>Add Collection</Text>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 
@@ -87,25 +126,41 @@ const CollectionDesignList = ({ route, navigation }) => {
     // THEN only item buttons should be shown.
     if(collection.items.length || collection.parent ){
       return (
-        <View>
-          {/* <Text>CASE 2.2</Text> */}
-          {collection.items.map((item) => (
+        <TouchableWithoutFeedback onPress={exitEditMode}>
+          <View style={{ flex: 1 }}>
+            {/* <Text>CASE 2.2</Text> */}
+            {collection.items.map((item) => (
+              <TouchableOpacity
+                style={[localStyles.surveyItemButton, isEditMode && localStyles.editMode]}
+                key={item.ID}
+                onLongPress={toggleEditMode}
+                onPress={() => !isEditMode && navigation.navigate('NewItem', { item: item })}
+              >
+                <View style={localStyles.buttonContentContainer}>
+                  <Text style={{ flex: 1 }}>{item.name}</Text>
+                  {isEditMode && (
+                    <TouchableOpacity
+                      style={[localStyles.deleteButton, { marginLeft: 'auto' }]} // Adjust positioning as needed
+                      onPress={(e) => {
+                        e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
+                        handleDeleteItem(collection.ID, item.ID);
+                      }}
+                    >
+                      <Ionicons name="close-circle" size={24} color="red" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </TouchableOpacity>
+            ))}
             <TouchableOpacity
-              style={styles.surveyItemButton}
-              key={item.ID}
-              onPress={() => navigation.navigate('NewItem', { item: item })}
+              style={localStyles.addButton}
+              onPress={() => !isEditMode && navigation.navigate('NewItem', { parentID: collectionID })}
             >
-              <Text>{item.name}</Text>
+              <Ionicons name="add-circle-outline" size={24} color="black" />
+              <Text style = {localStyles.addText}>Add Item</Text>
             </TouchableOpacity>
-          ))}
-          <TouchableOpacity
-            style={localStyles.addButton}
-            onPress={() => navigation.navigate('NewItem', { parentID: collectionID })}
-          >
-            <Ionicons name="add-circle-outline" size={24} color="black" />
-            <Text style = {localStyles.addText}>Add Item</Text>
-          </TouchableOpacity>
-        </View>
+          </View>
+        </TouchableWithoutFeedback>
       )
     }
     
@@ -113,25 +168,40 @@ const CollectionDesignList = ({ route, navigation }) => {
     // THEN only collection buttons should be shown
     if(collection.subCollections.length) {
       return (
-        <View>
-          {/* <Text>CASE 2.3</Text> */}
-          {collection.subCollections.map((subcollection) => (
+        <TouchableWithoutFeedback onPress={exitEditMode}>
+          <View style={{ flex: 1 }}>
+            {collection.subCollections.map((subcollection) => (
+                <TouchableOpacity
+                  style={[localStyles.surveyCollectionButton, isEditMode && localStyles.editMode]}
+                  key={subcollection.ID}
+                  onLongPress={toggleEditMode}
+                  onPress={() => !isEditMode && navigation.push('CollectionDesignList', { collectionID: subcollection.ID })}
+                >
+                  <View style={localStyles.buttonContentContainer}>
+                    <Text style={{ flex: 1 }}>{subcollection.name}</Text>
+                    {isEditMode && (
+                      <TouchableOpacity
+                        style={[localStyles.deleteButton, { marginLeft: 'auto' }]} // Adjust positioning as needed
+                        onPress={(e) => {
+                          e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
+                          handleDeleteCollection(subcollection.ID);
+                        }}
+                      >
+                        <Ionicons name="close-circle" size={24} color="red" />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </TouchableOpacity>
+            ))}
             <TouchableOpacity
-              style={styles.surveyCollectionButton}
-              key={subcollection.ID}
-              onPress={() => navigation.push('CollectionDesignList', { collectionID: subcollection.ID })}
+              style={localStyles.addButton}
+              onPress={() => !isEditMode && navigation.navigate('CollectionName', { parentID: collection.ID, parentName: collection.name })}
             >
-              <Text>{subcollection.name}</Text>
+              <Ionicons name="add-circle-outline" size={24} color="black" />
+              <Text style = {localStyles.addText}>Add Collection</Text>
             </TouchableOpacity>
-          ))}
-          <TouchableOpacity
-            style={localStyles.addButton}
-            onPress={() => navigation.navigate('CollectionName', { parentID: collection.ID, parentName: collection.name })}
-          >
-            <Ionicons name="add-circle-outline" size={24} color="black" />
-            <Text style = {localStyles.addText}>Add Collection</Text>
-          </TouchableOpacity>
-        </View>
+          </View>
+        </TouchableWithoutFeedback>
       );
     }
   }
@@ -145,6 +215,18 @@ const CollectionDesignList = ({ route, navigation }) => {
 };
 
 const localStyles = StyleSheet.create({
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  buttonContentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flex: 1,
+  },
+
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -161,7 +243,41 @@ const localStyles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     marginLeft: 4,
-  }
+  },
+  surveyItemButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    textAlign: 'left',
+    paddingVertical: 12,
+    marginVertical: 3,
+    marginHorizontal: 16,
+    paddingHorizontal: 32,
+    borderRadius: 3,
+    elevation: 3,
+    backgroundColor: 'white'
+  },
+  surveyCollectionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    textAlign: 'left',
+    paddingVertical: 12,
+    marginVertical: 3,
+    marginHorizontal: 16,
+    paddingHorizontal: 32,
+    borderRadius: 3,
+    elevation: 3,
+    backgroundColor: 'white',
+  },
+  editMode: {
+    borderWidth: 1, // Adds a border to the button
+    borderColor: 'rgba(0,0,0,0.2)', // Darkly shaded border color
+    shadowColor: '#000', // Shadow color for iOS
+    shadowOffset: { width: 0, height: 2 }, // Shadow position for iOS
+    shadowOpacity: 0.25, // Shadow opacity for iOS
+    shadowRadius: 3.84, // Shadow blur radius for iOS
+    elevation: 5, // Elevation for Android to create shadow
+    backgroundColor: '#FFF', // Button background color, adjust as needed
+  },
 
 });
 

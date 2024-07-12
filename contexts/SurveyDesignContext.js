@@ -80,13 +80,6 @@ export const SurveyDesignProvider = ({ children }) => {
     return !isDuplicate;
   };
 
-  const deleteTask = (taskID) => {
-    setSurveyDesign((prevData) => ({
-      ...prevData,
-      tasks: prevData.tasks.filter(task => task.taskID !== taskID)
-    }));
-  }
-
   const getTaskByID = (taskID) => {
     const task = surveyDesign.tasks.find(task => task.taskID === taskID);
     return task !== undefined ? task : null;
@@ -156,6 +149,45 @@ export const SurveyDesignProvider = ({ children }) => {
     }
   };
 
+  const deleteTaskByID = (taskID) => {
+    console.log("Deleting task with ID: " + taskID);
+    const updatedTasks = surveyDesign.tasks.filter(task => task.taskID !== taskID);
+
+    const newSurveyDesign = {
+      ...surveyDesign,
+      tasks: updatedTasks, // Explicitly update the tasks array
+    };
+    setSurveyDesign(newSurveyDesign);
+    console.log("Task deleted");
+
+  };
+  
+
+  const deleteCollectionByID = (collectionID) => {
+    const deleteCollectionRecursive = (id, collections) => {
+      return collections.map(collection => {
+        // If the current collection has subCollections, check them for the target ID
+        if (collection.subCollections) {
+          collection.subCollections = deleteCollectionRecursive(id, collection.subCollections);
+        }
+        return collection;
+      }).filter(collection => collection.ID !== id); // Now, filter the collection itself if it matches the ID
+    };
+  
+    surveyDesign.collections = deleteCollectionRecursive(collectionID, surveyDesign.collections);
+    setSurveyDesign({ ...surveyDesign });
+  };
+  
+  // Delete an item from a collection by item ID
+  const deleteItemFromCollection = (parentID, itemID) => {
+    const parentCollection = findCollectionByID(parentID);
+    if (parentCollection) {
+      parentCollection.items = parentCollection.items.filter(item => item.ID !== itemID);
+      setSurveyDesign({ ...surveyDesign });
+    } else {
+      console.error("Parent collection not found");
+    }
+  };
 
   return (
     <SurveyDesignContext.Provider 
@@ -165,7 +197,9 @@ export const SurveyDesignProvider = ({ children }) => {
           setName,
           addTask,
           updateTask,
-          deleteTask,
+          deleteTaskByID,
+          deleteCollectionByID,
+          deleteItemFromCollection,
           getTaskByID,
           addCollection,
           findCollectionByID,
