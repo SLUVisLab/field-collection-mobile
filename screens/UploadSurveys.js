@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import styles from '../Styles';
 import Toast from 'react-native-toast-message';
@@ -17,23 +17,23 @@ const UploadSurveys = ({ route, navigation }) => {
     const { listAllSavedSurveys, uploadSurvey } = useSurveyData()
     const [surveys, setSurveys] = useState([]);
     const [isConnected, setIsConnected] = useState(true);
+    const [isUploading, setIsUploading] = useState(false);
 
     const realm = useRealm();
 
-    useEffect(() => {
-        
+    const fetchSurveys = async () => {
+        console.log("fetchSurveys called");
+        const savedSurveys = await listAllSavedSurveys();
+        setSurveys(savedSurveys);
+    };
+
+    useEffect(() => {   
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
             if (!state.isConnected) {
                 Alert.alert("Offline", "Uploads are disabled while offline.");
             }
         });
-
-        const fetchSurveys = async () => {
-          console.log("fetchSurveys called");
-          const savedSurveys = await listAllSavedSurveys();
-          setSurveys(savedSurveys);
-        };
     
         fetchSurveys();
 
@@ -45,17 +45,51 @@ const UploadSurveys = ({ route, navigation }) => {
             Toast.show({
                 type: 'error',
                 text1: 'You are offline',
-                text2: 'Please connect to the internet to upload surveys.'
+                text2: 'Please connect to the internet to upload surveys.',
+                position: 'bottom',
+                visibilityTime: 3000,
+                autoHide: true,
+                topOffset: 30,
+                bottomOffset: 40,
             });
             return;
         }
         console.log("called upload handler");
         console.log(storageKey);
+
+        setIsUploading(true);
+
         try {
             await uploadSurvey(storageKey, realm); // Pass Realm instance to the function
             console.log("Upload successful");
+            fetchSurveys();
+
+            Toast.show({
+                type: 'success',
+                text1: 'Upload Successful',
+                text2: 'Your survey has been uploaded successfully.',
+                position: 'bottom',
+                visibilityTime: 3000,
+                autoHide: true,
+                topOffset: 30,
+                bottomOffset: 40,
+            });
+            
         } catch (error) {
             console.error("Upload failed", error);
+            Toast.show({
+                type: 'error', // Adjust the type based on your toast library's configuration
+                text1: 'Upload Failed',
+                text2: 'There was a problem uploading your survey. Please try again.',
+                position: 'bottom',
+                visibilityTime: 3000,
+                autoHide: true,
+                topOffset: 30,
+                bottomOffset: 40,
+            });
+
+        } finally {
+            setIsUploading(false); // End uploading
         }
     };
 
@@ -70,11 +104,17 @@ const UploadSurveys = ({ route, navigation }) => {
                 <TouchableOpacity key={survey.key} onPress={() => uploadHandler(survey.key)}>
                 <View style={localStyles.card}>
                     <Text>{survey.surveyName}</Text>
-                    <Text>{new Date(survey.completed).toLocaleString()}</Text>
+                    <Text>Completed: {new Date(survey.completed).toLocaleString()}</Text>
                     <Text>{survey.count} observations</Text>
                 </View>
                 </TouchableOpacity>
             ))
+        )}
+        {isUploading && (
+            <View style={localStyles.overlay}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text style={localStyles.overlayText}>Uploading...</Text>
+            </View>
         )}
   </View>
   );
@@ -101,6 +141,20 @@ const localStyles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 10,
     },
+    overlay: {
+        position: 'absolute',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+      },
+      overlayText: {
+        color: 'white',
+        marginTop: 20, // Adjust the space between the indicator and the text as needed
+      },
 
 });
 

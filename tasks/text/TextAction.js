@@ -15,10 +15,10 @@ const TextAction = ({ navigation, existingData, onComplete, task, item }) => {
     }, []);
 
     useEffect(() => {
-        if(task && task.dataLabel && existingData[task.dataLabel]) {
+        if(task && task.dataLabel && existingData && existingData["data"] && existingData["data"][task.dataLabel]) {
             console.log("existing text task data found")
     
-            setData(existingData[task.dataLabel])
+            setData(existingData["data"][task.dataLabel])
         }
     }, [task, existingData]);
 

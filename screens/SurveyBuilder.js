@@ -57,7 +57,7 @@ const SurveyBuilder = ({ route, navigation }) => {
       type: 'success',
       position: 'bottom',
       text1: 'Survey Saved Successfully',
-      visibilityTime: 1000,
+      visibilityTime: 3000,
       autoHide: true,
       topOffset: 30,
       bottomOffset: 40,

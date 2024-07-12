@@ -4,12 +4,15 @@ import { v4 as uuidv4 } from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import {storage, auth} from '../firebase';
+import * as FileSystem from 'expo-file-system';
 // import {useRealm} from '@realm/react';
 import {BSON} from 'realm';
 // import Observation from '../models/Observation';
 import SurveyResults from '../models/SurveyResults';
 
 const SurveyDataContext = createContext();
+
+const MEDIA_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'avi', 'wmv', 'flv', 'webm'];
 
 export const SurveyDataProvider = ({ children }) => {
   // Define the initial state
@@ -288,22 +291,30 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
-  const deleteUploadedLocalMedia = async (key) => {
+  const deleteUploadedLocalMedia = async (mediaPaths) => {
     try {
-
-    } catch(e) { 
-      // deletion error
-      console.log("Delete Uploaded Image Failed: ")
+      for (const path of mediaPaths) {
+        await FileSystem.deleteAsync(path);
+      }
+      console.log("All media files have been successfully deleted.");
+    } catch (e) {
+      console.log("Delete Uploaded Media Failed: ", e);
     }
   }
 
-  const deleteUploadedLocalSurveyData = async (key) => {
-
+  const deleteUploadedLocalSurveyData = async (storageKey) => {
     try {
+      if (!storageKey) {
+        console.log("Storage key is required.");
+        return;
+      }
+  
+      await AsyncStorage.removeItem(storageKey);
+      console.log(`Survey data associated with ${storageKey} has been successfully deleted.`);
 
     } catch(e) { 
       // deletion error
-      console.log("Delete Uploaded Survey Failed: ")
+      console.log(`Delete Uploaded Survey Failed for ${storageKey}: `, e);
     }
   }
 
@@ -379,17 +390,18 @@ export const SurveyDataProvider = ({ children }) => {
       } catch (e) {
         console.log("Upload to Media Storage Failed: ");
         console.error(e);
+        throw e;
       }
     } else {
       console.log('User is not authenticated. Cannot upload file.');
+      throw new Error('User is not authenticated. Cannot upload file.');
     }
   }
 
   const isMedia = (value) => {
     console.log("Checking if media: ", value)
-     const mediaExtensions = ['.jpg', '.png', '.mp4', '.mp3'];
      
-     if (typeof value === 'string' && mediaExtensions.some(ext => value.endsWith(ext))) {
+     if (typeof value === 'string' && MEDIA_EXTENSIONS.some(ext => value.endsWith(ext))) {
         return true;
       }
       return false;
@@ -437,9 +449,8 @@ export const SurveyDataProvider = ({ children }) => {
     } catch (e) {
       console.log("Handle Media Failed: ");
       console.error(e);
+      throw e;
     }
-  
-    return null;
   }
 
   const uploadSurvey = async (storageKey, realm) => {
@@ -449,16 +460,39 @@ export const SurveyDataProvider = ({ children }) => {
 
       try {
 
+        let isProcessing = false;
         // This listener will be called when the realm has been updated
         // It handles cleanup tasks after the survey has been uploaded
         realm.addListener('change', realmChangedListener = () => {
-          console.log("Data saved to local Realm");
-          console.log(storageKey)
-          console.log("MEDIA")
-          console.log(mediaPaths)
-          realm.removeAllListeners();
-          resolve("Survey uploaded successfully");
+          console.log("REALM CHANGED");
+
+          if (isProcessing) {
+            console.log("Already processing. Skipping...");
+            return;
+          }
+
+          isProcessing = true; // Prevent multiple calls to this listener
+
+          const handleAsyncOperations = async () => {
+            // Delete the uploaded media files
+            await deleteUploadedLocalMedia(mediaPaths);
+            
+            // Delete the survey data from AsyncStorage
+            await deleteUploadedLocalSurveyData(storageKey);
+          };
+
+          handleAsyncOperations().then(() => {
+            realm.removeAllListeners();
+            resolve("Survey uploaded successfully");
+            isProcessing = false;
+          }).catch((error) => {
+            isProcessing = false;
+            console.error("Error handling async operations: ", error);
+            // Handle any errors that occurred during the async operations
+          });
+
         });
+
       } catch (error) {
         console.error(
           `An exception was thrown within change listeners: ${error}`
@@ -489,9 +523,6 @@ export const SurveyDataProvider = ({ children }) => {
           });
 
         });
-
-        
-        
 
       } catch (error) {
         console.error("Upload Survey Failed:", error);

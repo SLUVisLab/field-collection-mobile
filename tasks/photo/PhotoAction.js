@@ -21,13 +21,13 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
   };
 
   useEffect(() => {
-    if(task && task.dataLabel && existingData[task.dataLabel]) {
+    if(task && task.dataLabel && existingData && existingData["data"] && existingData["data"][task.dataLabel]) {
       console.log("existing photo task data found")
       
       const fetchImage = async () => {
         try {
-          const img = await retrieveImage(existingData[task.dataLabel]);
-          setPhotoURI(existingData[task.dataLabel])
+          const img = await retrieveImage(existingData["data"][task.dataLabel]);
+          setPhotoURI(existingData["data"][task.dataLabel])
           setPhoto(img);
         } catch (error) {
           console.log("Retrieve image failed: ", error)
