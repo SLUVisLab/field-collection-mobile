@@ -7,6 +7,7 @@ import ProgressBar from 'react-native-progress/Bar';
 import { format } from 'date-fns';
 import {useRealm} from '@realm/react';
 import 'react-native-get-random-values'
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -14,12 +15,23 @@ import { useSurveyData } from '../contexts/SurveyDataContext';
 
 const UploadSurveys = ({ route, navigation }) => {
 
-    const { listAllSavedSurveys, uploadSurvey } = useSurveyData()
+    const { listAllSavedSurveys, uploadSurvey, deleteLocalSurveyData } = useSurveyData()
     const [surveys, setSurveys] = useState([]);
     const [isConnected, setIsConnected] = useState(true);
     const [isUploading, setIsUploading] = useState(false);
 
     const realm = useRealm();
+
+    const [isEditMode, setIsEditMode] = useState(false);
+
+    const toggleEditMode = () => setIsEditMode(!isEditMode);
+
+    // Function to exit edit mode
+    const exitEditMode = () => {
+        if (isEditMode) {
+        setIsEditMode(false);
+        }
+    };
 
     const fetchSurveys = async () => {
         console.log("fetchSurveys called");
@@ -93,6 +105,32 @@ const UploadSurveys = ({ route, navigation }) => {
         }
     };
 
+    const handleDeleteSurveyData = (key) => {
+        console.log('Delete survey:', key);
+        Alert.alert(
+          'Delete Saved Survey Data',
+          'Are you sure you want to delete this survey data?',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel',
+            },
+            {
+              text: 'Delete',
+              onPress: () => {
+                // Delete the survey file
+                // Add your code here to delete the file
+                deleteLocalSurveyData(key);
+                fetchSurveys();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+
+
   return (
     <View style={localStyles.wrapper}>
         {!isConnected && <Text style={localStyles.networkWarning}>No Network Connection: Upload Not Available</Text>}
@@ -101,11 +139,28 @@ const UploadSurveys = ({ route, navigation }) => {
             <Text>No Completed Surveys Found</Text>
         ) : (
             surveys.map(survey => (
-                <TouchableOpacity key={survey.key} onPress={() => uploadHandler(survey.key)}>
+                <TouchableOpacity 
+                    key={survey.key} 
+                    onPress={() => !isEditMode && uploadHandler(survey.key)}
+                    onLongPress={toggleEditMode}
+                >
                 <View style={localStyles.card}>
-                    <Text>{survey.surveyName}</Text>
-                    <Text>Completed: {new Date(survey.completed).toLocaleString()}</Text>
-                    <Text>{survey.count} observations</Text>
+                    <View>
+                        <Text>{survey.surveyName}</Text>
+                        <Text>Completed: {new Date(survey.completed).toLocaleString()}</Text>
+                        <Text>{survey.count} observations</Text>
+                    </View>
+                    {isEditMode && (
+                        <TouchableOpacity
+                            style={[localStyles.deleteButton, { marginLeft: 'auto' }]} // Adjust positioning as needed
+                            onPress={(e) => {
+                            e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
+                            handleDeleteSurveyData(survey.key);
+                            }}
+                        >
+                            <Ionicons name="close-circle" size={24} color="red" />
+                        </TouchableOpacity>
+                    )}
                 </View>
                 </TouchableOpacity>
             ))
@@ -135,6 +190,7 @@ const localStyles = StyleSheet.create({
         borderColor: '#000',
         padding: 10,
         margin: 5,
+        flexDirection: 'row',
     },
     networkWarning: {
         color: 'red',

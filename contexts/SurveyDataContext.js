@@ -291,7 +291,7 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
-  const deleteUploadedLocalMedia = async (mediaPaths) => {
+  const deleteLocalMedia = async (mediaPaths) => {
     try {
       for (const path of mediaPaths) {
         await FileSystem.deleteAsync(path);
@@ -302,7 +302,7 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
-  const deleteUploadedLocalSurveyData = async (storageKey) => {
+  const deleteLocalSurveyData = async (storageKey) => {
     try {
       if (!storageKey) {
         console.log("Storage key is required.");
@@ -475,10 +475,10 @@ export const SurveyDataProvider = ({ children }) => {
 
           const handleAsyncOperations = async () => {
             // Delete the uploaded media files
-            await deleteUploadedLocalMedia(mediaPaths);
+            await deleteLocalMedia(mediaPaths);
             
             // Delete the survey data from AsyncStorage
-            await deleteUploadedLocalSurveyData(storageKey);
+            await deleteLocalSurveyData(storageKey);
           };
 
           handleAsyncOperations().then(() => {
@@ -554,6 +554,7 @@ export const SurveyDataProvider = ({ children }) => {
           listAllSavedSurveys,
           saveForUpload,
           uploadSurvey,
+          deleteLocalSurveyData,
 
       }}
     >
