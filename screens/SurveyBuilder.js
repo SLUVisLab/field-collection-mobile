@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import styles from '../Styles';
 
@@ -26,6 +26,41 @@ const SurveyBuilder = ({ route, navigation }) => {
       title: surveyDesign.name
     });
   }, [surveyDesign]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = (action) => {
+        Alert.alert(
+          'Discard changes?',
+          'You have unsaved changes. Are you sure you want to discard them and leave the screen?',
+          [
+            { text: 'Cancel', style: 'cancel', onPress: () => null },
+            {
+              text: 'Discard',
+              style: 'destructive',
+              // If the user confirms, allow the back action
+              onPress: () => navigation.dispatch(action),
+            },
+          ],
+          { cancelable: false },
+        );
+
+        // By returning `true`, we prevent the default back behavior
+        return true;
+      };
+
+      // Add event listener for the beforeRemove event
+      const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+        // Prevent the default behavior of removing the screen
+        e.preventDefault();
+
+        // Call the function to show the alert dialog
+        onBackPress(e.data.action);
+      });
+
+      return unsubscribe;
+    }, [navigation])
+  );
 
 
   // TODO: remove this whole property as it doesnt really make sense and could only be updated from another context
