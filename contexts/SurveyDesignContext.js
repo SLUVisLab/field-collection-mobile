@@ -1,7 +1,8 @@
 import React, { createContext, useState, useContext } from 'react';
 import Task from '../tasks/Task'
 import SurveyCollection from '../utils/SurveyCollection';
-import SurveyItem from '../utils/SurveyItem';
+import SurveyDesign from '../models/SurveyDesign';
+import {BSON} from 'realm';
 
 const SurveyDesignContext = createContext();
 
@@ -189,11 +190,58 @@ export const SurveyDesignProvider = ({ children }) => {
     }
   };
 
+  const saveSurveyDesign = async (realm) => {
+    return new Promise(async (resolve, reject) => {
+
+
+      // TODO: Clean this up somehow!
+      // Realm will save generic javascript objects in collections of mixed data types
+      // However, it will not accept objects that are instances of custom classes.
+      // We need to convert the custom class instances to plain objects before saving
+      // and then convert them back to instances when loading the data.
+      // We also have to store the typeID of the class instance so we can recreate the instance
+
+      const tasksJSONArr = JSON.stringify(surveyDesign['tasks']);
+      const tasksObjArr = JSON.parse(tasksJSONArr);
+
+      if(tasksObjArr.length === surveyDesign['tasks'].length) {
+        console.log("Tasks are the same")
+        for (let i = 0; i < tasksObjArr.length; i++) {
+          tasksObjArr[i]["typeId"] = surveyDesign['tasks'][i].constructor.typeID
+        }
+      } else {
+        console.log("Tasks are different, aborting save")
+        reject(error);
+      }
+
+      const collectionsJSONArr = JSON.stringify(surveyDesign['collections']);
+      const collectionsObjArr = JSON.parse(collectionsJSONArr);
+
+      try {
+        realm.write(() => {
+          realm.create('SurveyDesign', {
+            _id: new BSON.ObjectId(),
+            name: surveyDesign["name"],
+            tasks: tasksObjArr,
+            collections: collectionsObjArr
+          });
+        });
+
+        resolve();
+
+      } catch (error) {
+        console.error("Error saving survey design: ", error);
+        reject(error);
+      }
+    });
+  };
+
   return (
     <SurveyDesignContext.Provider 
       value={{
           surveyDesign,
           setSurveyDesign,
+          saveSurveyDesign,
           setName,
           addTask,
           updateTask,

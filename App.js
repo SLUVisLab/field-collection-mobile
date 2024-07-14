@@ -14,6 +14,7 @@ import { FileProvider } from './contexts/FileContext';
 import { RealmProvider } from '@realm/react';
 
 import SurveyResults from './models/SurveyResults';
+import SurveyDesign from './models/SurveyDesign';
 // import Observation from './models/Observation';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -72,9 +73,16 @@ class App extends React.Component {
         <UserProvider fallback={LoginWrapper}>
         {/* <RealmProvider {...realmConfig}> */}
           <RealmProvider
-          schema={[SurveyResults]}
+          schema={[SurveyResults, SurveyDesign]}
           sync={{
             flexible: true,
+            initialSubscriptions: {
+              update(subs, realm) {
+                subs.add(realm.objects(SurveyDesign).filtered("name != nil"), {
+                  name: "All Survey Designs",
+                });
+              },
+            },
           }}>
             <NavigationContainer>
               <FileProvider>

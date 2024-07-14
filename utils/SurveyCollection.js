@@ -5,7 +5,8 @@ class SurveyCollection {
     constructor({ name, parentId = null, parentName = null, id = null }) {
 
     //TODO: Persist collection ID's when converting to and from xlsx
-      this.ID = uuidv4();
+    
+      this.ID = id ? id : uuidv4();
       this.name = name;
       this.subCollections = [];
       this.parentId = parentId ? parentId: null;

@@ -9,12 +9,15 @@ import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import { useFileContext } from '../contexts/FileContext';
 import { se } from 'date-fns/locale';
 
+import { useRealm } from '@realm/react';
+
 const SurveyBuilder = ({ route, navigation }) => {
 
-  const { surveyDesign, setName, addTask, deleteTaskByID } = useSurveyDesign();
+  const { surveyDesign, saveSurveyDesign, setName, addTask, deleteTaskByID } = useSurveyDesign();
   const { convertSurveyToXLSX, loadSurveyFiles } = useFileContext();
   
-  
+  const realm = useRealm();
+
   const [hasUnsavedChanges, setHasUnsavedChanges] = React.useState(false);
 
   const [isEditMode, setIsEditMode] = useState(false);
@@ -137,6 +140,43 @@ const SurveyBuilder = ({ route, navigation }) => {
     navigation.navigate('Home')
   };
 
+  const handleDoneMongo = async () => {
+    console.log("Called method to save survey")
+    console.log(surveyDesign)
+    
+    try {
+      await saveSurveyDesign(realm)
+      console.log("Survey saved successfully")
+
+      setHasUnsavedChanges(false);
+
+      Toast.show({
+        type: 'success',
+        position: 'bottom',
+        text1: 'Survey Saved Successfully',
+        visibilityTime: 3000,
+        autoHide: true,
+        topOffset: 30,
+        bottomOffset: 40,
+      });
+
+      navigation.navigate('Home')
+    } catch (error) {
+      console.error("Survey save failed", error);
+      Toast.show({
+        type: 'error', // Adjust the type based on your toast library's configuration
+        text1: 'Survey Save Failed',
+        text2: 'There was a problem saving your survey. Please try again.',
+        position: 'bottom',
+        visibilityTime: 3000,
+        autoHide: true,
+        topOffset: 30,
+        bottomOffset: 40,
+      });
+
+    }
+  };
+
   const handleDeleteTask = (taskID) => {
     console.log("Called method to delete task")
     console.log(taskID)
@@ -199,7 +239,7 @@ const SurveyBuilder = ({ route, navigation }) => {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={handleDone}
+        onPress={handleDoneMongo}
       >
         <Text style={styles.text}>Save</Text>
       </TouchableOpacity>
