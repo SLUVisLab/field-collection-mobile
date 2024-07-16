@@ -11,6 +11,13 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
   const [showInstructions, setShowInstructions] = useState(false);
   const [photo, setPhoto] = useState();
   const [photoURI, setPhotoURI] = useState();
+  const [isCameraReady, setIsCameraReady] = useState(false);
+
+  useEffect(() => {
+    if (isCameraReady) {
+      console.log('Camera is ready. Perform an action here.');
+    }
+  }, [isCameraReady]);
 
   // let camera_instance;
   const cameraRef = useRef(null);
@@ -94,15 +101,17 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
 
   return (
     <View style={styles.container}>
+      <View style={styles.info}>
+        {collection.parentName && <Text style={styles.infoText}>{collection.parentName}</Text>}
+        <Text style={styles.infoText}>{collection.name}</Text>
+        <Text style={styles.infoText}>{item.name}</Text>
+      </View>
       <Camera 
         ref={cameraRef}
         style={styles.camera} 
-        type={facing === 'back' ? Camera.Constants.Type.back : Camera.Constants.Type.front}  
+        type={facing === 'back' ? Camera.Constants.Type.back : Camera.Constants.Type.front}
+        onCameraReady={() => setIsCameraReady(true)}  
       >
-        <View style={styles.info}>
-          <Text style={styles.infoText}>{collection.name}</Text>
-          <Text style={styles.infoText}>{item.name}</Text>
-        </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
             <Ionicons name="camera-reverse" size={58} color="white" />
@@ -186,8 +195,10 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
     },
     info: {
       position: 'absolute',
-      top: 10,
-      left: 10
+      top: 20,
+      left: 10,
+      width: 500,
+      zIndex: 1,
     },
     helpButton: {
       justifyContent: 'center',

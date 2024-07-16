@@ -5,7 +5,7 @@ import styles from '../../Styles';
 
 
 
-const TextAction = ({ navigation, existingData, onComplete, task, item }) => {
+const TextAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
 
     const [data, setData] = useState('');
     const [showInstructions, setShowInstructions] = useState(false);
@@ -30,7 +30,11 @@ const TextAction = ({ navigation, existingData, onComplete, task, item }) => {
 
     return (
     <View style={[styles.container, { flex: 1, justifyContent: 'space-between' }]}>
-        <Text style={localStyles.itemName}>{item.name}</Text>
+      <View style={localStyles.infoContainer}>
+        {collection.parentName && <Text style={localStyles.info}>{collection.parentName}</Text>}
+        <Text style={localStyles.info}>{collection.name}</Text>
+        <Text style={localStyles.info}>{item.name}</Text>
+      </View>
         <View style={{ justifyContent: 'center', flex: 1 }}>
             <View>
                 <View style={[styles.inputLabelContainer, { flexDirection: 'row', justifyContent: 'space-between' }]}>
@@ -80,11 +84,13 @@ const TextAction = ({ navigation, existingData, onComplete, task, item }) => {
   };
 
   const localStyles = StyleSheet.create({
-    itemName: {
+    infoContainer: {
+      marginTop: 20,
+    },
+    info: {
         fontWeight: 'bold',
         fontSize: 20,
         textAlign: 'center',
-        marginTop: 20,
     },
     helpButton: {
         felx: 1,

@@ -88,7 +88,7 @@ const TaskAction = ({ route, navigation }) => {
             renderedComponent = <PhotoAction key={taskID} navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
             break;
         case 2:
-            renderedComponent = <TextAction key={taskID} navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} />;
+            renderedComponent = <TextAction key={taskID} navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
             break;
         default:
             renderedComponent = <Text>Error Loading Component</Text>
