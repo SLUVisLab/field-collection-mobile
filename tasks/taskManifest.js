@@ -1,11 +1,22 @@
-//This code is not currently implemented. Small number of initial task types 
-// means they are hardcoded. Task manifest is a feature for later on when new 
-// task modules can be imported dynamically from this list
+import PhotoTask from './photo/PhotoTask'
+import PhotoSetup from './photo/PhotoSetup';
+import PhotoAction from './photo/PhotoAction';
 
-const taskManifest = [
-    './photo/PhotoTask.js',
-    './text/TextTask.js',
-    // Add more module paths as needed
-  ];
+import TextTask from './text/TextTask'
+import TextSetup from './text/TextSetup';
+import TextAction from './text/TextAction';
+
+const TaskManifest = {
+  [TextTask.typeID]: {
+    taskAction: TextAction,
+    taskSetup: TextSetup,
+    taskModule: TextTask
+  },
+  [PhotoTask.typeID]: {
+    taskAction: PhotoAction,
+    taskSetup: PhotoSetup,
+    taskModule: PhotoTask
+  },
+}
   
-  export default taskManifest;
+export default TaskManifest;

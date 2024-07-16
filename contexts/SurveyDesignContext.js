@@ -1,14 +1,18 @@
 import React, { createContext, useState, useContext } from 'react';
 import Task from '../tasks/Task'
+import TaskManifest from '../tasks/TaskManifest';
 import SurveyCollection from '../utils/SurveyCollection';
 import SurveyDesign from '../models/SurveyDesign';
 import {BSON} from 'realm';
+import SurveyItem from '../utils/SurveyItem';
+import { id } from 'date-fns/locale';
 
 const SurveyDesignContext = createContext();
 
 export const SurveyDesignProvider = ({ children }) => {
   // Define the initial state
   const initialState = {
+    id: null,
     name: null,
     lastSubmitted: null,
     collections: [],
@@ -200,12 +204,12 @@ export const SurveyDesignProvider = ({ children }) => {
       // We need to convert the custom class instances to plain objects before saving
       // and then convert them back to instances when loading the data.
       // We also have to store the typeID of the class instance so we can recreate the instance
+      // which, looking at it again, is a bit of a mess.
 
       const tasksJSONArr = JSON.stringify(surveyDesign['tasks']);
       const tasksObjArr = JSON.parse(tasksJSONArr);
 
       if(tasksObjArr.length === surveyDesign['tasks'].length) {
-        console.log("Tasks are the same")
         for (let i = 0; i < tasksObjArr.length; i++) {
           tasksObjArr[i]["typeId"] = surveyDesign['tasks'][i].constructor.typeID
         }
@@ -216,15 +220,30 @@ export const SurveyDesignProvider = ({ children }) => {
 
       const collectionsJSONArr = JSON.stringify(surveyDesign['collections']);
       const collectionsObjArr = JSON.parse(collectionsJSONArr);
+      
 
       try {
         realm.write(() => {
-          realm.create('SurveyDesign', {
-            _id: new BSON.ObjectId(),
-            name: surveyDesign["name"],
-            tasks: tasksObjArr,
-            collections: collectionsObjArr
-          });
+          if (surveyDesign.id) {
+            console.log("Updating existing survey design")
+            const existingSurvey = realm.objectForPrimaryKey('SurveyDesign', surveyDesign.id);
+
+            if (existingSurvey) {
+              console.log("Existing survey found in mongo")
+              existingSurvey.name = surveyDesign["name"];
+              existingSurvey.tasks = tasksObjArr;
+              existingSurvey.collections = collectionsObjArr;
+            }
+
+          } else {
+            console.log("Creating new survey design")
+            realm.create('SurveyDesign', {
+              _id: new BSON.ObjectId(),
+              name: surveyDesign["name"],
+              tasks: tasksObjArr,
+              collections: collectionsObjArr
+            });
+          }
         });
 
         resolve();
@@ -236,12 +255,104 @@ export const SurveyDesignProvider = ({ children }) => {
     });
   };
 
+  const surveyFromMongo = async (mongoDesign) => {
+
+    const newDesign = {
+      id: mongoDesign._id,
+      name: mongoDesign.name,
+      tasks: [],
+      collections: []
+    };
+
+    for (const collection of mongoDesign.collections) {
+      // console.log("Parsing base level collection....")
+      let newCollection = new SurveyCollection({
+        name: collection.name,
+        id: collection._id
+      });
+      
+      if(collection.items.length > 0) {
+        // console.log("Items found....")
+        for (const item of collection.items) {
+
+          console.log("creating new instance of item...")
+          newItem = new SurveyItem({
+            name: item.name,
+            id: item.ID,
+            labels: item.labels,
+            location: item.location,
+            collectionId: item.collectionId
+          });
+          console.log("New Item ID:", newItem.ID)
+          console.log("Source Item ID:", item.ID)
+
+          newCollection.addItem(newItem);
+        }
+
+      } else if (collection.subCollections.length > 0) {
+        // console.log("subcollection found....")
+        console.log(collection.subCollections)
+        for (const subCollection of collection.subCollections) {
+          newSubCollection = new SurveyCollection({
+            name: subCollection.name,
+            id: subCollection._id,
+            parentName: collection.name,
+            parentId: collection._id
+          });
+
+          if(subCollection.items.length > 0) {
+            // console.log("sub Items found....")
+            // console.log(subCollection.items)
+            for (const item of subCollection.items) {
+              newItem = new SurveyItem({
+                name: item.name,
+                id: item._id,
+                labels: item.labels,
+                location: item.location,
+                collectionId: item.collectionId
+            });
+              newSubCollection.addItem(newItem);
+            }
+          }
+          newCollection.addSubcollection(newSubCollection);
+
+        }
+      } else {
+        // there are no tasks or subcollections
+        console.log("No items or subcollections found")
+      }
+
+      console.log(newCollection)
+
+      newDesign.collections.push(newCollection);
+    }
+
+    for (const task of mongoDesign.tasks) {
+      // console.log("Parsing task....")
+
+      let newTask = new TaskManifest[task.typeId].taskModule(
+        task.taskID,
+        task.taskDisplayName,
+        task.dataLabel,
+        task.instructions
+      );
+
+      newDesign.tasks.push(newTask);
+    }
+
+    setSurveyDesign({
+      ...newDesign,
+      });
+
+  }
+
   return (
     <SurveyDesignContext.Provider 
       value={{
           surveyDesign,
           setSurveyDesign,
           saveSurveyDesign,
+          surveyFromMongo,
           setName,
           addTask,
           updateTask,

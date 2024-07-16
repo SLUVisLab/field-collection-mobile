@@ -29,7 +29,7 @@ const NewItem = ({ route, navigation }) => {
       console.log('item Name:', itemName);
       console.log('parentID:', parentID);
 
-      let newItem = new SurveyItem(itemName)
+      let newItem = new SurveyItem({name: itemName, collectionID: parentID});
 
       addItemToCollection(parentID, newItem)
 

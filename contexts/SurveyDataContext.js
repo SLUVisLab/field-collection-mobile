@@ -89,21 +89,28 @@ export const SurveyDataProvider = ({ children }) => {
     // newObservation["surveyID"] = survey.ID; //implement me
 
     console.log("New Observation: ", newObservation)
+    console.log("Observations: ", surveyData.observations)
 
     setSurveyData((prevData) => {
       // Check if an observation for this item already exists
       const existingIndex = prevData.observations.findIndex(obs => obs.itemID === item.ID);
 
       if (existingIndex !== -1) {
-          // If it exists, update it
-          const updatedObservations = [...prevData.observations];
-          updatedObservations[existingIndex] = newObservation;
-          return { ...prevData, observations: updatedObservations };
+        // If it exists, update it
+        console.log("Updating existing observation...")
+        const updatedObservations = [...prevData.observations];
+        updatedObservations[existingIndex] = newObservation;
+        return { ...prevData, observations: updatedObservations };
       } else {
-          // If it doesn't exist, add it
-          return { ...prevData, observations: [...prevData.observations, newObservation] };
+        console.log("Adding new observation...")
+        // If it doesn't exist, add it
+        return { ...prevData, observations: [...prevData.observations, newObservation] };
       }
+
+      
     });
+
+    console.log("Observations: ", surveyData.observations)
 
   };
 
@@ -182,6 +189,7 @@ export const SurveyDataProvider = ({ children }) => {
 
     // Save the survey data whenever it changes
     useEffect(() => {
+
       stashForLater(surveyData);
     }, [surveyData.observations]);
 

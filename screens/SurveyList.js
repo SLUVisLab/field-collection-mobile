@@ -1,29 +1,32 @@
 import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
-import { useFileContext } from '../contexts/FileContext';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import { useSurveyData } from '../contexts/SurveyDataContext';
+import { useRealm } from '@realm/react'; 
+
 import styles from '../Styles';
 
 const SurveyList = ({ navigation }) => {
-  const { surveyFiles, convertXLSXToSurvey } = useFileContext(); // Access surveyFiles from FileContext
 
-  const { surveyDesign, clearSurveyDesign, setSurveyDesign } = useSurveyDesign()
+  const { surveyDesign, clearSurveyDesign, setSurveyDesign, surveyFromMongo } = useSurveyDesign()
   const { newSurvey, loadFromStash, setSurveyData, surveyData, deleteFromStash } = useSurveyData()
 
-  const handleLoadSurvey = async (filePath) => {
+  const realm = useRealm();
+
+  // retrieve the set of  objects
+  const designsList = realm.objects("SurveyDesign");
+
+  const handleLoadSurvey = async (mongoDesign, designName) => {
     
     // Clear the current survey layout in the surveyDesignContext
+    console.log('Clearing survey design...');
     clearSurveyDesign();
 
-    // Load a survey layout from xlsx file
-    const surveyDesignFromFile = await convertXLSXToSurvey(filePath);
-
-    // set the surveyDesign context -- it's used to navigate through the survey layout
-    setSurveyDesign(surveyDesignFromFile);
+    await surveyFromMongo(mongoDesign);
 
     // Check for existing or unfinished survey data
-    const existingSurveyData = await loadFromStash(surveyDesignFromFile.name); // use the value that is already loaded (surveyDesignFromFile)
+    // IF YOU TRY TO USE THE SURVEY DESIGN OBJECT HERE, IT WILL BE EMPTY!!
+    const existingSurveyData = await loadFromStash(designName); // use the value that is already loaded earlier.
 
     if (existingSurveyData) {
       console.log(existingSurveyData)
@@ -35,7 +38,7 @@ const SurveyList = ({ navigation }) => {
             text: "Discard",
             onPress: () => {
               // Discard the existing data and start a new survey
-              deleteFromStash(surveyDesignFromFile.name)
+              deleteFromStash(surveyDesign.name)
               newSurvey(surveyDesign);
               navigation.navigate('CollectionList');
             },
@@ -52,11 +55,11 @@ const SurveyList = ({ navigation }) => {
         ]
       );
     } else {
-
+      console.log('No existing survey data found...');
       // Create a new surveyData instance with data from the surveyDesign
       //TODO -- These two things must always match, and do not have a method of enforcement. FIX
 
-      newSurvey(surveyDesignFromFile)
+      newSurvey(surveyDesign)
       navigation.navigate('CollectionList');
     }
 
@@ -64,21 +67,21 @@ const SurveyList = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {surveyFiles.length === 0 ? (
+      { designsList.length === 0 ? (
         <Text>No Surveys Found</Text>
       ) : (
-        surveyFiles.map((filePath, index) => {
+        designsList.map((design, index) => {
           // Extract file name without extension
-          let surveyName = filePath.substring(filePath.lastIndexOf('/') + 1).replace('.xlsx', '');
-          surveyName = surveyName.replace(/_/g, ' ');
+          // let surveyName = filePath.substring(filePath.lastIndexOf('/') + 1).replace('.xlsx', '');
+          // surveyName = surveyName.replace(/_/g, ' ');
   
           return (
             <TouchableOpacity
               key={index}
               style={styles.button}
-              onPress={() => handleLoadSurvey(filePath)}
+              onPress={() => handleLoadSurvey(design, design.name)}
             >
-              <Text style={styles.text}>{surveyName}</Text>
+              <Text style={styles.text}>{design.name}</Text>
             </TouchableOpacity>
           );
         })

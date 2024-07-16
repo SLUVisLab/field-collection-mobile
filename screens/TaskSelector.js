@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import styles from '../Styles';
-import taskManifest from '../tasks/taskManifest'; // Import task manifest
-import PhotoTask from '../tasks/photo/PhotoTask'
-import TextTask from '../tasks/text/TextTask'
+// import taskManifest from '../tasks/taskManifest'; // Import task manifest
+import PhotoTask from '../tasks/photo/PhotoTask';
+import TextTask from '../tasks/text/TextTask';
 
 
 const TaskSelector = ({ navigation }) => {

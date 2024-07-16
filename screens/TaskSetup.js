@@ -1,28 +1,21 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import styles from '../Styles';
-import PhotoSetup from '../tasks/photo/PhotoSetup';
-import TextSetup from '../tasks/text/TextSetup';
+import TaskManifest from '../tasks/TaskManifest';
 
 const TaskSetup = ({ route, navigation }) => {
 
     const {taskTypeID, taskID} = route.params
 
-    let renderedComponent;
-
     console.log(taskTypeID)
     console.log(taskID)
 
-    switch(taskTypeID){
-        case 1:
-            renderedComponent = <PhotoSetup navigation = { navigation } taskID = { taskID } />;
-            break;
-        case 2:
-            renderedComponent = <TextSetup navigation = { navigation } taskID = { taskID } />;
-            break;
-        default:
-            renderedComponent = <Text>Error Loading Component</Text>
-    }
+    const TaskComponent = TaskManifest[taskTypeID]?.taskSetup;
+
+    const renderedComponent = TaskComponent ? (
+        <TaskComponent navigation={navigation} taskID={taskID} />
+    ) : (
+        <Text>Error Loading Component</Text>
+    );
 
     return (
         <View>

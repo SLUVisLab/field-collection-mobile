@@ -1,18 +1,25 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useFileContext } from '../contexts/FileContext';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext'
 import styles from '../Styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useRealm } from '@realm/react'; 
+import { tr } from 'date-fns/locale';
+
+// TODO: Clean up after XLSX to mongo refactor
 
 const SurveyDesignList = ({ navigation }) => {
-  const { surveyFiles, convertXLSXToSurvey, deleteSurveyFile } = useFileContext(); // Access surveyFiles from FileContext
 
-  const { clearSurveyDesign, setSurveyDesign } = useSurveyDesign()
+  const { clearSurveyDesign, surveyFromMongo } = useSurveyDesign()
 
   const [isEditMode, setIsEditMode] = useState(false);
 
   const toggleEditMode = () => setIsEditMode(!isEditMode);
+
+  const realm = useRealm();
+
+  // retrieve the set of  objects
+  const designs = realm.objects("SurveyDesign");
 
   // Function to exit edit mode
   const exitEditMode = () => {
@@ -21,15 +28,25 @@ const SurveyDesignList = ({ navigation }) => {
     }
   };
 
-  const handleLoadSurvey = async (filePath) => {
-    clearSurveyDesign();
-    const surveyDesignFromFile = await convertXLSXToSurvey(filePath);
-    setSurveyDesign(surveyDesignFromFile);
-    navigation.navigate('SurveyBuilder', { path: filePath });
+  const handleLoadSurvey = async (design) => {
+    
+    try {
+      clearSurveyDesign();
+
+      console.log('Load survey:', design);
+
+      surveyFromMongo(design)
+      // const surveyDesignFromFile = await convertXLSXToSurvey(filePath);
+      // setSurveyDesign(surveyDesignFromFile);
+      
+      navigation.navigate('SurveyBuilder');
+    } catch (error) {
+      console.error('Error loading survey:', error);
+    }
   };
 
-  const handleDeleteSurvey = (filePath) => {
-    console.log('Delete survey:', filePath);
+  const handleDeleteSurvey = (deletableSurvey) => {
+    console.log('Delete survey:', deletableSurvey);
     Alert.alert(
       'Delete Survey',
       'Are you sure you want to delete this survey?',
@@ -42,9 +59,15 @@ const SurveyDesignList = ({ navigation }) => {
         {
           text: 'Delete',
           onPress: () => {
-            // Delete the survey file
-            // Add your code here to delete the file
-            deleteSurveyFile(filePath);
+            try {
+              realm.write(() => {
+                realm.delete(deletableSurvey);
+              });
+
+              exitEditMode();
+            } catch (error) {
+              console.error('Error deleting survey file:', error);
+            }
           },
         },
       ],
@@ -61,27 +84,27 @@ const SurveyDesignList = ({ navigation }) => {
         <Text style={styles.text}>New Survey</Text>
       </TouchableOpacity>
 
-      {surveyFiles.map((filePath, index) => {
+      {designs.map((design, index) => {
         // Extract file name without extension
-        let surveyName = filePath.substring(filePath.lastIndexOf('/') + 1).replace('.xlsx', '');
+        // let surveyName = filePath.substring(filePath.lastIndexOf('/') + 1).replace('.xlsx', '');
 
-        surveyName = surveyName.replace(/_/g, ' ')
+        // surveyName = surveyName.replace(/_/g, ' ')
 
         return (
           <TouchableOpacity
             key={index}
             style={[styles.button, localStyles.surveyButton, isEditMode && localStyles.editMode]}
-            onPress={() => !isEditMode && handleLoadSurvey(filePath)}
+            onPress={() => !isEditMode && handleLoadSurvey(design)}
             onLongPress={toggleEditMode}
           >
             <View style={localStyles.buttonContentContainer}>
-              <Text style={[{ flex: 1 }, styles.text]}>{surveyName}</Text>
+              <Text style={[{ flex: 1 }, styles.text]}>{design.name}</Text>
               {isEditMode && (
                 <TouchableOpacity
                   style={[localStyles.deleteButton, { marginLeft: 'auto' }]} // Adjust positioning as needed
                   onPress={(e) => {
                     e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
-                    handleDeleteSurvey(filePath);
+                    handleDeleteSurvey(design);
                   }}
                 >
                   <Ionicons name="close-circle" size={24} color="red" />
