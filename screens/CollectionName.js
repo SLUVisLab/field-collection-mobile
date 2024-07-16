@@ -16,14 +16,22 @@ const CollectionName = ({ route, navigation }) => {
     const parentID = route.params && route.params.parentID ? route.params.parentID : null;
     const parentName = route.params && route.params.parentName ? route.params.parentName : null;
 
-    console.log("Collection Name:")
-    console.log(collectionName)
-    console.log("Parent ID:")
-    console.log(parentID)
-    console.log("Parent Name:")
-    console.log(parentName)
+    const validateFields = () => {
+      const newErrors = {};
+      if (!collectionName) newErrors.collectionName = 'Collection Name cannot be empty';
+      return newErrors;
+    };
 
     const handleDone = () => {
+
+      const validationErrors = validateFields();
+      if (Object.keys(validationErrors).length > 0) {
+          Alert.alert(
+              "Please fix the following errors:",
+              Object.values(validationErrors).join('\n')
+          );
+          return;
+      }
 
       let newCollection = new SurveyCollection({
         name: collectionName,

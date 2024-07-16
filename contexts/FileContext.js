@@ -119,15 +119,15 @@ export const FileProvider = ({ children }) => {
     });
     };
 
-    const convertXLSXToSurvey = async (fileName) => {
+    const convertXLSXToSurvey = async (uri) => {
         try {
             // Read XLSX content
-            const filePath = FileSystem.documentDirectory + '/' + fileName;
+            // const filePath = FileSystem.cacheDirectory + fileName;
 
-            console.log(filePath)
+            console.log(uri)
 
             console.log('filesystem read')
-            const xlsxContent = await FileSystem.readAsStringAsync(filePath, { encoding: FileSystem.EncodingType.Base64 });
+            const xlsxContent = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
     
             console.log("decodeing file to binary")
             // Decode base64 content
@@ -136,6 +136,9 @@ export const FileProvider = ({ children }) => {
             console.log("parsing workbook")
             // Parse XLSX content
             const workbook = XLSX.read(decodedContent, { type: 'binary' });
+
+            console.log("workbook parsed")
+            return;
 
             let newSurveyState = {
                 name: null,

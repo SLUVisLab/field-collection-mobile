@@ -30,7 +30,25 @@ const TextSetup = ({navigation, taskID}) => {
         }
       }, []);
 
+    const validateFields = () => {
+        const newErrors = {};
+        if (!displayName) newErrors.displayName = 'Display Name cannot be empty';
+        if (!dataLabel) newErrors.dataLabel = 'Data Label cannot be empty';
+        if (!instructions) newErrors.instructions = 'Instructions cannot be empty';
+        return newErrors;
+    };
+
     const handleSave = () => {
+
+        const validationErrors = validateFields();
+        if (Object.keys(validationErrors).length > 0) {
+            Alert.alert(
+                "Please fix the following errors:",
+                Object.values(validationErrors).join('\n')
+            );
+            return;
+        }
+        
         //TODO: Make real ID's
         let isSuccess;
         let newTextTask;

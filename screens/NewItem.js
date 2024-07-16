@@ -23,8 +23,23 @@ const NewItem = ({ route, navigation }) => {
         setItemName(item.name);
       }
     }, [navigation]);
+
+    const validateFields = () => {
+      const newErrors = {};
+      if (!itemName) newErrors.itemName = 'Item Name cannot be empty';
+      return newErrors;
+    };
+
   
     const handleDone = () => {
+      const validationErrors = validateFields();
+      if (Object.keys(validationErrors).length > 0) {
+          Alert.alert(
+              "Please fix the following errors:",
+              Object.values(validationErrors).join('\n')
+          );
+          return;
+      }
 
       console.log('item Name:', itemName);
       console.log('parentID:', parentID);
