@@ -41,8 +41,10 @@ const CollectionDesignList = ({ route, navigation }) => {
   const collection = collectionID ? findCollectionByID(collectionID) : null;
 
   React.useLayoutEffect(() => {
+    let collectionName = collection ? collection.name : 'Collections';
+    let parentName = collection ? collection.parentName : null;
     navigation.setOptions({
-      title: collection ? collection.name : 'Collections',
+      title: parentName ? `${parentName} > ${collectionName}` : collectionName,
     });
   }, [navigation, collection]);
 

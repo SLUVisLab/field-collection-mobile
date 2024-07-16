@@ -49,7 +49,7 @@ const CollectionName = ({ route, navigation }) => {
         addCollection(newCollection)
       }
       
-      navigation.navigate("CollectionDesignList")
+      navigation.replace("CollectionDesignList", { collectionID: newCollection.ID })
 
     };
   
