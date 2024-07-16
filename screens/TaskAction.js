@@ -77,17 +77,18 @@ const TaskAction = ({ route, navigation }) => {
         setObservationData({});
 
     }
+    
 
     let renderedComponent;
     const taskTypeID = task.constructor.typeID;
-    const taskID = task.id;
+    const taskID = task.taskID;
 
     switch(taskTypeID){
         case 1:
-            renderedComponent = <PhotoAction navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
+            renderedComponent = <PhotoAction key={taskID} navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
             break;
         case 2:
-            renderedComponent = <TextAction navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} />;
+            renderedComponent = <TextAction key={taskID} navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} />;
             break;
         default:
             renderedComponent = <Text>Error Loading Component</Text>
