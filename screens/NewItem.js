@@ -62,6 +62,7 @@ const NewItem = ({ route, navigation }) => {
           onChangeText={text => setItemName(text)}
           value={itemName}
           placeholder="Enter item name"
+          autoCorrect={false}
         />
         <TouchableOpacity
               style={styles.button}

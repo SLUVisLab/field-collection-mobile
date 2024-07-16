@@ -101,6 +101,7 @@ const TextSetup = ({navigation, taskID}) => {
                     style={styles.textInput}
                     value={displayName}
                     onChangeText={setDisplayName}
+                    autoCorrect={false}
                 />
             </View>
             
@@ -112,6 +113,8 @@ const TextSetup = ({navigation, taskID}) => {
                     style={styles.textInput}
                     value={dataLabel}
                     onChangeText={setDataLabel}
+                    autoCorrect={false}
+                    autoCapitalize="none"
                 />
             </View>
             <View>
@@ -122,6 +125,7 @@ const TextSetup = ({navigation, taskID}) => {
                     style={styles.textInput}
                     value={instructions}
                     onChangeText={setInstructions}
+                    autoCorrect={false}
                 />
             </View>
             <TouchableOpacity

@@ -63,6 +63,7 @@ const CollectionName = ({ route, navigation }) => {
           onChangeText={text => setCollectionName(text)}
           value={collectionName}
           placeholder="Enter item name"
+          autoCorrect={false}
         />
         <TouchableOpacity
               style={styles.button}

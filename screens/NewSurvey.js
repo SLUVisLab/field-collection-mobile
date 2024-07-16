@@ -129,6 +129,7 @@ const NewSurvey = ({ navigation }) => {
       onChangeText={text => setSurveyName(text)}
       value={surveyName}
       placeholder="Enter survey name"
+      autoCorrect={false}
     />
     <TouchableOpacity
       style={styles.button}
