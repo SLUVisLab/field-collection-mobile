@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import * as DocumentPicker from 'expo-document-picker';
-import { useFileContext } from '../contexts/FileContext'; 
+import { convertXLSXToSurvey } from '../utils/FileTools';
 import { useRealm } from '@realm/react';
 import styles from '../Styles';
 import { is } from 'date-fns/locale';
 
 
 const NewSurvey = ({ navigation }) => {
-
-  const { convertXLSXToSurvey } = useFileContext();
   
   const [surveyName, setSurveyName] = useState('');
 
-  const { surveyDesign, setName, clearSurveyDesign } = useSurveyDesign();
+  const { surveyDesign, setName, clearSurveyDesign, setSurveyDesign } = useSurveyDesign();
 
   const realm = useRealm();
 
@@ -58,22 +56,37 @@ const NewSurvey = ({ navigation }) => {
     navigation.navigate("SurveyBuilder")
   };
 
+  const launchDocumentPicker = async () => { 
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log("Launching Document Picker");
+        const res = await DocumentPicker.getDocumentAsync({
+          // Limiting the file type to xlsx
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+
+        resolve(res);
+
+      } catch (err) {
+        if (DocumentPicker.isCancel(err)) {
+          // User cancelled the picker
+          resolve(null);
+        } else {
+          throw err;
+        }
+      }
+    });
+  };
+
   const handleImportFromXLSX = async () => {
     try {
-      console.log("Launching Document Picker");
-      const res = await DocumentPicker.getDocumentAsync({
-        // Limiting the file type to xlsx
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      });
+      
+      const res = await launchDocumentPicker();
 
-      console.log("Document Picker Result:");
-      console.log(res);
-      console.log("Document Picker Result URI:");
-      console.log(res.uri);
-      console.log("Document Picker Result Name:");
-      console.log(res.name);
-      console.log("Document Picker Filetype extension:");
-      console.log(res.name.split('.').pop());
+      if (!res) {
+        console.log("User cancelled document picker");
+        return;
+      }
 
       const formattedName = res.name
         .replace(/_/g, ' ') // Replace all underscores with spaces
@@ -97,25 +110,30 @@ const NewSurvey = ({ navigation }) => {
             },
             {
               text: "Overwrite (Dont click me!)",
-              onPress: () => {
+              onPress: async () => {
                 // I'm not sure about this yet. Persisting SurveyDesign ID's
                 // Is the thing I'm worried about
-                return;
+                let newSurvey = await convertXLSXToSurvey(res.uri, formattedName);
+                setSurveyDesign(newSurvey);
+                navigation.navigate("SurveyBuilder", { surveyIsImported: true });
               }
             }
           ]
         );
+      } else {
+        let newSurvey = await convertXLSXToSurvey(res.uri, formattedName);
+        setSurveyDesign(newSurvey);
+        navigation.navigate("SurveyBuilder", { surveyIsImported: true });
       }
-
-      convertXLSXToSurvey(res.uri)
 
     } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        // User cancelled the picker
-      } else {
-        throw err;
-      }
+      console.error("Error importing from XLSX: ", err);
+      Alert.alert(
+        "Error importing from XLSX",
+        "Please check the file and try again"
+      );
     }
+
   };
 
   return (

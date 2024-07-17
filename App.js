@@ -10,7 +10,6 @@ import 'react-native-get-random-values'
 
 import { SurveyDesignProvider } from "./contexts/SurveyDesignContext";
 import { SurveyDataProvider } from "./contexts/SurveyDataContext";
-import { FileProvider } from './contexts/FileContext';
 import { RealmProvider } from '@realm/react';
 
 import SurveyResults from './models/SurveyResults';
@@ -85,34 +84,32 @@ class App extends React.Component {
             },
           }}>
             <NavigationContainer>
-              <FileProvider>
-                <SurveyDesignProvider>
-                  <SurveyDataProvider>
-                    <Stack.Navigator 
-                      initialRouteName="Home"
-                      screenOptions={{
-                        headerShown: false
-                      }}
-                    >
-                      <Stack.Screen name="Home" component={HomeScreen} />
-                      <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyDesignList" component={SurveyDesignList} />
-                      <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyList" component={SurveyList} />
-                      <Stack.Screen options={{headerShown: true, title: 'New Survey',}} name="NewSurvey" component={NewSurvey} />
-                      <Stack.Screen options={{headerShown: true, title: 'Survey',}} name="SurveyBuilder" component={SurveyBuilder} />
-                      <Stack.Screen options={{headerShown: true, title: 'Summary',}} name="SaveSurvey" component={SaveSurvey} />
-                      <Stack.Screen options={{headerShown: true, title: 'Upload',}} name="UploadSurveys" component={UploadSurveys} />
-                      <Stack.Screen options={{headerShown: true, title: 'Tasks',}} name="TaskSelector" component={TaskSelector} />
-                      <Stack.Screen options={{headerShown: true, title: 'Task Action',}} name="TaskAction" component={TaskAction} />
-                      <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionDesignList" component={CollectionDesignList} />
-                      <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionList" component={CollectionList} />
-                      <Stack.Screen options={{headerShown: true, title: 'New Collection',}} name="CollectionName" component={CollectionName} />
-                      <Stack.Screen options={{headerShown: true, title: 'New Item',}} name="NewItem" component={NewItem} />
-                      <Stack.Screen options={{headerShown: true}} name="TaskSetup" component={TaskSetup} />
-                      
-                    </Stack.Navigator>
-                  </SurveyDataProvider>
-                </SurveyDesignProvider>
-              </FileProvider>
+              <SurveyDesignProvider>
+                <SurveyDataProvider>
+                  <Stack.Navigator 
+                    initialRouteName="Home"
+                    screenOptions={{
+                      headerShown: false
+                    }}
+                  >
+                    <Stack.Screen name="Home" component={HomeScreen} />
+                    <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyDesignList" component={SurveyDesignList} />
+                    <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyList" component={SurveyList} />
+                    <Stack.Screen options={{headerShown: true, title: 'New Survey',}} name="NewSurvey" component={NewSurvey} />
+                    <Stack.Screen options={{headerShown: true, title: 'Survey',}} name="SurveyBuilder" component={SurveyBuilder} />
+                    <Stack.Screen options={{headerShown: true, title: 'Summary',}} name="SaveSurvey" component={SaveSurvey} />
+                    <Stack.Screen options={{headerShown: true, title: 'Upload',}} name="UploadSurveys" component={UploadSurveys} />
+                    <Stack.Screen options={{headerShown: true, title: 'Tasks',}} name="TaskSelector" component={TaskSelector} />
+                    <Stack.Screen options={{headerShown: true, title: 'Task Action',}} name="TaskAction" component={TaskAction} />
+                    <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionDesignList" component={CollectionDesignList} />
+                    <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionList" component={CollectionList} />
+                    <Stack.Screen options={{headerShown: true, title: 'New Collection',}} name="CollectionName" component={CollectionName} />
+                    <Stack.Screen options={{headerShown: true, title: 'New Item',}} name="NewItem" component={NewItem} />
+                    <Stack.Screen options={{headerShown: true}} name="TaskSetup" component={TaskSetup} />
+                    
+                  </Stack.Navigator>
+                </SurveyDataProvider>
+              </SurveyDesignProvider>
             </NavigationContainer>
             <Toast ref={(ref) => Toast.setRef(ref)} />
           </RealmProvider>

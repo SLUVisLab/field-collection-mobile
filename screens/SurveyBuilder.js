@@ -6,7 +6,6 @@ import styles from '../Styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
-import { useFileContext } from '../contexts/FileContext';
 import { se } from 'date-fns/locale';
 
 import { useRealm } from '@realm/react';
@@ -14,11 +13,13 @@ import { useRealm } from '@realm/react';
 const SurveyBuilder = ({ route, navigation }) => {
 
   const { surveyDesign, saveSurveyDesign, setName, addTask, deleteTaskByID } = useSurveyDesign();
-  const { convertSurveyToXLSX, loadSurveyFiles } = useFileContext();
   
   const realm = useRealm();
 
-  const [hasUnsavedChanges, setHasUnsavedChanges] = React.useState(false);
+  // Check if surveyIsImported parameter is provided and true
+  const isSurveyImported = route.params?.surveyIsImported === true;
+
+  const [hasUnsavedChanges, setHasUnsavedChanges] = React.useState(isSurveyImported);
 
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -120,26 +121,6 @@ const SurveyBuilder = ({ route, navigation }) => {
     navigation.navigate('TaskSetup', { taskTypeID: task.constructor.typeID, taskID: task.taskID });
   };
 
-  const handleDone = async () => {
-    console.log("Called method to save survey")
-    console.log(surveyDesign)
-    await convertSurveyToXLSX(surveyDesign);
-    loadSurveyFiles()
-    setHasUnsavedChanges(false);
-
-    Toast.show({
-      type: 'success',
-      position: 'bottom',
-      text1: 'Survey Saved Successfully',
-      visibilityTime: 3000,
-      autoHide: true,
-      topOffset: 30,
-      bottomOffset: 40,
-    });
-
-    navigation.navigate('Home')
-  };
-
   const handleDoneMongo = async () => {
     console.log("Called method to save survey")
     console.log(surveyDesign)
@@ -161,6 +142,7 @@ const SurveyBuilder = ({ route, navigation }) => {
       });
 
       navigation.navigate('Home')
+
     } catch (error) {
       console.error("Survey save failed", error);
       Toast.show({
