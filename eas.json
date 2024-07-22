@@ -31,17 +31,11 @@
       },
       "channel": "testing"
     },
-    "distribution": {
+    "production": {
       "distribution": "internal",
       "ios": {
         "resourceClass": "m-medium",
         "cocoapods": "1.15.2"
-      },
-      "channel": "distribution"
-    },
-    "production": {
-      "ios": {
-        "resourceClass": "m-medium"
       },
       "channel": "production"
     }
