@@ -86,6 +86,9 @@ Select 'Manage Surveys' from the home screen to edit an existing survey or creat
 ### Creating Surveys with Spreadsheets
 ![Creating Surveys with Spreadsheets](assets/creating_surveys_with_spreadsheets.jpg)
 
+[Sample Survey Spreadsheet](https://docs.google.com/spreadsheets/d/1US6NnQ0d1DGMfthzxKN5v8mVlgnrY3Fn/edit?usp=sharing&ouid=104744292422451722330&rtpof=true&sd=true)
+
+
 ## Collecting Data
 ### The Collections and Items List
 ![The Collections and Items List](assets/collections_items_list.jpg)
@@ -105,8 +108,53 @@ Select 'Manage Surveys' from the home screen to edit an existing survey or creat
 ## Downloading Data
 ![Downloading Data](assets/downloading_data.jpg)
 
+Data download notebook example:
+
+[Data download notebook example](https://colab.research.google.com/drive/1nqj_B1Fb1Wj9i3odYwqdXSxjvPSlokX7#scrollTo=neyS3pR0fhc8)
+
 ```python
-print("this is some code")
+import requests
+import json
+
+CLIENT_APP_ID = "data-pwljoor"
+DATABASE_NAME = "SurveyResults"
+COLLECTION_NAME = "SurveyResults"
+API_KEY = <YOUR_KEY_HERE>
+
+filter_by_survey_name =  {
+  "name": "Sample Survey"
+}
+
+payload_dict = {
+  "database": DATABASE_NAME,
+  "collection": COLLECTION_NAME,
+  "dataSource": "AtlasCluster",
+  "filter": filter_by_survey_name,  # Insert the chosen filter or example from above
+  "limit": 10
+}
+
+# serialize
+payload = json.dumps(payload_dict)
+
+headers = {
+  'Access-Control-Request-Headers': '*',
+  'apiKey': API_KEY,
+  "Content-Type": "application/json",
+  "Accept": "application/json"
+}
+
+try:
+    response = requests.post(url, headers=headers, data=payload)
+
+    if response.status_code != 200:
+      raise Exception(f"Error: {response.text}")
+
+    data = response.json()
+    
+except Exception as e:
+    print(e)
+
+
 
 ```
 
