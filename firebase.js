@@ -20,6 +20,8 @@ const firebaseConfig = {
 let storage;
 let auth;
 
+let isSigningIn = false;
+
 try {
 
 const app = initializeApp(firebaseConfig);
@@ -32,16 +34,19 @@ auth = getAuth(app);
 
 const tryAnonymousSignIn = () => {
   onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      // User is not signed in, proceed with anonymous sign-in
+    if (!user && !isSigningIn) { // Check if user is not signed in and no sign-in attempt is in progress
+      isSigningIn = true; // Indicate that a sign-in attempt is starting
       signInAnonymously(auth)
         .then(() => {
           console.log("User signed in anonymously");
         })
         .catch((error) => {
           console.error("Error during anonymous sign-in:", error);
+        })
+        .finally(() => {
+          isSigningIn = false; // Reset the flag once sign-in attempt is completed
         });
-    } else {
+    } else if (user) {
       // User is already signed in, no action needed
       console.log("User is already signed in.");
     }

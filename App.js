@@ -70,11 +70,19 @@ class App extends React.Component {
     return (
       <AppProvider id={APP_ID}>
         <UserProvider fallback={LoginWrapper}>
-        {/* <RealmProvider {...realmConfig}> */}
           <RealmProvider
           schema={[SurveyResults, SurveyDesign]}
           sync={{
             flexible: true,
+            existingRealmBehavior: {
+              type: "openImmediately",
+            },
+            newRealmFileBehavior: {
+              type: "downloadBeforeOpen",
+            },
+            onError: (_, error) => {
+              console.log(error);
+            },
             initialSubscriptions: {
               update(subs, realm) {
                 subs.add(realm.objects(SurveyDesign).filtered("name != nil"), {

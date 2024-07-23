@@ -97,7 +97,7 @@ const NewSurvey = ({ navigation }) => {
       if(!isSurveyNameUnique(formattedName)){
         console.log("Survey with the same name already exists: ", formattedName);
         Alert.alert(
-          "Existing Survey Data Found",
+          "Existing Survey Design Found",
           "Do you want to cancel or overwrite the existing data?",
           [
             {
@@ -109,7 +109,7 @@ const NewSurvey = ({ navigation }) => {
               style: "cancel"
             },
             {
-              text: "Overwrite (Dont click me!)",
+              text: "Overwrite",
               onPress: async () => {
                 // I'm not sure about this yet. Persisting SurveyDesign ID's
                 // Is the thing I'm worried about
