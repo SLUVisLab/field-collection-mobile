@@ -1,9 +1,8 @@
 import 'expo-dev-client';
 import React from 'react';
-import { Alert, View, Text, StyleSheet } from 'react-native';
-import Realm from "realm";
+import { View, Text, StyleSheet } from 'react-native';
 
-import {AppProvider, UserProvider} from '@realm/react';
+import { AppProvider, UserProvider, RealmProvider, useUser } from '@realm/react';
 
 import Toast from 'react-native-toast-message';
 import { ErrorBoundary } from "react-error-boundary";
@@ -12,7 +11,6 @@ import 'react-native-get-random-values'
 
 import { SurveyDesignProvider } from "./contexts/SurveyDesignContext";
 import { SurveyDataProvider } from "./contexts/SurveyDataContext";
-import { RealmProvider } from '@realm/react';
 
 import SurveyResults from './models/SurveyResults';
 import SurveyDesign from './models/SurveyDesign';
@@ -75,10 +73,14 @@ const styles = StyleSheet.create({
 // // an alternate option for realmAccessBehavior
 // // which will download the realm before opening it
 // // and if it takes more than 1 second, it will open the local realm
+// const realmAccessBehavior = {
+//   type: 'downloadBeforeOpen',
+//   timeOutBehavior: 'openLocalRealm',
+//   timeOut: 1000,
+// };
+
 const realmAccessBehavior = {
-  type: 'downloadBeforeOpen',
-  timeOutBehavior: 'openLocalRealm',
-  timeOut: 1000,
+  type: 'openImmediately',
 };
 
 class App extends React.Component {
@@ -90,11 +92,12 @@ class App extends React.Component {
   render() {
     return (
       <ErrorBoundary FallbackComponent={ErrorBoundryFallback} onError={logError}>
-        <AppProvider id={APP_ID}>
+        <AppProvider id={APP_ID} logLevel={'trace'} logger={(level, message) => console.log(`[${level}]: ${message}`)}>
           <UserProvider fallback={LoginWrapper}>
             <RealmProvider
             schema={[SurveyResults, SurveyDesign]}
             sync={{
+              user: useUser(),
               flexible: true,
               // the behaviors below set realm to use
               // the local realm if the sync fails, or offline
