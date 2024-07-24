@@ -2,6 +2,7 @@ import NetInfo from "@react-native-community/netinfo";
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
+import { Alert } from "react-native";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -30,6 +31,8 @@ auth = getAuth(app);
 
 } catch(error) {
   console.error("Could not initialize Firebase: ", error);
+  throw error;
+
 }
 
 const tryAnonymousSignIn = () => {
@@ -42,6 +45,7 @@ const tryAnonymousSignIn = () => {
         })
         .catch((error) => {
           console.error("Error during anonymous sign-in:", error);
+          throw error;
         })
         .finally(() => {
           isSigningIn = false; // Reset the flag once sign-in attempt is completed

@@ -1,10 +1,12 @@
 import 'expo-dev-client';
 import React from 'react';
+import { Alert, View, Text, StyleSheet } from 'react-native';
 import Realm from "realm";
 
 import {AppProvider, UserProvider} from '@realm/react';
 
 import Toast from 'react-native-toast-message';
+import { ErrorBoundary } from "react-error-boundary";
 
 import 'react-native-get-random-values'
 
@@ -36,93 +38,117 @@ import UploadSurveys from './screens/UploadSurveys';
 // Fallback log in component that's defined in another file.
 import LoginWrapper from './screens/LoginWrapper';
 
-// Define your configuration options
-// const realmConfig = {
-//   schema: [SurveyResults, Observation],
-//   deleteRealmIfMigrationNeeded: true,  // SET TO FLASE IN PRODUCITON!!!!
-//   schemaVersion: 3,
-//   migration: (oldRealm, newRealm) => {
-//     // Migration logic goes here
-//   },
-//   // Other configuration options can be set here as needed
-// };
-
 const APP_ID = 'data-collection-0-pybsrtz';
 
 const Stack = createNativeStackNavigator();
 
+const logError = (error, info) => {
+  console.error("ErrorBoundary caught an error: ", error, info);
+};
+
+const ErrorBoundryFallback = ({errorMessage}) => (
+  <View style={styles.ErrorBoundryFallbackContainer}>
+    <Text style={styles.ErrorBoundryFallbackText}>App Failed to initialize. Please check for network connection and reload.</Text>
+    {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
+  </View>
+);
+
+const styles = StyleSheet.create({
+  ErrorBoundryFallbackContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  ErrorBoundryFallbackText: {
+    fontSize: 16,
+    color: 'red',
+  },
+  errorMessage: {
+    marginTop: 10,
+    fontSize: 14,
+    color: 'black',
+    textAlign: 'center',
+  },
+});
+
+// // an alternate option for realmAccessBehavior
+// // which will download the realm before opening it
+// // and if it takes more than 1 second, it will open the local realm
+const realmAccessBehavior = {
+  type: 'downloadBeforeOpen',
+  timeOutBehavior: 'openLocalRealm',
+  timeOut: 1000,
+};
+
 class App extends React.Component {
 
   constructor(props) {
-    super(props)
-
-    global.selectedSite = 'NULL';
-    global.selectedBlock = 'NULL';
-    global.selectedTask = 'NULL';
-    global.selectedPlant = 'NULL';
-    global.selectedRow = 'NULL';
-    global.selectedColumn = 'NULL';
-    global.selectedUrl = 'NULL';
-    global.isDone = Array(100).fill(0).map(row => new Array(100).fill(0))
+    super(props);
   }
 
   render() {
     return (
-      <AppProvider id={APP_ID}>
-        <UserProvider fallback={LoginWrapper}>
-          <RealmProvider
-          schema={[SurveyResults, SurveyDesign]}
-          sync={{
-            flexible: true,
-            existingRealmBehavior: {
-              type: "openImmediately",
-            },
-            newRealmFileBehavior: {
-              type: "downloadBeforeOpen",
-            },
-            onError: (_, error) => {
-              console.log(error);
-            },
-            initialSubscriptions: {
-              update(subs, realm) {
-                subs.add(realm.objects(SurveyDesign).filtered("name != nil"), {
-                  name: "All Survey Designs",
-                });
+      <ErrorBoundary FallbackComponent={ErrorBoundryFallback} onError={logError}>
+        <AppProvider id={APP_ID}>
+          <UserProvider fallback={LoginWrapper}>
+            <RealmProvider
+            schema={[SurveyResults, SurveyDesign]}
+            sync={{
+              flexible: true,
+              // the behaviors below set realm to use
+              // the local realm if the sync fails, or offline
+              // https://www.mongodb.com/docs/atlas/device-sdks/sdk/react-native/sync-data/configure-a-synced-realm/#access-immediately-with-background-sync
+
+              //TODO: Show some kind of indicator when realm is unable to sync or offline.
+              // maybe abstract this from firebase.js to a higher context
+              existingRealmBehavior: realmAccessBehavior,
+              newRealmFileBehavior: realmAccessBehavior,
+              onError: (_, error) => {
+                console.error("THROWING ERROR");
+                throw error;
               },
-            },
-          }}>
-            <NavigationContainer>
-              <SurveyDesignProvider>
-                <SurveyDataProvider>
-                  <Stack.Navigator 
-                    initialRouteName="Home"
-                    screenOptions={{
-                      headerShown: false
-                    }}
-                  >
-                    <Stack.Screen name="Home" component={HomeScreen} />
-                    <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyDesignList" component={SurveyDesignList} />
-                    <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyList" component={SurveyList} />
-                    <Stack.Screen options={{headerShown: true, title: 'New Survey',}} name="NewSurvey" component={NewSurvey} />
-                    <Stack.Screen options={{headerShown: true, title: 'Survey',}} name="SurveyBuilder" component={SurveyBuilder} />
-                    <Stack.Screen options={{headerShown: true, title: 'Summary',}} name="SaveSurvey" component={SaveSurvey} />
-                    <Stack.Screen options={{headerShown: true, title: 'Upload',}} name="UploadSurveys" component={UploadSurveys} />
-                    <Stack.Screen options={{headerShown: true, title: 'Tasks',}} name="TaskSelector" component={TaskSelector} />
-                    <Stack.Screen options={{headerShown: true, title: 'Task Action',}} name="TaskAction" component={TaskAction} />
-                    <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionDesignList" component={CollectionDesignList} />
-                    <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionList" component={CollectionList} />
-                    <Stack.Screen options={{headerShown: true, title: 'New Collection',}} name="CollectionName" component={CollectionName} />
-                    <Stack.Screen options={{headerShown: true, title: 'New Item',}} name="NewItem" component={NewItem} />
-                    <Stack.Screen options={{headerShown: true}} name="TaskSetup" component={TaskSetup} />
-                    
-                  </Stack.Navigator>
-                </SurveyDataProvider>
-              </SurveyDesignProvider>
-            </NavigationContainer>
-            <Toast ref={(ref) => Toast.setRef(ref)} />
-          </RealmProvider>
-        </UserProvider>
-      </AppProvider>
+              initialSubscriptions: {
+                update(subs, realm) {
+                  subs.add(realm.objects(SurveyDesign).filtered("name != nil"), {
+                    name: "All Survey Designs",
+                  });
+                },
+              },
+            }}>
+              <NavigationContainer>
+                <SurveyDesignProvider>
+                  <SurveyDataProvider>
+                    <Stack.Navigator 
+                      initialRouteName="Home"
+                      screenOptions={{
+                        headerShown: false
+                      }}
+                    >
+                      <Stack.Screen name="Home" component={HomeScreen} />
+                      <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyDesignList" component={SurveyDesignList} />
+                      <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyList" component={SurveyList} />
+                      <Stack.Screen options={{headerShown: true, title: 'New Survey',}} name="NewSurvey" component={NewSurvey} />
+                      <Stack.Screen options={{headerShown: true, title: 'Survey',}} name="SurveyBuilder" component={SurveyBuilder} />
+                      <Stack.Screen options={{headerShown: true, title: 'Summary',}} name="SaveSurvey" component={SaveSurvey} />
+                      <Stack.Screen options={{headerShown: true, title: 'Upload',}} name="UploadSurveys" component={UploadSurveys} />
+                      <Stack.Screen options={{headerShown: true, title: 'Tasks',}} name="TaskSelector" component={TaskSelector} />
+                      <Stack.Screen options={{headerShown: true, title: 'Task Action',}} name="TaskAction" component={TaskAction} />
+                      <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionDesignList" component={CollectionDesignList} />
+                      <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionList" component={CollectionList} />
+                      <Stack.Screen options={{headerShown: true, title: 'New Collection',}} name="CollectionName" component={CollectionName} />
+                      <Stack.Screen options={{headerShown: true, title: 'New Item',}} name="NewItem" component={NewItem} />
+                      <Stack.Screen options={{headerShown: true}} name="TaskSetup" component={TaskSetup} />
+                      
+                    </Stack.Navigator>
+                  </SurveyDataProvider>
+                </SurveyDesignProvider>
+              </NavigationContainer>
+              <Toast ref={(ref) => Toast.setRef(ref)} />
+            </RealmProvider>
+          </UserProvider>
+        </AppProvider>
+      </ErrorBoundary>
       
     );
   }
