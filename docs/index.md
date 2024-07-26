@@ -141,11 +141,15 @@ Every task requires the following three basic fields: Display Name, Data Label, 
 
 #### Deleting Tasks
 
-To delete Tasks, enter 'edit mode' by pressing and holding the desired Task button. Once in edit mode, press the corresponding delete buttons on the Taks you wish to remove. To exit 'edit mode,' simply press and hold again.
+To delete Tasks, enter 'edit mode' by pressing and holding a Task button. Once in edit mode, press the corresponding delete buttons on the Task you wish to remove. To exit 'edit mode,' simply press and hold again.
 
 <div style="margin: 20px 0;">
   <img src="assets/delete_tasks.png" alt="Delete Tasks" style="width: 20%;">
 </div>
+
+#### Deleting Survey Designs
+To delete an entire Survey Design, select 'Manage Surveys' from the Home screen. nter 'edit mode' by pressing and holding a Survey button. Once in edit mode, press the corresponding delete buttons on the Survey you wish to remove. To exit 'edit mode,' simply press and hold again.
+
 
 ### Creating Surveys with Spreadsheets
 Survey designs can be created using .xlsx spreadsheets, allowing you to utilize the powerful features of spreadsheet editors. Tools like auto-fill and formulas can simplify the design of large, complex surveys, making them easier to manage and less time-consuming. You can find and copy a sample survey spreadsheet in the correct format here: [Sample Survey Spreadsheet](https://docs.google.com/spreadsheets/d/1US6NnQ0d1DGMfthzxKN5v8mVlgnrY3Fn/edit?usp=sharing&ouid=104744292422451722330&rtpof=true&sd=true)
