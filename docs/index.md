@@ -80,7 +80,10 @@ Select 'Manage Surveys' from the home screen followed by 'New Survey' and enter 
 The Survey Builder is used to organize the structure your survey and specify the data collection tasks involved. **Make sure to save your survey design when finished by clicking 'Save'!**
 
 Once the survey is saved, it will be synced to the cloud and other users will be able to use and interact with it.
-![Empty Survey Builder](assets/survey_builder_empty.png)
+
+<div style="margin: 20px 0;">
+  <img src="assets/survey_builder_empty.png" alt="Empty Survey Builder" style="width: 20%;">
+</div>
 
 ### Organizing Items in a Survey
 
@@ -92,19 +95,33 @@ Surveys are structured using Items, Collections, and Subcollections.
 
 #### Add a new collection
 Click 'Collections' from the Survey Builder view and select 'Add Collection'. Give the new collection a unique name and press 'Done'.
-![Collections, Subcollections, and Items](assets/create_new_collection.png)
+
+<div style="margin: 20px 0;">
+  <img src="assets/create_new_collection.png" alt="New Collection" style="width: 20%;">
+</div>
 
 Inside an empty collection you have the option to start adding Items or to create a Subcollection.
-![Subcollections and Items](assets/create_item_or_subcollection.png)
+
+<div style="margin: 20px 0;">
+  <img src="assets/create_item_or_subcollection.png" alt="Subcollections and Items" style="width: 20%;">
+</div>
 
 #### Add Items to a Collection
-![New Items](assets/new_items_added.png)
+
+<div style="margin: 20px 0;">
+  <img src="assets/new_items_added.png" alt="New Items" style="width: 20%;">
+</div>
+
 Select 'Add Item' and give the new item a unique name. for some use cases it can be useful to include a sequence of some sort in the name for organization (ie. Item 1, Item 2, Item 3).
 Click 'Done' and your new Item should be visible in the collection.
 
 
 #### Delete Items or Collections
-![Delete Items or collections](assets/delete_items.png)
+
+<div style="margin: 20px 0;">
+  <img src="assets/delete_items.png" alt="Delete Items or collections" style="width: 20%;">
+</div>
+
 To delete items or collections, enter 'edit mode' by pressing and holding the desired Collection or Item button. Once in edit mode, press the corresponding delete buttons on the items you wish to remove. To exit 'edit mode,' simply press and hold again.
 
 
@@ -112,10 +129,17 @@ To delete items or collections, enter 'edit mode' by pressing and holding the de
 A **Task** is an action performed to collect data on Items. Each Item can have multiple tasks. For example, a survey might require a user to take a photo of an item (task 1) and then write down a label for that image (task 2).
 
 From the Survey Builder view, select 'New Task' to see a list of the available task types
-![Tasks](assets/choose_task_type.png)
+
+<div style="margin: 20px 0;">
+  <img src="assets/choose_task_type.png" alt="Tasks" style="width: 20%;">
+</div>
 
 #### Required Task Fields
-![Tasks](assets/new_task_fields.png)
+
+<div style="margin: 20px 0;">
+  <img src="assets/new_task_fields.png" alt="Tasks" style="width: 20%;">
+</div>
+
 Every task requires the following three basic fields: Display Name, Data Label, and Instructions. Additional fields may be needed for specific task types, which are detailed in their respective documentation.
 
 **Display Name:** The visible name of the task. Aim for concise, descriptive names. This will be shown to the user performing the survey.
@@ -123,7 +147,11 @@ Every task requires the following three basic fields: Display Name, Data Label, 
 **Instructions:** Directions for the user completing the task.
 
 #### Deleting Tasks
-![Delete Tasks](assets/delete_tasks.png)
+
+<div style="margin: 20px 0;">
+  <img src="assets/delete_tasks.png" alt="Delete Tasks" style="width: 20%;">
+</div>
+
 To delete Tasks, enter 'edit mode' by pressing and holding the desired Task button. Once in edit mode, press the corresponding delete buttons on the Taks you wish to remove. To exit 'edit mode,' simply press and hold again.
 
 ### Creating Surveys with Spreadsheets
