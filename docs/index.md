@@ -186,7 +186,7 @@ To define a new subcollection in your survey design, enter the desired subcollec
 To upload a spreadsheet, go to 'Manage Surveys' from the Home Screen and select 'New Survey'. At the bottom of the screen, click 'Import From XLSX File' and use the file picker dialog to choose your XLSX file.
 
 <div style="margin: 20px 0;">
-  <img src="assets/namne_new_survey.png" alt="Spreadsheet New Survey" style="width: 40%;">
+  <img src="assets/name_new_survey.png" alt="Spreadsheet New Survey" style="width: 40%;">
 </div>
 
 
