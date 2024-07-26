@@ -186,9 +186,8 @@ To define a new subcollection in your survey design, enter the desired subcollec
 To upload a spreadsheet, go to 'Manage Surveys' from the Home Screen and select 'New Survey'. At the bottom of the screen, click 'Import From XLSX File' and use the file picker dialog to choose your XLSX file.
 
 <div style="margin: 20px 0;">
-  <img src="assets/name_new_survey.png" alt="Spreadsheet New Survey" style="width: 40%;">
+  <img src="assets/name_new_survey.png" alt="Spreadsheet New Survey" style="width: 20%;">
 </div>
-
 
 
 
@@ -224,15 +223,13 @@ DATABASE_NAME = "SurveyResults"
 COLLECTION_NAME = "SurveyResults"
 API_KEY = <YOUR_KEY_HERE>
 
-filter_by_survey_name =  {
-  "name": "Sample Survey"
-}
-
 payload_dict = {
   "database": DATABASE_NAME,
   "collection": COLLECTION_NAME,
   "dataSource": "AtlasCluster",
-  "filter": filter_by_survey_name,  # Insert the chosen filter or example from above
+  "filter": {
+    "name": "Sample Survey"      # Insert the chosen filter
+  } ,  
   "limit": 10
 }
 
@@ -256,8 +253,6 @@ try:
     
 except Exception as e:
     print(e)
-
-
 
 ```
 
