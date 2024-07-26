@@ -16,8 +16,8 @@
     - [Adding Data Collection Tasks to the Survey](#adding-data-collection-tasks-to-the-survey)
     - [Creating Surveys with Spreadsheets](#creating-surveys-with-spreadsheets)
 5. [Collecting Data](#collecting-data)
-    - [The Collections and Items List](#the-collections-and-items-list)
-    - [The Survey Summary](#the-survey-summary)
+    - [Save Data Locally](#save-data)
+    - [Upload Data](#upload-data)
     - [Saving a Survey](#saving-a-survey)
     - [Leaving a Survey Before You're Finished](#leaving-a-survey-before-youre-finished)
 6. [Uploading Data](#uploading-data)
@@ -189,20 +189,39 @@ To upload a spreadsheet, go to 'Manage Surveys' from the Home Screen and select 
 
 
 ## Collecting Data
-### The Collections and Items List
-![The Collections and Items List](assets/collections_items_list.jpg)
 
-### The Survey Summary
-![The Survey Summary](assets/survey_summary.jpg)
+**Begin a Survey**: From the Home Page, tap the 'Start Survey' button.
+**View Collections:** You will see survey collections and subcollections for the selected survey.
+**Collect Data:** Tap an item to start collecting data. You’ll be prompted to fill out details for each task in the survey.
+Saving Your Data
 
-### Saving a Survey
-![Saving a Survey](assets/saving_a_survey.jpg)
+Navigating back to the collection view should allow you to see which Survey Items have ben completed.
 
-### Leaving a Survey Before You're Finished
-![Leaving a Survey Before You're Finished](assets/leaving_a_survey.jpg)
+<div style="margin: 20px 0;">
+  <img src="assets/items_completed.png" alt="Items completed" style="width: 20%;">
+</div>
 
-## Uploading Data
-![Uploading Data](assets/uploading_data.jpg)
+Your data is automatically saved to the device as you enter it.
+If you close the app or leave the survey, your data is cached and can be reloaded later.
+
+### Save Data
+
+**View Survey Summary**: Click the 'Save' icon in the upper-right corner to see an overview of your survey progress.
+**Finish Survey**: Press 'Save Survey' to complete the current survey and mark it for upload.
+
+<div style="margin: 20px 0;">
+  <img src="assets/summary.png" alt="Summary" style="width: 20%;">
+</div>
+
+#### Upload Data
+Select 'Upload Survey' from the Home Screen to view surveys ready for upload. Click on any Survey Results present to initiate a data upload. Data upload is disabled while offline. 
+
+<div style="margin: 20px 0;">
+  <img src="assets/upload.png" alt="Upload" style="width: 20%;">
+</div>
+
+#### Deleting Survey Data
+To delete collected Survey Data, press and hold a Survey Data button. Once in edit mode, press the corresponding delete buttons on the Survey Data you wish to remove. To exit 'edit mode,' simply press and hold again.
 
 ## Downloading Data
 
