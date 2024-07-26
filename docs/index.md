@@ -26,17 +26,11 @@
 9. [Contact](#contact)
 
 ## Overview
-**NOTE:** The app is currently in its first beta release and full of bugs and opportunities for improvements. Please see the section on reporting bugs or suggesting improvements for more information on contributing.
 
-The data collection app is designed to help collect and organize various types of data by leveraging the capabilities of mobile devices. The app is intended to work **offline-first**, with various organizational layouts of items being observed and recorded, and to **store data in a central cloud database**.
+The data collection app is designed to facilitate the collection and organization of diverse data types using the capabilities of mobile devices. It operates **offline-first**, meaning you can collect and organize data without an active internet connection. Once online, the app synchronizes your data to a central cloud database, ensuring it is stored securely and accessible from anywhere.
 
-### Key Terms
+The app supports various organizational layouts for observing and recording items, making it versatile for different data collection needs.
 
-- **Item:** The individual unit of study. This can represent a singular object or a grouping of objects depending on use-case.
-- **Collection/Subcollection:** Items can be grouped into collections. Collections can also contain nested collections up to 1 level deep which are referred to as subcollections. Valid setups would include `collection/[item, item, item]` or `collection/subcollection1/[item, item, item]`.
-- **Task:** A data collection action to be performed on items. One item can be associated with several tasks. For example, taking a photo and then recording text input (two tasks) could all be associated with one item.
-- **Survey:** The overall set of items and tasks that define data collection and recording activities. Collections can be used to organize items into useful groups. The set of tasks defined in the survey will be performed once for each item defined in the survey.
-- **Observation:** The recorded results of data collection activities in a survey. Each item in a survey will have one observation. Each observation will include the recorded data from the set of defined tasks.
 
 ## Installation and Setup
 ### Android
@@ -190,7 +184,6 @@ To upload a spreadsheet, go to 'Manage Surveys' from the Home Screen and select 
 </div>
 
 
-
 ## Collecting Data
 ### The Collections and Items List
 ![The Collections and Items List](assets/collections_items_list.jpg)
@@ -208,7 +201,6 @@ To upload a spreadsheet, go to 'Manage Surveys' from the Home Screen and select 
 ![Uploading Data](assets/uploading_data.jpg)
 
 ## Downloading Data
-![Downloading Data](assets/downloading_data.jpg)
 
 Data download notebook example:
 
