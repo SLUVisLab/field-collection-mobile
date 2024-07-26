@@ -108,22 +108,21 @@ Inside an empty collection you have the option to start adding Items or to creat
 
 #### Add Items to a Collection
 
+Select 'Add Item' and give the new item a unique name. for some use cases it can be useful to include a sequence of some sort in the name for organization (ie. Item 1, Item 2, Item 3).
+Click 'Done' and your new Item should be visible in the collection.
+
 <div style="margin: 20px 0;">
   <img src="assets/new_items_added.png" alt="New Items" style="width: 20%;">
 </div>
 
-Select 'Add Item' and give the new item a unique name. for some use cases it can be useful to include a sequence of some sort in the name for organization (ie. Item 1, Item 2, Item 3).
-Click 'Done' and your new Item should be visible in the collection.
-
 
 #### Delete Items or Collections
+
+To delete items or collections, enter 'edit mode' by pressing and holding the desired Collection or Item button. Once in edit mode, press the corresponding delete buttons on the items you wish to remove. To exit 'edit mode,' simply press and hold again.
 
 <div style="margin: 20px 0;">
   <img src="assets/delete_items.png" alt="Delete Items or collections" style="width: 20%;">
 </div>
-
-To delete items or collections, enter 'edit mode' by pressing and holding the desired Collection or Item button. Once in edit mode, press the corresponding delete buttons on the items you wish to remove. To exit 'edit mode,' simply press and hold again.
-
 
 ### Adding Data Collection Tasks to the Survey
 A **Task** is an action performed to collect data on Items. Each Item can have multiple tasks. For example, a survey might require a user to take a photo of an item (task 1) and then write down a label for that image (task 2).
@@ -136,28 +135,61 @@ From the Survey Builder view, select 'New Task' to see a list of the available t
 
 #### Required Task Fields
 
-<div style="margin: 20px 0;">
-  <img src="assets/new_task_fields.png" alt="Tasks" style="width: 20%;">
-</div>
-
 Every task requires the following three basic fields: Display Name, Data Label, and Instructions. Additional fields may be needed for specific task types, which are detailed in their respective documentation.
 
 **Display Name:** The visible name of the task. Aim for concise, descriptive names. This will be shown to the user performing the survey.
 **Data Label:** The field name used in the JSON key/value pair when the data is collected. This key can be used when downloading and working with your data.
 **Instructions:** Directions for the user completing the task.
 
+<div style="margin: 20px 0;">
+  <img src="assets/new_task_fields.png" alt="Tasks" style="width: 20%;">
+</div>
+
 #### Deleting Tasks
+
+To delete Tasks, enter 'edit mode' by pressing and holding the desired Task button. Once in edit mode, press the corresponding delete buttons on the Taks you wish to remove. To exit 'edit mode,' simply press and hold again.
 
 <div style="margin: 20px 0;">
   <img src="assets/delete_tasks.png" alt="Delete Tasks" style="width: 20%;">
 </div>
 
-To delete Tasks, enter 'edit mode' by pressing and holding the desired Task button. Once in edit mode, press the corresponding delete buttons on the Taks you wish to remove. To exit 'edit mode,' simply press and hold again.
-
 ### Creating Surveys with Spreadsheets
-![Creating Surveys with Spreadsheets](assets/creating_surveys_with_spreadsheets.jpg)
+Survey designs can be created using .xlsx spreadsheets, allowing you to utilize the powerful features of spreadsheet editors. Tools like auto-fill and formulas can simplify the design of large, complex surveys, making them easier to manage and less time-consuming. You can find and copy a sample survey spreadsheet in the correct format here: [Sample Survey Spreadsheet](https://docs.google.com/spreadsheets/d/1US6NnQ0d1DGMfthzxKN5v8mVlgnrY3Fn/edit?usp=sharing&ouid=104744292422451722330&rtpof=true&sd=true)
 
-[Sample Survey Spreadsheet](https://docs.google.com/spreadsheets/d/1US6NnQ0d1DGMfthzxKN5v8mVlgnrY3Fn/edit?usp=sharing&ouid=104744292422451722330&rtpof=true&sd=true)
+#### Spreadsheet Tasks
+The first sheet in the spreadsheet workbook defines your survey tasks. Use the leftmost column to select the task type from a dropdown menu. The Task Type ID will autofill. Fill in the three required fields for each task—Display Name, Data Label, and Instructions—in the subsequent columns.
+
+<div style="margin: 20px 0;">
+  <img src="assets/spreadsheet_tasks.png" alt="Spreadsheet Tasks" style="width: 40%;">
+</div>
+
+#### Spreadsheet Collections and Items
+To define a new collection in your survey design, create a new sheet in your spreadsheet workbook. The name of this sheet will be used as the collection name. We recommend copying an existing collection sheet from the Sample_Survey.xlsx to maintain formatting.
+
+To create a new item in this collection, fill in a row under the 'Item Name' column.
+
+<div style="margin: 20px 0;">
+  <img src="assets/spreadsheet_collection.png" alt="Spreadsheet Collection" style="width: 40%;">
+</div>
+
+#### Spreadsheet Subcollections and Other Optional Fields
+To define a new subcollection in your survey design, enter the desired subcollection name in a row under the 'Subcollection' column and leave the rest of the row empty. The spreadsheet formatting will automatically highlight this row. All items listed below this row will be added to the subcollection.
+
+**ItemID** is an optional field. Use it if the objects being studied have unique identifiers that you want to include in the survey data.
+
+<div style="margin: 20px 0;">
+  <img src="assets/spreadsheet_collection_with_subs_ids.png" alt="Spreadsheet Collection With subcollections" style="width: 40%;">
+</div>
+
+#### Uploading a Spreadsheet
+
+To upload a spreadsheet, go to 'Manage Surveys' from the Home Screen and select 'New Survey'. At the bottom of the screen, click 'Import From XLSX File' and use the file picker dialog to choose your XLSX file.
+
+<div style="margin: 20px 0;">
+  <img src="assets/namne_new_survey.png" alt="Spreadsheet New Survey" style="width: 40%;">
+</div>
+
+
 
 
 ## Collecting Data
