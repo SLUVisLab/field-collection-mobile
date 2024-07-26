@@ -11,19 +11,19 @@
     - [Android](#android)
     - [iOS](#ios)
     - [Registration and Login](#registration-and-login)
-3. [Managing Surveys](#managing-surveys)
-    - [Collections, Subcollections, and Items](#collections-subcollections-and-items)
-    - [Tasks](#tasks)
+3. [Designing A New Survey](#designing-a-new-survey)
+    - [Organizing Items in a Survey](#organizing-items-in-a-survey)
+    - [Adding Data Collection Tasks to the Survey](#adding-data-collection-tasks-to-the-survey)
     - [Creating Surveys with Spreadsheets](#creating-surveys-with-spreadsheets)
-4. [Collecting Data](#collecting-data)
+5. [Collecting Data](#collecting-data)
     - [The Collections and Items List](#the-collections-and-items-list)
     - [The Survey Summary](#the-survey-summary)
     - [Saving a Survey](#saving-a-survey)
     - [Leaving a Survey Before You're Finished](#leaving-a-survey-before-youre-finished)
-5. [Uploading Data](#uploading-data)
-6. [Downloading Data](#downloading-data)
-7. [Bug Reporting and Suggesting Improvements](#bug-reporting-and-suggesting-improvements)
-8. [Contact](#contact)
+6. [Uploading Data](#uploading-data)
+7. [Downloading Data](#downloading-data)
+8. [Bug Reporting and Suggesting Improvements](#bug-reporting-and-suggesting-improvements)
+9. [Contact](#contact)
 
 ## Overview
 **NOTE:** The app is currently in its first beta release and full of bugs and opportunities for improvements. Please see the section on reporting bugs or suggesting improvements for more information on contributing.
@@ -71,17 +71,60 @@ Email and password based login is required to use the app. When first using the 
 
 Some features like password resetting and account recovery are not implemented yet. Contact app developer for account support.
 
-## Managing Surveys
+## Designing A New Survey
 
 The app supports creating and editing surveys using the **in-app GUI** as well as using **excel spreasheets in .xlsx format**. Spreadsheets can be uploaded to the app and will be processed into surveys. See [Creating Surveys with Spreadsheets](#creating-surveys-with-spreadsheets) for more details.
 
-Select 'Manage Surveys' from the home screen to edit an existing survey or create a new one. when creating a new survey, you'll be prompted to enter a name for your survey.
+Select 'Manage Surveys' from the home screen followed by 'New Survey' and enter a unique name for the survey. Afterwards, the app will navigate to the **Survey Builder** view.
 
-### Collections, Subcollections, and Items
-![Collections, Subcollections, and Items](assets/collections_subcollections_items.jpg)
+The Survey Builder is used to organize the structure your survey and specify the data collection tasks involved. **Make sure to save your survey design when finished by clicking 'Save'!**
 
-### Tasks
-![Tasks](assets/tasks.jpg)
+Once the survey is saved, it will be synced to the cloud and other users will be able to use and interact with it.
+![Empty Survey Builder](assets/survey_builder_empty.png)
+
+### Organizing Items in a Survey
+
+Surveys are structured using Items, Collections, and Subcollections. 
+
+**Items** are the real-world objects, events, or subjects you want to gather information on. Each item in your survey represents a specific thing you are interested in recording data about.
+
+**Collections** are groupings of items, allowing you to organize related data points. Collections can also contain **Subcollections**, nested up to one level deep. This structure lets your surveys reflect various real-world layouts such as grids, heirarchies, and clusters.
+
+#### Add a new collection
+Click 'Collections' from the Survey Builder view and select 'Add Collection'. Give the new collection a unique name and press 'Done'.
+![Collections, Subcollections, and Items](assets/create_new_collection.png)
+
+Inside an empty collection you have the option to start adding Items or to create a Subcollection.
+![Subcollections and Items](assets/create_item_or_subcollection.png)
+
+#### Add Items to a Collection
+![New Items](assets/new_items_added.png)
+Select 'Add Item' and give the new item a unique name. for some use cases it can be useful to include a sequence of some sort in the name for organization (ie. Item 1, Item 2, Item 3).
+Click 'Done' and your new Item should be visible in the collection.
+
+
+#### Delete Items or Collections
+![Delete Items or collections](assets/delete_items.png)
+To delete items or collections, enter 'edit mode' by pressing and holding the desired Collection or Item button. Once in edit mode, press the corresponding delete buttons on the items you wish to remove. To exit 'edit mode,' simply press and hold again.
+
+
+### Adding Data Collection Tasks to the Survey
+A **Task** is an action performed to collect data on Items. Each Item can have multiple tasks. For example, a survey might require a user to take a photo of an item (task 1) and then write down a label for that image (task 2).
+
+From the Survey Builder view, select 'New Task' to see a list of the available task types
+![Tasks](assets/choose_task_type.png)
+
+#### Required Task Fields
+![Tasks](assets/new_task_fields.png)
+Every task requires the following three basic fields: Display Name, Data Label, and Instructions. Additional fields may be needed for specific task types, which are detailed in their respective documentation.
+
+**Display Name:** The visible name of the task. Aim for concise, descriptive names. This will be shown to the user performing the survey.
+**Data Label:** The field name used in the JSON key/value pair when the data is collected. This key can be used when downloading and working with your data.
+**Instructions:** Directions for the user completing the task.
+
+#### Deleting Tasks
+![Delete Tasks](assets/delete_tasks.png)
+To delete Tasks, enter 'edit mode' by pressing and holding the desired Task button. Once in edit mode, press the corresponding delete buttons on the Taks you wish to remove. To exit 'edit mode,' simply press and hold again.
 
 ### Creating Surveys with Spreadsheets
 ![Creating Surveys with Spreadsheets](assets/creating_surveys_with_spreadsheets.jpg)
