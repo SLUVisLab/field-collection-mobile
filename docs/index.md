@@ -102,11 +102,13 @@ Inside an empty collection you have the option to start adding Items or to creat
 
 #### Add Items to a Collection
 
-Select 'Add Item' and give the new item a unique name. for some use cases it can be useful to include a sequence of some sort in the name for organization (ie. Item 1, Item 2, Item 3).
-Click 'Done' and your new Item should be visible in the collection.
-
-<div style="margin: 20px 0;">
-  <img src="assets/new_items_added.png" alt="New Items" style="width: 20%;">
+<div style="display: flex; align-items: center;">
+  <div style="flex: 1; padding-right: 20px;">
+    Select 'Add Item' and give the new item a unique name. For some use cases, it can be useful to include a sequence of some sort in the name for organization (e.g., Item 1, Item 2, Item 3). Click 'Done' and your new Item should be visible in the collection.
+  </div>
+  <div>
+    <img src="assets/new_items_added.png" alt="New Items" style="width: 50%;">
+  </div>
 </div>
 
 
