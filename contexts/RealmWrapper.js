@@ -1,5 +1,5 @@
 import { AppProvider, UserProvider, RealmProvider } from '@realm/react';
-import { OpenRealmBehaviorType, OpenRealmTimeOutBehavior, SyncError } from 'realm';
+import { OpenRealmBehaviorType, OpenRealmTimeOutBehavior, SyncError, WaitForSync } from 'realm';
 import React, { useState } from 'react';
 
 import SurveyResults from '../models/SurveyResults';
@@ -24,21 +24,25 @@ const RealmWrapper = ({children}) => {
                     schema={[SurveyResults, SurveyDesign]}
                     fallback={<RealmLoading />}
                     sync={{
-                    flexible: true,
-                    existingRealmBehavior: realmAccessBehavior,
-                    newRealmFileBehavior: realmAccessBehavior,
-                    onError: (_, error) => {
-                        setSyncError(error);
+                        flexible: true,
+                        existingRealmBehavior: realmAccessBehavior,
+                        newRealmFileBehavior: realmAccessBehavior,
                         
-                    },
-                    initialSubscriptions: {
-                        update(subs, realm) {
-                        subs.add(realm.objects(SurveyDesign).filtered("name != nil"), {
-                            name: "All Survey Designs",
-                        });
+                        onError: (_, error) => {
+                            console.log("I'm In the sync error handler!");
+                            setSyncError(error);               
                         },
-                    },
-                }}>
+
+                        initialSubscriptions: {
+                            update(subs, realm) {
+                            subs.add(realm.objects(SurveyDesign).filtered("name != nil"), {
+                                name: "All Survey Designs",
+                                behavior: WaitForSync.Never,
+                            });
+                            },
+                        },
+                    }}
+                >
                     {children}
                 </RealmProvider>
             </UserProvider>

@@ -118,7 +118,7 @@ const CollectionDesignList = ({ route, navigation }) => {
             onPress={() => navigation.navigate('CollectionName', { parentID: collection.ID, parentName: collection.name})}
           >
             <Ionicons name="add-circle-outline" size={24} color="black" />
-            <Text style = {localStyles.addText}>Add Collection</Text>
+            <Text style = {localStyles.addText}>Add Subcollection</Text>
           </TouchableOpacity>
         </View>
       );

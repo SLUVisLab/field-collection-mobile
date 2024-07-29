@@ -20,9 +20,11 @@ const Login = ({ onRegisterClick }) => {
         if (result.success) {
           // Handle successful login
           console.log('Login successful');
+          console.log(result);
         } else {
           // Handle failed login
           console.log('Login failed');
+          console.log(result)
           setPassword('');
           Toast.show({
             type: 'failure',

@@ -19,7 +19,7 @@ const NewSurvey = ({ navigation }) => {
 
   const validateFields = () => {
     const newErrors = {};
-    if (!itemName) newErrors.surveyName = 'Survey Name cannot be empty';
+    if (!surveyName) newErrors.surveyName = 'Survey Name cannot be empty';
     return newErrors;
   };
 
