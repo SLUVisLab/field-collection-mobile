@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Modal, TouchableOpacity, Button, SafeAreaView, Image } from 'react-native';
-import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
+import { Camera, CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 
 const PhotoAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
 
   const [facing, setFacing] = useState('back');
-  const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [permission, requestPermission] = useCameraPermissions();
   const [showInstructions, setShowInstructions] = useState(false);
   const [photo, setPhoto] = useState();
   const [photoURI, setPhotoURI] = useState();
@@ -106,10 +106,11 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
         <Text style={styles.infoText}>{collection.name}</Text>
         <Text style={styles.infoText}>{item.name}</Text>
       </View>
-      <Camera 
+      <CameraView 
         ref={cameraRef}
         style={styles.camera} 
-        type={facing === 'back' ? Camera.Constants.Type.back : Camera.Constants.Type.front}
+        type={facing}
+        autofocus={true}
         onCameraReady={() => setIsCameraReady(true)}  
       >
         <View style={styles.buttonContainer}>
@@ -146,7 +147,7 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
             </View>
           </View>
         </Modal>
-      </Camera>
+      </CameraView>
     </View>
   );
   };

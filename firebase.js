@@ -4,8 +4,19 @@ import { getStorage } from "firebase/storage";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { Alert } from "react-native";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+
+//TODO: Persist fb auth state using async storage
+// You are initializing Firebase Auth for React Native without providing
+// AsyncStorage. Auth state will default to memory persistence and will not
+// persist between sessions. In order to persist auth state, install the package
+// "@react-native-async-storage/async-storage" and provide it to
+// initializeAuth:
+
+// // import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+// // import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+// // const auth = initializeAuth(app, {
+// //   persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+// // });
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional

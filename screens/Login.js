@@ -23,6 +23,7 @@ const Login = ({ onRegisterClick }) => {
           console.log(result);
         } else {
           // Handle failed login
+          //TODO: fix this. This block fires when login is pending. 
           console.log('Login failed');
           console.log(result)
           setPassword('');
@@ -51,6 +52,8 @@ const Login = ({ onRegisterClick }) => {
             value={email}
             onChangeText={setEmail}
             placeholder="Enter your email"
+            autoCorrect={false}
+            autoCapitalize="none"
           />
         </View>
   

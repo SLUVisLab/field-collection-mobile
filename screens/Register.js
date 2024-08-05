@@ -50,6 +50,9 @@ const Register = () => {
             value={email}
             onChangeText={setEmail}
             placeholder="Enter your email"
+            autoCorrect={false}
+            autoCapitalize="none"
+
           />
         </View>
 
