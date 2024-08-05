@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import styles from '../Styles';
-// import taskManifest from '../tasks/taskManifest'; // Import task manifest
+import TaskManifest from '../tasks/TaskManifest'; // Import task manifest
 import PhotoTask from '../tasks/photo/PhotoTask';
 import TextTask from '../tasks/text/TextTask';
 
@@ -11,49 +10,33 @@ const TaskSelector = ({ navigation }) => {
 
   const tasks = [PhotoTask, TextTask];
 
-  // this is currently not working. Dynamic importing of task modules.
-  // TODO: Fix me later
-  // useEffect(() => {
-  //   const importTaskModules = async () => {
-  //     try {
-  //       const importedModules = await Promise.all(
-  //         modules.map(task => import(task))
-  //       );
-
-  //       setTaskModules(importedModules);
-  //     } catch (error) {
-  //       console.error('Error importing task modules:', error);
-  //     }
-  //   };
-
-  //   importTaskModules();
-  // }, []);
-
   return (
     <View>
-      {tasks.map((taskModule, index) => (
-        <TouchableOpacity
-          key={index}
-          style={localStyles.taskButton}
-          // dont pass a taskID to the task setup view because this is a new task
-          onPress={() => navigation.navigate('TaskSetup', { taskTypeID: taskModule.typeID, taskID: null }) }
-        >
-          {React.createElement(taskModule.typeIcon, { style: localStyles.taskIcon, size: 50 })}
-          <View style = {localStyles.info}>
-            <Text style={localStyles.taskName}>{taskModule.typeDisplayName}</Text>
-            <Text style = {localStyles.taskDescription}>{taskModule.typeDescription}</Text>
-          </View>
-          
-          
-        </TouchableOpacity>
-      ))}
+      {Object.keys(TaskManifest).map((key, index) => {
+        const taskModule = TaskManifest[key].taskModule;
+
+        return (
+          <TouchableOpacity
+            key={index}
+            style={localStyles.taskButton}
+            onPress={() => navigation.navigate('TaskSetup', { taskTypeID: taskModule.typeID, taskID: null })}
+          >
+            {React.createElement(taskModule.typeIcon, { style: localStyles.taskIcon, size: 50 })}
+            <View style={localStyles.info}>
+              <Text style={localStyles.taskName}>{taskModule.typeDisplayName}</Text>
+              <Text style={localStyles.taskDescription}>{taskModule.typeDescription}</Text>
+            </View>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 };
 
 const localStyles = StyleSheet.create({
   info: {
-    flexDirection: 'column'
+    flexDirection: 'column',
+
   },
   taskButton: {
     backgroundColor: 'white',
@@ -61,8 +44,8 @@ const localStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    borderBottomWidth: 1, // This will add a 1 pixel border to the bottom
-    borderBottomColor: 'black', // This will make the border color black
+    borderBottomWidth: 1, 
+    borderBottomColor: 'black', 
   },
   taskName: {
     fontWeight: 'bold',
@@ -74,6 +57,7 @@ const localStyles = StyleSheet.create({
   },
   taskIcon: {
     justifyContent: 'center',
+    width: 60, // fixed width helps with slightly different icon sizes
   },
 });
 

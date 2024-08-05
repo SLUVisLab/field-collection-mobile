@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 
 
-const TextSetup = ({ options, setOptions }) => {
+const NumberSetup = ({ options, setOptions }) => {
     
     console.log("Options: ", options);
 
@@ -23,4 +23,4 @@ const TextSetup = ({ options, setOptions }) => {
     );
 };
 
-export default TextSetup;
+export default NumberSetup;

@@ -3,19 +3,12 @@ import React from 'react';
 
 import RealmWrapper from './contexts/RealmWrapper';
 
-// import { AppProvider, UserProvider, RealmProvider } from '@realm/react';
-// import { OpenRealmBehaviorType, OpenRealmTimeOutBehavior, SyncError } from 'realm';
-
 import Toast from 'react-native-toast-message';
 
 import 'react-native-get-random-values'
 
 import { SurveyDesignProvider } from "./contexts/SurveyDesignContext";
 import { SurveyDataProvider } from "./contexts/SurveyDataContext";
-
-// import SurveyResults from './models/SurveyResults';
-// import SurveyDesign from './models/SurveyDesign';
-// import Observation from './models/Observation';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';

@@ -6,6 +6,10 @@ import TextTask from './text/TextTask'
 import TextSetup from './text/TextSetup';
 import TextAction from './text/TextAction';
 
+import NumberTask from './number/NumberTask';
+import NumberSetup from './number/NumberSetup';
+import NumberAction from './number/NumberAction';
+
 const TaskManifest = {
   [TextTask.typeID]: {
     taskAction: TextAction,
@@ -17,6 +21,12 @@ const TaskManifest = {
     taskSetup: PhotoSetup,
     taskModule: PhotoTask
   },
+  [NumberTask.typeID]: {
+    taskAction: NumberAction,
+    taskSetup: NumberSetup,
+    taskModule: NumberTask
+  },
+
 }
   
 export default TaskManifest;

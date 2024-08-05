@@ -5,8 +5,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 const CameraTaskIcon = ({ style, size = 24 }) => <Ionicons name="camera" size={size} color="black" style={style} />;
 
 class PhotoTask extends Task {
-  constructor(taskID, taskDisplayName, dataLabel, instructions) {
-    super(taskID, taskDisplayName, dataLabel, instructions);
+  constructor(taskID, taskDisplayName, dataLabel, instructions, options) {
+    super(taskID, taskDisplayName, dataLabel, instructions, options);
   }
 
 

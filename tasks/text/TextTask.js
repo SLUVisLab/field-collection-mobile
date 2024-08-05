@@ -4,8 +4,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 const TextTaskIcon = ({ style, size = 24 }) => <Ionicons name="text" size={size} color="black" style={style} />;
 
 class TextTask extends Task {
-    constructor(taskID, taskDisplayName, dataLabel, instructions) {
-      super(taskID, taskDisplayName, dataLabel, instructions);
+    constructor(taskID, taskDisplayName, dataLabel, instructions, options) {
+      super(taskID, taskDisplayName, dataLabel, instructions, options);
     }
   
   
@@ -16,7 +16,7 @@ TextTask.typeID = 2;
 TextTask.typeDisplayName = 'Text';
 TextTask.setupViewPath = '#';
 TextTask.actionViewPath = '#';
-TextTask.typeDescription = "Collect short text or numeric input";
+TextTask.typeDescription = "Collect short text input";
 TextTask.typeIcon = TextTaskIcon;
 
 export default TextTask;
