@@ -1,6 +1,5 @@
 import Task from '../Task';
 import Ionicons from '@expo/vector-icons/Ionicons';
-// import PhotoSetup from './PhotoSetup';
 
 const CameraTaskIcon = ({ style, size = 24 }) => <Ionicons name="camera" size={size} color="black" style={style} />;
 

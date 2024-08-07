@@ -1,14 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import TaskManifest from '../tasks/TaskManifest'; // Import task manifest
-import PhotoTask from '../tasks/photo/PhotoTask';
-import TextTask from '../tasks/text/TextTask';
-
+import TaskManifest from '../tasks/TaskManifest';
 
 const TaskSelector = ({ navigation }) => {
-  const [taskModules, setTaskModules] = useState([]);
-
-  const tasks = [PhotoTask, TextTask];
 
   return (
     <View>

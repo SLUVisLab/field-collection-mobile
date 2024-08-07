@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-const PhotoSetup = ({ options, setOptions }) => {
+const VideoSetup = ({ options, setOptions }) => {
 
     return (
         <View>
@@ -9,4 +9,4 @@ const PhotoSetup = ({ options, setOptions }) => {
     );
 };
 
-export default PhotoSetup;
+export default VideoSetup;
