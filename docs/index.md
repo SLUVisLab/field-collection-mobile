@@ -270,6 +270,12 @@ except Exception as e:
 
 ```
 
+Some sample data returned from the API
+<div style="margin: 20px 0;">
+  <img src="assets/data_sample.png" alt="Data Sample" style="width: 40%;">
+</div>
+
+
 ## Bug Reporting and Suggesting Improvements
 If you encounter a bug or have a suggestion for an improvement, please share it! You can...
 
