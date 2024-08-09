@@ -272,7 +272,7 @@ except Exception as e:
 
 Some sample data returned from the API
 <div style="margin: 20px 0;">
-  <img src="assets/data_sample.png" alt="Data Sample" style="width: 60%;">
+  <img src="assets/data_sample.png" alt="Data Sample" style="width: 70%;">
 </div>
 
 
