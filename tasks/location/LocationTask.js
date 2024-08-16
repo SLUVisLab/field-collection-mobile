@@ -11,7 +11,6 @@ class LocationTask extends Task {
 
 }
 
-// Set static properties for PhotoTask
 LocationTask.typeID = 7;
 LocationTask.typeDisplayName = 'Location';
 LocationTask.typeDescription = "Record Device Location"

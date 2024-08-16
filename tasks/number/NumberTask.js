@@ -11,7 +11,6 @@ class NumberTask extends Task {
   
 }
   
-// Set static properties for PhotoTask
 NumberTask.typeID = 3;
 NumberTask.typeDisplayName = 'Number';
 NumberTask.setupViewPath = '#';

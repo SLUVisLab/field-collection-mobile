@@ -11,12 +11,11 @@ class VideoTask extends Task {
 
 }
 
-// Set static properties for PhotoTask
-PhotoTask.typeID = 5;
-PhotoTask.typeDisplayName = 'Video';
-PhotoTask.typeDescription = "Record Video with the camera"
-PhotoTask.typeIcon = taskIcon;
-PhotoTask.setupViewPath = '#';
-PhotoTask.actionViewPath = '#';
+VideoTask.typeID = 5;
+VideoTask.typeDisplayName = 'Video';
+VideoTask.typeDescription = "Record Video with the camera"
+VideoTask.typeIcon = taskIcon;
+VideoTask.setupViewPath = '#';
+VideoTask.actionViewPath = '#';
 
 export default VideoTask;

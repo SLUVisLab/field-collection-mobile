@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, Pressable, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import styles from '../../Styles';
 
 const ChoiceSetup = ({ options, setOptions }) => {
     const [newChoice, setNewChoice] = useState('');
@@ -13,6 +14,8 @@ const ChoiceSetup = ({ options, setOptions }) => {
             Alert.alert('Invalid Choice', 'Choice cannot be an empty string.');
             return;
         }
+
+        console.log('Adding choice:', newChoice);
         setOptions(prevOptions => ({
             ...prevOptions,
             choices: [...(prevOptions.choices || []), newChoice]
@@ -28,17 +31,17 @@ const ChoiceSetup = ({ options, setOptions }) => {
                 placeholder="Enter new choice"
                 value={newChoice}
                 onChangeText={handleTextChange}
-                style={localStyles.input}
+                style={styles.textInput}
             />
-            <Pressable
+            <TouchableOpacity
                 onPress={addChoice}
-                style={localStyles.button}
+                style={styles.button}
             >
-                <Text style={localStyles.buttonText}>Add Choice</Text>
-            </Pressable>
+                <Text style={styles.text}>Add Choice</Text>
+            </TouchableOpacity>
             <Text style={localStyles.header}>Current Choices:</Text>
             <FlatList
-                data={options}
+                data={options.choices}
                 renderItem={({ item }) => <Text style={localStyles.choice}>{item}</Text>}
                 keyExtractor={(item, index) => index.toString()}
             />

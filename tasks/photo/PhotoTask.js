@@ -11,7 +11,6 @@ class PhotoTask extends Task {
 
 }
 
-// Set static properties for PhotoTask
 PhotoTask.typeID = 1;
 PhotoTask.typeDisplayName = 'Photo';
 PhotoTask.typeDescription = "Take a single photo with the camera"

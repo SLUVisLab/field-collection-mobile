@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import PhotoAction from '../tasks/photo/PhotoAction';
 import TextAction from '../tasks/text/TextAction';
+import TaskManifest from '../tasks/TaskManifest';
 
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import { useSurveyData } from '../contexts/SurveyDataContext';

@@ -11,7 +11,6 @@ class TextTask extends Task {
   
 }
   
-// Set static properties for PhotoTask
 TextTask.typeID = 2;
 TextTask.typeDisplayName = 'Text';
 TextTask.setupViewPath = '#';

@@ -61,18 +61,14 @@ const TaskSetup = ({ route, navigation }) => {
         let newTask;
         
         if(taskID){
-            console.log("Saving Options: ", options);
             // Update existing task in the survey context
             newTask = new TaskInstance(taskID, displayName, dataLabel, instructions, options);
-            console.log("New Task Options: ", newTask.options);
             isSuccess = updateTask(newTask);
 
         } else {
             // Add new task to the survey context
-            console.log("Saving Options: ", options);
             let newTaskID = Date.now()
             newTask = new TaskInstance(newTaskID, displayName, dataLabel, instructions, options);
-            console.log("New Task Options: ", newTask.options);
             isSuccess = addTask(newTask);
         }
 

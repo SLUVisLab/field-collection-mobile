@@ -6,8 +6,12 @@ const ChoiceTaskIcon = ({ style, size = 24 }) => <MaterialCommunityIcons name="f
 class ChoiceTask extends Task {
     constructor(taskID, taskDisplayName, dataLabel, instructions, options) {
         super(taskID, taskDisplayName, dataLabel, instructions, options);
-      
-        if (!options.choices || !Array.isArray(options.choices) || options.choices.length === 0) {
+
+        // for some reason the choices array is being sent as type object
+        // TODO: Figure out how to test that it is an array
+        // || !Array.isArray(options.choices)
+
+        if (!options.choices || options.choices.length === 0) {
             throw new Error('ChoiceTask requires an array of choices');
         }
         

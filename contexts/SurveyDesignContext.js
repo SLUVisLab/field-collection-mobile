@@ -328,13 +328,13 @@ export const SurveyDesignProvider = ({ children }) => {
     }
 
     for (const task of mongoDesign.tasks) {
-      // console.log("Parsing task....")
 
       let newTask = new TaskManifest[task.typeId].taskModule(
         task.taskID,
         task.taskDisplayName,
         task.dataLabel,
-        task.instructions
+        task.instructions,
+        task.options
       );
 
       newDesign.tasks.push(newTask);

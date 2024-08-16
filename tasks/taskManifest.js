@@ -27,15 +27,25 @@ import MultiPhotoSetup from './multiphoto/MultiPhotoSetup';
 import MultiPhotoAction from './multiphoto/MultiPhotoAction';
 
 const TaskManifest = {
-  [TextTask.typeID]: {
-    taskAction: TextAction,
-    taskSetup: TextSetup,
-    taskModule: TextTask
-  },
   [PhotoTask.typeID]: {
     taskAction: PhotoAction,
     taskSetup: PhotoSetup,
     taskModule: PhotoTask
+  },
+  // [MultiPhotoTask.typeID]: {
+  //   taskAction: MultiPhotoAction,
+  //   taskSetup: MultiPhotoSetup,
+  //   taskModule: MultiPhotoTask
+  // },
+  // [VideoTask.typeID]: {
+  //   taskAction: VideoAction,
+  //   taskSetup: VideoSetup,
+  //   taskModule: VideoTask
+  // },
+  [TextTask.typeID]: {
+    taskAction: TextAction,
+    taskSetup: TextSetup,
+    taskModule: TextTask
   },
   [NumberTask.typeID]: {
     taskAction: NumberAction,
@@ -47,21 +57,12 @@ const TaskManifest = {
     taskSetup: ChoiceSetup,
     taskModule: ChoiceTask
   },
-  [VideoTask.typeID]: {
-    taskAction: VideoAction,
-    taskSetup: VideoSetup,
-    taskModule: VideoTask
-  },
-  [LocationTask.typeID]: {
-    taskAction: LocationAction,
-    taskSetup: LocationSetup,
-    taskModule: LocationTask
-  },
-  [MultiPhotoTask.typeID]: {
-    taskAction: MultiPhotoAction,
-    taskSetup: MultiPhotoSetup,
-    taskModule: MultiPhotoTask
-  }
+  // [LocationTask.typeID]: {
+  //   taskAction: LocationAction,
+  //   taskSetup: LocationSetup,
+  //   taskModule: LocationTask
+  // },
+
 
 }
   

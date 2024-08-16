@@ -10,7 +10,6 @@ class MultiPhotoTask extends Task {
 
 }
 
-// Set static properties for PhotoTask
 MultiPhotoTask.typeID = 6;
 MultiPhotoTask.typeDisplayName = 'MultiPhoto';
 MultiPhotoTask.typeDescription = "Take multiple photos with the camera"
