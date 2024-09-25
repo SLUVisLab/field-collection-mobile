@@ -88,7 +88,17 @@ const NewSurvey = ({ navigation }) => {
         return;
       }
 
-      const formattedName = res.name
+      if (res.assets.length === 0) {
+        console.log("No file returned from document picker");
+        throw new Error("No file returned from document picker");
+      }
+
+      const document = res.assets[0];
+
+      console.log("Document Picker Result: ", document);
+      console.log("name: ", document.name);
+
+      const formattedName = document.name
         .replace(/_/g, ' ') // Replace all underscores with spaces
         .replace(/\.[^/.]+$/, ''); // Remove the file extension
 
@@ -113,7 +123,7 @@ const NewSurvey = ({ navigation }) => {
               onPress: async () => {
                 // I'm not sure about this yet. Persisting SurveyDesign ID's
                 // Is the thing I'm worried about
-                let newSurvey = await convertXLSXToSurvey(res.uri, formattedName);
+                let newSurvey = await convertXLSXToSurvey(document.uri, formattedName);
                 setSurveyDesign(newSurvey);
                 navigation.navigate("SurveyBuilder", { surveyIsImported: true });
               }
@@ -121,7 +131,7 @@ const NewSurvey = ({ navigation }) => {
           ]
         );
       } else {
-        let newSurvey = await convertXLSXToSurvey(res.uri, formattedName);
+        let newSurvey = await convertXLSXToSurvey(document.uri, formattedName);
         setSurveyDesign(newSurvey);
         navigation.navigate("SurveyBuilder", { surveyIsImported: true });
       }

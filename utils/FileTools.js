@@ -8,6 +8,35 @@ import SurveyCollection from '../utils/SurveyCollection';
 import SurveyItem from '../utils/SurveyItem';
 import { v4 as uuidv4 } from 'uuid';
 
+// Custom function to parse custom input format to javascript object for options field
+// For example: "options: [option1, option2, option3], required: true, maxSelections: 2"
+function parseCustomInput(input) {
+    const result = {};
+    const regex = /(\w+):\s*(\[[^\]]*\]|true|false|\d+|[^,]+)/g;
+    let match;
+
+    while ((match = regex.exec(input)) !== null) {
+        console.log("match: ", match)
+        const key = match[1];
+        let value = match[2].trim();
+
+        if (value.startsWith('[') && value.endsWith(']')) {
+            // Parse array
+            value = value.slice(1, -1).split(',').map(item => item.trim());
+        } else if (value === 'true' || value === 'false') {
+            // Parse boolean
+            value = value === 'true';
+        } else if (!isNaN(value)) {
+            // Parse number
+            value = Number(value);
+        }
+
+        result[key] = value;
+    }
+
+    return result;
+}
+
 const convertXLSXToSurvey = async (uri, surveyName) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -56,6 +85,11 @@ const convertXLSXToSurvey = async (uri, surveyName) => {
                 const taskDisplayName = row[2];
                 const dataLabel = row[3];
                 const instructions = row[4];
+                const options = row[5];
+                console.debug("options: ", options)
+
+                const parsedOptions = parseCustomInput(options);
+                console.debug("parsedOptions: ", parsedOptions)
             
                 // Create a new Task instance and add it to the tasks array
                 console.debug("creating new task")
@@ -67,7 +101,7 @@ const convertXLSXToSurvey = async (uri, surveyName) => {
                 }
                 
                 let taskID = uuidv4();
-                let newTask = new TaskManifest[parseInt(taskTypeID)].taskModule(taskID, taskDisplayName, dataLabel, instructions);
+                let newTask = new TaskManifest[parseInt(taskTypeID)].taskModule(taskID, taskDisplayName, dataLabel, instructions, parsedOptions);
 
                 console.debug("adding task to survey")
                 newSurveyState.tasks.push(newTask);
