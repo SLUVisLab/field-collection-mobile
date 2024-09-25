@@ -19,12 +19,11 @@ export default StyleSheet.create({
       height: deviceHeight
     },
     button: {
-      alignItems: 'center',
-      justifyContent: 'center',
       textAlign: 'center',
       paddingVertical: 12,
       marginVertical: 3,
       marginHorizontal: 16,
+      marginBottom: 12,
       paddingHorizontal: 32,
       borderRadius: 4,
       elevation: 3,
@@ -196,4 +195,71 @@ export default StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center'
     },
+    divider: {
+      height: 1,
+      marginVertical: 10,
+    },
+    horizontalLine: {
+      borderBottomColor: 'black',
+      borderBottomWidth: 1,
+      width: deviceWidth * 0.9, // Set width to 90% of the screen width
+      alignSelf: 'center', // Align the line to the center horizontally
+      marginVertical: 10,
+    },
+    headerText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 5,
+    },
+    textInput: {
+      backgroundColor: 'white',
+      width: '90%',
+      borderRadius: 10,
+      padding: 10,
+      marginVertical: 5,
+      alignSelf: 'center',
+    },
+    inputLabelContainer: {
+      width: '90%',
+      alignSelf: 'center', // Center the container horizontally
+      marginBottom: 5, // Add some spacing between the label and the input field
+    },
+    inputLabel: {
+      fontWeight: 'bold', // Make the text slightly bold
+    },
+    surveyItemButton: {
+      textAlign: 'left',
+      paddingVertical: 12,
+      marginVertical: 3,
+      marginHorizontal: 16,
+      paddingHorizontal: 32,
+      borderRadius: 3,
+      elevation: 3,
+      backgroundColor: 'white'
+    },
+    surveyCollectionButton: {
+      textAlign: 'left',
+      paddingVertical: 12,
+      marginVertical: 3,
+      marginHorizontal: 16,
+      paddingHorizontal: 32,
+      borderRadius: 3,
+      elevation: 3,
+      backgroundColor: 'white',
+    },
+    boldText: {
+      fontWeight: 'bold',
+    },
+    spacer: {
+      height: 40, // or whatever standard amount of space you want
+    },
+
+    loginWrapperTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      marginBottom: 60,
+    },
+
+
   }); 
