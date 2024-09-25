@@ -84,16 +84,34 @@ const TaskAction = ({ route, navigation }) => {
     const taskTypeID = task.constructor.typeID;
     const taskID = task.taskID;
 
-    switch(taskTypeID){
-        case 1:
-            renderedComponent = <PhotoAction key={taskID} navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
-            break;
-        case 2:
-            renderedComponent = <TextAction key={taskID} navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
-            break;
-        default:
-            renderedComponent = <Text>Error Loading Component</Text>
+    const TaskComponent = TaskManifest[taskTypeID]?.taskAction;
+
+    if (TaskComponent) {
+        renderedComponent = (
+            <TaskComponent
+                key={taskID}
+                navigation={navigation}
+                existingData={observationData}
+                task={task}
+                onComplete={(data) => taskCompleted(data)}
+                item={currentItem}
+                collection={collection}
+            />
+        );
+    } else {
+        renderedComponent = <Text>Error Loading Component</Text>;
     }
+
+    // switch(taskTypeID){
+    //     case 1:
+    //         renderedComponent = <PhotoAction key={taskID} navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
+    //         break;
+    //     case 2:
+    //         renderedComponent = <TextAction key={taskID} navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
+    //         break;
+    //     default:
+    //         renderedComponent = <Text>Error Loading Component</Text>
+    // }
 
     return (
         <View style={{ height: '100%' }}>

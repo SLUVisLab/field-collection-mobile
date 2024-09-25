@@ -36,26 +36,27 @@ const NumberAction = ({ navigation, existingData, onComplete, task, item, collec
         <Text style={localStyles.info}>{item.name}</Text>
       </View>
         <View style={{ justifyContent: 'center', flex: 1 }}>
-            <View>
-                <View style={[styles.inputLabelContainer, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-                    <Text style={[styles.inputLabel, { alignSelf: 'flex-end' }]}>{task.dataLabel}</Text>
-                    <TouchableOpacity style={localStyles.helpButton} onPress={() => setShowInstructions(true)}>
-                        <Text style={localStyles.buttonText}>?</Text>
-                    </TouchableOpacity>
-                </View>
-                <TextInput
-                    style={styles.textInput}
-                    value={data}
-                    keyboardType="numeric"
-                    onChangeText={setData}
-                />
-            </View>
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleDone}
-                >
-                <Text style={styles.text}>Done</Text>
+
+          <View style={[styles.inputLabelContainer, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+            <Text style={[styles.inputLabel, { alignSelf: 'flex-end' }]}>{task.dataLabel}</Text>
+            <TouchableOpacity style={localStyles.helpButton} onPress={() => setShowInstructions(true)}>
+                <Text style={localStyles.buttonText}>?</Text>
             </TouchableOpacity>
+          </View>
+          <TextInput
+            style={styles.textInput}
+            value={data}
+            keyboardType="numeric"
+            onChangeText={setData}
+          />
+        </View>
+        <View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleDone}
+            >
+            <Text style={styles.text}>Done</Text>
+          </TouchableOpacity>
         </View>
         <Modal
           animationType="slide"

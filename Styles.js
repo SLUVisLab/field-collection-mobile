@@ -23,6 +23,7 @@ export default StyleSheet.create({
       paddingVertical: 12,
       marginVertical: 3,
       marginHorizontal: 16,
+      marginBottom: 12,
       paddingHorizontal: 32,
       borderRadius: 4,
       elevation: 3,

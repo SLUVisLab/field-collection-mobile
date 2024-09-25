@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet, Text, Modal, TouchableOpacity } from 'react-native';
+import { View, TextInput, StyleSheet, Text, Modal, TouchableOpacity, FlatList } from 'react-native';
 import styles from '../../Styles';
 
 
@@ -25,7 +25,24 @@ const ChoiceAction = ({ navigation, existingData, onComplete, task, item, collec
 
         onComplete({ [task.dataLabel]: data });
   
-      };
+    };
+
+    const handlePress = (choice) => {
+        setData(choice);
+    };
+
+    const renderChoice = ({ item }) => (
+      <TouchableOpacity
+            style={[
+                localStyles.choiceItem,
+                data === item && localStyles.selectedItem
+            ]}
+            onPress={() => handlePress(item)}
+        >
+            <Text style={localStyles.choiceText}>{item}</Text>
+        </TouchableOpacity>
+    )
+
 
     return (
     <View style={[styles.container, { flex: 1, justifyContent: 'space-between' }]}>
@@ -34,29 +51,28 @@ const ChoiceAction = ({ navigation, existingData, onComplete, task, item, collec
         <Text style={localStyles.info}>{collection.name}</Text>
         <Text style={localStyles.info}>{item.name}</Text>
       </View>
-        <View style={{ justifyContent: 'center', flex: 1 }}>
-            <View>
-                <View style={[styles.inputLabelContainer, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-                    <Text style={[styles.inputLabel, { alignSelf: 'flex-end' }]}>{task.dataLabel}</Text>
-                    <TouchableOpacity style={localStyles.helpButton} onPress={() => setShowInstructions(true)}>
-                        <Text style={localStyles.buttonText}>?</Text>
-                    </TouchableOpacity>
-                </View>
-                <FlatList
-                    data={task.options.choices}
-                    renderItem={({ item }) => <Text style={styles.text}>{item}</Text>}
-                    keyExtractor={(item, index) => index.toString()}
-                    onPress={() => { setData(item) }}
-                />
-            </View>
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleDone}
-                >
-                <Text style={styles.text}>Done</Text>
-            </TouchableOpacity>
+      <View style={{ justifyContent: 'center', flex: 1 }}>
+        <View>
+            <Text style={localStyles.instructions}>{task.instructions}</Text>
+            {/* <TouchableOpacity style={localStyles.helpButton} onPress={() => setShowInstructions(true)}>
+                <Text style={localStyles.buttonText}>?</Text>
+            </TouchableOpacity> */}
         </View>
-        <Modal
+        <FlatList
+            data={task.options.choices}
+            renderItem={renderChoice}
+            keyExtractor={(item, index) => index.toString()}
+        />
+      </View>
+      <View>
+        <TouchableOpacity
+            style={styles.button}
+            onPress={handleDone}
+            >
+            <Text style={styles.text}>Done</Text>
+        </TouchableOpacity>
+      </View>
+        {/* <Modal
           animationType="slide"
           transparent={true}
           visible={showInstructions}
@@ -78,56 +94,50 @@ const ChoiceAction = ({ navigation, existingData, onComplete, task, item, collec
               </TouchableOpacity>
             </View>
           </View>
-        </Modal>
+        </Modal> */}
     </View>
     );
   };
 
   const localStyles = StyleSheet.create({
 
-    helpButton: {
-        felx: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'white',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 5,
-        margin: 10,
-      },
-      buttonText: {
-        color: 'black',
-      },
-      instructions: {
-        color: 'white',
-      },
-      centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 22
-      },
-      modalView: {
-        margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-          width: 0,
-          height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-      },
-      openButton: {
-        backgroundColor: "#F194FF",
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2
-      },
+    choiceItem: {
+      backgroundColor: 'white',
+      padding: 10,
+      marginVertical: 5,
+      marginHorizontal: 10,
+      borderRadius: 5,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    selectedItem: {
+      backgroundColor: 'lightgreen',
+    },
+    choiceText: {
+      color: 'black',
+    },
+    instructions: {
+      fontSize: 14,
+      padding: 10,
+    },
+    centeredView: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: 22
+    },
+    infoContainer: {
+      marginTop: 20,
+      marginBottom: 20
+    },
+    info: {
+        fontWeight: 'bold',
+        fontSize: 20,
+        textAlign: 'center',
+    },
 
   });
   
