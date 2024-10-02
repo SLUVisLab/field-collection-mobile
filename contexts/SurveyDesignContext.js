@@ -256,13 +256,16 @@ export const SurveyDesignProvider = ({ children }) => {
   };
 
   const surveyFromMongo = async (mongoDesign) => {
-
+    // TODO: Wrap this in a try/catch block
     const newDesign = {
       id: mongoDesign._id,
       name: mongoDesign.name,
       tasks: [],
       collections: []
     };
+
+    console.log("Parsing mongo design....")
+    console.log(newDesign.name)
 
     for (const collection of mongoDesign.collections) {
       // console.log("Parsing base level collection....")
@@ -275,7 +278,6 @@ export const SurveyDesignProvider = ({ children }) => {
         // console.log("Items found....")
         for (const item of collection.items) {
 
-          console.log("creating new instance of item...")
           newItem = new SurveyItem({
             name: item.name,
             id: item.ID,
@@ -283,15 +285,12 @@ export const SurveyDesignProvider = ({ children }) => {
             location: item.location,
             collectionId: item.collectionId
           });
-          console.log("New Item ID:", newItem.ID)
-          console.log("Source Item ID:", item.ID)
 
           newCollection.addItem(newItem);
         }
 
       } else if (collection.subCollections.length > 0) {
         // console.log("subcollection found....")
-        console.log(collection.subCollections)
         for (const subCollection of collection.subCollections) {
           newSubCollection = new SurveyCollection({
             name: subCollection.name,
@@ -322,8 +321,6 @@ export const SurveyDesignProvider = ({ children }) => {
         console.log("No items or subcollections found")
       }
 
-      console.log(newCollection)
-
       newDesign.collections.push(newCollection);
     }
 
@@ -340,9 +337,10 @@ export const SurveyDesignProvider = ({ children }) => {
       newDesign.tasks.push(newTask);
     }
 
-    setSurveyDesign({
-      ...newDesign,
-      });
+    return new Promise((resolve) => {
+      setSurveyDesign(newDesign);
+      resolve();
+    });
 
   }
 

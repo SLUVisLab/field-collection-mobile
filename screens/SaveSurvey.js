@@ -6,10 +6,14 @@ import ProgressBar from 'react-native-progress/Bar';
 import { format } from 'date-fns';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import { useSurveyData } from '../contexts/SurveyDataContext';
+import { useUser } from '@realm/react';
 
 const SaveSurvey = ({ route, navigation }) => {
   const { surveyDesign, addCollection, findCollectionByID } = useSurveyDesign();
   const { itemHasObservation, surveyData, setSurveyComplete, saveForUpload, deleteFromStash  } = useSurveyData()
+
+  const user = useUser();
+  const userEmail = user ? user.profile.email : "unknown";
 
   // Recursive function to check items in collections and subcollections
   const checkItemsInCollection = (collection) => {
@@ -40,7 +44,9 @@ const SaveSurvey = ({ route, navigation }) => {
     // Set the survey as complete
     setSurveyComplete(true);
 
-    saveForUpload(surveyDesign);
+    console.log("user email: " + userEmail);
+
+    saveForUpload(surveyDesign, userEmail);
 
     deleteFromStash(surveyDesign.name);
 

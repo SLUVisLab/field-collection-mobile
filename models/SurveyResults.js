@@ -11,6 +11,7 @@ class SurveyResults extends Realm.Object {
             name: 'string',
             dateStarted: 'date',
             dateCompleted: 'date',
+            user: 'string',
             tasks: 'mixed[]',
             collections: 'mixed[]',
             observations: 'mixed[]'

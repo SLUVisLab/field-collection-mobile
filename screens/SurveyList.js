@@ -21,6 +21,7 @@ const SurveyList = ({ navigation }) => {
     // Clear the current survey layout in the surveyDesignContext
     console.log('Clearing survey design...');
     clearSurveyDesign();
+    console.log(mongoDesign)
 
     await surveyFromMongo(mongoDesign);
 
@@ -38,8 +39,8 @@ const SurveyList = ({ navigation }) => {
             text: "Discard",
             onPress: () => {
               // Discard the existing data and start a new survey
-              deleteFromStash(surveyDesign.name)
-              newSurvey(surveyDesign);
+              deleteFromStash(designName);
+              newSurvey(mongoDesign);
               navigation.navigate('CollectionList');
             },
             style: "cancel"
@@ -58,8 +59,12 @@ const SurveyList = ({ navigation }) => {
       console.log('No existing survey data found...');
       // Create a new surveyData instance with data from the surveyDesign
       //TODO -- These two things must always match, and do not have a method of enforcement. FIX
+      console.log(surveyDesign)
 
-      newSurvey(surveyDesign)
+      // surveyFromMongo(mongoDesign) still doesn't consistently wait for surveyDesign to be set
+      // TODO: Find some way to simplyfy this process so there isn't all this duplication.
+      // don't forget to fix the call in the discard option above.
+      newSurvey(mongoDesign)
       navigation.navigate('CollectionList');
     }
 

@@ -77,11 +77,13 @@ const SurveyDesignList = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      
       <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('NewSurvey')}
+        style={localStyles.addButton}
+        onPress={() => !isEditMode && navigation.navigate('NewSurvey')}
       >
-        <Text style={styles.text}>New Survey</Text>
+        <Ionicons name="add-circle-outline" size={24} color="black" />
+        <Text style = {localStyles.addText}>New Survey</Text>
       </TouchableOpacity>
 
       {designs.map((design, index) => {
@@ -137,6 +139,23 @@ const localStyles = StyleSheet.create({
     shadowOpacity: 0.25, // Shadow opacity for iOS
     shadowRadius: 3.84, // Shadow blur radius for iOS
     elevation: 5, // Elevation for Android to create shadow
+  },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    textAlign: 'left',
+    paddingVertical: 12,
+    marginVertical: 34,
+    marginHorizontal: 16,
+    paddingHorizontal: 12,
+    borderRadius: 3,
+    elevation: 3,
+    backgroundColor: 'white',
+  },
+  addText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 4,
   },
 
 });
