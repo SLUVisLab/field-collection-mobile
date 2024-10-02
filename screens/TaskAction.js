@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Animated } from 'react-native';
 import TaskManifest from '../tasks/TaskManifest';
 
@@ -22,6 +22,10 @@ const TaskAction = ({ route, navigation }) => {
     const [observationData, setObservationData] = useState({});
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    const taskTypeID = task.constructor.typeID;
+    const taskID = task.taskID;
+    const TaskComponent = TaskManifest[taskTypeID]?.taskAction;
 
     const fadeIn = () => {
         Animated.timing(fadeAnim, {
@@ -106,9 +110,7 @@ const TaskAction = ({ route, navigation }) => {
     
 
     let renderedComponent;
-    const taskTypeID = task.constructor.typeID;
-    const taskID = task.taskID;
-    const TaskComponent = TaskManifest[taskTypeID]?.taskAction;
+
 
     if (TaskComponent) {
         renderedComponent = (
@@ -127,11 +129,9 @@ const TaskAction = ({ route, navigation }) => {
     }
 
     return (
-        <View style={{ height: '100%' }}>
-            <Animated.View style={{ opacity: fadeAnim }}>
-                {renderedComponent}
-            </Animated.View>
-        </View>
+        <Animated.View style={{ height: '100%', opacity: fadeAnim }}>
+            {renderedComponent}
+        </Animated.View>
     );
 };
 

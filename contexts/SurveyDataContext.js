@@ -9,6 +9,7 @@ import * as FileSystem from 'expo-file-system';
 import {BSON} from 'realm';
 // import Observation from '../models/Observation';
 import SurveyResults from '../models/SurveyResults';
+import TaskManifest from '../tasks/TaskManifest';
 
 const SurveyDataContext = createContext();
 
@@ -22,6 +23,7 @@ export const SurveyDataProvider = ({ children }) => {
     surveyName: null,
     startTime: null,
     stopTime: null,
+    user: null,
     tasks: [],
     collections: [],
     observations: []
@@ -152,18 +154,30 @@ export const SurveyDataProvider = ({ children }) => {
     }));
   };
 
-  const newSurvey = (surveyDesign) => {
+  const newSurvey = (mongoDesign) => {
+    console.log("NEW SURVEY DATA INSTANCE")
     clearSurveyData();
     
     let newId = uuidv4();
     setID(newId);
-    setName(surveyDesign.name)
+    console.log("creating new survey with name: " + mongoDesign.name)
+    setName(mongoDesign.name)
+    console.log("survey name " + surveyData.name)
 
-    for(task of surveyDesign.tasks) {
-      addTask[task]
+    for(const task of mongoDesign.tasks) {
+
+      let newTask = new TaskManifest[task.typeId].taskModule(
+        task.taskID,
+        task.taskDisplayName,
+        task.dataLabel,
+        task.instructions,
+        task.options
+      );
+
+      addTask(newTask);
     }
     
-    setStartTime(Date.now())
+    setStartTime(Date.now());
   
     //TODO: Handle Collections
     // Keep in mind -- what about future surveys that dont have predefined collections?
@@ -197,22 +211,22 @@ export const SurveyDataProvider = ({ children }) => {
   // Should only load surveys that don't have surveyComplete set to true
   const loadFromStash = async (surveyName) => {
     try {
-      console.log("Loading survey from: ")
+      console.log("checking for survey from: ")
 
       console.log(`@surveyData_${surveyName.replace(/\s/g, '_')}`)
       //TODO: This throws an error when opening a new survey. Because name is null 
 
       const jsonValue = await AsyncStorage.getItem(`@surveyData_${surveyName.replace(/\s/g, '_')}`)
-      
-      console.log("loading stashed survey...")
 
       if (jsonValue != null) {
+        console.log("stashed survey found...")  
         const parsedValue = JSON.parse(jsonValue);
         // Check if the survey is incomplete
         if (parsedValue.surveyComplete === false) {
           return parsedValue;
         }
       }
+      console.log("No stashed survey found...")
       return null;
       
     } catch(e) {
@@ -235,24 +249,22 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
-  const saveForUpload = async (surveyDesign) => {
+  const saveForUpload = async (surveyDesign, user) => {
 
-    console.log("SAVING FOR UPLOAD...")
+    console.log("SAVING FOR UPLOAD...") 
+    console.log(surveyData)
+    console.log(surveyData.surveyName)
     if (surveyData && surveyData.surveyName) {
+      console.log("processing survey...")
       try {
+        surveyData.user = user;
         surveyData.collections = [...surveyDesign.collections];
         surveyData.tasks = [...surveyDesign.tasks];
+        surveyData.surveyComplete = true;
+        surveyData.stopTime = Date.now();
       } catch(e) {
-        console.log("Failed to add collections and tasks to survey data: ", e);
+        console.log("Failed to process survey: ", e);
       }
-
-
-      console.log("SETTING STOP TIME")
-
-      surveyData.stopTime = Date.now();
-
-      console.log("Survey Data: ") 
-      console.log(surveyData)
 
       try {
         const jsonValue = JSON.stringify(surveyData)
@@ -511,6 +523,7 @@ export const SurveyDataProvider = ({ children }) => {
         const jsonValue = await AsyncStorage.getItem(storageKey);
         const surveyData = JSON.parse(jsonValue);
         const {processedSurvey, localMediaPaths} = await handleMediaItems(surveyData);
+
         console.log(localMediaPaths);
         console.log(processedSurvey);
 
@@ -525,6 +538,7 @@ export const SurveyDataProvider = ({ children }) => {
             name: processedSurvey["surveyName"],
             dateStarted: new Date(processedSurvey["startTime"]),
             dateCompleted: new Date(processedSurvey["stopTime"]),
+            user: processedSurvey["user"],
             tasks: processedSurvey["tasks"],
             collections: processedSurvey["collections"],
             observations: processedSurvey["observations"]
