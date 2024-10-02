@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
-import PhotoAction from '../tasks/photo/PhotoAction';
-import TextAction from '../tasks/text/TextAction';
+import { View, Text, Animated } from 'react-native';
 import TaskManifest from '../tasks/TaskManifest';
 
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
@@ -23,15 +21,42 @@ const TaskAction = ({ route, navigation }) => {
 
     const [observationData, setObservationData] = useState({});
 
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    const fadeIn = () => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 400,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const fadeOut = (callback) => {
+        Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 400,
+            useNativeDriver: true,
+        }).start(() => {
+            if (callback) callback();
+        });
+    };
+
     useEffect(() => {
         // all items in this collection have been completed
         if (currentItemIndex >= collection.items.length) {
             navigation.push('CollectionList', { collectionID: collectionID });
         // or they havent. move to next item. index incremented elsewhere
         } else {
-            setCurrentItem(collection.items[currentItemIndex]);
+            fadeOut(() => {
+                setCurrentItem(collection.items[currentItemIndex]);
+                fadeIn();
+            });
         }
     }, [currentItemIndex]);
+
+    useEffect(() => {
+        fadeIn();
+    }, []);
 
     useEffect(() => {
         // all tasks for this item have been completed. move to the next item
@@ -83,7 +108,6 @@ const TaskAction = ({ route, navigation }) => {
     let renderedComponent;
     const taskTypeID = task.constructor.typeID;
     const taskID = task.taskID;
-
     const TaskComponent = TaskManifest[taskTypeID]?.taskAction;
 
     if (TaskComponent) {
@@ -102,20 +126,11 @@ const TaskAction = ({ route, navigation }) => {
         renderedComponent = <Text>Error Loading Component</Text>;
     }
 
-    // switch(taskTypeID){
-    //     case 1:
-    //         renderedComponent = <PhotoAction key={taskID} navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
-    //         break;
-    //     case 2:
-    //         renderedComponent = <TextAction key={taskID} navigation = { navigation } existingData = { observationData} task = { task } onComplete={(data) => taskCompleted(data) } item={currentItem} collection={collection} />;
-    //         break;
-    //     default:
-    //         renderedComponent = <Text>Error Loading Component</Text>
-    // }
-
     return (
         <View style={{ height: '100%' }}>
-            {renderedComponent}
+            <Animated.View style={{ opacity: fadeAnim }}>
+                {renderedComponent}
+            </Animated.View>
         </View>
     );
 };
