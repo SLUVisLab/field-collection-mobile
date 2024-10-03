@@ -3,6 +3,7 @@
 </div>
 
 # User Guide
+v1.0.2(1)
 
 ## Table of Contents
 1. [Overview](#overview)
