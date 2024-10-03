@@ -133,7 +133,16 @@ export const SurveyDataProvider = ({ children }) => {
   }
 
   const itemHasObservation = (itemID)=> {
-    console.log(itemID);
+    console.log(surveyData)
+    console.log(surveyData.observations[0])
+    console.log(surveyData.observations[0].itemID)
+    console.log("ITEM ID FOR SEARCH:")
+    console.log(itemID)
+    for(const thing of surveyData.observations) {
+      console.log("Observation: " + thing.itemID)
+      console.log(typeof thing)
+    }
+    console.log("Checking if item has observation: " + itemID)
     const observation = surveyData.observations.find(obs => obs.itemID === itemID);
     console.log("Item has observation: " + observation)
     return observation !== undefined ? true : false;
@@ -201,11 +210,11 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
-    // Save the survey data whenever it changes
-    useEffect(() => {
+  // Save the survey data whenever it changes
+  useEffect(() => {
 
-      stashForLater(surveyData);
-    }, [surveyData.observations]);
+    stashForLater(surveyData);
+  }, [surveyData.observations]);
 
 
   // Should only load surveys that don't have surveyComplete set to true
@@ -554,6 +563,37 @@ export const SurveyDataProvider = ({ children }) => {
     });
   }
 
+  // Not currently in use. An attempt to fix async issues with loading survey data
+  const quickLoadSurvey = (data) => {
+    return new Promise((resolve, reject) => {
+      try {
+        if (surveyData) {
+          console.log("Quick loading survey data...");
+          console.log(data);
+          surveyData.ID = data.ID;
+          surveyData.surveyComplete = data.surveyComplete;
+          surveyData.surveyName = data.surveyName;
+          surveyData.startTime = data.startTime;
+          surveyData.stopTime = data.stopTime;
+          surveyData.user = data.user; 
+          surveyData.tasks = data.tasks;
+          surveyData.collections = data.collections;
+          surveyData.observations = data.observations;
+
+          console.log("survey data set")
+  
+          resolve("Survey data loaded successfully");
+        } else {
+          reject("Survey data is not defined");
+        }
+      } catch (e) {
+        console.log("Quick Load Survey Failed: ");
+        console.log(e);
+        reject(e);
+      }
+    });
+  };
+  
   return (
     <SurveyDataContext.Provider 
       value={{
@@ -577,6 +617,7 @@ export const SurveyDataProvider = ({ children }) => {
           saveForUpload,
           uploadSurvey,
           deleteLocalSurveyData,
+          quickLoadSurvey
 
       }}
     >

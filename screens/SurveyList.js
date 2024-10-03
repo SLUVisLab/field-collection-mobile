@@ -9,7 +9,7 @@ import styles from '../Styles';
 const SurveyList = ({ navigation }) => {
 
   const { surveyDesign, clearSurveyDesign, setSurveyDesign, surveyFromMongo } = useSurveyDesign()
-  const { newSurvey, loadFromStash, setSurveyData, surveyData, deleteFromStash } = useSurveyData()
+  const { newSurvey, loadFromStash, setSurveyData, surveyData, deleteFromStash, quickLoadSurvey } = useSurveyData()
 
   const realm = useRealm();
 
@@ -47,8 +47,9 @@ const SurveyList = ({ navigation }) => {
           },
           {
             text: "Load",
-            onPress: () => {
+            onPress: async () => {
               // Load the existing data
+              console.log('Loading existing survey data...');
               setSurveyData(existingSurveyData);
               navigation.navigate('CollectionList');
             }

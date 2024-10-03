@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, Modal, TouchableOpacity } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, Modal, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
 import styles from '../../Styles';
 
@@ -29,57 +29,59 @@ const TextAction = ({ navigation, existingData, onComplete, task, item, collecti
       };
 
     return (
-    <View style={[styles.container, { flex: 1, justifyContent: 'space-between' }]}>
-      <View style={localStyles.infoContainer}>
-        {collection.parentName && <Text style={localStyles.info}>{collection.parentName}</Text>}
-        <Text style={localStyles.info}>{collection.name}</Text>
-        <Text style={localStyles.info}>{item.name}</Text>
-      </View>
-        <View style={{ justifyContent: 'center', flex: 1 }}>
-          <View style={[styles.inputLabelContainer, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-              <Text style={[styles.inputLabel, { alignSelf: 'flex-end' }]}>{task.dataLabel}</Text>
-              <TouchableOpacity style={localStyles.helpButton} onPress={() => setShowInstructions(true)}>
-                  <Text style={localStyles.buttonText}>?</Text>
-              </TouchableOpacity>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={[styles.container, { flex: 1, justifyContent: 'space-between' }]}>
+          <View style={localStyles.infoContainer}>
+            {collection.parentName && <Text style={localStyles.info}>{collection.parentName}</Text>}
+            <Text style={localStyles.info}>{collection.name}</Text>
+            <Text style={localStyles.info}>{item.name}</Text>
           </View>
-          <TextInput
-              style={styles.textInput}
-              value={data}
-              onChangeText={setData}
-          />
-        </View>
-        <View>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleDone}
-            >
-            <Text style={styles.text}>Done</Text>
-          </TouchableOpacity>
-        </View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={showInstructions}
-          onRequestClose={() => {
-            setShowInstructions(false);
-          }}
-        >
-          <View style={localStyles.centeredView}>
-            <View style={localStyles.modalView}>
-              <Text style={localStyles.modalText}>{task.instructions}</Text>
-
-              <TouchableOpacity
-                style={{ ...localStyles.openButton, backgroundColor: "#2196F3" }}
-                onPress={() => {
-                  setShowInstructions(false);
-                }}
-              >
-                <Text style={localStyles.textStyle}>Hide Instructions</Text>
-              </TouchableOpacity>
+          <View style={{ justifyContent: 'center', flex: 1 }}>
+            <View style={[styles.inputLabelContainer, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+                <Text style={[styles.inputLabel, { alignSelf: 'flex-end' }]}>{task.dataLabel}</Text>
+                <TouchableOpacity style={localStyles.helpButton} onPress={() => setShowInstructions(true)}>
+                    <Text style={localStyles.buttonText}>?</Text>
+                </TouchableOpacity>
             </View>
+            <TextInput
+                style={styles.textInput}
+                value={data}
+                onChangeText={setData}
+            />
           </View>
-        </Modal>
-    </View>
+          <View>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleDone}
+              >
+              <Text style={styles.text}>Done</Text>
+            </TouchableOpacity>
+          </View>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={showInstructions}
+            onRequestClose={() => {
+              setShowInstructions(false);
+            }}
+          >
+            <View style={localStyles.centeredView}>
+              <View style={localStyles.modalView}>
+                <Text style={localStyles.modalText}>{task.instructions}</Text>
+
+                <TouchableOpacity
+                  style={{ ...localStyles.openButton, backgroundColor: "#2196F3" }}
+                  onPress={() => {
+                    setShowInstructions(false);
+                  }}
+                >
+                  <Text style={localStyles.textStyle}>Hide Instructions</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </View>
+      </TouchableWithoutFeedback>
     );
   };
 

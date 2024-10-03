@@ -64,6 +64,12 @@ const convertXLSXToSurvey = async (uri, surveyName) => {
             // tasks ****************************
 
             const firstSheetName = workbook.SheetNames[0]; // Get the name of the first sheet
+            // const secondSheetName = workbook.SheetNames[1]; // Get the name of the second sheet
+            // const thirdSheetName = workbook.SheetNames[2]; // Get the name of the third sheet
+            console.log("firstSheetName: ", firstSheetName)
+            // console.log("secondSheetName: ", secondSheetName)
+            // console.log("thirdSheetName: ", thirdSheetName)
+            
             const firstSheet = workbook.Sheets[firstSheetName]; // Get the first sheet object
 
             // Convert the first sheet to a JSON object
