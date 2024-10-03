@@ -13,7 +13,7 @@ function HomeScreen({ navigation }) {
             style={styles.button}
             onPress={() => navigation.navigate('SurveyList')}
           >
-            <Text style={styles.text}>Start Survey...</Text>
+            <Text style={styles.text}>Start Survey</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
