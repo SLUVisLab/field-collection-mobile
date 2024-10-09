@@ -258,7 +258,7 @@ export const SurveyDesignProvider = ({ children }) => {
   const surveyFromMongo = async (mongoDesign) => {
     // TODO: Wrap this in a try/catch block
     const newDesign = {
-      id: mongoDesign._id,
+      id: mongoDesign._id, //TODO: Should you use a different ID here?
       name: mongoDesign.name,
       tasks: [],
       collections: []
@@ -271,7 +271,7 @@ export const SurveyDesignProvider = ({ children }) => {
       // console.log("Parsing base level collection....")
       let newCollection = new SurveyCollection({
         name: collection.name,
-        id: collection._id
+        id: collection.ID // changed to NOT use the id from mongo.
       });
       
       if(collection.items.length > 0) {
@@ -294,9 +294,9 @@ export const SurveyDesignProvider = ({ children }) => {
         for (const subCollection of collection.subCollections) {
           newSubCollection = new SurveyCollection({
             name: subCollection.name,
-            id: subCollection._id,
+            id: subCollection.ID,
             parentName: collection.name,
-            parentId: collection._id
+            parentId: collection.ID
           });
 
           if(subCollection.items.length > 0) {
@@ -305,7 +305,7 @@ export const SurveyDesignProvider = ({ children }) => {
             for (const item of subCollection.items) {
               newItem = new SurveyItem({
                 name: item.name,
-                id: item._id,
+                id: item.ID,
                 labels: item.labels,
                 location: item.location,
                 collectionId: item.collectionId
