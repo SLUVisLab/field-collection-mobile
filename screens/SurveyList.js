@@ -21,7 +21,10 @@ const SurveyList = ({ navigation }) => {
     // Clear the current survey layout in the surveyDesignContext
     console.log('Clearing survey design...');
     clearSurveyDesign();
-    console.log(mongoDesign)
+
+
+    console.log("First item in first collection: ")
+    console.log(mongoDesign.collections[0].items[0])
 
     await surveyFromMongo(mongoDesign);
 

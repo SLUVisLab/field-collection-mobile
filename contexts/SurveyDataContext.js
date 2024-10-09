@@ -134,8 +134,7 @@ export const SurveyDataProvider = ({ children }) => {
 
   const itemHasObservation = (itemID)=> {
     console.log(surveyData)
-    console.log(surveyData.observations[0])
-    console.log(surveyData.observations[0].itemID)
+    console.log(surveyData.observations)
     console.log("ITEM ID FOR SEARCH:")
     console.log(itemID)
     for(const thing of surveyData.observations) {
@@ -171,7 +170,7 @@ export const SurveyDataProvider = ({ children }) => {
     setID(newId);
     console.log("creating new survey with name: " + mongoDesign.name)
     setName(mongoDesign.name)
-    console.log("survey name " + surveyData.name)
+    console.log("survey name " + surveyData.name) // returns undefined bc lifecycle update is async
 
     for(const task of mongoDesign.tasks) {
 
