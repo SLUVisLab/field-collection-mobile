@@ -25,4 +25,6 @@ jobs:
         run: yarn install
 
       - name: 🚀 Create update
-        run: eas update --auto --non-interactive --channel production
+        run: console.log("update code goes here once it's working!")
+        
+        # eas update --auto --non-interactive --channel production
