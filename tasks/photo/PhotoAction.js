@@ -109,7 +109,7 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
       <CameraView 
         ref={cameraRef}
         style={styles.camera} 
-        type={facing}
+        facing={facing}
         autofocus={true}
         onCameraReady={() => setIsCameraReady(true)}  
       >
@@ -163,7 +163,7 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
 
     },
     captureButton: {
-      backgroundColor: 'red',
+      backgroundColor: '#F2F2F2',
       borderRadius: 50,
       width: 100,
       height: 100,

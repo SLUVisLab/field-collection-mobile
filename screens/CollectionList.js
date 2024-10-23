@@ -4,7 +4,7 @@ import styles from '../Styles';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import { useSurveyData } from '../contexts/SurveyDataContext';
 
-import { MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 const CollectionList = ({ route, navigation }) => {
   // Initialize the survey design context
@@ -30,7 +30,7 @@ const CollectionList = ({ route, navigation }) => {
         <TouchableOpacity onPress={() => {
           navigation.navigate('SaveSurvey')
         }}>
-          <MaterialIcons name="save-alt" size={42} color="black" />
+          <FontAwesome name="save" size={42} color="black" />
         </TouchableOpacity>
       ),
     });
