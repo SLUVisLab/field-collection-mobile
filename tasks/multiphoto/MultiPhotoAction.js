@@ -1,71 +1,88 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Modal, TouchableOpacity, Button, SafeAreaView, Image } from 'react-native';
-import { Camera, CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 
 const MultiPhotoAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
-
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [showInstructions, setShowInstructions] = useState(false);
-  const [photo, setPhoto] = useState();
-  const [photoURI, setPhotoURI] = useState();
-  const [isCameraReady, setIsCameraReady] = useState(false);
-
-  useEffect(() => {
-    if (isCameraReady) {
-      console.log('Camera is ready. Perform an action here.');
-    }
-  }, [isCameraReady]);
-
-  // let camera_instance;
+  const [photos, setPhotos] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [previewBase64, setPreviewBase64] = useState(undefined);
+  const [cameraReady, setCameraReady] = useState(false);
   const cameraRef = useRef(null);
 
-  const retrieveImage = async (uri) => {
-    const imageBase64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
-    return imageBase64;
-  };
+  const photoCountOption = task?.options?.photoCount;
+  const isAtCamera = currentIndex >= photos.length;
 
   useEffect(() => {
-    if(task && task.dataLabel && existingData && existingData["data"] && existingData["data"][task.dataLabel]) {
-      console.log("existing photo task data found")
-      
-      const fetchImage = async () => {
-        try {
-          const img = await retrieveImage(existingData["data"][task.dataLabel]);
-          setPhotoURI(existingData["data"][task.dataLabel])
-          setPhoto(img);
-        } catch (error) {
-          console.log("Retrieve image failed: ", error)
-        }
-    };
-
-    fetchImage();
+    if (existingData?.data?.[task.dataLabel]) {
+      const existing = existingData.data[task.dataLabel];
+      const arr = Array.isArray(existing) ? existing : [existing];
+      setPhotos(arr);
     }
-  }, [task, existingData]);
+  }, [existingData]);
 
-  const takePicture = async () => {
-    console.log("Button pressed!")
-    if (cameraRef.current) {
-      console.log("camera instance found!")
-      const options = { quality: 0.5, base64: true };
-      const data = await cameraRef.current.takePictureAsync(options);
-      setPhoto(data.base64);
-      setPhotoURI(data.uri)
-      console.log(data.uri);
+  useEffect(() => {
+    if (!isAtCamera) {
+      loadPreview(photos[currentIndex]);
     } else {
-      console.log("camera instance not found!")
+      setPreviewBase64(undefined);
+    }
+  }, [currentIndex, photos]);
+
+  const loadPreview = async (uri) => {
+    try {
+      const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+      setPreviewBase64(base64);
+    } catch (e) {
+      console.error("Failed to load preview image", e);
     }
   };
 
-  if (!permission) {
-    // Camera permissions are still loading.
-    return <View />;
-  }
+  const takePicture = async () => {
+    if (!cameraRef.current) return;
+    const data = await cameraRef.current.takePictureAsync({ quality: 0.5, base64: true });
+  
+    setPhotos(prevPhotos => {
+      const updatedPhotos = [...prevPhotos, data.uri];
+      setCurrentIndex(updatedPhotos.length - 1); // index of new photo
+      return updatedPhotos;
+    });
+  };
 
+  const discardPhoto = () => {
+    const updated = photos.filter((_, i) => i !== currentIndex);
+    setPhotos(updated);
+    setCurrentIndex((i) => Math.max(i - 1, 0));
+  };
+
+  const savePhoto = () => {
+    setCurrentIndex((i) => Math.min(i + 1, photos.length));
+  };
+
+  const toggleCameraFacing = () => {
+    setFacing((f) => (f === 'back' ? 'front' : 'back'));
+  };
+
+  const canTakeMorePhotos = () => {
+    if (!photoCountOption) return true;
+    if (typeof photoCountOption === 'number') return photos.length < photoCountOption;
+    const max = photoCountOption.max ?? Infinity;
+    return photos.length < max;
+  };
+
+  const canFinish = () => {
+    if (!photoCountOption) return photos.length > 0;
+    if (typeof photoCountOption === 'number') return photos.length === photoCountOption;
+    const min = photoCountOption.min ?? 0;
+    return photos.length >= min;
+  };
+
+  if (!permission) return <View />;
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
@@ -74,178 +91,149 @@ const MultiPhotoAction = ({ navigation, existingData, onComplete, task, item, co
     );
   }
 
-  function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  }
-
-  if(photo) {
-    let savePhoto = () => {
-      onComplete({ [task.dataLabel]: photoURI });
-      setPhoto(undefined);
-      setPhotoURI(undefined);
-    };
-
-    let discardPhoto = () => {
-      setPhoto(undefined)
-      setPhotoURI(undefined)
-    };
-
-    return(
-      <SafeAreaView style = {styles.container}>
-        <Image style={styles.imagePreview} source = {{uri: "data:image/jpg;base64," + photo}} />
-        <Button title='save' onPress={savePhoto} />
-        <Button title='discard' onPress={discardPhoto} />
-      </SafeAreaView>
-    )
-  }
-
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.info}>
         {collection.parentName && <Text style={styles.infoText}>{collection.parentName}</Text>}
         <Text style={styles.infoText}>{collection.name}</Text>
         <Text style={styles.infoText}>{item.name}</Text>
+        <Text style={styles.infoText}>{`Photo ${currentIndex + 1} of ${photos.length}${canTakeMorePhotos() ? '' : ' (max reached)'}`}</Text>
       </View>
-      <CameraView 
-        ref={cameraRef}
-        style={styles.camera} 
-        type={facing}
-        autofocus={true}
-        onCameraReady={() => setIsCameraReady(true)}  
-      >
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
-            <Ionicons name="camera-reverse" size={58} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.captureButton} onPress={() => takePicture()}>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.helpButton} onPress={() => setShowInstructions(true)}>
-            <Text style={styles.buttonText}>?</Text>
-          </TouchableOpacity>
+
+      {!isAtCamera ? (
+        <View style={{ flex: 1 }}>
+          <Image style={styles.imagePreview} source={{ uri: `data:image/jpg;base64,${previewBase64}` }} />
+          <Button title="Keep" onPress={savePhoto} />
+          <Button title="Discard" onPress={discardPhoto} />
+          {currentIndex > 0 && (
+            <TouchableOpacity style={styles.navLeft} onPress={() => setCurrentIndex(currentIndex - 1)}>
+              <Ionicons name="chevron-back" size={48} color="white" style={styles.navIconShadow} />
+            </TouchableOpacity>
+          )}
+
+          {currentIndex < photos.length - 1 && (
+            <TouchableOpacity style={styles.navRight} onPress={() => setCurrentIndex(currentIndex + 1)}>
+              <Ionicons name="chevron-forward" size={48} color="white" style={styles.navIconShadow} />
+            </TouchableOpacity>
+          )}
         </View>
-        
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={showInstructions}
-          onRequestClose={() => {
-            setShowInstructions(false);
-          }}
+      ) : canTakeMorePhotos() ? (
+        <CameraView
+          ref={cameraRef}
+          style={styles.camera}
+          facing={facing}
+          onCameraReady={() => setCameraReady(true)}
         >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>{task.instructions}</Text>
-
-              <TouchableOpacity
-                style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
-                onPress={() => {
-                  setShowInstructions(false);
-                }}
-              >
-                <Text style={styles.textStyle}>Hide Instructions</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity onPress={toggleCameraFacing} style={styles.flipButton}>
+              <Ionicons name="camera-reverse" size={58} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={takePicture} style={styles.captureButton} />
+            <TouchableOpacity style={styles.helpButton} onPress={() => setShowInstructions(true)}>
+              <Text style={styles.buttonText}>?</Text>
+            </TouchableOpacity>
           </View>
-        </Modal>
-      </CameraView>
-    </View>
+        </CameraView>
+      ) : (
+        <View style={styles.container}>
+          <Text style={{ textAlign: 'center' }}>Maximum photo limit reached</Text>
+          <Button title="Review Photos" onPress={() => setCurrentIndex(0)} />
+        </View>
+      )}
+
+      {canFinish() && (
+        <Button
+          title="Finish Photo Task"
+          onPress={() => onComplete({ [task.dataLabel]: photos })}
+        />
+      )}
+
+      <Modal visible={showInstructions} transparent animationType="slide">
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>{task.instructions}</Text>
+            <TouchableOpacity
+              style={{ ...styles.openButton, backgroundColor: '#2196F3' }}
+              onPress={() => setShowInstructions(false)}
+            >
+              <Text style={styles.textStyle}>Hide Instructions</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
-  };
+};
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-    },
-    imagePreview: {
-      alignSelf: 'stretch',
-      flex: 1,
-
-    },
-    captureButton: {
-      backgroundColor: 'red',
-      borderRadius: 50,
-      width: 100,
-      height: 100,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderWidth: 2,
-      borderColor: 'white',
-    },
-    camera: {
-      flex: 1,
-    },
-    buttonContainer: {
-      position: 'absolute',
-      bottom: 40,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-end',
-      width: '100%',
-      padding: 10,
-    },
-    flipButton: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      // marginTop: 20
-    },
-    infoText: {
-      color: 'white',
-      fontWeight: 'bold',
-      fontSize: 22,
-    },
-    info: {
-      position: 'absolute',
-      top: 20,
-      left: 10,
-      width: 500,
-      zIndex: 1,
-    },
-    helpButton: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'white',
-      paddingHorizontal: 20,
-      // paddingVertical: 10,
-      borderRadius: 5,
-      margin: 5,
-      height: 50,
-      width: 50,
-      // marginTop: 50
-    },
-    buttonText: {
-      color: 'black',
-    },
-    instructions: {
-      color: 'white',
-    },
-    centeredView: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      marginTop: 22
-    },
-    modalView: {
-      margin: 20,
-      backgroundColor: "white",
-      borderRadius: 20,
-      padding: 35,
-      alignItems: "center",
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5
-    },
-    openButton: {
-      backgroundColor: "#F194FF",
-      borderRadius: 20,
-      padding: 10,
-      elevation: 2
-    },
-  });
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center' },
+  imagePreview: { alignSelf: 'stretch', flex: 1 },
+  captureButton: {
+    backgroundColor: '#F2F2F2',
+    borderRadius: 50,
+    width: 100,
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'white',
+  },
+  camera: { flex: 1 },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 40,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    width: '100%',
+    padding: 10,
+  },
+  flipButton: { justifyContent: 'center', alignItems: 'center' },
+  infoText: { color: 'white', fontWeight: 'bold', fontSize: 22 },
+  info: { position: 'absolute', top: 20, left: 10, width: 500, zIndex: 1 },
+  helpButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    margin: 5,
+    height: 50,
+    width: 50,
+  },
+  buttonText: { color: 'black' },
+  instructions: { color: 'white' },
+  centeredView: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22 },
+  modalView: {
+    margin: 20, backgroundColor: "white", borderRadius: 20, padding: 35, alignItems: "center",
+    shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5
+  },
+  openButton: { backgroundColor: "#F194FF", borderRadius: 20, padding: 10, elevation: 2 },
+  textStyle: { color: 'white' },
+  modalText: { fontSize: 16, marginBottom: 15 },
+  navLeft: {
+    position: 'absolute',
+    left: 10,
+    top: '50%',
+    transform: [{ translateY: -24 }],
+    zIndex: 10,
+    padding: 8,
+  },
   
-  export default MultiPhotoAction;
+  navRight: {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    transform: [{ translateY: -24 }],
+    zIndex: 10,
+    padding: 8,
+  },
+  
+  navIconShadow: {
+    textShadowColor: 'black',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
+  },
+});
+
+export default MultiPhotoAction;
