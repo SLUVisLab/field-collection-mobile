@@ -93,8 +93,14 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
     return(
       <SafeAreaView style = {styles.container}>
         <Image style={styles.imagePreview} source = {{uri: "data:image/jpg;base64," + photo}} />
-        <Button title='save' onPress={savePhoto} />
-        <Button title='discard' onPress={discardPhoto} />
+        <View style={styles.photoActionButtons}>
+          <TouchableOpacity style={styles.actionButton} onPress={savePhoto}>
+            <Text style={styles.actionButtonText}>Keep</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton} onPress={discardPhoto}>
+            <Text style={styles.actionButtonText}>Discard</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     )
   }
@@ -245,6 +251,26 @@ const PhotoAction = ({ navigation, existingData, onComplete, task, item, collect
       borderRadius: 20,
       padding: 10,
       elevation: 2
+    },
+    photoActionButtons: {
+      marginVertical: 10,
+      paddingHorizontal: 20,
+    },
+    
+    actionButton: {
+      backgroundColor: '#ffffffdd',
+      marginVertical: 8,
+      paddingVertical: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: '#ccc',
+    },
+    
+    actionButtonText: {
+      fontSize: 18,
+      color: '#333',
+      fontWeight: 'bold',
     },
   });
   

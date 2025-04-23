@@ -103,8 +103,14 @@ const MultiPhotoAction = ({ navigation, existingData, onComplete, task, item, co
       {!isAtCamera ? (
         <View style={{ flex: 1 }}>
           <Image style={styles.imagePreview} source={{ uri: `data:image/jpg;base64,${previewBase64}` }} />
-          <Button title="Keep" onPress={savePhoto} />
-          <Button title="Discard" onPress={discardPhoto} />
+          <View style={styles.photoActionButtons}>
+            <TouchableOpacity style={styles.actionButton} onPress={savePhoto}>
+              <Text style={styles.actionButtonText}>Keep</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionButton} onPress={discardPhoto}>
+              <Text style={styles.actionButtonText}>Discard</Text>
+            </TouchableOpacity>
+          </View>
           {currentIndex > 0 && (
             <TouchableOpacity style={styles.navLeft} onPress={() => setCurrentIndex(currentIndex - 1)}>
               <Ionicons name="chevron-back" size={48} color="white" style={styles.navIconShadow} />
@@ -233,6 +239,26 @@ const styles = StyleSheet.create({
     textShadowColor: 'black',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 4,
+  },
+  photoActionButtons: {
+    marginVertical: 10,
+    paddingHorizontal: 20,
+  },
+  
+  actionButton: {
+    backgroundColor: '#ffffffdd',
+    marginVertical: 8,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  
+  actionButtonText: {
+    fontSize: 18,
+    color: '#333',
+    fontWeight: 'bold',
   },
 });
 
