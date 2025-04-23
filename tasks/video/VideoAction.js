@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, Modal } from 'r
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
-import * as FileSystem from 'expo-file-system';
 
 const VideoAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
   const [facing, setFacing] = useState('back');
@@ -28,7 +27,7 @@ const VideoAction = ({ navigation, existingData, onComplete, task, item, collect
   const startRecording = async () => {
     if (!cameraRef.current) return;
     try {
-      const video = await cameraRef.current.recordAsync({ maxDuration: 60 });
+      const video = await cameraRef.current.recordAsync({ maxDuration: 60, mute: true  });
       setVideoURI(video.uri);
       setIsReviewing(true);
     } catch (err) {
@@ -55,7 +54,7 @@ const VideoAction = ({ navigation, existingData, onComplete, task, item, collect
   if (!permission.granted) {
     return (
       <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to use the camera</Text>
+        <Text style={{ textAlign: 'center' }}>We need your permission to use the camera and microphone</Text>
         <TouchableOpacity onPress={requestPermission} style={styles.actionButton}>
           <Text style={styles.actionButtonText}>Grant Permission</Text>
         </TouchableOpacity>
@@ -81,7 +80,6 @@ const VideoAction = ({ navigation, existingData, onComplete, task, item, collect
             resizeMode="contain"
             shouldPlay={false}
           />
-
           <View style={styles.photoActionButtons}>
             <TouchableOpacity style={styles.actionButton} onPress={saveVideo}>
               <Text style={styles.actionButtonText}>Keep</Text>
@@ -193,14 +191,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   centeredView: {
-    flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22,
+    flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 22,
   },
   modalView: {
-    margin: 20, backgroundColor: "white", borderRadius: 20, padding: 35, alignItems: "center",
-    shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5,
+    margin: 20, backgroundColor: 'white', borderRadius: 20, padding: 35, alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5,
   },
   openButton: {
-    backgroundColor: "#F194FF", borderRadius: 20, padding: 10, elevation: 2,
+    backgroundColor: '#F194FF', borderRadius: 20, padding: 10, elevation: 2,
   },
   textStyle: { color: 'white' },
   modalText: { fontSize: 16, marginBottom: 15 },
