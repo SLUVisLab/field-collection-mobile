@@ -37,11 +37,11 @@ const TaskManifest = {
     taskSetup: MultiPhotoSetup,
     taskModule: MultiPhotoTask
   },
-  // [VideoTask.typeID]: {
-  //   taskAction: VideoAction,
-  //   taskSetup: VideoSetup,
-  //   taskModule: VideoTask
-  // },
+  [VideoTask.typeID]: {
+    taskAction: VideoAction,
+    taskSetup: VideoSetup,
+    taskModule: VideoTask
+  },
   [TextTask.typeID]: {
     taskAction: TextAction,
     taskSetup: TextSetup,
