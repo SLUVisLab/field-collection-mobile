@@ -1,17 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, Modal } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 
 const VideoAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
   const [videoURI, setVideoURI] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
   const [isReviewing, setIsReviewing] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const cameraRef = useRef(null);
   const videoRef = useRef(null);
+  const recordingPromiseRef = useRef(null);
+  const [elapsedTime, setElapsedTime] = useState(0); //tracking time in ms
+  const startTimeRef = useRef(null);
+  const timerRef = useRef(null);
 
   useEffect(() => {
     if (existingData?.data?.[task.dataLabel]) {
@@ -24,20 +30,45 @@ const VideoAction = ({ navigation, existingData, onComplete, task, item, collect
     setFacing((f) => (f === 'back' ? 'front' : 'back'));
   };
 
-  const startRecording = async () => {
+  const handleRecordPress = async () => {
     if (!cameraRef.current) return;
+  
+    if (isRecording) {
+      // Stop recording safely
+
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+
+      try {
+        await cameraRef.current.stopRecording(); // will resolve recordAsync
+      } catch (e) {
+        console.warn('Tried to stop recording, but something went wrong:', e);
+      }
+      setIsRecording(false);
+      return;
+    }
+  
     try {
-      const video = await cameraRef.current.recordAsync({ maxDuration: 60, mute: true  });
+      setElapsedTime(0);
+      setIsRecording(true);
+      startTimeRef.current = Date.now();
+    
+      timerRef.current = setInterval(() => {
+        const now = Date.now();
+        setElapsedTime(now - startTimeRef.current);
+      }, 100)
+
+      recordingPromiseRef.current = cameraRef.current.recordAsync({ maxDuration: 60 });
+      const video = await recordingPromiseRef.current;
       setVideoURI(video.uri);
       setIsReviewing(true);
     } catch (err) {
       console.error('Recording error:', err);
-    }
-  };
-
-  const stopRecording = () => {
-    if (cameraRef.current) {
-      cameraRef.current.stopRecording();
+    } finally {
+      setIsRecording(false);
+      recordingPromiseRef.current = null;
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
   };
 
@@ -48,19 +79,30 @@ const VideoAction = ({ navigation, existingData, onComplete, task, item, collect
   const discardVideo = () => {
     setVideoURI(null);
     setIsReviewing(false);
+    setElapsedTime(0);
   };
 
-  if (!permission) return <View />;
-  if (!permission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to use the camera and microphone</Text>
-        <TouchableOpacity onPress={requestPermission} style={styles.actionButton}>
-          <Text style={styles.actionButtonText}>Grant Permission</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+    // Handle loading state
+    if (!permission || !microphonePermission) return <View />;
+
+    // If either permission is not granted, prompt for both
+    if (!permission.granted || !microphonePermission.granted) {
+        const requestBothPermissions = async () => {
+            await requestPermission();
+            await requestMicrophonePermission();
+        };
+
+        return (
+            <View style={styles.container}>
+            <Text style={{ textAlign: 'center', marginBottom: 20 }}>
+                We need your permission to use the camera and microphone
+            </Text>
+            <TouchableOpacity onPress={requestBothPermissions} style={styles.actionButton}>
+                <Text style={styles.actionButtonText}>Grant Permissions</Text>
+            </TouchableOpacity>
+            </View>
+        );
+    }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -91,20 +133,32 @@ const VideoAction = ({ navigation, existingData, onComplete, task, item, collect
         </View>
       ) : (
         <CameraView
+          mode="video"
           ref={cameraRef}
           style={styles.camera}
           facing={facing}
           videoStabilizationMode="auto"
         >
+          <View style={styles.timerContainer}>
+            <Text style={styles.timerText}>
+            {String(Math.floor(elapsedTime / 60000)).padStart(2, '0')}:
+            {String(Math.floor((elapsedTime % 60000) / 1000)).padStart(2, '0')}:
+            {String(Math.floor((elapsedTime % 1000) / 10)).padStart(2, '0')}
+            </Text>
+          </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
               <Ionicons name="camera-reverse" size={58} color="white" />
             </TouchableOpacity>
             <TouchableOpacity
-              onPressIn={startRecording}
-              onPressOut={stopRecording}
-              style={styles.captureButton}
-            />
+                onPress={handleRecordPress}
+                style={[
+                    styles.captureButton,
+                    isRecording ? styles.captureButtonRecording : styles.captureButtonIdle
+                ]}
+            >
+                <Ionicons name={isRecording ? 'square' : 'ellipse'} size={36} color="white" />
+            </TouchableOpacity>
             <TouchableOpacity style={styles.helpButton} onPress={() => setShowInstructions(true)}>
               <Text style={styles.buttonText}>?</Text>
             </TouchableOpacity>
@@ -143,12 +197,37 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   captureButton: {
-    backgroundColor: '#F2F2F2',
     borderRadius: 50,
     width: 100,
     height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 2,
     borderColor: 'white',
+  },
+  
+  captureButtonIdle: {
+    backgroundColor: '#F2F2F2',
+  },
+  
+  captureButtonRecording: {
+    backgroundColor: '#FF3B30',
+  },
+  timerContainer: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  
+  timerText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'monospace',
   },
   flipButton: {
     justifyContent: 'center',
