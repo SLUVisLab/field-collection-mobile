@@ -26,6 +26,10 @@ import MultiPhotoTask from './multiphoto/MultiPhotoTask';
 import MultiPhotoSetup from './multiphoto/MultiPhotoSetup';
 import MultiPhotoAction from './multiphoto/MultiPhotoAction';
 
+import BarcodeTask from './barcode/BarcodeTask'
+import BarcodeSetup from './barcode/BarcodeSetup';
+import BarcodeAction from './barcode/BarcodeAction';
+
 const TaskManifest = {
   [PhotoTask.typeID]: {
     taskAction: PhotoAction,
@@ -56,6 +60,11 @@ const TaskManifest = {
     taskAction: ChoiceAction,
     taskSetup: ChoiceSetup,
     taskModule: ChoiceTask
+  },
+  [BarcodeTask.typeID]: {
+    taskAction: BarcodeAction,
+    taskSetup: BarcodeSetup,
+    taskModule: BarcodeTask
   },
   // [LocationTask.typeID]: {
   //   taskAction: LocationAction,
