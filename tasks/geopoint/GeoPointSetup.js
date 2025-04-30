@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-const LocationSetup = ({ options, setOptions }) => {
+const GeoPointSetup = ({ options, setOptions }) => {
 
     return (
         <View>
@@ -9,4 +9,4 @@ const LocationSetup = ({ options, setOptions }) => {
     );
 };
 
-export default LocationSetup;
+export default GeoPointSetup;

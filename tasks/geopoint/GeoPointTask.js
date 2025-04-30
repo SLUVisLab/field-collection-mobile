@@ -3,7 +3,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 
 const taskIcon = ({ style, size = 24 }) => <Entypo name="location" size={size} color="black" style={style} />;
 
-class LocationTask extends Task {
+class GeoPointTask extends Task {
   constructor(taskID, taskDisplayName, dataLabel, instructions, options) {
     super(taskID, taskDisplayName, dataLabel, instructions, options);
   }
@@ -11,11 +11,11 @@ class LocationTask extends Task {
 
 }
 
-LocationTask.typeID = 7;
-LocationTask.typeDisplayName = 'Location';
-LocationTask.typeDescription = "Record Device Location"
-LocationTask.typeIcon = taskIcon;
-LocationTask.setupViewPath = '#';
-LocationTask.actionViewPath = '#';
+GeoPointTask.typeID = 7;
+GeoPointTask.typeDisplayName = 'GeoPoint';
+GeoPointTask.typeDescription = "Record Device Location as a lat/lon point";
+GeoPointTask.typeIcon = taskIcon;
+GeoPointTask.setupViewPath = '#';
+GeoPointTask.actionViewPath = '#';
 
-export default LocationTask;
+export default GeoPointTask;

@@ -18,9 +18,9 @@ import VideoTask from './video/VideoTask';
 import VideoSetup from './video/VideoSetup';
 import VideoAction from './video/VideoAction';
 
-import LocationTask from './location/LocationTask';
-import LocationSetup from './location/LocationSetup';
-import LocationAction from './location/LocationAction';
+import GeoPointTask from './geopoint/GeoPointTask';
+import GeoPointSetup from './geopoint/GeoPointSetup';
+import GeoPointAction from './geopoint/GeoPointAction';
 
 import MultiPhotoTask from './multiphoto/MultiPhotoTask';
 import MultiPhotoSetup from './multiphoto/MultiPhotoSetup';
@@ -66,10 +66,10 @@ const TaskManifest = {
     taskSetup: BarcodeSetup,
     taskModule: BarcodeTask
   },
-  // [LocationTask.typeID]: {
-  //   taskAction: LocationAction,
-  //   taskSetup: LocationSetup,
-  //   taskModule: LocationTask
+  // [GeoPointTask.typeID]: {
+  //   taskAction: GeoPointAction,
+  //   taskSetup: GeoPointSetup,
+  //   taskModule: GeoPointTask
   // },
 
 
