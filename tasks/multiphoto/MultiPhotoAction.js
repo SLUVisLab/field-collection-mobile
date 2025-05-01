@@ -43,8 +43,8 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
   };
 
   const takePicture = async () => {
-    console.log("Taking photo...");
-    console.log(cameraRef.current)
+    // console.log("Taking photo...");
+    // console.log(cameraRef.current)
     if (!cameraRef.current) return;
     const data = await cameraRef.current.takePictureAsync({ quality: 0.5, base64: true });
   
@@ -136,7 +136,13 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
             <TouchableOpacity onPress={toggleCameraFacing} style={styles.flipButton}>
               <Ionicons name="camera-reverse" size={58} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={takePicture} style={styles.captureButton} />
+            <TouchableOpacity 
+              onPress={() => {
+                // console.log('📸 Button pressed');
+                takePicture();
+                }}
+                style={styles.captureButton} 
+            />
             <TouchableOpacity style={styles.helpButton} onPress={() => setShowInstructions(true)}>
               <Text style={styles.buttonText}>?</Text>
             </TouchableOpacity>
@@ -185,6 +191,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderColor: 'white',
+    zIndex: 1000,
   },
   camera: { flex: 1 },
   buttonContainer: {
@@ -195,6 +202,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     width: '100%',
     padding: 10,
+    zIndex: 999,
   },
   flipButton: { justifyContent: 'center', alignItems: 'center' },
   infoText: { color: 'white', fontWeight: 'bold', fontSize: 22 },
