@@ -1,0 +1,36 @@
+# .github/workflows/eas-build.yml
+
+name: EAS Build
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+jobs:
+  eas-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Authenticate with EAS
+        run: eas login --token ${{ secrets.EAS_TOKEN }}
+
+      - name: Configure EAS environment
+        run: echo "EAS_BUILD_PROFILE=${{ inputs.environment }}" >> $GITHUB_ENV
+
+      - name: Run EAS Build
+        run: eas build --platform all --profile ${{ inputs.environment }} --non-interactive
