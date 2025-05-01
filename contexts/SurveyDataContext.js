@@ -5,15 +5,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import {storage, auth} from '../firebase';
 import * as FileSystem from 'expo-file-system';
+
 // import {useRealm} from '@realm/react';
 import {BSON} from 'realm';
+
 // import Observation from '../models/Observation';
-import SurveyResults from '../models/SurveyResults';
+// import SurveyResults from '../models/SurveyResults';
 import TaskManifest from '../tasks/TaskManifest';
+
+import { getFileExtensionFromPathOrBlob, generateDescriptiveFilename, isMedia } from '../utils/mediaUtils';
 
 const SurveyDataContext = createContext();
 
-const MEDIA_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov', 'avi', 'wmv', 'flv', 'webm'];
+const MAX_ITEM_ID_LENGTH = 10; // arbitrary cap to prevent filenames from being unwieldy
 
 export const SurveyDataProvider = ({ children }) => {
   // Define the initial state
@@ -347,28 +351,36 @@ export const SurveyDataProvider = ({ children }) => {
   }
 
 
-  const uploadToMediaStorage = async (path) => {
+  const uploadToMediaStorage = async (path, context = {}) => {
     if(auth.currentUser) {
       try {
+
+        console.log("Uploading with context:", context);
 
         // get the image file
         const response = await fetch(path); //THIS IS WHERE THE ERROR IS
         const blob = await response.blob();
 
+        const ext = getFileExtensionFromPathOrBlob(path, blob) || 'jpg';
+
+        const fileName = generateDescriptiveFilename({
+          parent: context.parentName,
+          subcollection: context.subcollectionName,
+          item: context.itemName,
+          itemID: context.itemID,
+          index: context.index,
+          extension: ext,
+        });
+
+        console.log("Generated filename:", fileName);
+
         const projectRef = ref(storage, 'beta-group');
         const imagesRef = ref(projectRef, 'images');
-
-        // strip everything but filename
-        const parts = path.split('/');
-        const fileName = parts[parts.length - 1];
-        console.log("Filename: ", fileName);
   
         // create a reference in the storage server
         const fileRef = ref(imagesRef, fileName);
         
-        const metadata = {
-          contentType: 'image/jpeg'
-        };
+        const metadata = { contentType: blob.type || `image/${ext}` };
 
         const uploadTask = uploadBytesResumable(fileRef, blob, metadata);
 
@@ -426,14 +438,6 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
-  const isMedia = (value) => {
-    console.log("Checking if media: ", value)
-     
-     if (typeof value === 'string' && MEDIA_EXTENSIONS.some(ext => value.endsWith(ext))) {
-        return true;
-      }
-      return false;
-  }
 
   const handleMediaItems = async (survey) => {
     try {
@@ -446,26 +450,31 @@ export const SurveyDataProvider = ({ children }) => {
         const observation = processedSurvey.observations[i];
 
         const data = observation.data;
+
+        const context = {
+          parentName: observation.parentCollectionName || '',
+          subcollectionName: observation.collectionName || '',
+          itemName: observation.itemName || '',
+          itemID: (observation.itemID || '').substring(0, MAX_ITEM_ID_LENGTH),
+        };
   
         // Check each key/value pair
         for (const key in data) {
-          if (data.hasOwnProperty(key)) {
-            const value = data[key];
-  
-            // If the value is a media item
-            if (isMedia(value)) {
-              // Upload the file to the firebase storage server
-              console.log("Uploading media item!");
-              const url = await uploadToMediaStorage(value);
-              
-              // Save the path to the localMediaPaths array
-              // This will be used to delete the files after the survey is uploaded
-              localMediaPaths.push(value);
-
-              // Replace the file path in the observation with the new url
-              console.log("URL: ", url)
-              data[key] = url;
+          const value = data[key];
+        
+          if (Array.isArray(value) && value.every(isMedia)) {
+            const urls = [];
+            for (let j = 0; j < value.length; j++) {
+              const uri = value[j];
+              const url = await uploadToMediaStorage(uri, { ...context, index: j });
+              localMediaPaths.push(uri);
+              urls.push(url);
             }
+            data[key] = urls;
+          } else if (isMedia(value)) {
+            const url = await uploadToMediaStorage(value, { ...context });
+            localMediaPaths.push(value);
+            data[key] = url;
           }
         }
       }
