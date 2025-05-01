@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Text, Modal, TouchableOpacity, Button, SafeAreaView, Image } from 'react-native';
-import { Camera, CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 
-const PhotoAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
+const PhotoAction = ({ existingData, onComplete, task, item, collection }) => {
 
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();

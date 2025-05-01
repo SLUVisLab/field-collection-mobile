@@ -124,7 +124,6 @@ const TaskAction = ({ route, navigation }) => {
         renderedComponent = (
             <TaskComponent
                 key={taskID}
-                navigation={navigation}
                 existingData={observationData}
                 task={task}
                 onComplete={(data) => taskCompleted(data)}

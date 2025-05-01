@@ -4,13 +4,12 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import styles from '../../Styles'; // Your shared styles
 
-const GeoPointAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
+const GeoPointAction = ({ existingData, onComplete, task, item, collection }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [recordedLocation, setRecordedLocation] = useState(null);
   const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
-    navigation.setOptions({ title: task.taskDisplayName });
 
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
