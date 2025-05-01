@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, TouchableOpacity, Alert, Platform } from 'react-native';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import * as DocumentPicker from 'expo-document-picker';
@@ -62,8 +62,25 @@ const NewSurvey = ({ navigation }) => {
         console.log("Launching Document Picker");
         const res = await DocumentPicker.getDocumentAsync({
           // Limiting the file type to xlsx
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          copyToCacheDirectory: true, // ensure file is accessible
+          multiple: false
         });
+
+        // Handle Android Google Drive crash-prone URIs
+        const uri = res?.assets?.[0]?.uri ?? res?.uri;
+
+        if (
+          Platform.OS === 'android' &&
+          uri?.startsWith('content://com.google.android.apps.docs.storage')
+        ) {
+          Alert.alert(
+            "Unsupported File Source",
+            "Please download the file from Google Drive to your device first, then try again."
+          );
+          resolve(null);
+          return;
+        }
 
         resolve(res);
 
@@ -93,7 +110,7 @@ const NewSurvey = ({ navigation }) => {
         throw new Error("No file returned from document picker");
       }
 
-      const document = res.assets[0];
+      const document = res.assets?.[0] ?? res;
 
       console.log("Document Picker Result: ", document);
       console.log("name: ", document.name);
