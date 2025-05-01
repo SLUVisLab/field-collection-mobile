@@ -78,6 +78,14 @@ const TaskAction = ({ route, navigation }) => {
     }, [currentTaskIndex]);
 
     useEffect(() => {
+        if (task) {
+            navigation.setOptions({
+            title: task.taskDisplayName || task.constructor.typeDisplayName
+            });
+        }
+    }, [task]);
+
+    useEffect(() => {
         console.log("Checking for existing data...")
         existingData = getObservationByItemID(currentItem.ID)
         if(existingData){

@@ -11,10 +11,6 @@ const TextAction = ({ navigation, existingData, onComplete, task, item, collecti
     const [showInstructions, setShowInstructions] = useState(false);
 
     useEffect(() => {
-        navigation.setOptions({ title: task.taskDisplayName });
-    }, []);
-
-    useEffect(() => {
         if(task && task.dataLabel && existingData && existingData["data"] && existingData["data"][task.dataLabel]) {
             console.log("existing text task data found")
     
