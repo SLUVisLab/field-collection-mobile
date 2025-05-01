@@ -5,7 +5,7 @@ import styles from '../../Styles';
 
 
 
-const NumberAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
+const NumberAction = ({ existingData, onComplete, task, item, collection }) => {
 
     const [data, setData] = useState('');
     const [showInstructions, setShowInstructions] = useState(false);

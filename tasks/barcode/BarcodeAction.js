@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, Modal, TouchableOpacity, TextInput, SafeAreaVie
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 
-const BarcodeAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
+const BarcodeAction = ({ existingData, onComplete, task, item, collection }) => {
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [showInstructions, setShowInstructions] = useState(false);

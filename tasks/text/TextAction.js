@@ -5,7 +5,7 @@ import styles from '../../Styles';
 
 
 
-const TextAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
+const TextAction = ({ existingData, onComplete, task, item, collection }) => {
 
     const [data, setData] = useState('');
     const [showInstructions, setShowInstructions] = useState(false);

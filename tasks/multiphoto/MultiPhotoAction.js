@@ -4,7 +4,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 
-const MultiPhotoAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
+const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) => {
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [showInstructions, setShowInstructions] = useState(false);
@@ -43,6 +43,8 @@ const MultiPhotoAction = ({ navigation, existingData, onComplete, task, item, co
   };
 
   const takePicture = async () => {
+    console.log("Taking photo...");
+    console.log(cameraRef.current)
     if (!cameraRef.current) return;
     const data = await cameraRef.current.takePictureAsync({ quality: 0.5, base64: true });
   

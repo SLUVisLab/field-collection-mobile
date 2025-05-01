@@ -4,7 +4,7 @@ import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo
 import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 
-const VideoAction = ({ navigation, existingData, onComplete, task, item, collection }) => {
+const VideoAction = ({ existingData, onComplete, task, item, collection }) => {
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
