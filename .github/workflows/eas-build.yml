@@ -16,13 +16,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  determine-release-type:
+    runs-on: ubuntu-latest
+    outputs:
+      release-version: ${{ steps.read-version.outputs.release-version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version from package.json
+        id: read-version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Release version: $VERSION"
+          echo "release-version=$VERSION" >> $GITHUB_OUTPUT
+
   eas-build:
+    needs: determine-release-type
     if: >-
       github.ref == 'refs/heads/main' ||
       github.ref == 'refs/heads/development' ||
       github.event_name == 'pull_request' ||
       (startsWith(github.ref, 'refs/heads/feature/') && contains(github.event.head_commit.message, '[build]'))
-
     runs-on: ubuntu-latest
 
     steps:
@@ -41,16 +55,34 @@ jobs:
       - name: Authenticate with EAS
         run: eas login --token ${{ secrets.EAS_TOKEN }}
 
-      - name: Set build environment
+      - name: Determine build profile
         run: |
+          VERSION=${{ needs.determine-release-type.outputs.release-version }}
+          echo "App version: $VERSION"
+
           if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
-            echo "EAS_BUILD_PROFILE=production" >> $GITHUB_ENV
+            if [[ "$VERSION" =~ ^[0-9]+\.0\.0$ || "$VERSION" =~ ^[0-9]+\.[0-9]+\.0$ ]]; then
+              echo "EAS_BUILD_PROFILE=production" >> $GITHUB_ENV
+              echo "RUN_BUILD=true" >> $GITHUB_ENV
+            else
+              echo "RUN_BUILD=false" >> $GITHUB_ENV
+            fi
           elif [[ "${{ github.ref }}" == 'refs/heads/development' ]]; then
             echo "EAS_BUILD_PROFILE=testing" >> $GITHUB_ENV
+            echo "RUN_BUILD=true" >> $GITHUB_ENV
           elif [[ "${{ github.event_name }}" == 'pull_request' ]]; then
             echo "EAS_BUILD_PROFILE=testing" >> $GITHUB_ENV
+            echo "RUN_BUILD=true" >> $GITHUB_ENV
           else
             echo "EAS_BUILD_PROFILE=development" >> $GITHUB_ENV
+            echo "RUN_BUILD=true" >> $GITHUB_ENV
 
-      - name: Run EAS Build
-        run: eas build --platform all --profile $EAS_BUILD_PROFILE --non-interactive
+      - name: Run EAS Build or Publish
+        run: |
+          if [[ "$RUN_BUILD" == "true" ]]; then
+            echo "Triggering EAS build with profile: $EAS_BUILD_PROFILE"
+            eas build --platform all --profile $EAS_BUILD_PROFILE --non-interactive
+          else
+            echo "Triggering OTA update"
+            expo publish --non-interactive
+          fi
