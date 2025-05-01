@@ -9,9 +9,6 @@ const ChoiceAction = ({ navigation, existingData, onComplete, task, item, collec
     const [data, setData] = useState('');
     const [showInstructions, setShowInstructions] = useState(false);
 
-    useEffect(() => {
-        navigation.setOptions({ title: task.taskDisplayName });
-    }, []);
 
     useEffect(() => {
         if(task && task.dataLabel && existingData && existingData["data"] && existingData["data"][task.dataLabel] ) {
