@@ -42,9 +42,7 @@ const BarcodeAction = ({ navigation, existingData, onComplete, task, item, colle
   };
 
   const handleSave = () => {
-    if (scannedData) {
-      onComplete({ [task.dataLabel]: scannedData });
-    }
+    onComplete({ [task.dataLabel]: scannedData || null });
   };
 
   if (!permission) return <View />;

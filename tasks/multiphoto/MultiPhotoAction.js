@@ -147,7 +147,7 @@ const MultiPhotoAction = ({ navigation, existingData, onComplete, task, item, co
         </View>
       )}
 
-      {canFinish() && (
+      {isAtCamera && canFinish() && (
         <Button
           title="Finish Photo Task"
           onPress={() => onComplete({ [task.dataLabel]: photos })}
