@@ -29,7 +29,13 @@ export const getFileExtensionFromPathOrBlob = (path, blob) => {
 };
 
 export const generateDescriptiveFilename = ({ parent, subcollection, item, itemID, index, extension = 'jpg' }) => {
-    const safe = (str) => str?.toLowerCase()?.replace(/\s+/g, '_')?.replace(/[^a-z0-9_]/g, '') ?? 'unknown';
+    // Replace spaces with dashes within a value, strip other non-alphanumeric except dashes
+    const safe = (str) =>
+      str?.toLowerCase()
+        ?.trim()
+        ?.replace(/\s+/g, '-')      // Replace spaces with dashes
+        ?.replace(/[^a-z0-9-]/g, '') // Remove non-alphanumeric except dash
+      ?? 'unknown';
   
     const nameParts = [
       safe(parent),
