@@ -28,14 +28,18 @@ export const getFileExtensionFromPathOrBlob = (path, blob) => {
   return 'jpg';
 };
 
-export const generateDescriptiveFilename = ({ parent, subcollection, item, itemID, index, extension = 'jpg' }) => {
-    // Replace spaces with dashes within a value, strip other non-alphanumeric except dashes
+export const generateDescriptiveFilename = ({
+    parent,
+    subcollection,
+    item,
+    itemID,
+    index,
+    extension = 'jpg',
+  }) => {
     const safe = (str) =>
-      str?.toLowerCase()
-        ?.trim()
-        ?.replace(/\s+/g, '-')      // Replace spaces with dashes
-        ?.replace(/[^a-z0-9-]/g, '') // Remove non-alphanumeric except dash
-      ?? 'unknown';
+      str?.toLowerCase()?.replace(/\s+/g, '-')?.replace(/[^a-z0-9-]/g, '') ?? 'unknown';
+  
+    const timestamp = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14); // e.g. 20240501_153045
   
     const nameParts = [
       safe(parent),
@@ -43,7 +47,7 @@ export const generateDescriptiveFilename = ({ parent, subcollection, item, itemI
       safe(item),
       `id${itemID}`,
       index !== undefined ? `img${index}` : null,
-      uuidv4().slice(0, 8),
+      timestamp,
     ];
   
     return `${nameParts.filter(Boolean).join('_')}.${extension}`;
