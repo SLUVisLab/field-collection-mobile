@@ -4,8 +4,8 @@ import { encode, decode } from 'base-64'
 // import PhotoTask from '../tasks/photo/PhotoTask'
 // import TextTask from '../tasks/text/TextTask'
 import TaskManifest from '../tasks/TaskManifest';
-import SurveyCollection from '../utils/SurveyCollection';
-import SurveyItem from '../utils/SurveyItem';
+import SurveyCollection from './SurveyCollection';
+import SurveyItem from './SurveyItem';
 import { v4 as uuidv4 } from 'uuid';
 
 // Custom function to parse custom input format to javascript object for options field

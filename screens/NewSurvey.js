@@ -3,7 +3,7 @@ import { View, TextInput, Button, StyleSheet, Text, TouchableOpacity, Alert, Pla
 // import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import * as DocumentPicker from 'expo-document-picker';
-import { convertXLSXToSurvey } from '../utils/FileTools';
+import { convertXLSXToSurvey } from '../utils/xlsxUtils';
 import { useRealm } from '@realm/react';
 import styles from '../Styles';
 import { is } from 'date-fns/locale';
