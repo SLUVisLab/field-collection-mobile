@@ -36,6 +36,14 @@ export const generateDescriptiveFilename = ({
     index,
     extension = 'jpg',
   }) => {
+
+    // Filename composition:
+    // {parent}-{subcollection}-{item}-id{itemID}_img{index}_{timestamp}.{extension}
+    // - Words within fields use dashes (-) to replace spaces
+    // - Underscores (_) separate major parts of the name
+    // - 'img{index}' is omitted for single media files
+    // - Timestamp is in the format YYYYMMDDHHMMSS (to ensure uniqueness and temporal context)
+
     const safe = (str) =>
       str?.toLowerCase()?.replace(/\s+/g, '-')?.replace(/[^a-z0-9-]/g, '') ?? 'unknown';
   
