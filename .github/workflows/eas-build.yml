@@ -40,20 +40,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 18.x
           cache: yarn
+
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EAS_TOKEN }}  # <- Make sure this is set in your repo secrets
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-
-      - name: Authenticate with EAS
-        run: eas login --token ${{ secrets.EAS_TOKEN }}
 
       - name: Determine build profile
         run: |
