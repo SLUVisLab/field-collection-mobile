@@ -40,8 +40,7 @@ npx expo start
 
 Use the QR code in your terminal to open the app on a physical device **with a development build**.
 
-📖 [Expo Development Builds](https://docs.expo.dev/development/builds/introduction/)
-
+📖 [Expo Development Builds](https://docs.expo.dev/develop/development-builds/introduction/)
 ---
 
 ## 🔧 Building with EAS
