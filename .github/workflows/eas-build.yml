@@ -25,11 +25,15 @@ jobs:
         id: read-version
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          echo "Release version: $VERSION"
           echo "release-version=$VERSION" >> $GITHUB_OUTPUT
 
   eas-build:
     needs: determine-release-type
+    if: >-
+      github.ref == 'refs/heads/main' ||
+      github.ref == 'refs/heads/development' ||
+      github.event_name == 'pull_request' ||
+      (startsWith(github.ref, 'refs/heads/feature/') && contains(github.event.head_commit.message, '[build]'))
     runs-on: ubuntu-latest
 
     steps:
@@ -50,7 +54,6 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Determine build profile
-        id: profile
         run: |
           VERSION=${{ needs.determine-release-type.outputs.release-version }}
           echo "App version: $VERSION"
@@ -71,29 +74,26 @@ jobs:
           else
             echo "EAS_BUILD_PROFILE=development" >> $GITHUB_ENV
             echo "RUN_BUILD=true" >> $GITHUB_ENV
-          fi
 
-      - name: Run EAS Build or OTA Publish
+      - name: Run EAS Build or Publish
         run: |
-          if [ "$RUN_BUILD" = "true" ]; then
+          if [[ "$RUN_BUILD" == "true" ]]; then
             echo "Triggering EAS build with profile: $EAS_BUILD_PROFILE"
-            eas build --platform all --profile "$EAS_BUILD_PROFILE" --non-interactive
+            eas build --platform all --profile $EAS_BUILD_PROFILE --non-interactive
           else
             echo "Triggering OTA update to 'production' channel"
             COMMIT_MESSAGE=$(git log -1 --pretty=%B | head -n 1)
             eas update --channel production --message "${COMMIT_MESSAGE}" --non-interactive
           fi
 
-      - name: Install QR code generator
-        if: env.RUN_BUILD == 'true'
-        run: npm install -g qrcode-cli@1.0.0
+      - name: Install QR Code Generator
+        if: ${{ env.RUN_BUILD == 'true' }}
+        run: npm install qrcode
 
-      - name: Fetch Build URLs & Generate QR Codes
-        if: env.RUN_BUILD == 'true'
-        id: build-meta
+      - name: Fetch EAS Build URLs and generate QR codes
+        if: ${{ env.RUN_BUILD == 'true' }}
+        id: get-urls
         run: |
-          mkdir -p qrcodes
-
           BUILD_JSON=$(eas build:list --status finished --limit 5 --json)
           echo "$BUILD_JSON" > builds.json
 
@@ -103,11 +103,20 @@ jobs:
           echo "ANDROID_URL=$ANDROID_URL" >> $GITHUB_ENV
           echo "IOS_URL=$IOS_URL" >> $GITHUB_ENV
 
-          echo "$ANDROID_URL" | qrcode -o qrcodes/android.png
-          echo "$IOS_URL" | qrcode -o qrcodes/ios.png
+          mkdir -p qrcodes
+          node <<EOF
+          const QRCode = require('qrcode');
+          const fs = require('fs');
 
-      - name: Upload QR codes to Slack
-        if: env.RUN_BUILD == 'true'
+          const androidUrl = process.env.ANDROID_URL;
+          const iosUrl = process.env.IOS_URL;
+
+          QRCode.toFile('qrcodes/android.png', androidUrl);
+          QRCode.toFile('qrcodes/ios.png', iosUrl);
+EOF
+
+      - name: Upload Build Info to Slack
+        if: ${{ env.RUN_BUILD == 'true' }}
         uses: slackapi/slack-github-action@v1.25.0
         with:
           channel-id: 'gather-dev'
@@ -119,21 +128,31 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Build Profile:* ${{ env.EAS_BUILD_PROFILE }}\n*Commit:* ${{ github.event.head_commit.message }}"
+                    "text": "*Profile:* ${{ env.EAS_BUILD_PROFILE }}\n*Commit:* ${{ github.event.head_commit.message }}"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Android Build:* ${{ env.ANDROID_URL }}"
+                    "text": "*Android:* <${{ env.ANDROID_URL }}|Download APK>"
+                  },
+                  "accessory": {
+                    "type": "image",
+                    "image_url": "cid:android.png",
+                    "alt_text": "Android QR"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*iOS Build:* ${{ env.IOS_URL }}"
+                    "text": "*iOS:* <${{ env.IOS_URL }}|Download IPA>"
+                  },
+                  "accessory": {
+                    "type": "image",
+                    "image_url": "cid:ios.png",
+                    "alt_text": "iOS QR"
                   }
                 }
               ]
