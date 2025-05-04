@@ -105,6 +105,6 @@ We use **Rebase and Merge** to maintain a linear commit history, which is requir
 
 ## 📚 Acknowledgments
 
-This project is made possible through the support of the **NSF Biology Integration Institute Program** and is part of ongoing research into scalable ecological monitoring and intelligent data workflows.
+This project is made possible through the support of the **NSF** and the **NRR Biology Integration Institute** and is part of ongoing research into scalable ecological monitoring and intelligent data workflows.
 
 For collaboration inquiries, please contact austin.carnahan@slu.edu
