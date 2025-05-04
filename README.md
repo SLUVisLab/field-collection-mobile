@@ -1,5 +1,3 @@
-# Roots for restoration
-
 ![EAS Build](https://github.com/SLUVislab/field-collection-mobile/actions/workflows/eas-build.yml/badge.svg)
 
 # 📱 Gather
