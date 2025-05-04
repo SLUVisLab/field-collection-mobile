@@ -38,7 +38,9 @@ yarn install
 npx expo start
 ```
 
-Use the QR code in your terminal to open the app on a physical device with the [Expo Go](https://expo.dev/client) app.
+Use the QR code in your terminal to open the app on a physical device **with a development build**.
+
+📖 [Expo Development Builds](https://docs.expo.dev/development/builds/introduction/)
 
 ---
 
