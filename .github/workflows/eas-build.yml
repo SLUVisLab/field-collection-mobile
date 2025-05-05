@@ -105,14 +105,19 @@ jobs:
           echo "IOS_URL=$IOS_URL" >> $GITHUB_ENV
 
           mkdir -p qrcodes
-          node <<EOF
+
+          cat << 'EOF' > generate_qr.js
           const QRCode = require('qrcode');
           const fs = require('fs');
+
           const androidUrl = process.env.ANDROID_URL;
           const iosUrl = process.env.IOS_URL;
+
           QRCode.toFile('qrcodes/android.png', androidUrl);
           QRCode.toFile('qrcodes/ios.png', iosUrl);
-EOF
+          EOF
+
+          node generate_qr.js
 
       - name: Upload Build Info to Slack
         if: ${{ env.RUN_BUILD == 'true' }}
