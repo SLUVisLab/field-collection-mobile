@@ -85,7 +85,7 @@ jobs:
         run: |
           if [[ "${{ github.event.inputs.debug-mode }}" == "true" ]]; then
             echo "DEBUG_MODE=true" >> $GITHUB_ENV
-            echo "EAS_BUILD_PROFILE=Debug" >> $GITHUB_ENV
+            echo "EAS_BUILD_PROFILE=debug" >> $GITHUB_ENV
             echo "RUN_BUILD=true" >> $GITHUB_ENV
             echo "Skipping EAS build (debug mode)"
           elif [[ "$RUN_BUILD" == "true" ]]; then
@@ -115,8 +115,8 @@ jobs:
             
             ANDROID_URL=$(jq -r '.[] | select(.platform=="ANDROID") | .artifacts.buildUrl' builds.json | head -n 1)
             IOS_URL=$(jq -r '.[] | select(.platform=="IOS") | .artifacts.buildUrl' builds.json | head -n 1)
-
           fi
+
 
           echo "ANDROID_URL=$ANDROID_URL" >> $GITHUB_ENV
           echo "IOS_URL=$IOS_URL" >> $GITHUB_ENV
