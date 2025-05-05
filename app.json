@@ -54,7 +54,11 @@
         "expo-build-properties",
         {
           "ios": {
-            "useFrameworks": "static"
+            "useFrameworks": "static",
+            "deploymentTarget": "13.0" // Required by ONNX — update/remove with SDK upgrades
+          },
+          "android": {
+            "minSdkVersion": 24 // Required by ONNX — update/remove with SDK upgrades
           }
         }
       ],
