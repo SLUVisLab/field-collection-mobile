@@ -85,7 +85,7 @@ jobs:
         run: |
           if [[ "${{ github.event.inputs.debug-mode }}" == "true" ]]; then
             echo "DEBUG_MODE=true" >> $GITHUB_ENV
-            echo "EAS_BUILD_PROFILE=production" >> $GITHUB_ENV
+            echo "EAS_BUILD_PROFILE=debug" >> $GITHUB_ENV
             echo "RUN_BUILD=true" >> $GITHUB_ENV
             echo "Skipping EAS build (debug mode)"
           elif [[ "$RUN_BUILD" == "true" ]]; then
@@ -107,37 +107,43 @@ jobs:
         run: |
           if [[ "$DEBUG_MODE" == "true" ]]; then
             echo "Using sample build URLs for testing"
-            echo 'ANDROID_URL=https://expo.dev/artifacts/eas/4jL44bjvpdC9oXxyZL7JQ4.apk' >> $GITHUB_ENV
-            echo 'IOS_URL=https://expo.dev/artifacts/eas/c7svE9G9ZJZ23iU3FbrhmF.ipa' >> $GITHUB_ENV
+            ANDROID_URL=https://expo.dev/artifacts/eas/4jL44bjvpdC9oXxyZL7JQ4.apk
+            IOS_URL=https://expo.dev/artifacts/eas/c7svE9G9ZJZ23iU3FbrhmF.ipa
           else
             BUILD_JSON=$(eas build:list --status finished --limit 5 --json --non-interactive)
             echo "$BUILD_JSON" > builds.json
             
             ANDROID_URL=$(jq -r '.[] | select(.platform=="ANDROID") | .artifacts.buildUrl' builds.json | head -n 1)
             IOS_URL=$(jq -r '.[] | select(.platform=="IOS") | .artifacts.buildUrl' builds.json | head -n 1)
-
-            echo "ANDROID_URL=$ANDROID_URL" >> $GITHUB_ENV
-            echo "IOS_URL=$IOS_URL" >> $GITHUB_ENV
           fi
+
+
+          echo "ANDROID_URL=$ANDROID_URL" >> $GITHUB_ENV
+          echo "IOS_URL=$IOS_URL" >> $GITHUB_ENV
+
+          # Print URLs for debugging
+          echo "Android URL: $ANDROID_URL"
+          echo "iOS URL: $IOS_URL"
 
           mkdir -p qrcodes
           node <<EOF
           const QRCode = require('qrcode');
           const fs = require('fs');
 
-          const androidUrl = process.env.ANDROID_URL;
-          const iosUrl = process.env.IOS_URL;
+          // Pass URLs directly as arguments rather than accessing environment
+          const androidUrl = "$ANDROID_URL";
+          const iosUrl = "$IOS_URL";
 
           async function generateQRCode() {
             try {
-              if (androidUrl && androidUrl.trim() !== '') {
+              if (androidUrl && androidUrl.trim() !== '' && androidUrl !== 'null') {
                 await QRCode.toFile('qrcodes/android.png', androidUrl);
                 console.log('Android QR code generated successfully');
               } else {
                 console.log('Skipping Android QR code generation - no valid URL');
               }
               
-              if (iosUrl && iosUrl.trim() !== '') {
+              if (iosUrl && iosUrl.trim() !== '' && iosUrl !== 'null') {
                 await QRCode.toFile('qrcodes/ios.png', iosUrl);
                 console.log('iOS QR code generated successfully');
               } else {
@@ -199,6 +205,10 @@ jobs:
             channel: C08QF24E2EB
             text: "*New Gather Build Complete*"
             blocks:
+              - type: header
+                text:
+                  type: plain_text
+                  text: "New Gather Build Complete"
               - type: section
                 text:
                   type: mrkdwn
