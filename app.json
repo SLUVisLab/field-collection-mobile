@@ -55,7 +55,7 @@
         {
           "ios": {
             "useFrameworks": "static",
-            "deploymentTarget": "13.0" // Required by ONNX — update/remove with SDK upgrades
+            "deploymentTarget": "15.1" // Required by ONNX — update/remove with SDK upgrades
           },
           "android": {
             "minSdkVersion": 24 // Required by ONNX — update/remove with SDK upgrades
