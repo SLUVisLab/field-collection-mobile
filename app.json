@@ -58,7 +58,8 @@
             "deploymentTarget": "15.1" // Required by ONNX — update/remove with SDK upgrades
           },
           "android": {
-            "minSdkVersion": 24 // Required by ONNX — update/remove with SDK upgrades
+            "minSdkVersion": 24, // Required by ONNX — update/remove with SDK upgrades
+            "newArchitecture": false  // disables the new RN architecture. Solves realm compatibility issue
           }
         }
       ],
