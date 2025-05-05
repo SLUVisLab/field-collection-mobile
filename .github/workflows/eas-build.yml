@@ -74,6 +74,7 @@ jobs:
           else
             echo "EAS_BUILD_PROFILE=development" >> $GITHUB_ENV
             echo "RUN_BUILD=true" >> $GITHUB_ENV
+          fi
 
       - name: Run EAS Build or Publish
         run: |
@@ -111,54 +112,129 @@ jobs:
           const androidUrl = process.env.ANDROID_URL;
           const iosUrl = process.env.IOS_URL;
 
-          QRCode.toFile('qrcodes/android.png', androidUrl);
-          QRCode.toFile('qrcodes/ios.png', iosUrl);
-EOF
-
-      - name: Upload Build Info to Slack
-        if: ${{ env.RUN_BUILD == 'true' }}
-        uses: slackapi/slack-github-action@v1.25.0
-        with:
-          channel-id: 'gather-dev'
-          payload: |
-            {
-              "text": "*New Gather Build Complete*",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Profile:* ${{ env.EAS_BUILD_PROFILE }}\n*Commit:* ${{ github.event.head_commit.message }}"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Android:* <${{ env.ANDROID_URL }}|Download APK>"
-                  },
-                  "accessory": {
-                    "type": "image",
-                    "image_url": "cid:android.png",
-                    "alt_text": "Android QR"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*iOS:* <${{ env.IOS_URL }}|Download IPA>"
-                  },
-                  "accessory": {
-                    "type": "image",
-                    "image_url": "cid:ios.png",
-                    "alt_text": "iOS QR"
-                  }
-                }
-              ]
+          async function generateQRCode() {
+            try {
+              if (androidUrl && androidUrl.trim() !== '') {
+                await QRCode.toFile('qrcodes/android.png', androidUrl);
+                console.log('Android QR code generated successfully');
+              } else {
+                console.log('Skipping Android QR code generation - no valid URL');
+              }
+              
+              if (iosUrl && iosUrl.trim() !== '') {
+                await QRCode.toFile('qrcodes/ios.png', iosUrl);
+                console.log('iOS QR code generated successfully');
+              } else {
+                console.log('Skipping iOS QR code generation - no valid URL');
+              }
+            } catch (error) {
+              console.error('Error generating QR code:', error);
+              process.exit(1);
             }
-          files: |
-            qrcodes/android.png
-            qrcodes/ios.png
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          }
+
+          generateQRCode();
+          EOF
+
+      - name: Check for valid build URLs
+        if: ${{ env.RUN_BUILD == 'true' }}
+        id: check-urls
+        run: |
+          if [[ -z "$ANDROID_URL" && -z "$IOS_URL" ]]; then
+            echo "No build URLs found, skipping Slack notification"
+            echo "SKIP_SLACK=true" >> $GITHUB_ENV
+          else
+            echo "Valid build URLs found, proceeding with Slack notification"
+            echo "SKIP_SLACK=false" >> $GITHUB_ENV
+            
+            # Check for QR code files
+            if [[ ! -f "qrcodes/android.png" && ! -z "$ANDROID_URL" ]]; then
+              echo "Warning: Android URL exists but QR code was not generated"
+            fi
+            if [[ ! -f "qrcodes/ios.png" && ! -z "$IOS_URL" ]]; then
+              echo "Warning: iOS URL exists but QR code was not generated"
+            fi
+          fi
+
+      - name: Check for QR code files
+        if: ${{ env.RUN_BUILD == 'true' && env.SKIP_SLACK != 'true' }}
+        id: check-qr-files
+        run: |
+          if [[ -f "qrcodes/android.png" && ! -z "$ANDROID_URL" ]]; then
+            echo "ANDROID_QR_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "ANDROID_QR_EXISTS=false" >> $GITHUB_ENV
+          fi
+          
+          if [[ -f "qrcodes/ios.png" && ! -z "$IOS_URL" ]]; then
+            echo "IOS_QR_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "IOS_QR_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Send Build Header to Slack
+        if: ${{ env.RUN_BUILD == 'true' && env.SKIP_SLACK != 'true' }}
+        id: slack_header
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: C08QF24E2EB
+            text: "*New Gather Build Complete*"
+            blocks:
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: "*Profile:* ${{ env.EAS_BUILD_PROFILE }}\n*Commit:* ${{ github.event.head_commit.message || 'No commit message available' }}"
+
+        # Android message
+      - name: Send Android build info
+        if: ${{ env.RUN_BUILD == 'true' && env.SKIP_SLACK != 'true' && env.ANDROID_URL != '' }}
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: C08QF24E2EB
+            thread_ts: "${{ steps.slack_header.outputs.ts }}"
+            text: "*Android:* <${{ env.ANDROID_URL }}|Download APK>"
+  
+        # Android QR code
+      - name: Upload Android QR code
+        if: ${{ env.RUN_BUILD == 'true' && env.SKIP_SLACK != 'true' && env.ANDROID_URL != '' && env.ANDROID_QR_EXISTS == 'true' }}
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: files.uploadV2
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel_id: C08QF24E2EB
+            thread_ts: "${{ steps.slack_header.outputs.ts }}"
+            file: "./qrcodes/android.png"
+            filename: "android-qr.png"
+            
+      # iOS message
+      - name: Send iOS build info
+        if: ${{ env.RUN_BUILD == 'true' && env.SKIP_SLACK != 'true' && env.IOS_URL != '' }}
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: C08QF24E2EB
+            thread_ts: "${{ steps.slack_header.outputs.ts }}"
+            text: "*iOS:* <${{ env.IOS_URL }}|Download IPA>"
+            
+      # iOS QR code
+      - name: Upload iOS QR code
+        if: ${{ env.RUN_BUILD == 'true' && env.SKIP_SLACK != 'true' && env.IOS_URL != '' && env.IOS_QR_EXISTS == 'true' }}
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: files.uploadV2
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel_id: C08QF24E2EB
+            thread_ts: "${{ steps.slack_header.outputs.ts }}"
+            file: "./qrcodes/ios.png"
+            filename: "ios-qr.png"      
+          
