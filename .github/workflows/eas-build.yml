@@ -95,11 +95,11 @@ jobs:
         if: ${{ env.RUN_BUILD == 'true' }}
         id: get-urls
         run: |
-          BUILD_JSON=$(eas build:list --status finished --limit 5 --json)
+          BUILD_JSON=$(eas build:list --status finished --limit 5 --json --non-interactive)
           echo "$BUILD_JSON" > builds.json
 
-          ANDROID_URL=$(jq -r '.[] | select(.platform=="android") | .artifacts.buildUrl' builds.json | head -n 1)
-          IOS_URL=$(jq -r '.[] | select(.platform=="ios") | .artifacts.buildUrl' builds.json | head -n 1)
+          ANDROID_URL=$(jq -r '.[] | select(.platform=="ANDROID") | .artifacts.buildUrl' builds.json | head -n 1)
+          IOS_URL=$(jq -r '.[] | select(.platform=="IOS") | .artifacts.buildUrl' builds.json | head -n 1)
 
           echo "ANDROID_URL=$ANDROID_URL" >> $GITHUB_ENV
           echo "IOS_URL=$IOS_URL" >> $GITHUB_ENV
