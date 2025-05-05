@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - development
-      - 'feature/**'
+      - 'feature/*'
     paths-ignore:
       - '**.md'
   pull_request:
@@ -29,11 +29,12 @@ jobs:
 
   eas-build:
     needs: determine-release-type
-    if: >-
+    if: ${{ 
       github.ref == 'refs/heads/main' ||
       github.ref == 'refs/heads/development' ||
       github.event_name == 'pull_request' ||
       (startsWith(github.ref, 'refs/heads/feature/') && contains(github.event.head_commit.message, '[build]'))
+    }}
     runs-on: ubuntu-latest
 
     steps:
@@ -107,10 +108,8 @@ jobs:
           node <<EOF
           const QRCode = require('qrcode');
           const fs = require('fs');
-
           const androidUrl = process.env.ANDROID_URL;
           const iosUrl = process.env.IOS_URL;
-
           QRCode.toFile('qrcodes/android.png', androidUrl);
           QRCode.toFile('qrcodes/ios.png', iosUrl);
 EOF
@@ -162,3 +161,4 @@ EOF
             qrcodes/ios.png
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
