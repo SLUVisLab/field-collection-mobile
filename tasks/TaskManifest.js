@@ -71,6 +71,11 @@ const TaskManifest = {
   //   taskSetup: GeoPointSetup,
   //   taskModule: GeoPointTask
   // },
+  [ImageSegmentationTask.typeID]: {
+    taskAction: ImageSegmentationAction,
+    taskSetup: ImageSegmentationSetup,
+    taskModule: ImageSegmentationTask
+  },
 
 
 }
