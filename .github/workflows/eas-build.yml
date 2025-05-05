@@ -29,12 +29,12 @@ jobs:
 
   eas-build:
     needs: determine-release-type
-    if: ${{ 
+    if: >-
       github.ref == 'refs/heads/main' ||
       github.ref == 'refs/heads/development' ||
       github.event_name == 'pull_request' ||
       (startsWith(github.ref, 'refs/heads/feature/') && contains(github.event.head_commit.message, '[build]'))
-    }}
+    
     runs-on: ubuntu-latest
 
     steps:
