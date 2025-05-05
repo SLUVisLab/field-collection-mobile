@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - development
-      - 'feature/**'
+      - 'feature/*'
     paths-ignore:
       - '**.md'
   pull_request:
