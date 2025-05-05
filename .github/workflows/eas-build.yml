@@ -75,6 +75,7 @@ jobs:
           else
             echo "EAS_BUILD_PROFILE=development" >> $GITHUB_ENV
             echo "RUN_BUILD=true" >> $GITHUB_ENV
+          fi
 
       - name: Run EAS Build or Publish
         run: |
