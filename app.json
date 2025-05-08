@@ -22,6 +22,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.astylianou.bii-phenotyper",
+      "config": {
+        "googleMapsApiKey": "process.env.GOOGLE_MAPS_IOS_API_KEY"
+      },
       "infoPlist": {
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access camera.",
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone",
@@ -32,6 +35,11 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "process.env.GOOGLE_MAPS_ANDROID_API_KEY"
+        }
       },
       "permissions": [
         "android.permission.CAMERA",
