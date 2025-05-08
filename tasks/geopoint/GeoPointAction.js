@@ -54,6 +54,8 @@ const GeoPointAction = ({ existingData, onComplete, task, item, collection }) =>
               style={{ flex: 1 }}
               provider={PROVIDER_GOOGLE}
               showsUserLocation
+              onError={(error) => console.error("MapView error:", error)}
+              onMapReady={() => console.log("Map is ready")}
               region={{
                 latitude: currentLocation.latitude,
                 longitude: currentLocation.longitude,
