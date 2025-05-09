@@ -89,7 +89,7 @@ describe('Task Action Components Contract Tests', () => {
       const mockOnComplete = jest.fn();
       
       test('renders without errors with required props', () => {
-        const { container } = render(
+        const { root } = render(
           <ActionComponent
             existingData={null}
             onComplete={mockOnComplete}
@@ -98,7 +98,7 @@ describe('Task Action Components Contract Tests', () => {
             collection={mockCollection}
           />
         );
-        expect(container).toBeTruthy();
+        expect(root).toBeTruthy();
       });
       
       test('renders with generic existingData prop', () => {
@@ -109,7 +109,7 @@ describe('Task Action Components Contract Tests', () => {
           }
         };
         
-        const { container } = render(
+        const { root } = render(
           <ActionComponent
             existingData={mockData}
             onComplete={mockOnComplete}
@@ -118,7 +118,7 @@ describe('Task Action Components Contract Tests', () => {
             collection={mockCollection}
           />
         );
-        expect(container).toBeTruthy();
+        expect(root).toBeTruthy();
       });
     });
   });

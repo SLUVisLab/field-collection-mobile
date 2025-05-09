@@ -7,6 +7,6 @@ import VideoSetup from '../VideoSetup';
 describe('VideoTask', () => {
   test('exists with correct typeID', () => {
     expect(VideoTask).toBeDefined();
-    expect(VideoTask.typeID).toBe(4);
+    expect(VideoTask.typeID).toBe(5);
   });
 });

@@ -41,17 +41,17 @@ describe('Task Setup Components Contract Tests', () => {
       });
       
       test('renders without errors with empty options', () => {
-        const { container } = render(
+        const { root } = render(
           <SetupComponent options={{}} setOptions={mockSetOptions} />
         );
-        expect(container).toBeTruthy();
+        expect(root).toBeTruthy();
       });
       
       test('renders without errors with null options', () => {
-        const { container } = render(
+        const { root } = render(
           <SetupComponent options={null} setOptions={mockSetOptions} />
         );
-        expect(container).toBeTruthy();
+        expect(root).toBeTruthy();
       });
       
     });

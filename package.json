@@ -11,7 +11,7 @@
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg))"
+      "node_modules/(?!(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)"
     ],
     "setupFilesAfterEnv": [
       "@testing-library/jest-native/extend-expect"
@@ -81,7 +81,7 @@
     "react-native-toast-message": "^2.2.0",
     "react-native-web": "~0.19.10",
     "react-native-webview": "13.8.6",
-    "react-test-renderer": "^18.2.0",
+    "react-test-renderer": "18.2.0",
     "realm": "12.12.1",
     "tsv": "^0.2.0",
     "uuid": "^9.0.1",

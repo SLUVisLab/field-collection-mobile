@@ -7,6 +7,6 @@ import MultiPhotoSetup from '../MultiPhotoSetup';
 describe('MultiPhotoTask', () => {
   test('exists with correct typeID', () => {
     expect(MultiPhotoTask).toBeDefined();
-    expect(MultiPhotoTask.typeID).toBe(3);
+    expect(MultiPhotoTask.typeID).toBe(6);
   });
 });

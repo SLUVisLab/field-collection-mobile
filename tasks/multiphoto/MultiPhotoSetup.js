@@ -9,6 +9,15 @@ const PhotoSetup = ({ options, setOptions }) => {
     const [max, setMax] = useState('');
 
     useEffect(() => {
+        // Handle null/undefined options
+        if (!options) {
+            setMode('unlimited');
+            setExact('');
+            setMin('');
+            setMax('');
+            return;
+        }
+
         const { photoCount } = options;
         if (photoCount === undefined || photoCount === null) {
             setMode('unlimited');
@@ -30,6 +39,9 @@ const PhotoSetup = ({ options, setOptions }) => {
 
     // Update options.photoCount on any change
     useEffect(() => {
+        // Skip updates if options is null
+        if (!options || !setOptions) return;
+        
         if (mode === 'unlimited') {
             setOptions(prev => ({ ...prev, photoCount: undefined }));
         } else if (mode === 'exact') {

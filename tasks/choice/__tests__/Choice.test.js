@@ -1,12 +1,12 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import BarcodeTask from '../BarcodeTask';
-import BarcodeAction from '../BarcodeAction';
-import { BarcodeSetup } from '../BarcodeSetup';
+import ChoiceTask from '../ChoiceTask';
+import ChoiceAction from '../ChoiceAction';
+import { ChoiceSetup } from '../ChoiceSetup';
 
-describe('BarcodeTask', () => {
+describe('ChoiceTask', () => {
     test('exists with correct typeID', () => {
-      expect(BarcodeTask).toBeDefined();
-      expect(BarcodeTask.typeID).toBe(8);
+      expect(ChoiceTask).toBeDefined();
+      expect(ChoiceTask.typeID).toBe(4);
     });
   });

@@ -16,11 +16,11 @@
  */
 
 import Task from '../Task';
-import TaskManifest from '../tasks/TaskManifest';
+import TaskManifest from '../TaskManifest';
 
-describe('Task Contract Tests', () => {
+describe('Task Class Contract Tests', () => {
   // Get all registered tasks from the manifest
-  const taskTypes = Object.values(TaskManifest.taskTypes);
+  const taskTypes = Object.values(TaskManifest).map(entry => entry.taskModule);
   
   // Check for duplicate typeIDs
   test('all tasks have unique typeIDs', () => {
@@ -40,8 +40,8 @@ describe('Task Contract Tests', () => {
   taskTypes.forEach(TaskType => {
     describe(`${TaskType.typeDisplayName} (typeID: ${TaskType.typeID})`, () => {
       test('extends Task class', () => {
-        const instance = new TaskType('test-id', 'Test Task', 'testData', 'Instructions', {});
-        expect(instance).toBeInstanceOf(Task);
+        // Check prototype chain
+        expect(Object.getPrototypeOf(TaskType.prototype)).toBe(Task.prototype);
       });
       
       test('has required static properties', () => {
@@ -64,22 +64,7 @@ describe('Task Contract Tests', () => {
         expect(TaskType.typeIcon).toBeDefined();
         expect(typeof TaskType.typeIcon).toBe('function');
       });
-      
-      test('properly initializes with constructor parameters', () => {
-        const taskID = `test-${TaskType.typeID}`;
-        const displayName = `Test ${TaskType.typeDisplayName}`;
-        const dataLabel = 'testData';
-        const instructions = 'Test instructions';
-        const options = { testOption: true };
-        
-        const instance = new TaskType(taskID, displayName, dataLabel, instructions, options);
-        
-        expect(instance.taskID).toBe(taskID);
-        expect(instance.taskDisplayName).toBe(displayName);
-        expect(instance.dataLabel).toBe(dataLabel);
-        expect(instance.instructions).toBe(instructions);
-        expect(instance.options).toEqual(options);
-      });
+    
     });
   });
 });

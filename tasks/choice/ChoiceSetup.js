@@ -4,6 +4,7 @@ import styles from '../../Styles';
 
 const ChoiceSetup = ({ options, setOptions }) => {
     const [newChoice, setNewChoice] = useState('');
+    const choices = options?.choices || [];
 
     const handleTextChange = (newValue) => {
         setNewChoice(newValue);
@@ -18,7 +19,7 @@ const ChoiceSetup = ({ options, setOptions }) => {
         console.log('Adding choice:', newChoice);
         setOptions(prevOptions => ({
             ...prevOptions,
-            choices: [...(prevOptions.choices || []), newChoice]
+            choices: [...(prevOptions?.choices || []), newChoice]
         }));
         setNewChoice('');
 
@@ -41,7 +42,7 @@ const ChoiceSetup = ({ options, setOptions }) => {
             </TouchableOpacity>
             <Text style={localStyles.header}>Current Choices:</Text>
             <FlatList
-                data={options.choices}
+                data={choices}
                 renderItem={({ item }) => <Text style={localStyles.choice}>{item}</Text>}
                 keyExtractor={(item, index) => index.toString()}
             />
