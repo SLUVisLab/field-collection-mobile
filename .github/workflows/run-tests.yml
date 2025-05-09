@@ -1,0 +1,62 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+      - development
+  push:
+    branches:
+      - 'feature/*'
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+    inputs:
+      debug-mode:
+        description: 'Run with verbose logging'
+        type: boolean
+        default: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests
+        run: |
+          if [[ "${{ github.event.inputs.debug-mode }}" == "true" ]]; then
+            yarn test --no-watch --coverage --verbose
+          else
+            yarn test --no-watch --coverage
+          fi
+          
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
+          
+      - name: Report test status
+        if: always()
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: C08QF24E2EB
+            text: "${{ job.status == 'success' && '✅' || '❌' }} Tests ${{ job.status }} for ${{ github.repository }} on branch ${{ github.ref_name }}"
+            blocks:
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: "${{ job.status == 'success' && '✅' || '❌' }} *Tests ${{ job.status }}*\nRepository: ${{ github.repository }}\nBranch: ${{ github.ref_name }}\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View details>"
