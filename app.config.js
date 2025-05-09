@@ -1,3 +1,4 @@
+
 module.exports = {
     expo: {
       name: "Gather",

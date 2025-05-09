@@ -32,6 +32,23 @@ const GeoPointAction = ({ existingData, onComplete, task, item, collection }) =>
     }
   }, [task, existingData]);
 
+  useEffect(() => {
+    console.log("MapView props:", {
+      provider: PROVIDER_GOOGLE,
+      hasLocation: !!currentLocation,
+    });
+    
+    // Add a simple network test
+    fetch('https://www.google.com')
+      .then(() => console.log('Network connection available'))
+      .catch(e => console.error('Network test failed:', e));
+      
+    // Check if Google Maps JS API is accessible
+    fetch('https://maps.googleapis.com')
+      .then(() => console.log('Maps API reachable'))
+      .catch(e => console.error('Maps API unreachable:', e));
+  }, [currentLocation]);
+
   const handleRecord = () => {
     if (currentLocation) {
       setRecordedLocation(currentLocation);
@@ -52,7 +69,7 @@ const GeoPointAction = ({ existingData, onComplete, task, item, collection }) =>
           <>
             <MapView
               style={{ flex: 1 }}
-              provider={PROVIDER_GOOGLE}
+              // provider={PROVIDER_GOOGLE}
               showsUserLocation
               onError={(error) => console.error("MapView error:", error)}
               onMapReady={() => console.log("Map is ready")}
