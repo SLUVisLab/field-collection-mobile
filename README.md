@@ -1,5 +1,5 @@
-![EAS Build](https://github.com/SLUVislab/field-collection-mobile/actions/workflows/eas-build.yml/badge.svg)
-![Tests](https://github.com/SLUVislab/field-collection-mobile/actions/workflows/eas-build.yml/badge.svg)
+![EAS Build](https://github.com/SLUVislab/field-collection-mobile/actions/workflows/eas-build.yml/badge.svg?job=eas-build)
+![Tests](https://github.com/SLUVislab/field-collection-mobile/actions/workflows/eas-build.yml/badge.svg?job=test)
 
 # 📱 Gather
 
