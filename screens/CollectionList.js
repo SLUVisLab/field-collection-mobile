@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import styles from '../Styles';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import { useSurveyData } from '../contexts/SurveyDataContext';
@@ -47,7 +47,7 @@ const CollectionList = ({ route, navigation }) => {
   // Scenario 1:Base Level Collections
   if (!collectionID) {
     return (
-      <View>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         {surveyDesign.collections.map((collection) => (
           <TouchableOpacity
             key={collection.ID}
@@ -57,14 +57,14 @@ const CollectionList = ({ route, navigation }) => {
             <Text>{collection.name}</Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
     );
   }
   if (collection) {  
     //Scenario 2.2: Items exist
     if(collection.items.length){
       return (
-        <View>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
           {/* <Text>CASE 2.2</Text> */}
           {collection.items.map((item) => (
             <TouchableOpacity
@@ -78,14 +78,14 @@ const CollectionList = ({ route, navigation }) => {
               <Text>{item.name}</Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
       )
     }
     
     // Scenario 2.3: subcollections Exist
     if(collection.subCollections.length) {
       return (
-        <View>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
           {/* <Text>CASE 2.3</Text> */}
           {collection.subCollections.map((subcollection) => (
             <TouchableOpacity
@@ -96,7 +96,7 @@ const CollectionList = ({ route, navigation }) => {
               <Text>{subcollection.name}</Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
       );
     }
   }
@@ -108,5 +108,11 @@ const CollectionList = ({ route, navigation }) => {
     </View>
   );
 };
+
+const localStyles = StyleSheet.create({
+  scrollContainer: {
+    paddingBottom: 20, // Adds some padding at the bottom of the scrollable content
+  }
+});
 
 export default CollectionList;
