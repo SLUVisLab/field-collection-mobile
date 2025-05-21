@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Button, TouchableOpacity, StyleSheet, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import styles from '../Styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -60,7 +60,7 @@ const CollectionDesignList = ({ route, navigation }) => {
   if (!collectionID) {
     return (
       <TouchableWithoutFeedback onPress={exitEditMode}>
-        <View style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.scrollContainer} style={{ flex: 1 }}>
           {/* <Text>CASE 1</Text> */}
           {surveyDesign.collections.map((collection) => (
               <TouchableOpacity
@@ -92,7 +92,7 @@ const CollectionDesignList = ({ route, navigation }) => {
             <Ionicons name="add-circle-outline" size={24} color="black" />
             <Text style = {localStyles.addText}>Add Collection</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
       </TouchableWithoutFeedback>
     );
   }
@@ -129,7 +129,7 @@ const CollectionDesignList = ({ route, navigation }) => {
     if(collection.items.length || collection.parent ){
       return (
         <TouchableWithoutFeedback onPress={exitEditMode}>
-          <View style={{ flex: 1 }}>
+          <ScrollView contentContainerStyle={styles.scrollContainer} style={{ flex: 1 }}>
             {/* <Text>CASE 2.2</Text> */}
             {collection.items.map((item) => (
               <TouchableOpacity
@@ -161,7 +161,7 @@ const CollectionDesignList = ({ route, navigation }) => {
               <Ionicons name="add-circle-outline" size={24} color="black" />
               <Text style = {localStyles.addText}>Add Item</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </TouchableWithoutFeedback>
       )
     }
@@ -171,7 +171,7 @@ const CollectionDesignList = ({ route, navigation }) => {
     if(collection.subCollections.length) {
       return (
         <TouchableWithoutFeedback onPress={exitEditMode}>
-          <View style={{ flex: 1 }}>
+          <ScrollView contentContainerStyle={styles.scrollContainer} style={{ flex: 1 }}>
             {collection.subCollections.map((subcollection) => (
                 <TouchableOpacity
                   style={[localStyles.surveyCollectionButton, isEditMode && localStyles.editMode]}
@@ -202,7 +202,7 @@ const CollectionDesignList = ({ route, navigation }) => {
               <Ionicons name="add-circle-outline" size={24} color="black" />
               <Text style = {localStyles.addText}>Add Collection</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </TouchableWithoutFeedback>
       );
     }
@@ -280,6 +280,9 @@ const localStyles = StyleSheet.create({
     elevation: 5, // Elevation for Android to create shadow
     backgroundColor: '#FFF', // Button background color, adjust as needed
   },
+  scrollContainer: {
+    paddingBottom: 20, // Adds some padding at the bottom of the scrollable content
+  }
 
 });
 
