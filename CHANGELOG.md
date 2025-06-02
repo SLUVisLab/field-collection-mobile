@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/SLUVisLab/field-collection-mobile/compare/v1.1.2...v1.2.0) (2025-06-02)
+
+
+### Features
+
+* add ids to filenames ([4e8aa86](https://github.com/SLUVisLab/field-collection-mobile/commit/4e8aa86bed09180aceb1d67194ef72a49e158b51))
+
 ## [1.1.2](https://github.com/SLUVisLab/field-collection-mobile/compare/v1.1.1...v1.1.2) (2025-06-02)
 
 
