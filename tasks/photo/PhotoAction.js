@@ -49,7 +49,7 @@ const PhotoAction = ({ existingData, onComplete, task, item, collection }) => {
     console.log("Button pressed!")
     if (cameraRef.current) {
       console.log("camera instance found!")
-      const options = { quality: 0.5, base64: true };
+      const options = { quality: 0.6, base64: true };
       const data = await cameraRef.current.takePictureAsync(options);
       setPhoto(data.base64);
       setPhotoURI(data.uri)

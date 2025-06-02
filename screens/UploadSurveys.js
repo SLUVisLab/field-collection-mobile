@@ -13,11 +13,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useSurveyData } from '../contexts/SurveyDataContext';
 
+const MAX_HISTORY_ITEMS = 50;  // Maximum number of completed uploads to keep
+const MAX_HISTORY_DAYS = 90;   // Maximum age of history items in days
+
 const UploadSurveys = ({ route, navigation }) => {
-    const { listAllSavedSurveys, uploadSurvey, deleteLocalSurveyData } = useSurveyData();
+    const { 
+        listAllSavedSurveys, 
+        uploadSurvey, 
+        deleteLocalSurveyData, 
+        cancelUpload, 
+        uploadProgress: contextUploadProgress 
+    } = useSurveyData();
+    
     const [pendingSurveys, setPendingSurveys] = useState([]);
     const [completedUploads, setCompletedUploads] = useState([]);
-    const [uploadProgress, setUploadProgress] = useState({});
     const [isConnected, setIsConnected] = useState(true);
     const [isEditMode, setIsEditMode] = useState(false);
 
@@ -38,11 +47,19 @@ const UploadSurveys = ({ route, navigation }) => {
         const savedSurveys = await listAllSavedSurveys();
         setPendingSurveys(savedSurveys);
         
-        // Load completed upload history from AsyncStorage
+        // Load and filter completed upload history from AsyncStorage
         try {
             const completedData = await AsyncStorage.getItem('@completedUploads');
             if (completedData) {
-                setCompletedUploads(JSON.parse(completedData));
+                const allUploads = JSON.parse(completedData);
+                const filteredUploads = applyHistoryLimits(allUploads);
+                
+                // If we filtered out some items, update the stored data
+                if (filteredUploads.length < allUploads.length) {
+                    await AsyncStorage.setItem('@completedUploads', JSON.stringify(filteredUploads));
+                }
+                
+                setCompletedUploads(filteredUploads);
             }
         } catch (error) {
             console.error("Failed to load completed uploads", error);
@@ -62,11 +79,32 @@ const UploadSurveys = ({ route, navigation }) => {
                 ...completedUploads
             ];
             
-            await AsyncStorage.setItem('@completedUploads', JSON.stringify(updatedCompletedUploads));
-            setCompletedUploads(updatedCompletedUploads);
+            // Apply limits before saving
+            const filteredUploads = applyHistoryLimits(updatedCompletedUploads);
+            
+            await AsyncStorage.setItem('@completedUploads', JSON.stringify(filteredUploads));
+            setCompletedUploads(filteredUploads);
         } catch (error) {
             console.error("Failed to save completed upload", error);
         }
+    };
+
+    // Helper function to apply both time and count limits
+    const applyHistoryLimits = (uploads) => {
+        // Apply time-based filtering
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - MAX_HISTORY_DAYS);
+        
+        let filtered = uploads.filter(upload => 
+            new Date(upload.uploadedAt) >= cutoffDate
+        );
+        
+        // Apply count-based limiting
+        if (filtered.length > MAX_HISTORY_ITEMS) {
+            filtered = filtered.slice(0, MAX_HISTORY_ITEMS);
+        }
+        
+        return filtered;
     };
 
     useEffect(() => {   
@@ -82,6 +120,34 @@ const UploadSurveys = ({ route, navigation }) => {
         return () => unsubscribe();
     }, []);
 
+    // Monitor upload progress and move completed uploads to the completed list
+    useEffect(() => {
+        // Check for completed uploads
+        Object.entries(contextUploadProgress).forEach(([key, status]) => {
+            if (status.status === 'completed' && status.progress === 100) {
+                // Find the survey in pending surveys
+                const completedSurvey = pendingSurveys.find(s => s.key === key);
+                if (completedSurvey) {
+                    // Save to completed uploads
+                    saveCompletedUpload(completedSurvey);
+                    
+                    // Remove from pending surveys
+                    setPendingSurveys(prev => prev.filter(s => s.key !== key));
+                    
+                    // Show success toast
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Upload Successful',
+                        text2: `${completedSurvey.surveyName} has been uploaded successfully.`,
+                        position: 'bottom',
+                        visibilityTime: 3000,
+                        autoHide: true,
+                    });
+                }
+            }
+        });
+    }, [contextUploadProgress]);
+
     const uploadHandler = async (survey) => {
         if (!isConnected) {
             Toast.show({
@@ -95,56 +161,12 @@ const UploadSurveys = ({ route, navigation }) => {
             return;
         }
 
-        // Initialize progress for this survey
-        setUploadProgress(prev => ({
-            ...prev,
-            [survey.key]: { status: 'preparing', progress: 0 }
-        }));
-
         try {
-            // This is where we would update the uploadSurvey function to report progress
-            // For now, we'll simulate progress updates
-            setUploadProgress(prev => ({
-                ...prev,
-                [survey.key]: { status: 'uploading media', progress: 20 }
-            }));
-
-            // Delay to simulate upload progress
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            setUploadProgress(prev => ({
-                ...prev,
-                [survey.key]: { status: 'uploading media', progress: 60 }
-            }));
-
-            await uploadSurvey(survey.key, realm); 
-            
-            // Mark upload as complete
-            setUploadProgress(prev => ({
-                ...prev,
-                [survey.key]: { status: 'completed', progress: 100 }
-            }));
-
-            // Save to completed uploads
-            await saveCompletedUpload(survey);
-            
-            // Remove from pending surveys
-            setPendingSurveys(pendingSurveys.filter(s => s.key !== survey.key));
-
-            Toast.show({
-                type: 'success',
-                text1: 'Upload Successful',
-                text2: `${survey.surveyName} has been uploaded successfully.`,
-                position: 'bottom',
-                visibilityTime: 3000,
-                autoHide: true,
-            });
-            
+            // Call the upload function from the context
+            // It will handle progress updates internally
+            await uploadSurvey(survey.key, realm);
         } catch (error) {
             console.error("Upload failed", error);
-            setUploadProgress(prev => ({
-                ...prev,
-                [survey.key]: { status: 'failed', progress: 0 }
-            }));
             
             Toast.show({
                 type: 'error',
@@ -178,7 +200,7 @@ const UploadSurveys = ({ route, navigation }) => {
         );
     };
 
-    const cancelUpload = (surveyKey) => {
+    const handleCancelUpload = (surveyKey) => {
         Alert.alert(
           'Cancel Upload',
           'Are you sure you want to cancel this upload?',
@@ -190,14 +212,9 @@ const UploadSurveys = ({ route, navigation }) => {
             {
               text: 'Yes, Cancel',
               onPress: () => {
-                // Reset the upload progress for this survey
-                setUploadProgress(prev => {
-                  const updated = {...prev};
-                  delete updated[surveyKey];
-                  return updated;
-                });
+                // Call the cancelUpload function from context
+                cancelUpload(surveyKey);
                 
-                // Later we'll need to add actual cancellation logic in the context provider
                 Toast.show({
                   type: 'info',
                   text1: 'Upload Cancelled',
@@ -215,7 +232,10 @@ const UploadSurveys = ({ route, navigation }) => {
 
     // Render a pending survey item
     const renderPendingSurveyItem = (survey) => {
-        const isUploading = uploadProgress[survey.key];
+        const uploadInfo = contextUploadProgress[survey.key];
+        const isActiveUpload = uploadInfo && ['starting', 'preparing', 'uploading', 'saving', 'saving to database', 'cleaning up'].includes(uploadInfo.status);
+        const isFailedUpload = uploadInfo && uploadInfo.status === 'failed';
+        const isCancelledUpload = uploadInfo && uploadInfo.status === 'cancelled';
         
         return (
             <View key={survey.key} style={localStyles.card}>
@@ -225,62 +245,77 @@ const UploadSurveys = ({ route, navigation }) => {
                         <Text>Completed: {new Date(survey.completed).toLocaleString()}</Text>
                         <Text>{survey.count} observations</Text>
                         
-                        {isUploading && (
+                        {uploadInfo && (
                             <View style={localStyles.progressContainer}>
-                                <Text>Status: {uploadProgress[survey.key].status}</Text>
-                                <View style={localStyles.progressRow}>
-                                    <ProgressBar 
-                                        progress={uploadProgress[survey.key].progress / 100} 
-                                        width={150} 
-                                        color="#0066cc"
-                                    />
-                                    <Text style={localStyles.progressText}>
-                                        {uploadProgress[survey.key].progress}%
-                                    </Text>
-                                </View>
+                                <Text>Status: {
+                                    isCancelledUpload ? 'Cancelled' : 
+                                    isFailedUpload ? 'Failed' : 
+                                    uploadInfo.status
+                                }</Text>
+                                
+                                {isActiveUpload && (
+                                    <View style={localStyles.progressRow}>
+                                        <ProgressBar 
+                                            progress={uploadInfo.progress / 100} 
+                                            width={150} 
+                                            color="#0066cc"
+                                        />
+                                        <Text style={localStyles.progressText}>
+                                            {uploadInfo.progress}%
+                                        </Text>
+                                    </View>
+                                )}
                             </View>
                         )}
                     </View>
-                    
-                    <View style={localStyles.buttonContainer}>
-                        {isEditMode ? (
-                            <TouchableOpacity 
-                                style={localStyles.iconButton}
-                                onPress={() => handleDeleteSurveyData(survey.key)}
-                            >
-                                <Ionicons name="close-circle" size={24} color="red" />
-                            </TouchableOpacity>
-                        ) : isUploading ? (
-                            <TouchableOpacity 
-                                style={localStyles.iconButton}
-                                onPress={() => cancelUpload(survey.key)}
-                            >
-                                <Ionicons name="stop-circle" size={24} color="#ff6600" />
-                            </TouchableOpacity>
-                        ) : (
-                            <TouchableOpacity 
-                                style={localStyles.iconButton}
-                                onPress={() => uploadHandler(survey)}
-                                disabled={!isConnected}
-                            >
-                                <Ionicons name="cloud-upload" size={24} color={isConnected ? "#0066cc" : "#cccccc"} />
-                            </TouchableOpacity>
-                        )}
-                    </View>
-                </View>
                 
-                {/* Show retry button if upload failed */}
-                {isUploading && uploadProgress[survey.key].status === 'failed' && (
-                    <TouchableOpacity 
-                        style={localStyles.retryButton}
-                        onPress={() => uploadHandler(survey)}
-                    >
-                        <Text style={localStyles.retryButtonText}>Retry Upload</Text>
-                    </TouchableOpacity>
-                )}
+                <View style={localStyles.buttonContainer}>
+                    {isEditMode ? (
+                        <TouchableOpacity 
+                            style={localStyles.iconButton}
+                            onPress={() => handleDeleteSurveyData(survey.key)}
+                        >
+                            <Ionicons name="close-circle" size={24} color="red" />
+                        </TouchableOpacity>
+                    ) : isActiveUpload ? (
+                        // Show cancel button only during active upload
+                        <TouchableOpacity 
+                            style={localStyles.iconButton}
+                            onPress={() => handleCancelUpload(survey.key)}
+                        >
+                            <Ionicons name="stop-circle" size={24} color="#ff6600" />
+                        </TouchableOpacity>
+                    ) : (
+                        // Show upload button when not uploading or after cancel/fail
+                        <TouchableOpacity 
+                            style={localStyles.iconButton}
+                            onPress={() => uploadHandler(survey)}
+                            disabled={!isConnected}
+                        >
+                            <Ionicons name="cloud-upload" size={24} color={isConnected ? "#0066cc" : "#cccccc"} />
+                        </TouchableOpacity>
+                    )}
+                </View>
             </View>
-        );
-    };
+            
+            {/* Show retry button only if upload has failed (not when cancelled) */}
+            {isFailedUpload && (
+                <TouchableOpacity 
+                    style={localStyles.retryButton}
+                    onPress={() => uploadHandler(survey)}
+                >
+                    <Text style={localStyles.retryButtonText}>Retry Upload</Text>
+                </TouchableOpacity>
+            )}
+            
+            {/* Show a message when cancelled */}
+            {isCancelledUpload && (
+                <Text style={localStyles.cancelledText}>
+                    Upload was cancelled. Click the upload button to try again.
+                </Text>
+            )}
+        </View>
+    )};
 
     // Render a completed upload item
     const renderCompletedUploadItem = (upload) => (
@@ -297,6 +332,35 @@ const UploadSurveys = ({ route, navigation }) => {
             </View>
         </View>
     );
+
+    // Add a handler for clearing history
+    const handleClearHistory = () => {
+        if (completedUploads.length === 0) return;
+        
+        Alert.alert(
+          'Clear Upload History',
+          'Are you sure you want to clear all upload history?',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { 
+                text: 'Clear', 
+                style: 'destructive',
+                onPress: async () => {
+                    await AsyncStorage.setItem('@completedUploads', JSON.stringify([]));
+                    setCompletedUploads([]);
+                    Toast.show({
+                        type: 'success',
+                        text1: 'History Cleared',
+                        text2: 'Upload history has been cleared.',
+                        position: 'bottom',
+                        visibilityTime: 3000,
+                        autoHide: true,
+                    });
+                }
+            },
+          ]
+        );
+    };
 
     return (
         <ScrollView style={localStyles.container}>
@@ -316,11 +380,23 @@ const UploadSurveys = ({ route, navigation }) => {
             </View>
             
             <View style={localStyles.section}>
-                <Text style={localStyles.sectionTitle}>Completed Uploads</Text>
+                <View style={localStyles.sectionHeader}>
+                    <Text style={localStyles.sectionTitle}>Completed Uploads</Text>
+                </View>
+                
                 {completedUploads.length === 0 ? (
                     <Text style={localStyles.emptyStateText}>No completed uploads</Text>
                 ) : (
-                    completedUploads.map(renderCompletedUploadItem)
+                    <>
+                        {completedUploads.map(renderCompletedUploadItem)}
+                        
+                        <TouchableOpacity 
+                            style={localStyles.clearHistoryButton}
+                            onPress={handleClearHistory}
+                        >
+                            <Text style={localStyles.clearHistoryText}>Clear History</Text>
+                        </TouchableOpacity>
+                    </>
                 )}
             </View>
             
@@ -436,7 +512,32 @@ const localStyles = StyleSheet.create({
     retryButtonText: {
         color: '#fff',
         fontWeight: 'bold',
-    }
+    },
+    cancelledText: {
+        color: '#ff6600',
+        fontStyle: 'italic',
+        marginTop: 8,
+        textAlign: 'center',
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+        marginBottom: 12,
+    },
+    clearHistoryButton: {
+        backgroundColor: '#f0f0f0',
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 16,
+        borderWidth: 1,
+        borderColor: '#ddd',
+    },
+    clearHistoryText: {
+        color: '#cc0000',
+        fontWeight: '500',
+    },
 });
 
 export default UploadSurveys;

@@ -46,7 +46,7 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
     // console.log("Taking photo...");
     // console.log(cameraRef.current)
     if (!cameraRef.current) return;
-    const data = await cameraRef.current.takePictureAsync({ quality: 0.5, base64: true });
+    const data = await cameraRef.current.takePictureAsync({ quality: 0.6, base64: true });
   
     setPhotos(prevPhotos => {
       const updatedPhotos = [...prevPhotos, data.uri];
