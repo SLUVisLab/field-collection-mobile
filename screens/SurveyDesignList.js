@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext'
 import styles from '../Styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -18,8 +18,8 @@ const SurveyDesignList = ({ navigation }) => {
 
   const realm = useRealm();
 
-  // retrieve the set of  objects
-  const designs = realm.objects("SurveyDesign");
+  // retrieve the set of objects and sort them alphabetically
+  const designs = realm.objects("SurveyDesign").sorted("name");
 
   // Function to exit edit mode
   const exitEditMode = () => {
@@ -77,45 +77,57 @@ const SurveyDesignList = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <ScrollView>
+        <TouchableOpacity
+          style={localStyles.addButton}
+          onPress={() => !isEditMode && navigation.navigate('NewSurvey')}
+        >
+          <Ionicons name="add-circle-outline" size={24} color="black" />
+          <Text style = {localStyles.addText}>New Survey</Text>
+        </TouchableOpacity>
+
+        {designs.map((design, index) => {
+          // Extract file name without extension
+          // let surveyName = filePath.substring(filePath.lastIndexOf('/') + 1).replace('.xlsx', '');
+
+          // surveyName = surveyName.replace(/_/g, ' ')
+
+          return (
+            <TouchableOpacity
+              key={index}
+              style={[styles.button, localStyles.surveyButton, isEditMode && localStyles.editMode]}
+              onPress={() => !isEditMode && handleLoadSurvey(design)}
+              onLongPress={toggleEditMode}
+            >
+              <View style={localStyles.buttonContentContainer}>
+                <Text style={[{ flex: 1 }, styles.text]}>{design.name}</Text>
+                {isEditMode && (
+                  <TouchableOpacity
+                    style={[localStyles.deleteButton, { marginLeft: 'auto' }]} // Adjust positioning as needed
+                    onPress={(e) => {
+                      e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
+                      handleDeleteSurvey(design);
+                    }}
+                  >
+                    <Ionicons name="close-circle" size={24} color="red" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+        
+        <View style={localStyles.bottomPadding} />
+      </ScrollView>
       
-      <TouchableOpacity
-        style={localStyles.addButton}
-        onPress={() => !isEditMode && navigation.navigate('NewSurvey')}
-      >
-        <Ionicons name="add-circle-outline" size={24} color="black" />
-        <Text style = {localStyles.addText}>New Survey</Text>
-      </TouchableOpacity>
-
-      {designs.map((design, index) => {
-        // Extract file name without extension
-        // let surveyName = filePath.substring(filePath.lastIndexOf('/') + 1).replace('.xlsx', '');
-
-        // surveyName = surveyName.replace(/_/g, ' ')
-
-        return (
-          <TouchableOpacity
-            key={index}
-            style={[styles.button, localStyles.surveyButton, isEditMode && localStyles.editMode]}
-            onPress={() => !isEditMode && handleLoadSurvey(design)}
-            onLongPress={toggleEditMode}
-          >
-            <View style={localStyles.buttonContentContainer}>
-              <Text style={[{ flex: 1 }, styles.text]}>{design.name}</Text>
-              {isEditMode && (
-                <TouchableOpacity
-                  style={[localStyles.deleteButton, { marginLeft: 'auto' }]} // Adjust positioning as needed
-                  onPress={(e) => {
-                    e.stopPropagation(); // Prevent the parent TouchableOpacity from triggering
-                    handleDeleteSurvey(design);
-                  }}
-                >
-                  <Ionicons name="close-circle" size={24} color="red" />
-                </TouchableOpacity>
-              )}
-            </View>
-          </TouchableOpacity>
-        );
-      })}
+      {isEditMode && (
+        <TouchableOpacity 
+          style={localStyles.exitEditModeButton}
+          onPress={exitEditMode}
+        >
+          <Text style={localStyles.exitEditModeText}>Done</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -157,7 +169,12 @@ const localStyles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 4,
   },
-
+  contentContainer: {
+    flexGrow: 1, // Allows content to grow but enables scrolling when needed
+  },
+  bottomPadding: {
+    height: 40, // Adds some padding at the bottom for better scrolling
+  },
 });
 
 export default SurveyDesignList;
