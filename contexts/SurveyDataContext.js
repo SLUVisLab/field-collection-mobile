@@ -412,13 +412,14 @@ export const SurveyDataProvider = ({ children }) => {
 
       const ext = getFileExtensionFromPathOrBlob(path, blob) || 'jpg';
       
-      // generateDescriptiveFilename handles adding a timestamp to the name as well.
+      // Include the surveyID when generating the filename
       const fileName = generateDescriptiveFilename({
         parent: context.parentName,
         subcollection: context.subcollectionName,
         item: context.itemName,
         itemID: context.itemID,
         index: context.index,
+        surveyID: context.surveyID, // Use the survey ID from context
         extension: ext,
       });
 
@@ -546,6 +547,9 @@ export const SurveyDataProvider = ({ children }) => {
       const processedSurvey = { ...survey };
       const localMediaPaths = [];
       
+      // Get the survey ID to use for consistent file naming
+      const surveyID = processedSurvey.ID || surveyKey.split('_').pop();
+      
       // Build a queue of all media files to upload
       const uploadQueue = [];
       let totalMediaFiles = 0;
@@ -568,7 +572,11 @@ export const SurveyDataProvider = ({ children }) => {
             for (let j = 0; j < value.length; j++) {
               uploadQueue.push({
                 uri: value[j],
-                context: { ...context, index: j },
+                context: { 
+                  ...context, 
+                  index: j,
+                  surveyID: surveyID // Pass the surveyID in the context
+                },
                 observationIndex: processedSurvey.observations.indexOf(observation),
                 key,
                 arrayIndex: j,
@@ -579,7 +587,10 @@ export const SurveyDataProvider = ({ children }) => {
           } else if (isMedia(value)) {
             uploadQueue.push({
               uri: value,
-              context: { ...context },
+              context: { 
+                ...context,
+                surveyID: surveyID // Pass the surveyID in the context
+              },
               observationIndex: processedSurvey.observations.indexOf(observation),
               key,
               isArray: false
