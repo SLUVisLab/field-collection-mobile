@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2](https://github.com/SLUVisLab/field-collection-mobile/compare/v1.1.1...v1.1.2) (2025-06-02)
+
+
+### Bug Fixes
+
+* add scrolling to survey lists and alphabetize ([d802d3a](https://github.com/SLUVisLab/field-collection-mobile/commit/d802d3af65f6ced8dbc18fd66c4352a4d75cd725))
+* improve upload UI and add concurrency. patch navigation issues ([2e3323b](https://github.com/SLUVisLab/field-collection-mobile/commit/2e3323bf716b57a1d27af554f42492e69817b166))
+
 ## [1.1.1](https://github.com/SLUVisLab/field-collection-mobile/compare/v1.1.0...v1.1.1) (2025-05-21)
 
 
