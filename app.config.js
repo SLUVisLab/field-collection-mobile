@@ -23,6 +23,7 @@ module.exports = {
       ios: {
         supportsTablet: true,
         bundleIdentifier: "com.astylianou.bii-phenotyper",
+        googleServicesFile: process.env.GOOGLE_SERVICES_IOS,
         config: {
           // Here we can directly use process.env
           googleMapsApiKey: process.env.GOOGLE_MAPS_IOS_API_KEY
@@ -38,6 +39,7 @@ module.exports = {
           foregroundImage: "./assets/icons/adaptive-icon.png",
           backgroundColor: "#FFFFFF"
         },
+        googleServicesFile: process.env.GOOGLE_SERVICES_ANDROID,
         config: {
           googleMaps: {
             // Direct environment variable usage
@@ -61,6 +63,8 @@ module.exports = {
         }
       },
       plugins: [
+        "@react-native-firebase/app",
+        "@react-native-firebase/crashlytics",
         [
           "expo-build-properties",
           {
