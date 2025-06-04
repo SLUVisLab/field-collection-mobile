@@ -769,6 +769,13 @@ export const SurveyDataProvider = ({ children }) => {
   // Updated uploadSurvey method that integrates with the progress system
   const uploadSurvey = async (storageKey, realm) => {
     const surveyKey = storageKey; // Use the storage key as the unique identifier
+
+    // Add test log message for Crashlytics initialization
+    LogService.logError(new Error('TEST: Upload initialization successful'), {
+      surveyKey,
+      testMessage: 'This is a test log to verify Crashlytics is working',
+      timestamp: new Date().toISOString()
+    });
     
     return new Promise(async (resolve, reject) => {
       let mediaPaths;
