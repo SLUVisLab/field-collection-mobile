@@ -48,7 +48,8 @@ const TaskAction = ({ route, navigation }) => {
     useEffect(() => {
         // all items in this collection have been completed
         if (currentItemIndex >= collection.items.length) {
-            navigation.push('CollectionList', { collectionID: collectionID });
+            // navigation.replace('CollectionList', { collectionID: collectionID });
+            navigation.goBack();
         // or they havent. move to next item. index incremented elsewhere
         } else {
             fadeOut(() => {

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -351,257 +351,431 @@ export const SurveyDataProvider = ({ children }) => {
   }
 
 
-  const uploadToMediaStorage = async (path, context = {}) => {
-    if(auth.currentUser) {
-      try {
+  // Add state to track uploads across the app
+  const [uploadTasks, setUploadTasks] = useState({});
+  const activeUploads = useRef({});
 
-        console.log("Uploading with context:", context);
+  // Track upload progress of each survey
+  const [uploadProgress, setUploadProgress] = useState({});
 
-        // get the image file
-        const response = await fetch(path); //THIS IS WHERE THE ERROR IS
-        const blob = await response.blob();
-
-        const ext = getFileExtensionFromPathOrBlob(path, blob) || 'jpg';
-
-        const fileName = generateDescriptiveFilename({
-          parent: context.parentName,
-          subcollection: context.subcollectionName,
-          item: context.itemName,
-          itemID: context.itemID,
-          index: context.index,
-          extension: ext,
-        });
-
-        console.log("Generated filename:", fileName);
-
-        const projectRef = ref(storage, 'beta-group');
-        const imagesRef = ref(projectRef, 'images');
-  
-        // create a reference in the storage server
-        const fileRef = ref(imagesRef, fileName);
-        
-        const metadata = { contentType: blob.type || `image/${ext}` };
-
-        const uploadTask = uploadBytesResumable(fileRef, blob, metadata);
-
-        return new Promise((resolve, reject) => {
-          uploadTask.on('state_changed',
-            (snapshot) => {
-              // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-              console.log('Upload is ' + progress + '% done');
-              switch (snapshot.state) {
-                case 'paused':
-                  console.log('Upload is paused');
-                  break;
-                case 'running':
-                  console.log('Upload is running');
-                  break;
-              }
-            }, 
-            (error) => {
-              // A full list of error codes is available at
-              // https://firebase.google.com/docs/storage/web/handle-errors
-              switch (error.code) {
-                case 'storage/unauthorized':
-                  console.log("Unauthorized: ", error.code)
-                  // User doesn't have permission to access the object
-                  reject(error);
-                case 'storage/canceled':
-                  // User canceled the upload
-                  console.log("Canceled: ", error.code)
-                  reject(error);
-                case 'storage/unknown':
-                  // Unknown error occurred, inspect error.serverResponse
-                  console.log("Unknown: ", error.code)
-                  reject(error);
-              }
-            }, 
-            () => {
-              // Upload completed successfully, now we can get the download URL
-              getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                console.log('File uploaded');
-                resolve(downloadURL);
-              });
-            }
-          );
-        });
-
-      } catch (e) {
-        console.log("Upload to Media Storage Failed: ");
-        console.error(e);
-        throw e;
+  // Function to update the progress of a specific survey upload
+  const updateUploadProgress = (surveyKey, status, progress, fileProgress = null) => {
+    setUploadProgress(prev => ({
+      ...prev,
+      [surveyKey]: {
+        status,
+        progress,
+        fileProgress, // Optional detailed progress of individual files
+        updatedAt: Date.now(),
       }
-    } else {
+    }));
+  };
+
+  // Function to cancel an active upload
+  const cancelUpload = (surveyKey) => {
+    if (activeUploads.current[surveyKey]) {
+      // Cancel all active upload tasks for this survey
+      Object.values(activeUploads.current[surveyKey]).forEach(task => {
+        if (task && typeof task.cancel === 'function') {
+          task.cancel();
+        }
+      });
+      
+      // Clean up the reference
+      delete activeUploads.current[surveyKey];
+      
+      // Update the progress state
+      updateUploadProgress(surveyKey, 'cancelled', 0);
+      
+      return true;
+    }
+    return false;
+  };
+
+  // Modified uploadToMediaStorage function with improved progress tracking
+  // Create references once at initialization
+  const projectRef = ref(storage, 'beta-group');
+  const imagesRef = ref(projectRef, 'images');
+
+  const uploadToMediaStorage = async (path, context = {}, surveyKey = null, progressInfo = null) => {
+    if(!auth.currentUser) {
       console.log('User is not authenticated. Cannot upload file.');
       throw new Error('User is not authenticated. Cannot upload file.');
     }
-  }
+    
+    try {
+      console.log("Uploading with context:", context);
 
+      // get the image file
+      const response = await fetch(path);
+      const blob = await response.blob();
 
-  const handleMediaItems = async (survey) => {
+      const ext = getFileExtensionFromPathOrBlob(path, blob) || 'jpg';
+      
+      // Include the surveyID when generating the filename
+      const fileName = generateDescriptiveFilename({
+        parent: context.parentName,
+        subcollection: context.subcollectionName,
+        item: context.itemName,
+        itemID: context.itemID,
+        index: context.index,
+        surveyID: context.surveyID, // Use the survey ID from context
+        extension: ext,
+      });
+
+      console.log("Generated filename:", fileName);
+
+      // No need to recreate these references - use the shared ones
+      // const projectRef = ref(storage, 'beta-group');
+      // const imagesRef = ref(projectRef, 'images');
+
+      // create a reference in the storage server
+      const fileRef = ref(imagesRef, fileName);
+      
+      const metadata = { contentType: blob.type || `image/${ext}` };
+
+      const uploadTask = uploadBytesResumable(fileRef, blob, metadata);
+
+      // If we have a surveyKey, register this task for tracking/cancellation
+      if (surveyKey) {
+        if (!activeUploads.current[surveyKey]) {
+          activeUploads.current[surveyKey] = {};
+        }
+        
+        // Store the task using the file path as a unique identifier
+        const fileKey = `${context.itemID || ''}_${context.index || 0}`;
+        activeUploads.current[surveyKey][fileKey] = uploadTask;
+      }
+
+      return new Promise((resolve, reject) => {
+        uploadTask.on('state_changed',
+          (snapshot) => {
+            // Get task progress, including the number of bytes uploaded and the total number of bytes
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log(`Upload of ${fileName} is ${progress.toFixed(1)}% done`);
+            
+            // If we're tracking this upload as part of a survey and have progress info
+            if (surveyKey && uploadProgress[surveyKey] && progressInfo) {
+              // Get current progress data
+              setUploadProgress(prev => {
+                // Don't update if we're no longer in uploading state
+                if (!prev[surveyKey] || 
+                    !['uploading', 'starting', 'preparing'].includes(prev[surveyKey].status)) {
+                  return prev;
+                }
+
+                // Keep track of file progress
+                const currentProgress = prev[surveyKey];
+                const fileProgress = {...(currentProgress.fileProgress || {})};
+                const fileKey = `${context.itemID || ''}_${context.index || 0}`;
+                
+                fileProgress[fileKey] = {
+                  fileName,
+                  progress: Math.round(progress),
+                  state: snapshot.state
+                };
+                
+                // Only let progress increase, never decrease
+                const baseProgress = progressInfo.uploadedCount / progressInfo.totalFiles;
+                const fileContribution = (1 / progressInfo.totalFiles) * (progress / 100);
+                const calculatedProgress = Math.round((baseProgress + fileContribution) * 80);
+                
+                // Ensure progress never goes backward
+                const newProgress = Math.max(calculatedProgress, currentProgress.progress || 0);
+                
+                return {
+                  ...prev,
+                  [surveyKey]: {
+                    ...currentProgress,
+                    status: 'uploading',
+                    progress: Math.min(newProgress, 89), // Cap at 89% until all files complete
+                    fileProgress,
+                    updatedAt: Date.now()
+                  }
+                };
+              });
+            }
+          }, 
+          (error) => {
+            console.error(`Upload error for ${fileName}:`, error);
+            
+            // Clean up the task reference if we were tracking it
+            if (surveyKey && activeUploads.current[surveyKey]) {
+              const fileKey = `${context.itemID || ''}_${context.index || 0}`;
+              delete activeUploads.current[surveyKey][fileKey];
+            }
+            
+            switch (error.code) {
+              case 'storage/canceled':
+                console.log("Upload was canceled");
+                reject(new Error('Upload was canceled'));
+                break;
+              default:
+                reject(error);
+                break;
+            }
+          }, 
+          () => {
+            // Upload completed successfully
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              console.log(`File ${fileName} uploaded successfully`);
+              
+              // Clean up the task reference if we were tracking it
+              if (surveyKey && activeUploads.current[surveyKey]) {
+                const fileKey = `${context.itemID || ''}_${context.index || 0}`;
+                delete activeUploads.current[surveyKey][fileKey];
+              }
+              
+              resolve(downloadURL);
+            });
+          }
+        );
+      });
+    } catch (e) {
+      console.error("Upload to Media Storage Failed:", e);
+      throw e;
+    }
+  };
+
+  // Set max concurrent uploads
+  const MAX_CONCURRENT_UPLOADS = 5;
+
+  // Updated handleMediaItems function with concurrent uploads
+  const handleMediaItems = async (survey, surveyKey) => {
     try {
       // Create a copy of the survey to avoid mutating the original object
       const processedSurvey = { ...survey };
       const localMediaPaths = [];
-  
-      // Iterate over each observation
-      for (let i = 0; i < processedSurvey.observations.length; i++) {
-        const observation = processedSurvey.observations[i];
-
+      
+      // Get the survey ID to use for consistent file naming
+      const surveyID = processedSurvey.ID || surveyKey.split('_').pop();
+      
+      // Build a queue of all media files to upload
+      const uploadQueue = [];
+      let totalMediaFiles = 0;
+      
+      // First, collect all media files and build the queue
+      for (const observation of processedSurvey.observations) {
         const data = observation.data;
-
+        
         const context = {
           parentName: observation.parentCollectionName || '',
           subcollectionName: observation.collectionName || '',
           itemName: observation.itemName || '',
           itemID: (observation.itemID || '').substring(0, MAX_ITEM_ID_LENGTH),
         };
-  
-        // Check each key/value pair
+        
         for (const key in data) {
           const value = data[key];
-        
+          
           if (Array.isArray(value) && value.every(isMedia)) {
-            const urls = [];
             for (let j = 0; j < value.length; j++) {
-              const uri = value[j];
-              const url = await uploadToMediaStorage(uri, { ...context, index: j });
-              localMediaPaths.push(uri);
-              urls.push(url);
+              uploadQueue.push({
+                uri: value[j],
+                context: { 
+                  ...context, 
+                  index: j,
+                  surveyID: surveyID // Pass the surveyID in the context
+                },
+                observationIndex: processedSurvey.observations.indexOf(observation),
+                key,
+                arrayIndex: j,
+                isArray: true
+              });
+              totalMediaFiles++;
             }
-            data[key] = urls;
           } else if (isMedia(value)) {
-            const url = await uploadToMediaStorage(value, { ...context });
-            localMediaPaths.push(value);
-            data[key] = url;
+            uploadQueue.push({
+              uri: value,
+              context: { 
+                ...context,
+                surveyID: surveyID // Pass the surveyID in the context
+              },
+              observationIndex: processedSurvey.observations.indexOf(observation),
+              key,
+              isArray: false
+            });
+            totalMediaFiles++;
           }
         }
       }
-
-      console.log("New Survey: ", processedSurvey);
-
+      
+      // Initialize progress tracking
+      updateUploadProgress(surveyKey, 'preparing', 0, { 
+        totalFiles: totalMediaFiles
+      });
+      
+      // Begin upload process
+      updateUploadProgress(surveyKey, 'uploading', 0);
+      
+      let completedCount = 0;
+      const urls = {}; // Store results by observation index and key
+      
+      // Process the queue in batches with limited concurrency
+      while (uploadQueue.length > 0) {
+        const currentBatch = uploadQueue.splice(0, MAX_CONCURRENT_UPLOADS);
+        
+        // Create an array of promises for the current batch
+        const uploadPromises = currentBatch.map(item => {
+          return uploadToMediaStorage(item.uri, item.context, surveyKey, {
+            uploadedCount: completedCount,
+            totalFiles: totalMediaFiles
+          })
+          .then(downloadURL => {
+            // Store the local media path for cleanup later
+            localMediaPaths.push(item.uri);
+            
+            // Store the download URL for updating the survey data
+            if (!urls[item.observationIndex]) {
+              urls[item.observationIndex] = {};
+            }
+            
+            if (item.isArray) {
+              if (!urls[item.observationIndex][item.key]) {
+                urls[item.observationIndex][item.key] = [];
+              }
+              urls[item.observationIndex][item.key][item.arrayIndex] = downloadURL;
+            } else {
+              urls[item.observationIndex][item.key] = downloadURL;
+            }
+            
+            // Increment completed count
+            completedCount++;
+            
+            // Update progress safely using a function to ensure we get the latest state
+            setUploadProgress(prev => {
+              if (!prev[surveyKey]) return prev;
+              
+              // Calculate new progress based on completed files
+              const newProgress = Math.round((completedCount / totalMediaFiles) * 80);
+              
+              // Only update if this would increase the progress
+              if (newProgress <= prev[surveyKey].progress) return prev;
+              
+              return {
+                ...prev,
+                [surveyKey]: {
+                  ...prev[surveyKey],
+                  status: 'uploading',
+                  progress: newProgress,
+                  updatedAt: Date.now()
+                }
+              };
+            });
+            
+            return downloadURL;
+          });
+        });
+        
+        // Wait for all promises in the current batch to resolve
+        await Promise.all(uploadPromises);
+      }
+      
+      // Update the processed survey with the URLs
+      for (const observationIndex in urls) {
+        const observation = processedSurvey.observations[observationIndex];
+        for (const key in urls[observationIndex]) {
+          if (Array.isArray(urls[observationIndex][key])) {
+            // Fill any gaps in array uploads (in case some uploads were missing)
+            const existingArray = observation.data[key] || [];
+            const newArray = [...existingArray];
+            
+            urls[observationIndex][key].forEach((url, index) => {
+              if (url) newArray[index] = url;
+            });
+            
+            observation.data[key] = newArray;
+          } else {
+            observation.data[key] = urls[observationIndex][key];
+          }
+        }
+      }
+      
+      // After all media is uploaded, move to saving phase
+      updateUploadProgress(surveyKey, 'saving', 90);
+      
       return { processedSurvey, localMediaPaths };
-
     } catch (e) {
-      console.log("Handle Media Failed: ");
-      console.error(e);
+      console.error("Handle Media Failed:", e);
+      updateUploadProgress(surveyKey, 'failed', 0);
       throw e;
     }
-  }
+  };
 
+  // Updated uploadSurvey method that integrates with the progress system
   const uploadSurvey = async (storageKey, realm) => {
+    const surveyKey = storageKey; // Use the storage key as the unique identifier
+    
     return new Promise(async (resolve, reject) => {
-
       let mediaPaths;
 
       try {
-
-        let isProcessing = false;
-        // This listener will be called when the realm has been updated
-        // It handles cleanup tasks after the survey has been uploaded
-        realm.addListener('change', realmChangedListener = () => {
-          console.log("REALM CHANGED");
-
-          if (isProcessing) {
-            console.log("Already processing. Skipping...");
-            return;
-          }
-
-          isProcessing = true; // Prevent multiple calls to this listener
-
-          const handleAsyncOperations = async () => {
-            // Delete the uploaded media files
-            await deleteLocalMedia(mediaPaths);
-            
-            // Delete the survey data from AsyncStorage
-            await deleteLocalSurveyData(storageKey);
-          };
-
-          handleAsyncOperations().then(() => {
-            realm.removeAllListeners();
-            resolve("Survey uploaded successfully");
-            isProcessing = false;
-          }).catch((error) => {
-            isProcessing = false;
-            console.error("Error handling async operations: ", error);
-            // Handle any errors that occurred during the async operations
-          });
-
-        });
-
-      } catch (error) {
-        console.error(
-          `An exception was thrown within change listeners: ${error}`
-        );
-      }
-
-      try {
-        const jsonValue = await AsyncStorage.getItem(storageKey);
-        const surveyData = JSON.parse(jsonValue);
-        const {processedSurvey, localMediaPaths} = await handleMediaItems(surveyData);
-
-        console.log(localMediaPaths);
-        console.log(processedSurvey);
-
-        mediaPaths = localMediaPaths;
+        // Initialize upload progress
+        updateUploadProgress(surveyKey, 'starting', 0);
         
-        console.log("Uploading survey to Realm: ");
-        console.log(processedSurvey['collections']);
-        console.log(processedSurvey['tasks']);
-        realm.write(() => {
-          realm.create('SurveyResults', {
-            _id: new BSON.ObjectId(),
-            name: processedSurvey["surveyName"],
-            dateStarted: new Date(processedSurvey["startTime"]),
-            dateCompleted: new Date(processedSurvey["stopTime"]),
-            user: processedSurvey["user"],
-            tasks: processedSurvey["tasks"],
-            collections: processedSurvey["collections"],
-            observations: processedSurvey["observations"]
+        // Load the survey data
+        const jsonValue = await AsyncStorage.getItem(storageKey);
+        if (!jsonValue) {
+          updateUploadProgress(surveyKey, 'failed', 0);
+          reject(new Error('Survey data not found'));
+          return;
+        }
+        
+        const surveyData = JSON.parse(jsonValue);
+        
+        // Process and upload media files with progress tracking
+        try {
+          const {processedSurvey, localMediaPaths} = await handleMediaItems(surveyData, surveyKey);
+          mediaPaths = localMediaPaths;
+          
+          // Update progress to indicate we're saving to Realm
+          updateUploadProgress(surveyKey, 'saving to database', 90);
+          
+          // Save to Realm database
+          realm.write(() => {
+            realm.create('SurveyResults', {
+              _id: new BSON.ObjectId(),
+              name: processedSurvey["surveyName"],
+              dateStarted: new Date(processedSurvey["startTime"]),
+              dateCompleted: new Date(processedSurvey["stopTime"]),
+              user: processedSurvey["user"],
+              tasks: processedSurvey["tasks"],
+              collections: processedSurvey["collections"],
+              observations: processedSurvey["observations"]
+            });
           });
-
-        });
-
+          
+          // Clean up
+          updateUploadProgress(surveyKey, 'cleaning up', 95);
+          
+          // Delete local media files
+          await deleteLocalMedia(mediaPaths);
+          
+          // Delete the survey data from AsyncStorage
+          await deleteLocalSurveyData(storageKey);
+          
+          // Mark as complete
+          updateUploadProgress(surveyKey, 'completed', 100);
+          
+          resolve("Survey uploaded successfully");
+        } catch (error) {
+          console.error("Upload failed:", error);
+          updateUploadProgress(surveyKey, 'failed', 0);
+          reject(error);
+        }
       } catch (error) {
         console.error("Upload Survey Failed:", error);
-        realm.removeAllListeners();
+        updateUploadProgress(surveyKey, 'failed', 0);
         reject(error);
-      }
-    });
-  }
-
-  // Not currently in use. An attempt to fix async issues with loading survey data
-  const quickLoadSurvey = (data) => {
-    return new Promise((resolve, reject) => {
-      try {
-        if (surveyData) {
-          console.log("Quick loading survey data...");
-          console.log(data);
-          surveyData.ID = data.ID;
-          surveyData.surveyComplete = data.surveyComplete;
-          surveyData.surveyName = data.surveyName;
-          surveyData.startTime = data.startTime;
-          surveyData.stopTime = data.stopTime;
-          surveyData.user = data.user; 
-          surveyData.tasks = data.tasks;
-          surveyData.collections = data.collections;
-          surveyData.observations = data.observations;
-
-          console.log("survey data set")
-  
-          resolve("Survey data loaded successfully");
-        } else {
-          reject("Survey data is not defined");
+      } finally {
+        // Clean up any lingering upload tasks
+        if (activeUploads.current[surveyKey]) {
+          delete activeUploads.current[surveyKey];
         }
-      } catch (e) {
-        console.log("Quick Load Survey Failed: ");
-        console.log(e);
-        reject(e);
       }
     });
   };
-  
+
   return (
     <SurveyDataContext.Provider 
       value={{
@@ -624,8 +798,10 @@ export const SurveyDataProvider = ({ children }) => {
           listAllSavedSurveys,
           saveForUpload,
           uploadSurvey,
+          cancelUpload,
           deleteLocalSurveyData,
-          quickLoadSurvey
+          // quickLoadSurvey,
+          uploadProgress
 
       }}
     >

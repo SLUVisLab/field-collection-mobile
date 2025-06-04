@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext';
 import { useSurveyData } from '../contexts/SurveyDataContext';
 import { useRealm } from '@realm/react'; 
@@ -13,8 +13,8 @@ const SurveyList = ({ navigation }) => {
 
   const realm = useRealm();
 
-  // retrieve the set of  objects
-  const designsList = realm.objects("SurveyDesign");
+  // retrieve the set of objects and sort them alphabetically
+  const designsList = realm.objects("SurveyDesign").sorted("name");
 
   const handleLoadSurvey = async (mongoDesign, designName) => {
     
@@ -76,15 +76,11 @@ const SurveyList = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      { designsList.length === 0 ? (
-        <Text>No Surveys Found</Text>
-      ) : (
-        designsList.map((design, index) => {
-          // Extract file name without extension
-          // let surveyName = filePath.substring(filePath.lastIndexOf('/') + 1).replace('.xlsx', '');
-          // surveyName = surveyName.replace(/_/g, ' ');
-  
-          return (
+      <ScrollView>
+        { designsList.length === 0 ? (
+          <Text style={styles.emptyListText}>No Surveys Found</Text>
+        ) : (
+          designsList.map((design, index) => (
             <TouchableOpacity
               key={index}
               style={styles.button}
@@ -92,9 +88,10 @@ const SurveyList = ({ navigation }) => {
             >
               <Text style={styles.text}>{design.name}</Text>
             </TouchableOpacity>
-          );
-        })
-      )}
+          ))
+        )}
+        <View style={{height: 40}} />
+      </ScrollView>
     </View>
   );
 };
