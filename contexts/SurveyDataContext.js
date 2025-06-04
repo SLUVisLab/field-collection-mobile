@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import {storage, auth} from '../firebase';
 import * as FileSystem from 'expo-file-system';
+import { LogService } from '../contexts/LogService'; // Import LogService
 
 // import {useRealm} from '@realm/react';
 import {BSON} from 'realm';
@@ -400,15 +401,63 @@ export const SurveyDataProvider = ({ children }) => {
   const uploadToMediaStorage = async (path, context = {}, surveyKey = null, progressInfo = null) => {
     if(!auth.currentUser) {
       console.log('User is not authenticated. Cannot upload file.');
-      throw new Error('User is not authenticated. Cannot upload file.');
+      const error = new Error('User is not authenticated. Cannot upload file.');
+      LogService.logUploadIssue(surveyKey, 'auth_check', error, { context });
+      throw error;
     }
     
     try {
       console.log("Uploading with context:", context);
+      
+      // Check if file exists before fetching
+      try {
+        const fileInfo = await FileSystem.getInfoAsync(path);
+        console.log("FILE EXISTS:", fileInfo.exists, "SIZE:", fileInfo.size);
+        
+        if (!fileInfo.exists) {
+          const error = new Error(`File does not exist: ${path}`);
+          LogService.logUploadIssue(surveyKey, 'file_check', error, { 
+            path,
+            context
+          });
+          throw error;
+        }
+      } catch (fileCheckError) {
+        console.error("FILE CHECK ERROR:", fileCheckError);
+        LogService.logUploadIssue(surveyKey, 'file_check', fileCheckError, { 
+          path, 
+          context 
+        });
+        throw fileCheckError;
+      }
 
       // get the image file
-      const response = await fetch(path);
-      const blob = await response.blob();
+      let response;
+      try {
+        response = await fetch(path);
+        console.log("FETCH COMPLETE. Status:", response.status, "OK:", response.ok);
+      } catch (fetchError) {
+        console.error("FETCH ERROR:", fetchError);
+        LogService.logUploadIssue(surveyKey, 'fetch', fetchError, { 
+          path, 
+          context 
+        });
+        throw fetchError;
+      }
+      
+      // Try to get blob
+      let blob;
+      try {
+        blob = await response.blob();
+        console.log("BLOB RECEIVED. Size:", blob.size, "Type:", blob.type);
+      } catch (blobError) {
+        console.error("BLOB ERROR:", blobError);
+        LogService.logUploadIssue(surveyKey, 'blob_creation', blobError, { 
+          path, 
+          context 
+        });
+        throw blobError;
+      }
 
       const ext = getFileExtensionFromPathOrBlob(path, blob) || 'jpg';
       
@@ -424,10 +473,6 @@ export const SurveyDataProvider = ({ children }) => {
       });
 
       console.log("Generated filename:", fileName);
-
-      // No need to recreate these references - use the shared ones
-      // const projectRef = ref(storage, 'beta-group');
-      // const imagesRef = ref(projectRef, 'images');
 
       // create a reference in the storage server
       const fileRef = ref(imagesRef, fileName);
@@ -505,6 +550,15 @@ export const SurveyDataProvider = ({ children }) => {
               delete activeUploads.current[surveyKey][fileKey];
             }
             
+            // Log the upload error with detailed context
+            LogService.logUploadIssue(surveyKey, 'firebase_upload', error, {
+              fileName,
+              fileSize: blob.size,
+              fileType: blob.type,
+              path,
+              context
+            });
+            
             switch (error.code) {
               case 'storage/canceled':
                 console.log("Upload was canceled");
@@ -533,6 +587,11 @@ export const SurveyDataProvider = ({ children }) => {
       });
     } catch (e) {
       console.error("Upload to Media Storage Failed:", e);
+      LogService.logUploadIssue(surveyKey, 'media_storage', e, { 
+        path, 
+        context,
+        userID: auth.currentUser?.uid
+      });
       throw e;
     }
   };
@@ -697,6 +756,11 @@ export const SurveyDataProvider = ({ children }) => {
       return { processedSurvey, localMediaPaths };
     } catch (e) {
       console.error("Handle Media Failed:", e);
+      LogService.logUploadIssue(surveyKey, 'process_media', e, {
+        totalFiles: totalMediaFiles,
+        completedCount: completedCount,
+        userID: auth.currentUser?.uid
+      });
       updateUploadProgress(surveyKey, 'failed', 0);
       throw e;
     }
@@ -765,6 +829,9 @@ export const SurveyDataProvider = ({ children }) => {
         }
       } catch (error) {
         console.error("Upload Survey Failed:", error);
+        LogService.logUploadIssue(storageKey, 'upload_survey', error, {
+          userID: auth.currentUser?.uid
+        });
         updateUploadProgress(surveyKey, 'failed', 0);
         reject(error);
       } finally {
