@@ -4,13 +4,10 @@ on:
   push:
     branches:
       - main
-      - development
+      - 'hotfix/*'
       - 'feature/*'
     paths-ignore:
       - '**.md'
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       debug-mode:
@@ -36,8 +33,7 @@ jobs:
     needs: determine-release-type
     if: >-
       github.ref == 'refs/heads/main' ||
-      github.ref == 'refs/heads/development' ||
-      github.event_name == 'pull_request' ||
+      (startsWith(github.ref, 'refs/heads/hotfix/') && contains(github.event.head_commit.message, '[build]')) ||
       (startsWith(github.ref, 'refs/heads/feature/') && contains(github.event.head_commit.message, '[build]'))
     runs-on: ubuntu-latest
 
@@ -62,20 +58,32 @@ jobs:
         run: |
           VERSION=${{ needs.determine-release-type.outputs.release-version }}
           echo "App version: $VERSION"
-
+          
           if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
-            if [[ "$VERSION" =~ ^[0-9]+\.0\.0$ || "$VERSION" =~ ^[0-9]+\.[0-9]+\.0$ ]]; then
-              echo "EAS_BUILD_PROFILE=production" >> $GITHUB_ENV
-              echo "RUN_BUILD=true" >> $GITHUB_ENV
+            # Check if this is a release-please commit
+            COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+            IS_RELEASE_PLEASE=false
+            
+            if [[ "$COMMIT_MESSAGE" == *"chore(main): release"* || "$COMMIT_MESSAGE" == *"chore: release"* ]]; then
+              echo "Release-please commit detected: $COMMIT_MESSAGE"
+              IS_RELEASE_PLEASE=true
             else
+              echo "Not a release-please commit, skipping build/update"
               echo "RUN_BUILD=false" >> $GITHUB_ENV
+              exit 0
             fi
-          elif [[ "${{ github.ref }}" == 'refs/heads/development' ]]; then
-            echo "EAS_BUILD_PROFILE=testing" >> $GITHUB_ENV
-            echo "RUN_BUILD=true" >> $GITHUB_ENV
-          elif [[ "${{ github.event_name }}" == 'pull_request' ]]; then
-            echo "EAS_BUILD_PROFILE=testing" >> $GITHUB_ENV
-            echo "RUN_BUILD=true" >> $GITHUB_ENV
+            
+            # If it is a release-please commit, continue with version check
+            if [[ "$IS_RELEASE_PLEASE" == "true" ]]; then
+              if [[ "$VERSION" =~ ^[0-9]+\.0\.0$ || "$VERSION" =~ ^[0-9]+\.[0-9]+\.0$ ]]; then
+                echo "Major or minor version bump detected - running production build"
+                echo "EAS_BUILD_PROFILE=production" >> $GITHUB_ENV
+                echo "RUN_BUILD=true" >> $GITHUB_ENV
+              else
+                echo "Patch version detected - running update instead of build"
+                echo "RUN_BUILD=false" >> $GITHUB_ENV
+              fi
+            fi
           else
             echo "EAS_BUILD_PROFILE=development" >> $GITHUB_ENV
             echo "RUN_BUILD=true" >> $GITHUB_ENV
@@ -262,5 +270,4 @@ jobs:
             channel_id: C08QF24E2EB
             thread_ts: "${{ steps.slack_header.outputs.ts }}"
             file: "./qrcodes/ios.png"
-            filename: "ios-qr.png"      
-          
+            filename: "ios-qr.png"
