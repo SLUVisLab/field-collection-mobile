@@ -66,11 +66,11 @@ const TaskManifest = {
     taskSetup: BarcodeSetup,
     taskModule: BarcodeTask
   },
-  // [GeoPointTask.typeID]: {
-  //   taskAction: GeoPointAction,
-  //   taskSetup: GeoPointSetup,
-  //   taskModule: GeoPointTask
-  // },
+  [GeoPointTask.typeID]: {
+    taskAction: GeoPointAction,
+    taskSetup: GeoPointSetup,
+    taskModule: GeoPointTask
+  },
 
 
 }

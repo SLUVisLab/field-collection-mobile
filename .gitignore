@@ -19,3 +19,6 @@ android/
 .metro-health-check*
 
 .env
+
+google-services.json
+GoogleService-Info.plist
