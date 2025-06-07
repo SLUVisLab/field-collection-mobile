@@ -1,25 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from 'react-native';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import styles from '../../Styles'; // Your shared styles
+import crashlytics from '@react-native-firebase/crashlytics';
 
 const GeoPointAction = ({ existingData, onComplete, task, item, collection }) => {
-  const [currentLocation, setCurrentLocation] = useState(null);
+  const [currentUserLocation, setCurrentUserLocation] = useState(null);
+  const [mapRegion, setMapRegion] = useState(null);
+  const [markerCoordinates, setMarkerCoordinates] = useState(null);
   const [recordedLocation, setRecordedLocation] = useState(null);
   const [showInstructions, setShowInstructions] = useState(false);
-
+  
+  const mapRef = useRef(null);
+  
+  // Initial setup - get user location
   useEffect(() => {
-
     (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') return;
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          crashlytics().setAttributes({
+            errorType: 'location_permission_denied',
+            screen: 'GeoPointAction'
+          });
+          crashlytics().log('Location permissions not granted');
+          return;
+        }
 
-      const loc = await Location.getCurrentPositionAsync({});
-      setCurrentLocation(loc.coords);
+        const loc = await Location.getCurrentPositionAsync({});
+        const initialRegion = {
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
+        };
+        
+        setCurrentUserLocation(loc.coords);
+        setMapRegion(initialRegion);
+        setMarkerCoordinates(loc.coords);
+      } catch (error) {
+        crashlytics().setAttributes({
+          errorType: 'location_initialization_error',
+          screen: 'GeoPointAction'
+        });
+        crashlytics().log(`Error initializing location: ${error.message}`);
+        crashlytics().recordError(error);
+      }
     })();
   }, []);
 
+  // Load existing data if available
   useEffect(() => {
     if (
       task &&
@@ -28,33 +60,70 @@ const GeoPointAction = ({ existingData, onComplete, task, item, collection }) =>
       existingData["data"] &&
       existingData["data"][task.dataLabel]
     ) {
-      setRecordedLocation(existingData["data"][task.dataLabel]);
+      const savedLocation = existingData["data"][task.dataLabel];
+      setRecordedLocation(savedLocation);
+      
+      // If we have saved coordinates but no current location yet, center on saved location
+      if (savedLocation && !mapRegion) {
+        setMapRegion({
+          latitude: savedLocation.latitude,
+          longitude: savedLocation.longitude,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
+        });
+        setMarkerCoordinates({
+          latitude: savedLocation.latitude,
+          longitude: savedLocation.longitude,
+        });
+      }
     }
   }, [task, existingData]);
 
-  useEffect(() => {
-    console.log("MapView props:", {
-      provider: PROVIDER_GOOGLE,
-      hasLocation: !!currentLocation,
+  // Handle region change when map is moved
+  const handleRegionChange = (region) => {
+    setMarkerCoordinates({
+      latitude: region.latitude,
+      longitude: region.longitude
     });
-    
-    // Add a simple network test
-    fetch('https://www.google.com')
-      .then(() => console.log('Network connection available'))
-      .catch(e => console.error('Network test failed:', e));
-      
-    // Check if Google Maps JS API is accessible
-    fetch('https://maps.googleapis.com')
-      .then(() => console.log('Maps API reachable'))
-      .catch(e => console.error('Maps API unreachable:', e));
-  }, [currentLocation]);
+  };
 
-  const handleRecord = () => {
-    if (currentLocation) {
-      setRecordedLocation(currentLocation);
+  // Recenter map on user's location
+  const recenterMap = async () => {
+    try {
+      // Get fresh location
+      const { status } = await Location.getForegroundPermissionsAsync();
+      if (status !== 'granted') return;
+      
+      const loc = await Location.getCurrentPositionAsync({});
+      setCurrentUserLocation(loc.coords);
+      
+      // Animate map to user location
+      if (mapRef.current) {
+        mapRef.current.animateToRegion({
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
+        }, 500);
+      }
+    } catch (error) {
+      crashlytics().setAttributes({
+        errorType: 'recenter_location_error',
+        screen: 'GeoPointAction'
+      });
+      crashlytics().log(`Error recentering map: ${error.message}`);
+      crashlytics().recordError(error);
     }
   };
 
+  // Record current marker position
+  const handleRecord = () => {
+    if (markerCoordinates) {
+      setRecordedLocation(markerCoordinates);
+    }
+  };
+
+  // Save recorded location
   const handleSave = () => {
     if (recordedLocation) {
       onComplete({ [task.dataLabel]: recordedLocation });
@@ -63,25 +132,40 @@ const GeoPointAction = ({ existingData, onComplete, task, item, collection }) =>
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Map with overlay */}
-      <View style={{ flex: 2 }}>
-        {currentLocation && (
+      {/* Map with fixed center marker */}
+      <View style={{ flex: 2, position: 'relative' }}>
+        {mapRegion && (
           <>
             <MapView
+              ref={mapRef}
               style={{ flex: 1 }}
-              // provider={PROVIDER_GOOGLE}
               showsUserLocation
-              onError={(error) => console.error("MapView error:", error)}
-              onMapReady={() => console.log("Map is ready")}
-              region={{
-                latitude: currentLocation.latitude,
-                longitude: currentLocation.longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005,
+              onError={(error) => {
+                console.error("MapView error:", error);
+                crashlytics().log(`MapView error: ${error}`);
               }}
+              onMapReady={() => console.log("Map is ready")}
+              initialRegion={mapRegion}
+              onRegionChangeComplete={handleRegionChange}
+            />
+
+            {/* Fixed center marker */}
+            <View style={localStyles.centerMarkerContainer}>
+                <MaterialCommunityIcons 
+                  name="map-marker" 
+                  size={40} 
+                  color="#E74C3C" // Red marker color
+                  style={localStyles.centerMarker} 
+                />
+            </View>
+
+            {/* Recenter button */}
+            <TouchableOpacity 
+              style={localStyles.recenterButton} 
+              onPress={recenterMap}
             >
-              <Marker coordinate={currentLocation} />
-            </MapView>
+              <MaterialIcons name="my-location" size={24} color="black" />
+            </TouchableOpacity>
 
             <View style={localStyles.infoOverlay}>
               {collection.parentName && <Text style={localStyles.infoText}>{collection.parentName}</Text>}
@@ -92,10 +176,10 @@ const GeoPointAction = ({ existingData, onComplete, task, item, collection }) =>
         )}
       </View>
 
-      {/* Live location display */}
-      {currentLocation && (
+      {/* Live marker location display */}
+      {markerCoordinates && (
         <Text style={localStyles.coords}>
-          Live: {currentLocation.latitude.toFixed(5)}, {currentLocation.longitude.toFixed(5)}
+          Marker: {markerCoordinates.latitude.toFixed(5)}, {markerCoordinates.longitude.toFixed(5)}
         </Text>
       )}
 
@@ -207,6 +291,33 @@ const localStyles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2
+  },
+  // New styles for marker and recenter button
+  centerMarkerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    pointerEvents: 'none',
+  },
+  centerMarker: {
+    marginBottom: 30, // Adjust based on the icon size to make the tip the actual location
+  },
+  recenterButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'white',
+    padding: 8,
+    borderRadius: 4,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
 });
 

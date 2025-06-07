@@ -2,7 +2,6 @@ import 'expo-dev-client';
 import React, { useEffect } from 'react';
 
 import RealmWrapper from './contexts/RealmWrapper';
-import { LogService } from './contexts/LogService'; // Import LogService
 import Toast from 'react-native-toast-message';
 
 import 'react-native-get-random-values'
@@ -79,20 +78,6 @@ class App extends React.Component {
     super(props);
   }
 
-  componentDidMount() {
-    // Initialize LogService when app starts
-    this.initializeLogging();
-  }
-
-  initializeLogging = async () => {
-    try {
-      await LogService.init();
-      console.log('Logging service initialized');
-    } catch (error) {
-      console.error('Failed to initialize logging:', error);
-    }
-  }
-
   render() {
     return (
       <RealmWrapper>
@@ -124,7 +109,7 @@ class App extends React.Component {
             </SurveyDataProvider>
           </SurveyDesignProvider>
         </NavigationContainer>
-        <Toast ref={(ref) => Toast.setRef(ref)} />
+        <Toast />
       </RealmWrapper>
     );
   }

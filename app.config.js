@@ -4,7 +4,7 @@ module.exports = {
       name: "Gather",
       slug: "BII-Manual-Phenotyper",
       owner: "slu-vislab",
-      version: "1.1.0",
+      version: "1.2.0",
       orientation: "portrait",
       icon: "./assets/icons/ios-light.png",
       jsEngine: "hermes",
@@ -31,7 +31,8 @@ module.exports = {
         infoPlist: {
           NSCameraUsageDescription: "Allow $(PRODUCT_NAME) to access camera.",
           NSMicrophoneUsageDescription: "Allow $(PRODUCT_NAME) to access your microphone",
-          NSLocationWhenInUseUsageDescription: "Allow $(PRODUCT_NAME) to access your location while using the app."
+          NSLocationWhenInUseUsageDescription: "Allow $(PRODUCT_NAME) to access your location while using the app.",
+          ITSAppUsesNonExemptEncryption: false
         }
       },
       android: {

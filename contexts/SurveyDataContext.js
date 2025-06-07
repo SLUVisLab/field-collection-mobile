@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import {storage, auth} from '../firebase';
 import * as FileSystem from 'expo-file-system';
-import { LogService } from '../contexts/LogService'; // Import LogService
+import crashlytics from '@react-native-firebase/crashlytics';
 
 // import {useRealm} from '@realm/react';
 import {BSON} from 'realm';
@@ -401,8 +401,20 @@ export const SurveyDataProvider = ({ children }) => {
   const uploadToMediaStorage = async (path, context = {}, surveyKey = null, progressInfo = null) => {
     if(!auth.currentUser) {
       console.log('User is not authenticated. Cannot upload file.');
+      
+      // Add context with attributes
+      crashlytics().setAttributes({
+        errorType: 'authentication_error',
+        path: path || 'unknown',
+        surveyKey: surveyKey || 'unknown',
+        context: JSON.stringify(context)
+      });
+      
+      // Add descriptive logs
+      crashlytics().log('Upload failed: User not authenticated');
+      
       const error = new Error('User is not authenticated. Cannot upload file.');
-      LogService.logUploadIssue(surveyKey, 'auth_check', error, { context });
+      crashlytics().recordError(error);
       throw error;
     }
     
@@ -415,20 +427,41 @@ export const SurveyDataProvider = ({ children }) => {
         console.log("FILE EXISTS:", fileInfo.exists, "SIZE:", fileInfo.size);
         
         if (!fileInfo.exists) {
-          const error = new Error(`File does not exist: ${path}`);
-          LogService.logUploadIssue(surveyKey, 'file_check', error, { 
-            path,
-            context
+          // Add context with attributes
+          crashlytics().setAttributes({
+            errorType: 'file_missing',
+            path: path || 'unknown',
+            surveyKey: surveyKey || 'unknown',
+            itemID: context.itemID || 'unknown',
+            itemName: context.itemName || 'unknown'
           });
+          
+          // Add descriptive logs
+          crashlytics().log(`File does not exist: ${path}`);
+          crashlytics().log(`Context: ${JSON.stringify(context)}`);
+          
+          const error = new Error(`File does not exist: ${path}`);
+          crashlytics().recordError(error);
           throw error;
         }
-      } catch (fileCheckError) {
-        console.error("FILE CHECK ERROR:", fileCheckError);
-        LogService.logUploadIssue(surveyKey, 'file_check', fileCheckError, { 
-          path, 
-          context 
+      } catch (error) {
+        console.error("FILE CHECK ERROR:", error);
+        
+        // Add context with attributes
+        crashlytics().setAttributes({
+          errorType: 'file_check_error',
+          path: path || 'unknown',
+          surveyKey: surveyKey || 'unknown',
+          errorMessage: error.message,
+          context: JSON.stringify(context)
         });
-        throw fileCheckError;
+        
+        // Add descriptive logs
+        crashlytics().log(`Error checking file: ${path}`);
+        crashlytics().log(`Error details: ${error.message}`);
+        
+        crashlytics().recordError(error);
+        throw error;
       }
 
       // get the image file
@@ -436,13 +469,24 @@ export const SurveyDataProvider = ({ children }) => {
       try {
         response = await fetch(path);
         console.log("FETCH COMPLETE. Status:", response.status, "OK:", response.ok);
-      } catch (fetchError) {
-        console.error("FETCH ERROR:", fetchError);
-        LogService.logUploadIssue(surveyKey, 'fetch', fetchError, { 
-          path, 
-          context 
+      } catch (error) {
+        console.error("FETCH ERROR:", error);
+        
+        // Add context with attributes
+        crashlytics().setAttributes({
+          errorType: 'fetch_error',
+          path: path || 'unknown',
+          surveyKey: surveyKey || 'unknown',
+          errorMessage: error.message,
+          context: JSON.stringify(context)
         });
-        throw fetchError;
+        
+        // Add descriptive logs
+        crashlytics().log(`Error fetching file: ${path}`);
+        crashlytics().log(`Error details: ${error.message}`);
+        
+        crashlytics().recordError(error);
+        throw error;
       }
       
       // Try to get blob
@@ -450,13 +494,25 @@ export const SurveyDataProvider = ({ children }) => {
       try {
         blob = await response.blob();
         console.log("BLOB RECEIVED. Size:", blob.size, "Type:", blob.type);
-      } catch (blobError) {
-        console.error("BLOB ERROR:", blobError);
-        LogService.logUploadIssue(surveyKey, 'blob_creation', blobError, { 
-          path, 
-          context 
+      } catch (error) {
+        console.error("BLOB ERROR:", error);
+        
+        // Add context with attributes
+        crashlytics().setAttributes({
+          errorType: 'blob_conversion_error',
+          path: path || 'unknown',
+          surveyKey: surveyKey || 'unknown',
+          responseStatus: String(response?.status), // Converted to string
+          responseOk: response?.ok ? 'true' : 'false',
+          context: JSON.stringify(context)
         });
-        throw blobError;
+        
+        // Add descriptive logs
+        crashlytics().log(`Error creating blob from: ${path}`);
+        crashlytics().log(`Response status: ${response?.status}, OK: ${response?.ok}`);
+        
+        crashlytics().recordError(error);
+        throw error;
       }
 
       const ext = getFileExtensionFromPathOrBlob(path, blob) || 'jpg';
@@ -550,14 +606,23 @@ export const SurveyDataProvider = ({ children }) => {
               delete activeUploads.current[surveyKey][fileKey];
             }
             
-            // Log the upload error with detailed context
-            LogService.logUploadIssue(surveyKey, 'firebase_upload', error, {
-              fileName,
-              fileSize: blob.size,
-              fileType: blob.type,
-              path,
-              context
+            // Add context with attributes
+            crashlytics().setAttributes({
+              errorType: 'firebase_upload_error',
+              path: path || 'unknown',
+              fileName: fileName,
+              firebaseErrorCode: error.code || 'unknown',
+              blobSize: String(blob?.size), // Converted to string
+              blobType: blob?.type,
+              surveyKey: surveyKey || 'unknown',
+              context: JSON.stringify(context)
             });
+            
+            // Add descriptive logs
+            crashlytics().log(`Firebase upload error for file: ${fileName}`);
+            crashlytics().log(`Error code: ${error.code}, message: ${error.message}`);
+            
+            crashlytics().recordError(error);
             
             switch (error.code) {
               case 'storage/canceled':
@@ -585,14 +650,24 @@ export const SurveyDataProvider = ({ children }) => {
           }
         );
       });
-    } catch (e) {
-      console.error("Upload to Media Storage Failed:", e);
-      LogService.logUploadIssue(surveyKey, 'media_storage', e, { 
-        path, 
-        context,
-        userID: auth.currentUser?.uid
+    } catch (error) {
+      console.error("Upload to Media Storage Failed:", error);
+      
+      // Add context with attributes for general errors
+      crashlytics().setAttributes({
+        errorType: 'general_upload_error',
+        path: path || 'unknown',
+        surveyKey: surveyKey || 'unknown',
+        userId: auth.currentUser?.uid || 'unknown',
+        context: JSON.stringify(context)
       });
-      throw e;
+      
+      // Add descriptive logs
+      crashlytics().log(`General upload error for path: ${path}`);
+      crashlytics().log(`Error: ${error.message}`);
+      
+      crashlytics().recordError(error);
+      throw error;
     }
   };
 
@@ -754,15 +829,26 @@ export const SurveyDataProvider = ({ children }) => {
       updateUploadProgress(surveyKey, 'saving', 90);
       
       return { processedSurvey, localMediaPaths };
-    } catch (e) {
-      console.error("Handle Media Failed:", e);
-      LogService.logUploadIssue(surveyKey, 'process_media', e, {
-        totalFiles: totalMediaFiles,
-        completedCount: completedCount,
-        userID: auth.currentUser?.uid
+    } catch (error) {
+      console.error("Handle Media Failed:", error);
+      
+      // Add context with attributes
+      crashlytics().setAttributes({
+        errorType: 'media_processing_error',
+        surveyKey: surveyKey || 'unknown',
+        surveyName: survey?.surveyName || 'unknown',
+        totalMediaFiles: String(totalMediaFiles || 0), // Converted to string
+        completedCount: String(completedCount || 0), // Converted to string
+        userId: auth.currentUser?.uid || 'unknown'
       });
+      
+      // Add descriptive logs
+      crashlytics().log(`Media processing failed for survey: ${surveyKey}`);
+      crashlytics().log(`Error: ${error.message}`);
+      
+      crashlytics().recordError(error);
       updateUploadProgress(surveyKey, 'failed', 0);
-      throw e;
+      throw error;
     }
   };
 
@@ -770,12 +856,15 @@ export const SurveyDataProvider = ({ children }) => {
   const uploadSurvey = async (storageKey, realm) => {
     const surveyKey = storageKey; // Use the storage key as the unique identifier
 
-    // Add test log message for Crashlytics initialization
-    LogService.logError(new Error('TEST: Upload initialization successful'), {
-      surveyKey,
-      testMessage: 'This is a test log to verify Crashlytics is working',
-      timestamp: new Date().toISOString()
+    // Add context with attributes
+    crashlytics().setAttributes({
+      action: 'survey_upload_start',
+      surveyKey: surveyKey || 'unknown'
     });
+    
+    // Add descriptive logs
+    crashlytics().log(`Starting upload for survey: ${surveyKey}`);
+    crashlytics().recordError(new Error(`Test: Upload started for ${surveyKey}`));
     
     return new Promise(async (resolve, reject) => {
       let mediaPaths;
@@ -787,6 +876,14 @@ export const SurveyDataProvider = ({ children }) => {
         // Load the survey data
         const jsonValue = await AsyncStorage.getItem(storageKey);
         if (!jsonValue) {
+          // Add error context
+          crashlytics().setAttributes({
+            errorType: 'survey_not_found',
+            surveyKey: surveyKey
+          });
+          crashlytics().log(`Survey data not found for key: ${surveyKey}`);
+          crashlytics().recordError(new Error('Survey data not found'));
+          
           updateUploadProgress(surveyKey, 'failed', 0);
           reject(new Error('Survey data not found'));
           return;
@@ -828,17 +925,49 @@ export const SurveyDataProvider = ({ children }) => {
           // Mark as complete
           updateUploadProgress(surveyKey, 'completed', 100);
           
+          // Log success
+          crashlytics().setAttributes({
+            action: 'survey_upload_complete',
+            surveyKey: surveyKey,
+            mediaCount: String(mediaPaths?.length || 0) // Converted to string
+          });
+          crashlytics().log(`Survey upload completed successfully: ${surveyKey}`);
+          
           resolve("Survey uploaded successfully");
         } catch (error) {
+          // Add context with attributes
+          crashlytics().setAttributes({
+            errorType: 'media_upload_error',
+            surveyKey: surveyKey || 'unknown',
+            surveyName: surveyData?.surveyName || 'unknown',
+            userId: surveyData?.user?.id || 'unknown'
+          });
+          
+          // Add descriptive logs
+          crashlytics().log(`Survey upload media handling failed: ${surveyKey}`);
+          crashlytics().log(`Error: ${error.message}`);
+          
+          crashlytics().recordError(error);
           console.error("Upload failed:", error);
           updateUploadProgress(surveyKey, 'failed', 0);
           reject(error);
         }
       } catch (error) {
         console.error("Upload Survey Failed:", error);
-        LogService.logUploadIssue(storageKey, 'upload_survey', error, {
-          userID: auth.currentUser?.uid
+        
+        // Add context with attributes
+        crashlytics().setAttributes({
+          errorType: 'survey_upload_error',
+          surveyKey: surveyKey || 'unknown',
+          stage: 'initialization',
+          userId: auth.currentUser?.uid || 'unknown'
         });
+        
+        // Add descriptive logs
+        crashlytics().log(`Survey upload failed at initialization: ${surveyKey}`);
+        crashlytics().log(`Error: ${error.message}`);
+        
+        crashlytics().recordError(error);
         updateUploadProgress(surveyKey, 'failed', 0);
         reject(error);
       } finally {
