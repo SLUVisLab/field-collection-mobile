@@ -1,8 +1,7 @@
 import 'expo-dev-client';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import RealmWrapper from './contexts/RealmWrapper';
-
 import Toast from 'react-native-toast-message';
 
 import 'react-native-get-random-values'
@@ -110,7 +109,7 @@ class App extends React.Component {
             </SurveyDataProvider>
           </SurveyDesignProvider>
         </NavigationContainer>
-        <Toast ref={(ref) => Toast.setRef(ref)} />
+        <Toast />
       </RealmWrapper>
     );
   }

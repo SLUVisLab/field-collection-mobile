@@ -4,7 +4,7 @@ module.exports = {
       name: "Gather",
       slug: "BII-Manual-Phenotyper",
       owner: "slu-vislab",
-      version: "1.1.0",
+      version: "1.2.0",
       orientation: "portrait",
       icon: "./assets/icons/ios-light.png",
       jsEngine: "hermes",
@@ -23,6 +23,7 @@ module.exports = {
       ios: {
         supportsTablet: true,
         bundleIdentifier: "com.astylianou.bii-phenotyper",
+        googleServicesFile: process.env.GOOGLE_SERVICES_IOS,
         config: {
           // Here we can directly use process.env
           googleMapsApiKey: process.env.GOOGLE_MAPS_IOS_API_KEY
@@ -30,7 +31,8 @@ module.exports = {
         infoPlist: {
           NSCameraUsageDescription: "Allow $(PRODUCT_NAME) to access camera.",
           NSMicrophoneUsageDescription: "Allow $(PRODUCT_NAME) to access your microphone",
-          NSLocationWhenInUseUsageDescription: "Allow $(PRODUCT_NAME) to access your location while using the app."
+          NSLocationWhenInUseUsageDescription: "Allow $(PRODUCT_NAME) to access your location while using the app.",
+          ITSAppUsesNonExemptEncryption: false
         }
       },
       android: {
@@ -38,6 +40,7 @@ module.exports = {
           foregroundImage: "./assets/icons/adaptive-icon.png",
           backgroundColor: "#FFFFFF"
         },
+        googleServicesFile: process.env.GOOGLE_SERVICES_ANDROID,
         config: {
           googleMaps: {
             // Direct environment variable usage
@@ -61,6 +64,8 @@ module.exports = {
         }
       },
       plugins: [
+        "@react-native-firebase/app",
+        "@react-native-firebase/crashlytics",
         [
           "expo-build-properties",
           {
