@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import styles from '../Styles';
 import Toast from 'react-native-toast-message';
 import ProgressBar from 'react-native-progress/Bar';
@@ -84,64 +84,76 @@ const SaveSurvey = ({ route, navigation }) => {
   surveySummary.forEach(collection => calculateTotals(collection));
 
   return (
-    <View style= {{ padding: 10 }}>
-      <Text style={localStyles.header}>{surveyDesign.name}</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView 
+        style={localStyles.scrollContainer}
+        contentContainerStyle={localStyles.contentContainer}
+        showsVerticalScrollIndicator={true}
+      >
+        <Text style={localStyles.header}>{surveyDesign.name}</Text>
 
-      <View style={localStyles.infoContainer}>
-        <View style={localStyles.summaryLabelContainer}>
-          <Text style={localStyles.summaryLabel}>Started at: </Text>
-          <Text>{format(new Date(surveyData.startTime), 'eee, MM/dd/yy hh:mm a')}</Text>
+        <View style={localStyles.infoContainer}>
+          <View style={localStyles.summaryLabelContainer}>
+            <Text style={localStyles.summaryLabel}>Started at: </Text>
+            <Text>{format(new Date(surveyData.startTime), 'eee, MM/dd/yy hh:mm a')}</Text>
+          </View>
+          <View style={localStyles.summaryLabelContainer}>
+            <Text style={localStyles.summaryLabel}>Recorded Observations: </Text>
+            <Text>{totalItemsWithObservations}</Text>
+          </View>
+          <View style={localStyles.summaryLabelContainer}>
+            <Text style={localStyles.summaryLabel}>Total Items: </Text>
+            <Text>{totalItemsInSurvey}</Text>
+          </View>
         </View>
-        <View style={localStyles.summaryLabelContainer}>
-          <Text style={localStyles.summaryLabel}>Recorded Observations: </Text>
-          <Text>{totalItemsWithObservations}</Text>
-        </View>
-        <View style={localStyles.summaryLabelContainer}>
-          <Text style={localStyles.summaryLabel}>Total Items: </Text>
-          <Text>{totalItemsInSurvey}</Text>
-        </View>
-      </View>
-      
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleSubmit}
-        >
-        <Text style={styles.text}>Save Survey</Text>
-      </TouchableOpacity>
-      <View style={styles.horizontalLine} />
-      <Text style={styles.headerText}>Breakdown</Text>
-      {surveySummary.map((collection, index) => (
-        <View key={index}>
-          {collection.totalItems > 0 ? (
-            <View>
-              <View style={localStyles.progressLabelContainer}> 
-                <Text>{collection.name}</Text>
-                <Text>{collection.itemsWithObservations} / {collection.totalItems}</Text>
-              </View>
-              <ProgressBar progress={collection.itemsWithObservations/collection.totalItems} width={340} />
-            </View>
-          ) : (
-            <>
-              <Text>{collection.name}</Text>
-              {collection.subCollections.map((subCollection, subIndex) => (
-                <View key={subIndex} style={localStyles.subCollection}>
-                  <View style={localStyles.progressLabelContainer}>
-                    <Text>{subCollection.name}</Text>
-                    <Text>{subCollection.itemsWithObservations} / {subCollection.totalItems}</Text>
-                  </View>
-                  <ProgressBar progress={subCollection.itemsWithObservations/subCollection.totalItems} width={340} />
+        
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSubmit}
+          >
+          <Text style={styles.text}>Save Survey</Text>
+        </TouchableOpacity>
+        <View style={styles.horizontalLine} />
+        <Text style={styles.headerText}>Breakdown</Text>
+        {surveySummary.map((collection, index) => (
+          <View key={index}>
+            {collection.totalItems > 0 ? (
+              <View>
+                <View style={localStyles.progressLabelContainer}> 
+                  <Text>{collection.name}</Text>
+                  <Text>{collection.itemsWithObservations} / {collection.totalItems}</Text>
                 </View>
-              ))}
-            </>
-          )}
-        </View>
-      ))}
-    </View>
+                <ProgressBar progress={collection.itemsWithObservations/collection.totalItems} width={340} />
+              </View>
+            ) : (
+              <>
+                <Text>{collection.name}</Text>
+                {collection.subCollections.map((subCollection, subIndex) => (
+                  <View key={subIndex} style={localStyles.subCollection}>
+                    <View style={localStyles.progressLabelContainer}>
+                      <Text>{subCollection.name}</Text>
+                      <Text>{subCollection.itemsWithObservations} / {subCollection.totalItems}</Text>
+                    </View>
+                    <ProgressBar progress={subCollection.itemsWithObservations/subCollection.totalItems} width={340} />
+                  </View>
+                ))}
+              </>
+            )}
+          </View>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
   );
-
 };
 
 const localStyles = StyleSheet.create({
+  scrollContainer: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: 16,
+    paddingBottom: 30, // Add extra padding at the bottom
+  },
   subCollection: {
     marginLeft: 20,
   },
@@ -164,7 +176,6 @@ const localStyles = StyleSheet.create({
   infoContainer: {
     marginBottom: 30,
   }
-
 });
 
 export default SaveSurvey;

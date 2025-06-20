@@ -269,21 +269,31 @@ export const SurveyDataProvider = ({ children }) => {
     console.log(surveyData.surveyName)
     if (surveyData && surveyData.surveyName) {
       console.log("processing survey...")
-      try {
-        surveyData.user = user;
-        surveyData.collections = [...surveyDesign.collections];
-        surveyData.tasks = [...surveyDesign.tasks];
-        surveyData.surveyComplete = true;
-        surveyData.stopTime = Date.now();
-      } catch(e) {
-        console.log("Failed to process survey: ", e);
-      }
+
+      // Create a fresh, updated copy
+      const updatedSurvey = {
+        ...surveyData,
+        user: user,
+        collections: [...surveyDesign.collections],
+        tasks: [...surveyDesign.tasks],
+        surveyComplete: true,
+        stopTime: Date.now()
+      };
+      // try {
+      //   surveyData.user = user;
+      //   surveyData.collections = [...surveyDesign.collections];
+      //   surveyData.tasks = [...surveyDesign.tasks];
+      //   surveyData.surveyComplete = true;
+      //   surveyData.stopTime = Date.now();
+      // } catch(e) {
+      //   console.log("Failed to process survey: ", e);
+      // }
 
       try {
-        const jsonValue = JSON.stringify(surveyData)
+        const jsonValue = JSON.stringify(updatedSurvey)
         console.log("Saving survery to:")
-        console.log(`@savedSurvey_${surveyData.surveyName.replace(/\s/g, '_')}_${Date.now()}`)
-        await AsyncStorage.setItem(`@savedSurvey_${surveyData.surveyName.replace(/\s/g, '_')}_${Date.now()}`, jsonValue)
+        console.log(`@savedSurvey_${updatedSurvey.surveyName.replace(/\s/g, '_')}_${Date.now()}`)
+        await AsyncStorage.setItem(`@savedSurvey_${updatedSurvey.surveyName.replace(/\s/g, '_')}_${Date.now()}`, jsonValue)
         console.log("saved survey data...")
       } catch (e) {
         // saving error
@@ -678,7 +688,7 @@ export const SurveyDataProvider = ({ children }) => {
   const handleMediaItems = async (survey, surveyKey) => {
     try {
       // Create a copy of the survey to avoid mutating the original object
-      const processedSurvey = { ...survey };
+      const processedSurvey = JSON.parse(JSON.stringify(survey));
       const localMediaPaths = [];
       
       // Get the survey ID to use for consistent file naming
@@ -870,6 +880,7 @@ export const SurveyDataProvider = ({ children }) => {
       let mediaPaths;
 
       try {
+
         // Initialize upload progress
         updateUploadProgress(surveyKey, 'starting', 0);
         
@@ -900,6 +911,7 @@ export const SurveyDataProvider = ({ children }) => {
           updateUploadProgress(surveyKey, 'saving to database', 90);
           
           // Save to Realm database
+          // console.log("Saving to realm with data:", JSON.stringify(processedSurvey, null, 2));
           realm.write(() => {
             realm.create('SurveyResults', {
               _id: new BSON.ObjectId(),
