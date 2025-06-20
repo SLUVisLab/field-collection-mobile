@@ -45,7 +45,14 @@ const UploadSurveys = ({ route, navigation }) => {
     const fetchSurveys = async () => {
         // Fetch surveys ready for upload
         const savedSurveys = await listAllSavedSurveys();
-        setPendingSurveys(savedSurveys);
+
+        // Sort by completed date, newest first
+        const sortedSurveys = [...savedSurveys].sort((a, b) => {
+            // Convert to dates and compare (newest first)
+            return new Date(b.completed) - new Date(a.completed);
+        });
+        
+        setPendingSurveys(sortedSurveys);
         
         // Load and filter completed upload history from AsyncStorage
         try {
