@@ -881,10 +881,6 @@ export const SurveyDataProvider = ({ children }) => {
 
       try {
 
-        // Add verification token to track complete process
-        let uploadVerified = false;
-        let savedObjectId = null;
-
         // Initialize upload progress
         updateUploadProgress(surveyKey, 'starting', 0);
         
@@ -915,7 +911,7 @@ export const SurveyDataProvider = ({ children }) => {
           updateUploadProgress(surveyKey, 'saving to database', 90);
           
           // Save to Realm database
-          console.log("Saving to realm with data:", JSON.stringify(processedSurvey, null, 2));
+          // console.log("Saving to realm with data:", JSON.stringify(processedSurvey, null, 2));
           realm.write(() => {
             realm.create('SurveyResults', {
               _id: new BSON.ObjectId(),
