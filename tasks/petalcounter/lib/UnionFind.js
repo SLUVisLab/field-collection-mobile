@@ -186,7 +186,7 @@ function rel_persistence(f, threshold = 1e4) {
   return pairs;
 }
 
-module.exports = {
+export {
   UnionFind,
   mergeF,
   persistence,

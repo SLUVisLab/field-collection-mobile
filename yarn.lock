@@ -7118,6 +7118,11 @@ react-native-dropdown-picker@^5.4.6:
   resolved "https://registry.npmjs.org/react-native-dropdown-picker/-/react-native-dropdown-picker-5.4.6.tgz"
   integrity sha512-T1XBHbE++M6aRU3wFYw3MvcOuabhWZ29RK/Ivdls2r1ZkZ62iEBZknLUPeVLMX3x6iUxj4Zgr3X2DGlEGXeHsA==
 
+react-native-fast-opencv@^0.4.6:
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/react-native-fast-opencv/-/react-native-fast-opencv-0.4.6.tgz#46d261c733483c406fbcb324517a10a991ed43fc"
+  integrity sha512-Vw1YmB58DLI2ZqX7Q/0c8MffRBhr4mG9qawIXxvSfhTUI8/D4Srx6T9vzAe1CY6GAET1dwaNuAXbYwCMj1G/Og==
+
 react-native-fs@^2.20.0:
   version "2.20.0"
   resolved "https://registry.npmjs.org/react-native-fs/-/react-native-fs-2.20.0.tgz"

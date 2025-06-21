@@ -48,6 +48,7 @@
     "react-iframe": "^1.8.5",
     "react-native": "0.74.3",
     "react-native-dropdown-picker": "^5.4.6",
+    "react-native-fast-opencv": "^0.4.6",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-get-random-values": "~1.11.0",

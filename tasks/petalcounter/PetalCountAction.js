@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Modal, TouchableOpacity, Button, SafeAreaView, 
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
+import { countPetals } from './lib/CountPetals';
 
 const PetalCountAction = ({ existingData, onComplete, task, item, collection }) => {
 
