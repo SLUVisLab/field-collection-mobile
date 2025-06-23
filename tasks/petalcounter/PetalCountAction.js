@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import { countPetals } from './lib/CountPetals';
 import { Picker } from '@react-native-picker/picker';
+import HSVColorPicker from './components/HSVColorPicker';
 
 const PetalCountAction = ({ existingData, onComplete, task, item, collection }) => {
   const [facing, setFacing] = useState('back');
@@ -21,6 +22,17 @@ const PetalCountAction = ({ existingData, onComplete, task, item, collection }) 
 
   // Add new state for the selected mask
   const [selectedMask, setSelectedMask] = useState('result');
+
+  // Add new state for color picker
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [selectedColorParams, setSelectedColorParams] = useState({
+    hueMin: 18, hueMax: 38,
+    satMin: 60, satMax: 255,
+    valMin: 60, valMax: 255
+  });
+
+  // Add a new state for preview frame
+  const [previewFrameUri, setPreviewFrameUri] = useState(null);
 
   const cameraRef = useRef(null);
 
@@ -55,12 +67,12 @@ const PetalCountAction = ({ existingData, onComplete, task, item, collection }) 
         setPhoto(data.base64);
         setPhotoURI(data.uri);
         
-        // Process the image for petal counting
+        // Process the image for petal counting with selected color params
         setIsProcessing(true);
         setError(null);
         
         try {
-          const results = await countPetals(data.uri);
+          const results = await countPetals(data.uri, 20, selectedColorParams);
           setPetalData(results);
         } catch (err) {
           console.error("Petal counting failed:", err);
@@ -72,6 +84,49 @@ const PetalCountAction = ({ existingData, onComplete, task, item, collection }) 
         console.error("Failed to take picture:", err);
         setError("Failed to take picture. Please try again.");
       }
+    }
+  };
+
+  // Handle color selection
+  const handleColorSelected = (colorParams) => {
+    setSelectedColorParams(colorParams);
+    setShowColorPicker(false);
+  };
+
+  // Helper function to get color preset name
+  const getColorPresetName = (params) => {
+    const presets = [
+      { name: 'Yellow', color: {hueMin: 18, hueMax: 38, satMin: 60, satMax: 255, valMin: 60, valMax: 255} },
+      { name: 'White', color: {hueMin: 0, hueMax: 180, satMin: 0, satMax: 30, valMin: 200, valMax: 255} },
+      { name: 'Pink', color: {hueMin: 140, hueMax: 170, satMin: 50, satMax: 255, valMin: 100, valMax: 255} },
+      { name: 'Purple', color: {hueMin: 120, hueMax: 140, satMin: 50, satMax: 255, valMin: 50, valMax: 255} },
+    ];
+    
+    for (const preset of presets) {
+      if (JSON.stringify(preset.color) === JSON.stringify(params)) {
+        return preset.name;
+      }
+    }
+    return "Custom";
+  };
+
+  const capturePreviewForColorPicker = async () => {
+    if (cameraRef.current && isCameraReady) {
+      try {
+        console.log("Capturing preview frame for color picker...");
+        const options = { quality: 0.5, base64: false };
+        const data = await cameraRef.current.takePictureAsync(options);
+        console.log("Preview frame captured:", data.uri);
+        setPreviewFrameUri(data.uri);
+        setShowColorPicker(true);
+      } catch (error) {
+        console.error("Failed to capture preview frame:", error);
+        // Open color picker anyway, it will show a placeholder
+        setShowColorPicker(true);
+      }
+    } else {
+      console.log("Camera not ready, opening color picker without preview");
+      setShowColorPicker(true);
     }
   };
 
@@ -373,13 +428,51 @@ const PetalCountAction = ({ existingData, onComplete, task, item, collection }) 
           <TouchableOpacity style={styles.flipButton} onPress={toggleCameraFacing}>
             <Ionicons name="camera-reverse" size={58} color="white" />
           </TouchableOpacity>
+          
           <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.helpButton} onPress={() => setShowInstructions(true)}>
-            <Text style={styles.buttonText}>?</Text>
-          </TouchableOpacity>
+          
+          <View style={styles.rightButtonsContainer}>
+            <TouchableOpacity 
+              style={styles.colorButton}
+              onPress={capturePreviewForColorPicker}
+            >
+              <Ionicons name="color-palette" size={40} color="white" />
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.helpButton} 
+              onPress={() => setShowInstructions(true)}
+            >
+              <Text style={styles.buttonText}>?</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         
+        {/* Color setting indicator */}
+        <View style={styles.colorIndicator}>
+          <Text style={styles.colorIndicatorText}>
+            Color: {getColorPresetName(selectedColorParams)}
+          </Text>
+        </View>
+        
+        {/* Color picker modal */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showColorPicker}
+          onRequestClose={() => setShowColorPicker(false)}
+        >
+          <View style={styles.colorPickerModalContainer}>
+            <HSVColorPicker 
+              photoURI={previewFrameUri || photoURI}
+              onColorSelected={handleColorSelected}
+              onClose={() => setShowColorPicker(false)}
+            />
+          </View>
+        </Modal>
+        
+        {/* Existing instruction modal */}
         <Modal
           animationType="slide"
           transparent={true}
@@ -629,7 +722,36 @@ const styles = StyleSheet.create({
   stageCounter: {
     fontSize: 14,
     color: '#666',
-  }
+  },
+  rightButtonsContainer: {
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+  },
+  colorButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 50,
+    height: 50,
+    marginBottom: 8,
+  },
+  colorPickerModalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  colorIndicator: {
+    position: 'absolute',
+    top: 80,
+    right: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    padding: 8,
+    borderRadius: 5,
+  },
+  colorIndicatorText: {
+    color: 'white',
+    fontSize: 14,
+  },
 });
 
 export default PetalCountAction;

@@ -146,94 +146,211 @@ export function fillHoles(binaryMask) {
 }
 
 // 
+// function getLargestComponent(binaryImg, minFraction = 0.1, minSize = null) {
+//   console.log(' Starting getLargestComponent...');
+//   try {
+//     const imgInfo = getMatInfo(binaryImg);
+//     const rows = imgInfo.rows;
+//     const cols = imgInfo.cols;
+
+//     console.log('Input size:', rows, 'x', cols);
+
+//     console.log('Creating labels matrix...');
+//     const labels = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_32S);
+//     const stats = OpenCV.createObject(ObjectType.Mat, 0, 0, DataTypes.CV_32S);
+//     const centroids = OpenCV.createObject(ObjectType.Mat, 0, 0, DataTypes.CV_64F);
+
+//     console.log('Running connected components...');
+//     const { value: numLabels } = OpenCV.invoke(
+//       'connectedComponentsWithStats',
+//       binaryImg, labels, stats, centroids
+//     );
+//     console.log('Found', numLabels, 'connected components');
+
+//     console.log('Counting non-zero pixels...');
+//     const { value: totalPixels } = OpenCV.invoke('countNonZero', binaryImg);
+//     console.log('Total non-zero pixels:', totalPixels);
+
+//     console.log('Analyzing component sizes...');
+//     const sizes = [];
+//     const statsInfo = OpenCV.toJSValue(stats);
+//     const statsBuf = OpenCV.matToBuffer(stats, 'int32');
+//     const intArray = new Int32Array(statsBuf.buffer);
+
+//     for (let i = 1; i < numLabels; i++) {
+//       try {
+//         const area = intArray[i * 5 + ConnectedComponentsTypes.CC_STAT_AREA];
+//         sizes.push({ label: i, size: area });
+//       } catch (err) {
+//         console.error('Error reading stats at index', i, ':', err);
+//       }
+//     }
+
+//     if (minSize === null && sizes.length) {
+//       minSize = Math.max(...sizes.map(x => x.size)) + 1;
+//       console.log('Using minSize:', minSize);
+//     }
+
+//     console.log('Filtering valid components...');
+//     const valid = sizes
+//       .filter(x => x.size / totalPixels > minFraction || x.size > minSize)
+//       .map(x => x.label);
+//     console.log('Valid components:', valid.length, 'of', sizes.length);
+
+//     console.log('Creating result mask...');
+//     const mask = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
+//     OpenCV.invoke('setTo', mask, OpenCV.createObject(ObjectType.Scalar, 0));
+
+//     console.log('Processing each valid component...');
+//     valid.forEach((label, index) => {
+//       try {
+//         console.log(`Processing component ${index + 1}/${valid.length} (label ${label})...`);
+//         const region = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
+//         const labelScalar = OpenCV.createObject(ObjectType.Scalar, label);
+//         OpenCV.invoke('compare', labels, labelScalar, region, CmpTypes.CMP_EQ);
+
+//         console.log('Copying to result mask...');
+//         // Create a matrix filled with white (255)
+//         const white = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
+//         OpenCV.invoke('threshold', region, white, 0, 255, ThresholdTypes.THRESH_BINARY_INV);
+
+//         // Use bitwise_and to copy only the valid region into the mask
+//         OpenCV.invoke('bitwise_or', mask, white, mask, region);
+
+//       } catch (err) {
+//         console.error('Error processing component', label, ':', err);
+//       }
+//     });
+
+//     // console.log('Cleaning up remaining buffers...');
+//     // const result = OpenCV.invoke('clone', mask); // Clone before clearing
+//     // OpenCV.clearBuffers();
+//     console.log('getLargestComponent complete');
+//     return mask;;
+//   } catch (err) {
+//     console.error('Error in getLargestComponent:', err);
+//     throw err;
+//   }
+// }
+
 function getLargestComponent(binaryImg, minFraction = 0.1, minSize = null) {
-  console.log(' Starting getLargestComponent...');
+  console.log('🔍 Starting getLargestComponent...');
   try {
-    const imgInfo = getMatInfo(binaryImg);
-    const rows = imgInfo.rows;
-    const cols = imgInfo.cols;
+    const { rows, cols, type } = getMatInfo(binaryImg);
 
-    console.log('Input size:', rows, 'x', cols);
-
-    console.log('Creating labels matrix...');
     const labels = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_32S);
     const stats = OpenCV.createObject(ObjectType.Mat, 0, 0, DataTypes.CV_32S);
     const centroids = OpenCV.createObject(ObjectType.Mat, 0, 0, DataTypes.CV_64F);
 
-    console.log('Running connected components...');
     const { value: numLabels } = OpenCV.invoke(
       'connectedComponentsWithStats',
       binaryImg, labels, stats, centroids
     );
-    console.log('Found', numLabels, 'connected components');
 
-    console.log('Counting non-zero pixels...');
+    console.log('Connected components found:', numLabels);
+
     const { value: totalPixels } = OpenCV.invoke('countNonZero', binaryImg);
-    console.log('Total non-zero pixels:', totalPixels);
-
-    console.log('Analyzing component sizes...');
-    const sizes = [];
-    const statsInfo = OpenCV.toJSValue(stats);
     const statsBuf = OpenCV.matToBuffer(stats, 'int32');
     const intArray = new Int32Array(statsBuf.buffer);
 
+    const sizes = [];
     for (let i = 1; i < numLabels; i++) {
-      try {
-        const area = intArray[i * 5 + ConnectedComponentsTypes.CC_STAT_AREA];
-        sizes.push({ label: i, size: area });
-      } catch (err) {
-        console.error('Error reading stats at index', i, ':', err);
-      }
+      const area = intArray[i * 5 + ConnectedComponentsTypes.CC_STAT_AREA];
+      sizes.push({ label: i, size: area });
     }
 
-    if (minSize === null && sizes.length) {
+    if (minSize === null && sizes.length > 0) {
       minSize = Math.max(...sizes.map(x => x.size)) + 1;
-      console.log('Using minSize:', minSize);
     }
 
-    console.log('Filtering valid components...');
     const valid = sizes
       .filter(x => x.size / totalPixels > minFraction || x.size > minSize)
       .map(x => x.label);
-    console.log('Valid components:', valid.length, 'of', sizes.length);
 
-    console.log('Creating result mask...');
+    console.log('Valid components:', valid.length);
+
     const mask = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
-    OpenCV.invoke('setTo', mask, OpenCV.createObject(ObjectType.Scalar, 0));
+    const pt1 = OpenCV.createObject(ObjectType.Point, 0, 0);
+    const pt2 = OpenCV.createObject(ObjectType.Point, cols, rows);
+    const black = OpenCV.createObject(ObjectType.Scalar, 0);
+    OpenCV.invoke('rectangle', mask, pt1, pt2, black, -1, LineTypes.LINE_8);
 
-    console.log('Processing each valid component...');
     valid.forEach((label, index) => {
-      try {
-        console.log(`Processing component ${index + 1}/${valid.length} (label ${label})...`);
-        const region = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
-        const labelScalar = OpenCV.createObject(ObjectType.Scalar, label);
-        OpenCV.invoke('compare', labels, labelScalar, region, CmpTypes.CMP_EQ);
+      const region = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
+      const labelScalar = OpenCV.createObject(ObjectType.Scalar, label);
+      OpenCV.invoke('compare', labels, labelScalar, region, CmpTypes.CMP_EQ);
 
-        console.log('Copying to result mask...');
-        // Create a matrix filled with white (255)
-        const white = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
-        OpenCV.invoke('threshold', region, white, 0, 255, ThresholdTypes.THRESH_BINARY_INV);
-
-        // Use bitwise_and to copy only the valid region into the mask
-        OpenCV.invoke('bitwise_or', mask, white, mask, region);
-
-      } catch (err) {
-        console.error('Error processing component', label, ':', err);
-      }
+      OpenCV.invoke('bitwise_or', mask, region, mask); // add region to mask
     });
 
-    // console.log('Cleaning up remaining buffers...');
-    // const result = OpenCV.invoke('clone', mask); // Clone before clearing
-    // OpenCV.clearBuffers();
-    console.log('getLargestComponent complete');
-    return mask;;
+    console.log('✅ getLargestComponent complete');
+    return mask;
   } catch (err) {
-    console.error('Error in getLargestComponent:', err);
+    console.error('❌ Error in getLargestComponent:', err);
     throw err;
   }
 }
 
-async function countPetals(imagePath, pad = 20) {
+
+async function generateColorMask(imagePath, colorParams) {
+  console.log('🎯 Generating sharp magenta mask preview...');
+  try {
+    const image = await resizeImage(imagePath);
+    const imageInfo = getMatInfo(image);
+
+    // Blur to smooth edges
+    const rgb = OpenCV.createObject(ObjectType.Mat, imageInfo.rows, imageInfo.cols, imageInfo.type);
+    OpenCV.invoke('medianBlur', image, rgb, 5);
+
+    // Convert to HSV
+    const hsv = OpenCV.createObject(ObjectType.Mat, imageInfo.rows, imageInfo.cols, imageInfo.type);
+    OpenCV.invoke('cvtColor', rgb, hsv, ColorConversionCodes.COLOR_BGR2HSV);
+
+    // Create binary mask
+    const hsvMask = OpenCV.createObject(ObjectType.Mat, imageInfo.rows, imageInfo.cols, DataTypes.CV_8U);
+    const lowerb = OpenCV.createObject(ObjectType.Scalar,
+      colorParams.hueMin, colorParams.satMin, colorParams.valMin);
+    const upperb = OpenCV.createObject(ObjectType.Scalar,
+      colorParams.hueMax, colorParams.satMax, colorParams.valMax);
+    OpenCV.invoke('inRange', hsv, lowerb, upperb, hsvMask);
+
+    // Clone blurred image to use as base
+    const result = OpenCV.invoke('clone', rgb);
+
+    // Create magenta overlay (filled using rectangle since setTo is unsupported)
+    const magentaOverlay = OpenCV.createObject(ObjectType.Mat, imageInfo.rows, imageInfo.cols, imageInfo.type);
+    const magentaColor = OpenCV.createObject(ObjectType.Scalar, 255, 0, 255); // BGR: hot magenta
+
+    const pt1 = OpenCV.createObject(ObjectType.Point, 0, 0);
+    const pt2 = OpenCV.createObject(ObjectType.Point, imageInfo.cols, imageInfo.rows);
+    OpenCV.invoke('rectangle', magentaOverlay, pt1, pt2, magentaColor, -1, LineTypes.LINE_8);
+
+    // Masked copy: copy magentaOverlay into result only where hsvMask is white
+    OpenCV.invoke('copyTo', magentaOverlay, result, hsvMask);
+
+    // Convert result and mask to base64 for display
+    const previewBase64 = OpenCV.toJSValue(result, 'jpeg').base64;
+    const maskBase64 = OpenCV.toJSValue(hsvMask, 'jpeg').base64;
+
+    OpenCV.clearBuffers();
+
+    return {
+      preview: previewBase64,
+      mask: maskBase64,
+      dimensions: {
+        width: imageInfo.cols,
+        height: imageInfo.rows
+      }
+    };
+  } catch (err) {
+    console.error('💥 Error in generateColorMask:', err);
+    OpenCV.clearBuffers();
+    throw err;
+  }
+}
+
+// Modify countPetals to accept color parameters
+async function countPetals(imagePath, pad = 20, colorParams = null) {
   console.log('Starting countPetals with path:', imagePath?.substring(0, 20) + '...');
   try {
     console.log('Resizing input image...');
@@ -260,12 +377,22 @@ async function countPetals(imagePath, pad = 20) {
     console.log('Creating HSV mask...');
     const hsvInfo = getMatInfo(hsv);
     const hsvMask = OpenCV.createObject(ObjectType.Mat, hsvInfo.rows, hsvInfo.cols, DataTypes.CV_8U);
-    //slightly tighter HSV range for yellow
-    const lowerb = OpenCV.createObject(ObjectType.Scalar, 18, 60, 60);
-    const upperb = OpenCV.createObject(ObjectType.Scalar, 38, 255, 255);
+    
+    // Use custom color parameters if provided, otherwise use defaults for yellow
+    const defaultColor = {
+      hueMin: 18, hueMax: 38,
+      satMin: 60, satMax: 255,
+      valMin: 60, valMax: 255
+    };
+    
+    const color = colorParams || defaultColor;
+    
+    console.log('Using color parameters:', color);
+    const lowerb = OpenCV.createObject(ObjectType.Scalar, 
+      color.hueMin, color.satMin, color.valMin);
+    const upperb = OpenCV.createObject(ObjectType.Scalar, 
+      color.hueMax, color.satMax, color.valMax);
 
-    // const lowerb = OpenCV.createObject(ObjectType.Scalar, 15, 40, 40);
-    // const upperb = OpenCV.createObject(ObjectType.Scalar, 45, 255, 255);
     OpenCV.invoke('inRange', hsv, lowerb, upperb, hsvMask);
     console.log('HSV mask created');
 
@@ -540,6 +667,7 @@ async function countPetals(imagePath, pad = 20) {
         width: imageInfo.cols,
         height: imageInfo.rows
       },
+      colorParams: color, // Add the color used for future reference
       rgbBlur: rgbBlurBase64,
       hsvMask: hsvMaskBase64,
       bMask: bMaskBase64,
@@ -569,5 +697,6 @@ async function countPetals(imagePath, pad = 20) {
 }
 
 export {
-  countPetals
+  countPetals,
+  generateColorMask
 };
