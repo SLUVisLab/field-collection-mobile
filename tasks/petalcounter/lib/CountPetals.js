@@ -6,16 +6,27 @@ import {
   ColorConversionCodes,
   ThresholdTypes,
   MorphTypes,
+  MorphShapes,
   DistanceTypes,
-  ConnectedComponentsTypes
+  ConnectedComponentsTypes,
+  LineTypes,
 } from 'react-native-fast-opencv';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { UnionFind, persistence } from './UnionFind';
 
 console.log('CountPetals module loaded');
 
+function getMatInfo(mat) {
+  const info = OpenCV.toJSValue(mat, 'png');
+  return {
+    rows: info.rows,
+    cols: info.cols,
+    type: info.type
+  };
+}
+
 export async function resizeImage(inputUri) {
-  console.log('🔄 Starting resizeImage with uri:', inputUri?.substring(0, 20) + '...');
+  console.log('Starting resizeImage with uri:', inputUri?.substring(0, 20) + '...');
   try {
     console.log('Getting image metadata...');
     // First, get metadata (dimensions) without any actions
@@ -26,14 +37,14 @@ export async function resizeImage(inputUri) {
 
     const { width: origWidth, height: origHeight } = meta;
 
-    // Calculate size capped at 1024px
+    // Calculate size capped at 512px
     let newWidth, newHeight;
     if (origWidth > origHeight) {
-      newWidth = 1024;
-      newHeight = Math.round((origHeight * 1024) / origWidth);
+      newWidth = 512;
+      newHeight = Math.round((origHeight * 512) / origWidth);
     } else {
-      newHeight = 1024;
-      newWidth = Math.round((origWidth * 1024) / origHeight);
+      newHeight = 512;
+      newWidth = Math.round((origWidth * 512) / origHeight);
     }
     console.log('New dimensions:', newWidth, 'x', newHeight);
 
@@ -42,24 +53,23 @@ export async function resizeImage(inputUri) {
     const result = await ImageManipulator.manipulateAsync(
       inputUri,
       [{ resize: { width: newWidth, height: newHeight } }],
-      { compress: 1.0, format: ImageManipulator.SaveFormat.PNG, base64: true } // Try JPEG instead of PNG
+      { compress: 1.0, format: ImageManipulator.SaveFormat.PNG, base64: true }
     );
     console.log('Image resized, base64 length:', result?.base64?.length);
 
     // Convert base64 image to OpenCV Mat
     console.log('Converting to OpenCV Mat...');
     if (!OpenCV) {
-      console.error('⚠️ OpenCV is undefined!');
+      console.error('OpenCV is undefined!');
       throw new Error('OpenCV module is undefined');
     }
     
     if (!result.base64) {
-      console.error('⚠️ No base64 data in result!');
+      console.error('No base64 data in result!');
       throw new Error('No base64 data available');
     }
     
     try {
-      // Check if base64 string starts with data URI prefix and remove if needed
       let base64Data = result.base64;
       if (base64Data.startsWith('data:')) {
         base64Data = base64Data.split(',')[1];
@@ -68,49 +78,39 @@ export async function resizeImage(inputUri) {
       
       console.log('Base64 first 20 chars:', base64Data.substring(0, 20));
       const mat = OpenCV.base64ToMat(base64Data);
-
-      if (mat && typeof mat === 'object') {
-        for (const [key, value] of Object.entries(mat)) {
-          console.log(`🧪 Mat[${key}]:`, value);
-        }
-      }
       
-      const matInfo = OpenCV.toJSValue(mat, 'png');
-      console.log('✅ Mat info:', matInfo);
-
-      if (!matInfo || !matInfo.rows || !matInfo.cols) {
-        console.error('⚠️ Invalid Mat info:', matInfo);
-        throw new Error('OpenCV returned unusable Mat data');
-      }
-      
+      const matInfo = getMatInfo(mat);
       console.log('Conversion complete, Mat dimensions:', matInfo.rows, 'x', matInfo.cols);
       return mat;
     } catch (err) {
-      console.error('⚠️ base64ToMat failed:', err);
+      console.error('base64ToMat failed:', err);
       throw new Error(`base64ToMat failed: ${err.message}`);
     }
   } catch (err) {
-    console.error('❌ Error resizing image for OpenCV:', err);
+    console.error('Error resizing image for OpenCV:', err);
     throw err;
   }
 }
 
 export function fillHoles(binaryMask) {
-  console.log('🔄 Starting fillHoles...');
+  console.log('Starting fillHoles...');
   try {
-    // Create a destination image to draw into (same size/type as binaryMask)
+    // Get dimensions using helper function
+    const maskInfo = getMatInfo(binaryMask);
+    
+    // Create a destination image to draw into
     console.log('Creating filled matrix...');
     const filled = OpenCV.createObject(
       ObjectType.Mat,
-      binaryMask.rows,
-      binaryMask.cols,
-      binaryMask.type
+      maskInfo.rows,
+      maskInfo.cols,
+      maskInfo.type
     );
     console.log('Creating contour containers...');
 
     // Create empty contour container
-    const contours = OpenCV.createObject(ObjectType.MatVector);
-    const hierarchy = OpenCV.createObject(ObjectType.Mat);
+    const contours = OpenCV.createObject(ObjectType.MatVector, 0); // vector of size 0
+    const hierarchy = OpenCV.createObject(ObjectType.Mat, maskInfo.rows, maskInfo.cols, DataTypes.CV_32S);
 
     // Find contours
     console.log('Finding contours...');
@@ -121,7 +121,9 @@ export function fillHoles(binaryMask) {
       1,  // RETR_CCOMP
       2   // CHAIN_APPROX_SIMPLE
     );
-    console.log('Found contours, count:', contours?.size?.());
+
+    const { array } = OpenCV.toJSValue(contours);
+    console.log('Found contours, count:', array.length);
 
     // Draw contours filled (thickness = -1)
     console.log('Drawing filled contours...');
@@ -138,17 +140,21 @@ export function fillHoles(binaryMask) {
 
     return filled;
   } catch (err) {
-    console.error('❌ Error in fillHoles:', err);
+    console.error('Error in fillHoles:', err);
     throw err;
   }
 }
 
+// 
 function getLargestComponent(binaryImg, minFraction = 0.1, minSize = null) {
-  console.log('🔄 Starting getLargestComponent...');
+  console.log(' Starting getLargestComponent...');
   try {
-    const { rows, cols } = binaryImg;
+    const imgInfo = getMatInfo(binaryImg);
+    const rows = imgInfo.rows;
+    const cols = imgInfo.cols;
+
     console.log('Input size:', rows, 'x', cols);
-    
+
     console.log('Creating labels matrix...');
     const labels = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_32S);
     const stats = OpenCV.createObject(ObjectType.Mat, 0, 0, DataTypes.CV_32S);
@@ -167,15 +173,19 @@ function getLargestComponent(binaryImg, minFraction = 0.1, minSize = null) {
 
     console.log('Analyzing component sizes...');
     const sizes = [];
+    const statsInfo = OpenCV.toJSValue(stats);
+    const statsBuf = OpenCV.matToBuffer(stats, 'int32');
+    const intArray = new Int32Array(statsBuf.buffer);
+
     for (let i = 1; i < numLabels; i++) {
       try {
-        const area = OpenCV.invoke('Mat.at', stats, i, OpenCV.ConnectedComponentsTypes.CC_STAT_AREA).value;
+        const area = intArray[i * 5 + ConnectedComponentsTypes.CC_STAT_AREA];
         sizes.push({ label: i, size: area });
       } catch (err) {
-        console.error('Error getting stats at index', i, ':', err);
+        console.error('Error reading stats at index', i, ':', err);
       }
     }
-    
+
     if (minSize === null && sizes.length) {
       minSize = Math.max(...sizes.map(x => x.size)) + 1;
       console.log('Using minSize:', minSize);
@@ -196,115 +206,151 @@ function getLargestComponent(binaryImg, minFraction = 0.1, minSize = null) {
       try {
         console.log(`Processing component ${index + 1}/${valid.length} (label ${label})...`);
         const region = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
-        OpenCV.invoke('compare', labels, label, region, CmpTypes.CMP_EQ);
-        
+        const labelScalar = OpenCV.createObject(ObjectType.Scalar, label);
+        OpenCV.invoke('compare', labels, labelScalar, region, CmpTypes.CMP_EQ);
+
         console.log('Copying to result mask...');
+        // Create a matrix filled with white (255)
         const white = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
-        OpenCV.invoke('setTo', white, 255);
-        OpenCV.invoke('copyTo', white, mask, region);
-        
-        console.log('Cleaning up temporary objects...');
-        white.release();
-        region.release();
+        OpenCV.invoke('threshold', region, white, 0, 255, ThresholdTypes.THRESH_BINARY_INV);
+
+        // Use bitwise_and to copy only the valid region into the mask
+        OpenCV.invoke('bitwise_or', mask, white, mask, region);
+
       } catch (err) {
         console.error('Error processing component', label, ':', err);
       }
     });
 
-    console.log('Cleaning up remaining buffers...');
-    OpenCV.clearBuffers();
+    // console.log('Cleaning up remaining buffers...');
+    // const result = OpenCV.invoke('clone', mask); // Clone before clearing
+    // OpenCV.clearBuffers();
     console.log('getLargestComponent complete');
-    return mask;
+    return mask;;
   } catch (err) {
-    console.error('❌ Error in getLargestComponent:', err);
+    console.error('Error in getLargestComponent:', err);
     throw err;
   }
 }
 
 async function countPetals(imagePath, pad = 20) {
-  console.log('🔄 Starting countPetals with path:', imagePath?.substring(0, 20) + '...');
+  console.log('Starting countPetals with path:', imagePath?.substring(0, 20) + '...');
   try {
     console.log('Resizing input image...');
     const image = await resizeImage(imagePath);
-    console.log('Image resized:', image?.rows, 'x', image?.cols);
+    const imageInfo = getMatInfo(image);
+    console.log('Image resized:', imageInfo.rows, 'x', imageInfo.cols);
     
     // Create a copy of the original resized image to return
     console.log('Creating image copy for return...');
-    const imageToReturn = OpenCV.createObject(ObjectType.Mat);
-    OpenCV.invoke('copy', image, imageToReturn);
+    const imageToReturn = OpenCV.invoke('clone', image);
 
     console.log('Applying median blur...');
-    const rgb = OpenCV.createObject(ObjectType.Mat, image.rows, image.cols, image.type);
+    const rgb = OpenCV.createObject(ObjectType.Mat, imageInfo.rows, imageInfo.cols, imageInfo.type);
     OpenCV.invoke('medianBlur', image, rgb, 5);
 
+    // debugging visual layer
+    const rgbBlurBase64 = OpenCV.toJSValue(rgb, 'jpeg').base64;
+
     console.log('Converting to HSV...');
-    const hsv = OpenCV.createObject(ObjectType.Mat, rgb.rows, rgb.cols, rgb.type);
+    const rgbInfo = getMatInfo(rgb);
+    const hsv = OpenCV.createObject(ObjectType.Mat, rgbInfo.rows, rgbInfo.cols, rgbInfo.type);
     OpenCV.invoke('cvtColor', rgb, hsv, ColorConversionCodes.COLOR_BGR2HSV);
 
     console.log('Creating HSV mask...');
-    const hsvMask = OpenCV.createObject(ObjectType.Mat, hsv.rows, hsv.cols, DataTypes.CV_8U);
-    OpenCV.invoke('inRange', hsv, [15, 40, 40], [45, 255, 255], hsvMask);
+    const hsvInfo = getMatInfo(hsv);
+    const hsvMask = OpenCV.createObject(ObjectType.Mat, hsvInfo.rows, hsvInfo.cols, DataTypes.CV_8U);
+    //slightly tighter HSV range for yellow
+    const lowerb = OpenCV.createObject(ObjectType.Scalar, 18, 60, 60);
+    const upperb = OpenCV.createObject(ObjectType.Scalar, 38, 255, 255);
+
+    // const lowerb = OpenCV.createObject(ObjectType.Scalar, 15, 40, 40);
+    // const upperb = OpenCV.createObject(ObjectType.Scalar, 45, 255, 255);
+    OpenCV.invoke('inRange', hsv, lowerb, upperb, hsvMask);
     console.log('HSV mask created');
 
+    hsvMaskBase64 = OpenCV.toJSValue(hsvMask, 'jpeg').base64;
+
     console.log('Converting to LAB...');
-    const lab = OpenCV.createObject(ObjectType.Mat, rgb.rows, rgb.cols, rgb.type);
+    const lab = OpenCV.createObject(ObjectType.Mat, rgbInfo.rows, rgbInfo.cols, rgbInfo.type);
     OpenCV.invoke('cvtColor', rgb, lab, ColorConversionCodes.COLOR_BGR2Lab);
 
-    // NOTE: No verified way to split channels directly in JS – check return value
     console.log('Splitting LAB channels...');
-    const channels = [];
-    OpenCV.invoke('split', lab, channels);  // expect channels[2] to be 'b'
-    console.log('Channels split, array length:', channels?.length);
-    
-    if (!channels || channels.length < 3) {
-      throw new Error(`Invalid channels array: ${JSON.stringify(channels)}`);
+    const channelVec = OpenCV.createObject(ObjectType.MatVector);
+    OpenCV.invoke('split', lab, channelVec);
+
+    // Step 1: Debug metadata
+    const vecInfo = OpenCV.toJSValue(channelVec);
+    if (!vecInfo.array || vecInfo.array.length < 3) {
+      throw new Error(`Invalid channels length: ${vecInfo.array.length}`);
     }
-    
-    const b = channels[2];
-    if (!b) {
-      throw new Error('Missing b channel');
-    }
-    console.log('B channel extracted');
+    console.log('Split into channels with dimensions:', vecInfo.array.map(c => `${c.rows}x${c.cols}`));
+
+    // Step 2: Get the 'b' channel for processing
+    const b = OpenCV.copyObjectFromVector(channelVec, 2);
+    if (!b) throw new Error('Failed to extract B channel Mat');
+    console.log('Extracted B-channel Mat, proxy id:', b.id);
 
     console.log('Applying Gaussian blur to b channel...');
-    const bBlur = OpenCV.createObject(ObjectType.Mat, b.rows, b.cols, b.type);
-    OpenCV.invoke('GaussianBlur', b, bBlur, [5, 5], 0);
+    const bInfo = getMatInfo(b);
+    const bBlur = OpenCV.createObject(ObjectType.Mat, bInfo.rows, bInfo.cols, bInfo.type);
+    const kernelSize = OpenCV.createObject(ObjectType.Size, 5, 5);
+    OpenCV.invoke('GaussianBlur', b, bBlur, kernelSize, 0);
+    console.log('Gaussian blur applied');
 
-    console.log('Finding Otsu threshold...');
-    const bTemp = OpenCV.createObject(ObjectType.Mat, bBlur.rows, bBlur.cols, DataTypes.CV_8U);
-    const { value: threshold } = OpenCV.invoke('threshold', bBlur, bTemp, 0, 255, ThresholdTypes.THRESH_BINARY + ThresholdTypes.THRESH_OTSU);
-    console.log('Otsu threshold:', threshold);
+    console.log('Applying Otsu threshold...');
+    const bMask = OpenCV.createObject(ObjectType.Mat, bInfo.rows, bInfo.cols, DataTypes.CV_8U);
+    OpenCV.invoke('threshold', bBlur, bMask, 0, 255, ThresholdTypes.THRESH_BINARY + ThresholdTypes.THRESH_OTSU);
+    console.log('Otsu threshold applied and mask generated');
 
-    console.log('Applying threshold to b channel...');
-    const bMask = OpenCV.createObject(ObjectType.Mat, bBlur.rows, bBlur.cols, DataTypes.CV_8U);
-    OpenCV.invoke('threshold', bBlur, bMask, threshold, 255, ThresholdTypes.THRESH_BINARY);
+    bMaskBase64 = OpenCV.toJSValue(bMask, 'jpeg').base64;
 
     console.log('Creating yellow mask by combining HSV and b masks...');
-    const yellowMask = OpenCV.createObject(ObjectType.Mat, hsvMask.rows, hsvMask.cols, DataTypes.CV_8U);
+    const hsvMaskInfo = getMatInfo(hsvMask);
+    const yellowMask = OpenCV.createObject(ObjectType.Mat, hsvMaskInfo.rows, hsvMaskInfo.cols, DataTypes.CV_8U);
     OpenCV.invoke('bitwise_and', hsvMask, bMask, yellowMask);
+    console.log('Yellow mask created');
+
+    // For debugging
+    const yellowMaskBase64 = OpenCV.toJSValue(yellowMask, 'jpeg').base64;
 
     console.log('Creating morphological kernel...');
-    const kernel = OpenCV.invoke('getStructuringElement', MorphTypes.MORPH_ELLIPSE, [5, 5]);
+    const size = OpenCV.createObject(ObjectType.Size, 5, 5);
+    const kernel = OpenCV.invoke('getStructuringElement', MorphShapes.MORPH_ELLIPSE, size);
 
     console.log('Applying opening operation...');
-    const opened = OpenCV.createObject(ObjectType.Mat, yellowMask.rows, yellowMask.cols, yellowMask.type);
+    const yellowMaskInfo = getMatInfo(yellowMask);
+    const opened = OpenCV.createObject(ObjectType.Mat, yellowMaskInfo.rows, yellowMaskInfo.cols, yellowMaskInfo.type);
     OpenCV.invoke('morphologyEx', yellowMask, opened, MorphTypes.MORPH_OPEN, kernel);
 
+    openedMaskBase64 = OpenCV.toJSValue(opened, 'jpeg').base64;
+
     console.log('Applying closing operation...');
-    const closed = OpenCV.createObject(ObjectType.Mat, opened.rows, opened.cols, opened.type);
+    const openedInfo = getMatInfo(opened);
+    const closed = OpenCV.createObject(ObjectType.Mat, openedInfo.rows, openedInfo.cols, openedInfo.type);
     OpenCV.invoke('morphologyEx', opened, closed, MorphTypes.MORPH_CLOSE, kernel);
+
+      // for debugging
+    const closedMaskBase64 = OpenCV.toJSValue(closed, 'jpeg').base64;
 
     console.log('Finding largest component...');
     const largest = getLargestComponent(closed);
     console.log('Largest component found');
 
+    const largestMaskBase64 = OpenCV.toJSValue(largest, 'jpeg').base64;
+
     console.log('Filling holes in mask...');
     const filled = fillHoles(largest);
     console.log('Holes filled');
 
+    const filledMaskBase64 = OpenCV.toJSValue(filled, 'jpeg').base64;
+
     console.log('Finding non-zero coordinates...');
-    const { value: nonZero } = OpenCV.invoke('findNonZero', filled);
-    console.log('Non-zero coordinates found, count:', nonZero?.length);
+    const nonZeroPoints = OpenCV.createObject(ObjectType.PointVector);
+    OpenCV.invoke('findNonZero', filled, nonZeroPoints);
+
+    const { array: nonZero } = OpenCV.toJSValue(nonZeroPoints);
+    console.log('Non-zero coordinates found, count:', nonZero.length);
     
     if (!nonZero || nonZero.length === 0) {
       throw new Error('No non-zero points found in the mask');
@@ -318,16 +364,25 @@ async function countPetals(imagePath, pad = 20) {
     console.log('Y range:', Math.min(...yVals), '-', Math.max(...yVals));
 
     console.log('Calculating bounding box with padding:', pad);
+    const filledInfo = getMatInfo(filled);
     const xMin = Math.max(0, Math.min(...xVals) - pad);
-    const xMax = Math.min(filled.cols, Math.max(...xVals) + pad);
+    const xMax = Math.min(filledInfo.cols, Math.max(...xVals) + pad);
     const yMin = Math.max(0, Math.min(...yVals) - pad);
-    const yMax = Math.min(filled.rows, Math.max(...yVals) + pad);
+    const yMax = Math.min(filledInfo.rows, Math.max(...yVals) + pad);
     console.log('Bounding box:', xMin, yMin, xMax, yMax);
 
     console.log('Cropping filled mask...');
-    const cropped = OpenCV.createObject(ObjectType.Mat);
-    OpenCV.invoke('crop', filled, cropped, [xMin, yMin, xMax - xMin, yMax - yMin]);
-    console.log('Cropped to', cropped?.rows, 'x', cropped?.cols);
+    const cropped = OpenCV.createObject(
+      ObjectType.Mat, 
+      yMax - yMin,  // height
+      xMax - xMin,  // width
+      getMatInfo(filled).type  // same type as source
+    );
+    const roi = OpenCV.createObject(ObjectType.Rect, xMin, yMin, xMax - xMin, yMax - yMin);
+    OpenCV.invoke('crop', filled, cropped, roi);
+    console.log('Cropped mask created');
+    const croppedInfo = getMatInfo(cropped);
+    console.log('Cropped to', croppedInfo.rows, 'x', croppedInfo.cols);
 
     // Estimate center from non-zero points
     console.log('Calculating center of mass...');
@@ -336,32 +391,54 @@ async function countPetals(imagePath, pad = 20) {
     console.log('Center at:', centerX, centerY);
 
     console.log('Creating EDT input mask...');
-    const edtInput = OpenCV.createObject(ObjectType.Mat, cropped.rows, cropped.cols, DataTypes.CV_8U);
-    OpenCV.invoke('setTo', edtInput, 255); // Fill with ones
+    // Step 1: create empty matrix
+    const edtInput = OpenCV.createObject(ObjectType.Mat, croppedInfo.rows, croppedInfo.cols, DataTypes.CV_8U);
 
-    // Adjust center for crop
+    // Step 2: fill with white using a threshold trick
+    OpenCV.invoke('threshold', edtInput, edtInput, 0, 255, ThresholdTypes.THRESH_BINARY_INV);
+
     console.log('Adjusting center for crop...');
     const adjustedCenterX = centerX - xMin;
     const adjustedCenterY = centerY - yMin;
     console.log('Adjusted center:', adjustedCenterX, adjustedCenterY);
 
+    // Step 3: count non-zero before drawing center
+    const preDrawStats = OpenCV.invoke('countNonZero', edtInput);
+    console.log('Non-zero before drawing center:', preDrawStats.value);
+
+    // Step 4: draw a black dot at the center
     console.log('Drawing center point...');
+    const centerPoint = OpenCV.createObject(ObjectType.Point, adjustedCenterX, adjustedCenterY);
+    const black = OpenCV.createObject(ObjectType.Scalar, 0);
     OpenCV.invoke(
       'circle',
       edtInput,
-      [adjustedCenterX, adjustedCenterY],
+      centerPoint,
       1,
-      OpenCV.createObject(ObjectType.Scalar, 0),
-      -1
+      black,
+      -1,
+      LineTypes.LINE_8
     );
 
+    const edtInputMaskBase64 = OpenCV.toJSValue(edtInput, 'jpeg').base64;
+
+    // Step 5: confirm change
+    const postDrawStats = OpenCV.invoke('countNonZero', edtInput);
+    console.log('Non-zero after drawing center:', postDrawStats.value);
+    console.log('Non-zero difference:', preDrawStats.value - postDrawStats.value);
+
     console.log('Computing distance transform...');
-    const edt = OpenCV.createObject(ObjectType.Mat, cropped.rows, cropped.cols, DataTypes.CV_32F);
+    const edt = OpenCV.createObject(ObjectType.Mat, croppedInfo.rows, croppedInfo.cols, DataTypes.CV_32F);
     OpenCV.invoke('distanceTransform', edtInput, edt, DistanceTypes.DIST_L2, 5);
     console.log('Distance transform computed');
 
+    const edtInfo = getMatInfo(edt);
+    const edtNormalized = OpenCV.createObject(ObjectType.Mat, edtInfo.rows, edtInfo.cols, DataTypes.CV_8U);
+    OpenCV.invoke('normalize', edt, edtNormalized, 0, 255, 1); // NORM_MINMAX = 1
+    const edtMaskBase64 = OpenCV.toJSValue(edtNormalized, 'jpeg').base64;
+
     console.log('Finding maximum radius...');
-    const { value: maxRadius } = OpenCV.invoke('minMaxLoc', edt);
+    const { maxVal: maxRadius } = OpenCV.invoke('minMaxLoc', edt);
     console.log('Max radius:', maxRadius);
 
     console.log('Converting EDT to buffer...');
@@ -385,8 +462,8 @@ async function countPetals(imagePath, pad = 20) {
     }
     console.log('2D array created', edtArray?.length, 'x', edtArray[0]?.length);
 
-    console.log('Cleaning buffers...');
-    OpenCV.clearBuffers();
+    // console.log('Cleaning buffers...');
+    // OpenCV.clearBuffers();
 
     // Compute persistence features
     console.log('Computing persistence features...');
@@ -412,10 +489,21 @@ async function countPetals(imagePath, pad = 20) {
     console.log('Features above threshold:', k);
 
     console.log('Extracting births and deaths...');
-    // Slice out births and deaths
-    const births = pers.slice(0, k).map(p => p[2]); // (x, y) of each elder
-    const deaths = pers.slice(1, k).map(p => p[1]); // (x, y) of each saddle
+    // Transform coordinates back to original image space
+    const births = pers.slice(0, k).map(p => {
+      // p[2] contains [y, x] of each elder point
+      return [p[2][0] + yMin, p[2][1] + xMin]; // Add offset to return to original image coordinates
+    });
+
+    const deaths = pers.slice(1, k).map(p => {
+      // p[1] contains [y, x] of each saddle
+      return [p[1][0] + yMin, p[1][1] + xMin]; // Add offset to return to original image coordinates
+    });
+
     console.log('Births:', births?.length, 'Deaths:', deaths?.length);
+
+    console.log("Births (sample):", births.slice(0, 5));
+    console.log("Deaths (sample):", deaths.slice(0, 5));
 
     // Also return crop info for aligning results
     const maskBounds = {
@@ -425,33 +513,47 @@ async function countPetals(imagePath, pad = 20) {
       yMax,
     };
 
-    // Convert the Mat to a base64 string for easy display
     console.log('Converting result image to base64...');
-    const base64Image = OpenCV.matToBase64(imageToReturn);
-    console.log('Base64 image created, length:', base64Image?.length);
-    
-    // Release the copied image
-    console.log('Releasing resources...');
-    imageToReturn.release();
+  
+    const imageResult = OpenCV.toJSValue(imageToReturn, 'jpeg').base64;
 
-    console.log('✅ countPetals complete, returning results with count:', k);
+
+    console.log('Cleaning buffers...');
+    OpenCV.clearBuffers();
+
+    const center = [adjustedCenterX + xMin, adjustedCenterY + yMin];
+
+    
+    
+    console.log('countPetals complete, returning results with count:', k);
     return {
       count: k,
       maxRadius,
       thresholdDist,
       births,
       deaths,
+      center,
       edtArray,
       maskBounds,
-      image: base64Image,
+      image: imageResult,
       dimensions: {
-        width: image.cols,
-        height: image.rows
-      }
+        width: imageInfo.cols,
+        height: imageInfo.rows
+      },
+      rgbBlur: rgbBlurBase64,
+      hsvMask: hsvMaskBase64,
+      bMask: bMaskBase64,
+      yellowMask: yellowMaskBase64,
+      openedMask: openedMaskBase64,
+      closedMask: closedMaskBase64,
+      largestMask: largestMaskBase64,
+      filledMask: filledMaskBase64,
+      edtInputMask: edtInputMaskBase64,
+      edtMask: edtMaskBase64,
     };
 
   } catch (err) {
-    console.error('❌ Error in countPetals:', err);
+    console.error('Error in countPetals:', err);
     console.error('Error details:', err.message);
     console.error('Error stack:', err.stack);
     

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, Modal, TouchableOpacity, Button, SafeAreaView, Image, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, Modal, TouchableOpacity, Button, SafeAreaView, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
 import { countPetals } from './lib/CountPetals';
+import { Picker } from '@react-native-picker/picker';
 
 const PetalCountAction = ({ existingData, onComplete, task, item, collection }) => {
   const [facing, setFacing] = useState('back');
@@ -17,6 +18,9 @@ const PetalCountAction = ({ existingData, onComplete, task, item, collection }) 
   const [isProcessing, setIsProcessing] = useState(false);
   const [petalData, setPetalData] = useState(null);
   const [error, setError] = useState(null);
+
+  // Add new state for the selected mask
+  const [selectedMask, setSelectedMask] = useState('result');
 
   const cameraRef = useRef(null);
 
@@ -137,55 +141,205 @@ const PetalCountAction = ({ existingData, onComplete, task, item, collection }) 
       );
     }
 
+    // Define mask options with descriptive labels
+    const maskOptions = [
+      { key: 'result', label: 'Final Result', description: 'The processed image with detected petals' },
+      { key: 'rgbBlur', label: 'RGB Blur', description: 'Initial median blur applied to reduce noise' },
+      { key: 'hsvMask', label: 'HSV Mask', description: 'Yellow color detection using HSV color space' },
+      { key: 'bMask', label: 'B Channel Mask', description: 'Mask from the b channel of LAB color space' },
+      { key: 'yellowMask', label: 'Yellow Mask', description: 'Combined HSV and b channel masks' },
+      { key: 'openedMask', label: 'Opened Mask', description: 'After morphological opening operation' },
+      { key: 'closedMask', label: 'Closed Mask', description: 'After morphological closing operation' },
+      { key: 'largestMask', label: 'Largest Component', description: 'Largest connected component in the mask' },
+      { key: 'filledMask', label: 'Filled Mask', description: 'Mask with holes filled' },
+      { key: 'edtInputMask', label: 'EDT Input', description: 'Input for distance transform with center point' },
+      { key: 'edtMask', label: 'EDT Output', description: 'Distance transform output' },
+    ];
+    
+    // Get the current image source based on selected mask
+    const getCurrentImageSource = () => {
+      if (!petalData) return `data:image/jpg;base64,${photo}`;
+      
+      if (selectedMask === 'result') {
+        return `data:image/png;base64,${petalData.image}`;
+      } else if (petalData[selectedMask]) {
+        return `data:image/jpeg;base64,${petalData[selectedMask]}`;
+      }
+      
+      return `data:image/png;base64,${petalData.image}`;
+    };
+
+    // Determine if we should show overlays based on the selected mask
+    const shouldShowOverlays = () => {
+      return selectedMask === 'result';
+    };
+
     return (
       <SafeAreaView style={styles.container}>
-        {/* If we have petal data, show the analyzed image with markers */}
         {petalData ? (
-          <View style={styles.analysisContainer}>
-            <Image 
-              style={styles.imagePreview} 
-              source={{uri: `data:image/png;base64,${petalData.image}`}} 
-            />
-            
-            {/* Overlay birth points */}
-            {petalData.births && petalData.births.map((point, index) => (
-              <View 
-                key={`birth-${index}`} 
-                style={[
-                  styles.marker, 
-                  { 
-                    left: point[1], // x coordinate
-                    top: point[0],  // y coordinate
-                    backgroundColor: 'rgba(0, 255, 0, 0.7)'
-                  }
-                ]} 
+          <>
+            <View
+              style={{
+                width: '100%',
+                aspectRatio: petalData.dimensions.width / petalData.dimensions.height,
+                position: 'relative',
+              }}
+            >
+              <Image 
+                source={{ uri: getCurrentImageSource() }}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  resizeMode: 'contain',
+                }}
               />
-            ))}
-            
-            {/* Overlay death points if available */}
-            {petalData.deaths && petalData.deaths.map((point, index) => (
-              <View 
-                key={`death-${index}`} 
-                style={[
-                  styles.marker, 
-                  { 
-                    left: point[1], // x coordinate
-                    top: point[0],  // y coordinate
-                    backgroundColor: 'rgba(255, 0, 0, 0.7)'
-                  }
-                ]} 
-              />
-            ))}
-            
-            {/* Petal count display */}
-            <View style={styles.countContainer}>
-              <Text style={styles.countLabel}>Petal Count</Text>
-              <Text style={styles.countValue}>{petalData.count}</Text>
+
+              {/* Only show overlays when viewing the result image */}
+              {shouldShowOverlays() && (
+                <>
+                  {/* Overlay bounding box */}
+                  {petalData.maskBounds && (
+                    <View
+                      style={{
+                        position: 'absolute',
+                        left: petalData.maskBounds.xMin,
+                        top: petalData.maskBounds.yMin,
+                        width: petalData.maskBounds.xMax - petalData.maskBounds.xMin,
+                        height: petalData.maskBounds.yMax - petalData.maskBounds.yMin,
+                        borderWidth: 2,
+                        borderColor: 'rgba(255, 255, 0, 0.6)',
+                        borderStyle: 'dashed',
+                      }}
+                    />
+                  )}
+
+                  {/* Overlay center point */}
+                  {petalData.center && (
+                    <View
+                      style={{
+                        position: 'absolute',
+                        left: petalData.center[0] - 6,
+                        top: petalData.center[1] - 6,
+                        width: 12,
+                        height: 12,
+                        borderRadius: 6,
+                        backgroundColor: 'rgba(0, 128, 255, 0.7)',
+                        borderWidth: 1,
+                        borderColor: 'white',
+                        zIndex: 10,
+                      }}
+                    />
+                  )}
+
+                  {/* Overlay threshold circle */}
+                  {petalData.thresholdDist && petalData.center && (
+                    <View
+                      style={{
+                        position: 'absolute',
+                        width: petalData.thresholdDist * 2,
+                        height: petalData.thresholdDist * 2,
+                        borderRadius: petalData.thresholdDist,
+                        left: petalData.center[0] - petalData.thresholdDist,
+                        top: petalData.center[1] - petalData.thresholdDist,
+                        borderWidth: 1,
+                        borderColor: 'rgba(0, 128, 255, 0.7)',
+                        borderStyle: 'dashed',
+                      }}
+                    />
+                  )}
+
+                  {/* Overlay birth points */}
+                  {petalData.births?.map((point, index) => (
+                    <View
+                      key={`birth-${index}`}
+                      style={{
+                        position: 'absolute',
+                        left: point[1],
+                        top: point[0],
+                        width: 12,
+                        height: 12,
+                        borderRadius: 6,
+                        backgroundColor: 'rgba(0, 255, 0, 0.7)',
+                        borderWidth: 1,
+                        borderColor: 'white',
+                      }}
+                    />
+                  ))}
+
+                  {/* Overlay death points */}
+                  {petalData.deaths?.map((point, index) => (
+                    <View
+                      key={`death-${index}`}
+                      style={{
+                        position: 'absolute',
+                        left: point[1],
+                        top: point[0],
+                        width: 12,
+                        height: 12,
+                        borderRadius: 6,
+                        backgroundColor: 'rgba(255, 0, 0, 0.7)',
+                        borderWidth: 1,
+                        borderColor: 'white',
+                      }}
+                    />
+                  ))}
+                </>
+              )}
+
+              {/* Petal count display */}
+              <View style={styles.countContainer}>
+                <Text style={styles.countLabel}>Petal Count</Text>
+                <Text style={styles.countValue}>{petalData.count}</Text>
+              </View>
             </View>
-          </View>
+
+            {/* Processing stage selector */}
+            <View style={styles.processingStageSelector}>
+              <Text style={styles.processingStageSelectorLabel}>
+                {maskOptions.find(o => o.key === selectedMask)?.label}
+              </Text>
+              
+              {/* Description of the current processing stage */}
+              <Text style={styles.processingStageSelectorDescription}>
+                {maskOptions.find(o => o.key === selectedMask)?.description}
+              </Text>
+              
+              {/* Navigation buttons for stages */}
+              <View style={styles.stageNavigationButtons}>
+                <TouchableOpacity
+                  style={[styles.stageNavigationButton, selectedMask === maskOptions[0].key && styles.stageNavigationButtonDisabled]}
+                  disabled={selectedMask === maskOptions[0].key}
+                  onPress={() => {
+                    const currentIndex = maskOptions.findIndex(o => o.key === selectedMask);
+                    if (currentIndex > 0) {
+                      setSelectedMask(maskOptions[currentIndex - 1].key);
+                    }
+                  }}
+                >
+                  <Text style={styles.stageNavigationButtonText}>Previous</Text>
+                </TouchableOpacity>
+                
+                <Text style={styles.stageCounter}>
+                  {maskOptions.findIndex(o => o.key === selectedMask) + 1} / {maskOptions.length}
+                </Text>
+                
+                <TouchableOpacity
+                  style={[styles.stageNavigationButton, selectedMask === maskOptions[maskOptions.length - 1].key && styles.stageNavigationButtonDisabled]}
+                  disabled={selectedMask === maskOptions[maskOptions.length - 1].key}
+                  onPress={() => {
+                    const currentIndex = maskOptions.findIndex(o => o.key === selectedMask);
+                    if (currentIndex < maskOptions.length - 1) {
+                      setSelectedMask(maskOptions[currentIndex + 1].key);
+                    }
+                  }}
+                >
+                  <Text style={styles.stageNavigationButtonText}>Next</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
         ) : (
-          // Otherwise just show the original image
-          <Image style={styles.imagePreview} source={{uri: `data:image/jpg;base64,${photo}`}} />
+          <Image style={styles.imagePreview} source={{ uri: `data:image/jpg;base64,${photo}` }} />
         )}
 
         <View style={styles.photoActionButtons}>
@@ -198,6 +352,7 @@ const PetalCountAction = ({ existingData, onComplete, task, item, collection }) 
         </View>
       </SafeAreaView>
     );
+
   }
 
   return (
@@ -411,6 +566,69 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 28,
+  },
+  centerDot: {
+    position: 'absolute',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: 'rgba(0, 128, 255, 0.8)',
+    borderWidth: 1,
+    borderColor: 'white',
+    zIndex: 10,
+  },
+  thresholdCircle: {
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 128, 255, 0.6)',
+    borderStyle: 'dashed',
+  },
+  boundingBox: {
+    position: 'absolute',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 0, 0.6)',
+    borderStyle: 'dashed',
+  },
+  processingStageSelector: {
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+    borderRadius: 8,
+    margin: 10,
+  },
+  processingStageSelectorLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  processingStageSelectorDescription: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 10,
+    fontStyle: 'italic',
+  },
+  stageNavigationButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  stageNavigationButton: {
+    backgroundColor: '#ddd',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 4,
+  },
+  stageNavigationButtonDisabled: {
+    opacity: 0.5,
+  },
+  stageNavigationButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  stageCounter: {
+    fontSize: 14,
+    color: '#666',
   }
 });
 
