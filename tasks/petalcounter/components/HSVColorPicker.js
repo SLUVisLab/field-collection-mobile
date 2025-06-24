@@ -7,11 +7,11 @@ import { generateColorMask } from '../lib/CountPetals';
 const HSVColorPicker = ({ photoURI, onColorSelected, onClose }) => {
   const [colorParams, setColorParams] = useState({
     hueMin: 18,
-    hueMax: 38,
+    hueMax: 32,
     satMin: 60,
-    satMax: 255,
+    satMax: 250,
     valMin: 60,
-    valMax: 255,
+    valMax: 250,
   });
   
   const [previewImage, setPreviewImage] = useState(null);
