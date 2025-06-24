@@ -94,7 +94,7 @@ export async function resizeImage(inputUri) {
 }
 
 export function fillHoles(binaryMask) {
-  console.log('🧩 Starting fillHoles with border-aware flood fill...');
+  console.log('Starting fillHoles with border-aware flood fill...');
   try {
     const { rows, cols } = getMatInfo(binaryMask);
 
@@ -134,10 +134,10 @@ export function fillHoles(binaryMask) {
     const filled = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
     OpenCV.invoke('bitwise_or', binaryMask, floodInverted, filled);
 
-    console.log('✅ fillHoles completed safely with border-aware flood fill.');
+    console.log('fillHoles completed safely with border-aware flood fill.');
     return filled;
   } catch (err) {
-    console.error('❌ Error in fillHoles:', err);
+    console.error('Error in fillHoles:', err);
     throw err;
   }
 }
