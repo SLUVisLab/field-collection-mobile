@@ -10,6 +10,7 @@ import {
   DistanceTypes,
   ConnectedComponentsTypes,
   LineTypes,
+  ColormapTypes,
 } from 'react-native-fast-opencv';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { UnionFind, persistence } from './UnionFind';
@@ -93,54 +94,50 @@ export async function resizeImage(inputUri) {
 }
 
 export function fillHoles(binaryMask) {
-  console.log('Starting fillHoles...');
+  console.log('🧩 Starting fillHoles with border-aware flood fill...');
   try {
-    // Get dimensions using helper function
-    const maskInfo = getMatInfo(binaryMask);
-    
-    // Create a destination image to draw into
-    console.log('Creating filled matrix...');
-    const filled = OpenCV.createObject(
-      ObjectType.Mat,
-      maskInfo.rows,
-      maskInfo.cols,
-      maskInfo.type
-    );
-    console.log('Creating contour containers...');
+    const { rows, cols } = getMatInfo(binaryMask);
 
-    // Create empty contour container
-    const contours = OpenCV.createObject(ObjectType.MatVector, 0); // vector of size 0
-    const hierarchy = OpenCV.createObject(ObjectType.Mat, maskInfo.rows, maskInfo.cols, DataTypes.CV_32S);
+    // Step 1: Clone the input binary mask
+    const floodFilled = OpenCV.invoke('clone', binaryMask);
 
-    // Find contours
-    console.log('Finding contours...');
-    OpenCV.invoke(
-      'findContours',
-      binaryMask,
-      contours,
-      1,  // RETR_CCOMP
-      2   // CHAIN_APPROX_SIMPLE
-    );
+    // Step 2: Create a flood mask (must be 2 pixels larger than input)
+    const floodMask = OpenCV.createObject(ObjectType.Mat, rows + 2, cols + 2, DataTypes.CV_8U);
+    const zero = OpenCV.createObject(ObjectType.Scalar, 0);
+    OpenCV.invoke('threshold', floodMask, floodMask, 1, 0, ThresholdTypes.THRESH_BINARY); // fill with 0s
 
-    const { array } = OpenCV.toJSValue(contours);
-    console.log('Found contours, count:', array.length);
+    const fillColor = OpenCV.createObject(ObjectType.Scalar, 255);
+    const dummyRect = OpenCV.createObject(ObjectType.Rect, 0, 0, 1, 1);
+    const loDiff = OpenCV.createObject(ObjectType.Scalar, 0);
+    const upDiff = OpenCV.createObject(ObjectType.Scalar, 0);
+    const flags = 4;
 
-    // Draw contours filled (thickness = -1)
-    console.log('Drawing filled contours...');
-    OpenCV.invoke(
-      'drawContours',
-      filled,
-      contours,
-      -1,
-      OpenCV.createObject(ObjectType.Scalar, 255),
-      -1,
-      8
-    );
-    console.log('Contours drawn');
+    // Step 3: Flood fill from all edge pixels
+    for (let x = 0; x < cols; x++) {
+      for (let y of [0, rows - 1]) {
+        const pt = OpenCV.createObject(ObjectType.Point, x, y);
+        OpenCV.invoke('floodFill', floodFilled, floodMask, pt, fillColor, dummyRect, loDiff, upDiff, flags);
+      }
+    }
+    for (let y = 0; y < rows; y++) {
+      for (let x of [0, cols - 1]) {
+        const pt = OpenCV.createObject(ObjectType.Point, x, y);
+        OpenCV.invoke('floodFill', floodFilled, floodMask, pt, fillColor, dummyRect, loDiff, upDiff, flags);
+      }
+    }
 
+    // Step 4: Invert flood filled result
+    const floodInverted = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
+    OpenCV.invoke('bitwise_not', floodFilled, floodInverted);
+
+    // Step 5: Combine with original mask
+    const filled = OpenCV.createObject(ObjectType.Mat, rows, cols, DataTypes.CV_8U);
+    OpenCV.invoke('bitwise_or', binaryMask, floodInverted, filled);
+
+    console.log('✅ fillHoles completed safely with border-aware flood fill.');
     return filled;
   } catch (err) {
-    console.error('Error in fillHoles:', err);
+    console.error('❌ Error in fillHoles:', err);
     throw err;
   }
 }
@@ -431,22 +428,17 @@ async function countPetals(imagePath, pad = 20, colorParams = null) {
     console.log('Center at:', centerX, centerY);
 
     console.log('Creating EDT input mask...');
-    // Step 1: create empty matrix
-    const edtInput = OpenCV.createObject(ObjectType.Mat, croppedInfo.rows, croppedInfo.cols, DataTypes.CV_8U);
 
-    // Step 2: fill with white using a threshold trick
-    OpenCV.invoke('threshold', edtInput, edtInput, 0, 255, ThresholdTypes.THRESH_BINARY_INV);
+    const white = OpenCV.createObject(ObjectType.Mat, croppedInfo.rows, croppedInfo.cols, DataTypes.CV_8U);
+    OpenCV.invoke('threshold', white, white, 0, 255, ThresholdTypes.THRESH_BINARY_INV);
+
+    const edtInput = OpenCV.invoke('clone', white);
 
     console.log('Adjusting center for crop...');
     const adjustedCenterX = centerX - xMin;
     const adjustedCenterY = centerY - yMin;
     console.log('Adjusted center:', adjustedCenterX, adjustedCenterY);
 
-    // Step 3: count non-zero before drawing center
-    const preDrawStats = OpenCV.invoke('countNonZero', edtInput);
-    console.log('Non-zero before drawing center:', preDrawStats.value);
-
-    // Step 4: draw a black dot at the center
     console.log('Drawing center point...');
     const centerPoint = OpenCV.createObject(ObjectType.Point, adjustedCenterX, adjustedCenterY);
     const black = OpenCV.createObject(ObjectType.Scalar, 0);
@@ -454,28 +446,18 @@ async function countPetals(imagePath, pad = 20, colorParams = null) {
       'circle',
       edtInput,
       centerPoint,
-      1,
-      black,
-      -1,
+      1,     // radius
+      black, // fill color
+      -1,    // fill circle
       LineTypes.LINE_8
     );
 
     const edtInputMaskBase64 = OpenCV.toJSValue(edtInput, 'jpeg').base64;
 
-    // Step 5: confirm change
-    const postDrawStats = OpenCV.invoke('countNonZero', edtInput);
-    console.log('Non-zero after drawing center:', postDrawStats.value);
-    console.log('Non-zero difference:', preDrawStats.value - postDrawStats.value);
-
     console.log('Computing distance transform...');
     const edt = OpenCV.createObject(ObjectType.Mat, croppedInfo.rows, croppedInfo.cols, DataTypes.CV_32F);
     OpenCV.invoke('distanceTransform', edtInput, edt, DistanceTypes.DIST_L2, 5);
     console.log('Distance transform computed');
-
-    const edtInfo = getMatInfo(edt);
-    const edtNormalized = OpenCV.createObject(ObjectType.Mat, edtInfo.rows, edtInfo.cols, DataTypes.CV_8U);
-    OpenCV.invoke('normalize', edt, edtNormalized, 0, 255, 1); // NORM_MINMAX = 1
-    const edtMaskBase64 = OpenCV.toJSValue(edtNormalized, 'jpeg').base64;
 
     console.log('Finding maximum radius...');
     const { maxVal: maxRadius } = OpenCV.invoke('minMaxLoc', edt);
@@ -489,6 +471,7 @@ async function countPetals(imagePath, pad = 20, colorParams = null) {
     console.log('Creating Float32Array from buffer...');
     const floatArr = new Float32Array(buffer);
     console.log('Float array created, length:', floatArr?.length);
+    console.log("Sample EDT values:", floatArr.slice(0, 20));
 
     console.log('Converting float array to 2D array...');
     const edtArray = [];
@@ -501,9 +484,6 @@ async function countPetals(imagePath, pad = 20, colorParams = null) {
       edtArray.push(row);
     }
     console.log('2D array created', edtArray?.length, 'x', edtArray[0]?.length);
-
-    // console.log('Cleaning buffers...');
-    // OpenCV.clearBuffers();
 
     // Compute persistence features
     console.log('Computing persistence features...');
@@ -590,7 +570,7 @@ async function countPetals(imagePath, pad = 20, colorParams = null) {
       largestMask: largestMaskBase64,
       filledMask: filledMaskBase64,
       edtInputMask: edtInputMaskBase64,
-      edtMask: edtMaskBase64,
+      // edtMask: edtMaskBase64,
     };
 
   } catch (err) {

@@ -208,7 +208,7 @@ const PetalCountAction = ({ existingData, onComplete, task, item, collection }) 
       { key: 'largestMask', label: 'Largest Component', description: 'Largest connected component in the mask' },
       { key: 'filledMask', label: 'Filled Mask', description: 'Mask with holes filled' },
       { key: 'edtInputMask', label: 'EDT Input', description: 'Input for distance transform with center point' },
-      { key: 'edtMask', label: 'EDT Output', description: 'Distance transform output' },
+      // { key: 'edtMask', label: 'EDT Output', description: 'Distance transform output' },
     ];
     
     // Get the current image source based on selected mask
