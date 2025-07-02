@@ -7,7 +7,8 @@ import {
   Modal, 
   SafeAreaView,
   FlatList,
-  Dimensions 
+  Dimensions,
+  Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as FileSystem from 'expo-file-system';
@@ -49,27 +50,43 @@ const Gallery = ({ photos, removePhoto }) => {
 
   const handleDeletePhoto = () => {
     if (selectedPhotoIndex !== null) {
-      removePhoto(selectedPhotoIndex);
-      setSelectedPhotoIndex(null);
-      
-      // Clean up cache for deleted photo
-      setPhotoBase64Cache(prev => {
-        const newCache = { ...prev };
-        delete newCache[selectedPhotoIndex];
-        
-        // Adjust cache keys for photos after the deleted one
-        const adjustedCache = {};
-        Object.keys(newCache).forEach(key => {
-          const numKey = parseInt(key);
-          if (numKey > selectedPhotoIndex) {
-            adjustedCache[numKey - 1] = newCache[key];
-          } else {
-            adjustedCache[key] = newCache[key];
+      Alert.alert(
+        "Delete Photo",
+        "Are you sure you want to delete this photo? This action cannot be undone.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: () => {
+              removePhoto(selectedPhotoIndex);
+              setSelectedPhotoIndex(null);
+              
+              // Clean up cache for deleted photo
+              setPhotoBase64Cache(prev => {
+                const newCache = { ...prev };
+                delete newCache[selectedPhotoIndex];
+                
+                // Adjust cache keys for photos after the deleted one
+                const adjustedCache = {};
+                Object.keys(newCache).forEach(key => {
+                  const numKey = parseInt(key);
+                  if (numKey > selectedPhotoIndex) {
+                    adjustedCache[numKey - 1] = newCache[key];
+                  } else {
+                    adjustedCache[key] = newCache[key];
+                  }
+                });
+                
+                return adjustedCache;
+              });
+            }
           }
-        });
-        
-        return adjustedCache;
-      });
+        ]
+      );
     }
   };
 
