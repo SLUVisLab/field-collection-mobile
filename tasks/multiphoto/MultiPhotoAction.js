@@ -27,10 +27,6 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
       setPhotos(arr);
       // Set currentIndex to camera position (beyond the photos array)
       setCurrentIndex(arr.length);
-      // Open gallery modal if there are existing photos
-      if (arr.length > 0) {
-        setShowGallery(true);
-      }
     } else {
       // Reset state when no existing data (new item)
       setPhotos([]);
@@ -72,7 +68,7 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
     // Show the photo for 0.25 seconds then return to camera
     setTimeout(() => {
       setCurrentIndex(prevIndex => prevIndex + 1);
-    }, 1000);
+    }, 750);
   };
 
   const removePhoto = (indexToRemove) => {

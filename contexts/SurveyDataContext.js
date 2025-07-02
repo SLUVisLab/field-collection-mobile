@@ -121,13 +121,44 @@ export const SurveyDataProvider = ({ children }) => {
 
   };
 
-  //TODO: Does this get used?
+  // Update an existing observation by its ID
   const updateObservation = (updatedObs) => {
     setSurveyData((prevData) => ({
-    ...prevData,
-    observations: prevData.observations.map(obs =>
-        obs.id === updatedObs.id ? updatedObs : obs
-    )
+      ...prevData,
+      observations: prevData.observations.map(obs =>
+        obs.ID === updatedObs.ID ? updatedObs : obs
+      )
+    }));
+  };
+
+  // Move observation data from one item to another by updating item/collection fields
+  const moveObservationToItem = (sourceItemID, targetItem, targetCollection) => {
+    setSurveyData((prevData) => {
+      const updatedObservations = prevData.observations.map(obs => {
+        if (obs.itemID === sourceItemID) {
+          // Create updated observation with new item/collection info but same data
+          return {
+            ...obs,
+            itemName: targetItem.name,
+            itemID: targetItem.ID,
+            collectionName: targetCollection.name,
+            collectionID: targetCollection.ID,
+            parentCollectionName: targetCollection.parentName ? targetCollection.parentName : null,
+            parentCollectionID: targetCollection.parentId ? targetCollection.parentId : null,
+          };
+        }
+        return obs;
+      });
+      
+      return { ...prevData, observations: updatedObservations };
+    });
+  };
+
+  // Delete observation data for a specific item
+  const deleteObservationByItemID = (itemID) => {
+    setSurveyData((prevData) => ({
+      ...prevData,
+      observations: prevData.observations.filter(obs => obs.itemID !== itemID)
     }));
   };
 
@@ -1003,6 +1034,8 @@ export const SurveyDataProvider = ({ children }) => {
           setStartTime,
           addObservation,
           updateObservation,
+          moveObservationToItem,
+          deleteObservationByItemID,
           getObservationByItemID,
           itemHasObservation,
           addCollection,
