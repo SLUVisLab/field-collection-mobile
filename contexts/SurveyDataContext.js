@@ -448,7 +448,7 @@ export const SurveyDataProvider = ({ children }) => {
         errorType: 'authentication_error',
         path: path || 'unknown',
         surveyKey: surveyKey || 'unknown',
-        context: JSON.stringify(context)
+        context: JSON.stringify(context.itemName)
       });
       
       // Add descriptive logs
@@ -479,7 +479,7 @@ export const SurveyDataProvider = ({ children }) => {
           
           // Add descriptive logs
           crashlytics().log(`File does not exist: ${path}`);
-          crashlytics().log(`Context: ${JSON.stringify(context)}`);
+          crashlytics().log(`Context: ${JSON.stringify(context.itemName)}`);
           
           const error = new Error(`File does not exist: ${path}`);
           crashlytics().recordError(error);
@@ -494,7 +494,7 @@ export const SurveyDataProvider = ({ children }) => {
           path: path || 'unknown',
           surveyKey: surveyKey || 'unknown',
           errorMessage: error.message,
-          context: JSON.stringify(context)
+          context: JSON.stringify(context.itemName)
         });
         
         // Add descriptive logs
@@ -519,7 +519,7 @@ export const SurveyDataProvider = ({ children }) => {
           path: path || 'unknown',
           surveyKey: surveyKey || 'unknown',
           errorMessage: error.message,
-          context: JSON.stringify(context)
+          context: JSON.stringify(context.itemName)
         });
         
         // Add descriptive logs
@@ -545,7 +545,7 @@ export const SurveyDataProvider = ({ children }) => {
           surveyKey: surveyKey || 'unknown',
           responseStatus: String(response?.status), // Converted to string
           responseOk: response?.ok ? 'true' : 'false',
-          context: JSON.stringify(context)
+          context: JSON.stringify(context.itemName)
         });
         
         // Add descriptive logs
@@ -559,7 +559,7 @@ export const SurveyDataProvider = ({ children }) => {
       const ext = getFileExtensionFromPathOrBlob(path, blob) || 'jpg';
       
       // Include the surveyID when generating the filename
-      const fileName = generateDescriptiveFilename({
+      let fileName = generateDescriptiveFilename({
         parent: context.parentName,
         subcollection: context.subcollectionName,
         item: context.itemName,
@@ -572,11 +572,14 @@ export const SurveyDataProvider = ({ children }) => {
       console.log("Generated filename:", fileName);
 
       // create a reference in the storage server
-      const fileRef = ref(imagesRef, fileName);
+      let fileRef = ref(imagesRef, fileName);
       
       const metadata = { contentType: blob.type || `image/${ext}` };
 
       const uploadTask = uploadBytesResumable(fileRef, blob, metadata);
+
+      blob = null; //  Clear early to help GC
+      response = null; //  Clear early to help GC
 
       // If we have a surveyKey, register this task for tracking/cancellation
       if (surveyKey) {
@@ -646,6 +649,12 @@ export const SurveyDataProvider = ({ children }) => {
               const fileKey = `${context.itemID || ''}_${context.index || 0}`;
               delete activeUploads.current[surveyKey][fileKey];
             }
+
+            blob = null;
+            response = null;
+            fileName = null;
+            fileRef = null;
+            context = null;
             
             // Add context with attributes
             crashlytics().setAttributes({
@@ -653,10 +662,8 @@ export const SurveyDataProvider = ({ children }) => {
               path: path || 'unknown',
               fileName: fileName,
               firebaseErrorCode: error.code || 'unknown',
-              blobSize: String(blob?.size), // Converted to string
-              blobType: blob?.type,
               surveyKey: surveyKey || 'unknown',
-              context: JSON.stringify(context)
+              context: JSON.stringify(context.itemName)
             });
             
             // Add descriptive logs
@@ -677,7 +684,9 @@ export const SurveyDataProvider = ({ children }) => {
           }, 
           () => {
             // Upload completed successfully
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            fileRef = uploadTask.snapshot.ref;       
+
+            getDownloadURL(fileRef).then((downloadURL) => {
               console.log(`File ${fileName} uploaded successfully`);
               
               // Clean up the task reference if we were tracking it
@@ -685,7 +694,11 @@ export const SurveyDataProvider = ({ children }) => {
                 const fileKey = `${context.itemID || ''}_${context.index || 0}`;
                 delete activeUploads.current[surveyKey][fileKey];
               }
-              
+              // Explicitly null out heavy references
+              fileRef = null;
+              fileName = null;
+              context = null;
+
               resolve(downloadURL);
             });
           }
@@ -700,7 +713,7 @@ export const SurveyDataProvider = ({ children }) => {
         path: path || 'unknown',
         surveyKey: surveyKey || 'unknown',
         userId: auth.currentUser?.uid || 'unknown',
-        context: JSON.stringify(context)
+        context: JSON.stringify(context.itemName)
       });
       
       // Add descriptive logs
@@ -713,7 +726,7 @@ export const SurveyDataProvider = ({ children }) => {
   };
 
   // Set max concurrent uploads
-  const MAX_CONCURRENT_UPLOADS = 5;
+  const MAX_CONCURRENT_UPLOADS = 2;
 
   // Updated handleMediaItems function with concurrent uploads
   const handleMediaItems = async (survey, surveyKey) => {
@@ -847,24 +860,58 @@ export const SurveyDataProvider = ({ children }) => {
       }
       
       // Update the processed survey with the URLs
-      for (const observationIndex in urls) {
-        const observation = processedSurvey.observations[observationIndex];
-        for (const key in urls[observationIndex]) {
-          if (Array.isArray(urls[observationIndex][key])) {
-            // Fill any gaps in array uploads (in case some uploads were missing)
-            const existingArray = observation.data[key] || [];
-            const newArray = [...existingArray];
+      // for (const observationIndex in urls) {
+      //   const observation = processedSurvey.observations[observationIndex];
+      //   for (const key in urls[observationIndex]) {
+      //     if (Array.isArray(urls[observationIndex][key])) {
+      //       // Fill any gaps in array uploads (in case some uploads were missing)
+      //       const existingArray = observation.data[key] || [];
+      //       const newArray = [...existingArray];
             
-            urls[observationIndex][key].forEach((url, index) => {
-              if (url) newArray[index] = url;
-            });
+      //       urls[observationIndex][key].forEach((url, index) => {
+      //         if (url) newArray[index] = url;
+      //       });
             
-            observation.data[key] = newArray;
-          } else {
-            observation.data[key] = urls[observationIndex][key];
-          }
+      //       observation.data[key] = newArray;
+      //     } else {
+      //       observation.data[key] = urls[observationIndex][key];
+      //     }
+      //   }
+      // }
+
+      // After all media is uploaded, update the processed survey
+    for (const observationIndex in urls) {
+      // Step 1: Clone the observation defensively to avoid mutating shared references
+      const observation = { ...processedSurvey.observations[observationIndex] };
+
+      // Step 2: Clone the `data` object separately to isolate writes
+      const cleanData = { ...(observation.data || {}) };
+
+      for (const key in urls[observationIndex]) {
+        const value = urls[observationIndex][key];
+
+        if (Array.isArray(value)) {
+          // Step 3: Safely fill in array elements, preserving previous entries
+          const existingArray = Array.isArray(cleanData[key]) ? [...cleanData[key]] : [];
+
+          value.forEach((url, i) => {
+            if (url) existingArray[i] = url;
+          });
+
+          cleanData[key] = existingArray;
+        } else {
+          // Step 4: Direct assignment for scalar/media values
+          cleanData[key] = value;
         }
       }
+
+        // Step 5: Re-assign clean `data` object back to observation
+        observation.data = cleanData;
+
+        // Step 6: Write observation back to processedSurvey
+        processedSurvey.observations[observationIndex] = observation;
+      }
+
       
       // After all media is uploaded, move to saving phase
       updateUploadProgress(surveyKey, 'saving', 90);
