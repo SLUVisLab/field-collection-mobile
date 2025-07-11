@@ -743,7 +743,8 @@ export const SurveyDataProvider = ({ children }) => {
       let totalMediaFiles = 0;
       
       // First, collect all media files and build the queue
-      for (const observation of processedSurvey.observations) {
+      for (let i = 0; i < processedSurvey.observations.length; i++) {
+        const observation = processedSurvey.observations[i];
         const data = observation.data;
         
         const context = {
@@ -765,7 +766,7 @@ export const SurveyDataProvider = ({ children }) => {
                   index: j,
                   surveyID: surveyID // Pass the surveyID in the context
                 },
-                observationIndex: processedSurvey.observations.indexOf(observation),
+                observationIndex: i,
                 key,
                 arrayIndex: j,
                 isArray: true
@@ -779,7 +780,7 @@ export const SurveyDataProvider = ({ children }) => {
                 ...context,
                 surveyID: surveyID // Pass the surveyID in the context
               },
-              observationIndex: processedSurvey.observations.indexOf(observation),
+              observationIndex: i,
               key,
               isArray: false
             });
@@ -814,15 +815,13 @@ export const SurveyDataProvider = ({ children }) => {
             localMediaPaths.push(item.uri);
             
             // Store the download URL for updating the survey data
-            if (!urls[item.observationIndex]) {
-              urls[item.observationIndex] = {};
-            }
-            
+            urls[item.observationIndex] = urls[item.observationIndex] || {};
+
             if (item.isArray) {
-              if (!urls[item.observationIndex][item.key]) {
-                urls[item.observationIndex][item.key] = [];
-              }
-              urls[item.observationIndex][item.key][item.arrayIndex] = downloadURL;
+              const existingArray = urls[item.observationIndex][item.key] || [];
+              const newArray = [...existingArray];
+              newArray[item.arrayIndex] = downloadURL;
+              urls[item.observationIndex][item.key] = newArray;
             } else {
               urls[item.observationIndex][item.key] = downloadURL;
             }
