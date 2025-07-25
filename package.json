@@ -54,6 +54,7 @@
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-get-random-values": "~1.11.0",
+    "react-native-json-tree": "^1.5.0",
     "react-native-maps": "1.14.0",
     "react-native-paper": "^5.7.0",
     "react-native-permissions": "^4.1.5",
