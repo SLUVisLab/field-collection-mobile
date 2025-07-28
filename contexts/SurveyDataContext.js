@@ -365,6 +365,16 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
+  const resolvePath = (path) => {
+    if (path.startsWith('file://')) {
+        // Absolute path: Replace the old application ID with the current cache directory
+        const relativePath = path.replace(/^.*Library\/Caches\//, '');
+        return `${FileSystem.cacheDirectory}${relativePath}`;
+    }
+    // Relative path: Prepend the cache directory
+    return `${FileSystem.cacheDirectory}${path}`;
+  };
+
   const deleteLocalMedia = async (mediaPaths) => {
     try {
       for (const path of mediaPaths) {
@@ -760,7 +770,7 @@ export const SurveyDataProvider = ({ children }) => {
           if (Array.isArray(value) && value.every(isMedia)) {
             for (let j = 0; j < value.length; j++) {
               uploadQueue.push({
-                uri: value[j],
+                uri: resolvePath(value[j]),
                 context: { 
                   ...context, 
                   index: j,
@@ -775,7 +785,7 @@ export const SurveyDataProvider = ({ children }) => {
             }
           } else if (isMedia(value)) {
             uploadQueue.push({
-              uri: value,
+              uri: resolvePath(value),
               context: { 
                 ...context,
                 surveyID: surveyID // Pass the surveyID in the context

@@ -32,7 +32,8 @@ const Gallery = ({ photos, removePhoto }) => {
 
   const loadPhotoBase64 = async (uri, index) => {
     try {
-      const base64 = await FileSystem.readAsStringAsync(uri, { 
+      const resolvedPath = `${FileSystem.cacheDirectory}${uri}`;
+      const base64 = await FileSystem.readAsStringAsync(resolvedPath, { 
         encoding: FileSystem.EncodingType.Base64 
       });
       setPhotoBase64Cache(prev => ({

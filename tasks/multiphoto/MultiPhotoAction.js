@@ -46,7 +46,8 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
 
   const loadPreview = async (uri) => {
     try {
-      const base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+      const resolvedPath = `${FileSystem.cacheDirectory}${uri}`;
+      const base64 = await FileSystem.readAsStringAsync(resolvedPath, { encoding: FileSystem.EncodingType.Base64 });
       setPreviewBase64(base64);
     } catch (e) {
       console.error("Failed to load preview image", e);
@@ -59,8 +60,9 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
     if (!cameraRef.current) return;
     const data = await cameraRef.current.takePictureAsync({ quality: 0.6, base64: true });
   
+    const relativePath = data.uri.replace(FileSystem.cacheDirectory, '');
     setPhotos(prevPhotos => {
-      const updatedPhotos = [...prevPhotos, data.uri];
+      const updatedPhotos = [...prevPhotos, relativePath];
       setCurrentIndex(updatedPhotos.length - 1); // index of new photo
       return updatedPhotos;
     });

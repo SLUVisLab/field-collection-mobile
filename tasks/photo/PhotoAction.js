@@ -23,7 +23,8 @@ const PhotoAction = ({ existingData, onComplete, task, item, collection }) => {
   const cameraRef = useRef(null);
 
   const retrieveImage = async (uri) => {
-    const imageBase64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+    const resolvedPath = `${FileSystem.cacheDirectory}${uri}`;
+    const imageBase64 = await FileSystem.readAsStringAsync(resolvedPath, { encoding: FileSystem.EncodingType.Base64 });
     return imageBase64;
   };
 
@@ -52,8 +53,9 @@ const PhotoAction = ({ existingData, onComplete, task, item, collection }) => {
       const options = { quality: 0.6, base64: true };
       const data = await cameraRef.current.takePictureAsync(options);
       setPhoto(data.base64);
-      setPhotoURI(data.uri)
-      console.log(data.uri);
+      const relativePath = data.uri.replace(FileSystem.cacheDirectory, '');
+      setPhotoURI(relativePath)
+      console.log(relativePath);
     } else {
       console.log("camera instance not found!")
     }

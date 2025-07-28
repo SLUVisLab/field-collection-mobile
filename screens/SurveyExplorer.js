@@ -7,22 +7,25 @@ const SurveyExplorer = ({ route }) => {
     const { survey } = route.params;
     const [selectedImage, setSelectedImage] = useState(null);
 
-    const handleMediaClick = async (path) => {
+    const handleMediaClick = async (relativePath) => {
         try {
-            const fileInfo = await FileSystem.getInfoAsync(path);
+            // Resolve the relative path to an absolute path
+            const resolvedPath = `${FileSystem.cacheDirectory}${relativePath}`;
+            const fileInfo = await FileSystem.getInfoAsync(resolvedPath);
+
             if (fileInfo.exists) {
-                setSelectedImage(path);
+                setSelectedImage(resolvedPath);
             } else {
-                Alert.alert('File Not Found', `The file at ${path} does not exist.`);
+                Alert.alert('File Not Found', `The file at ${resolvedPath} does not exist.`);
             }
         } catch (error) {
-            console.error(`Error checking file at ${path}:`, error);
+            console.error(`Error checking file at ${relativePath}:`, error);
             Alert.alert('Error', 'An error occurred while trying to preview the image.');
         }
     };
 
     const renderValue = (value) => {
-        if (typeof value === 'string' && value.startsWith('file://')) {
+        if (typeof value === 'string') {
             return (
                 <Text
                     style={styles.mediaLink}
