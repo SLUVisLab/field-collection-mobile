@@ -55,8 +55,6 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
   };
 
   const takePicture = async () => {
-    // console.log("Taking photo...");
-    // console.log(cameraRef.current)
     if (!cameraRef.current) return;
     const data = await cameraRef.current.takePictureAsync({ quality: 0.6, base64: true });
   
@@ -123,36 +121,26 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
         <Text style={styles.infoText}>{`Photo ${currentIndex + 1} of ${photos.length}${canTakeMorePhotos() ? '' : ' (max reached)'}`}</Text>
       </View>
 
-      {!isAtCamera ? (
-        <View style={{ flex: 1 }}>
-          <Image style={styles.imagePreview} source={{ uri: `data:image/jpg;base64,${previewBase64}` }} />
-        </View>
-      ) : canTakeMorePhotos() ? (
-        <CameraView
-          ref={cameraRef}
-          style={styles.camera}
-          facing={facing}
-          onCameraReady={() => setCameraReady(true)}
-        >
-          <TouchableOpacity style={styles.instructionsButton} onPress={() => setShowInstructions(true)}>
-            <Text style={styles.buttonText}>?</Text>
-          </TouchableOpacity>
-          
-          <View style={styles.buttonContainer}>
+      {/* Camera View */}
+      <CameraView
+        ref={cameraRef}
+        style={[
+          styles.camera,
+          { opacity: isAtCamera ? 1 : 0, zIndex: isAtCamera ? 1 : 0 } // Toggle visibility
+        ]}
+        facing={facing}
+        onCameraReady={() => setCameraReady(true)}
+      >
+        <TouchableOpacity style={styles.instructionsButton} onPress={() => setShowInstructions(true)}>
+          <Text style={styles.buttonText}>?</Text>
+        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <View style={styles.cameraControlsRow}>
             <TouchableOpacity onPress={toggleCameraFacing} style={styles.flipButton}>
               <Ionicons name="camera-reverse" size={58} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity 
-              onPress={() => {
-                // console.log('📸 Button pressed');
-                takePicture();
-                }}
-                style={styles.captureButton} 
-            />
-            <TouchableOpacity 
-              style={styles.photoLibraryButton}
-              onPress={() => setShowGallery(true)}
-            >
+            <TouchableOpacity onPress={takePicture} style={styles.captureButton} />
+            <TouchableOpacity style={styles.photoLibraryButton} onPress={() => setShowGallery(true)}>
               <MaterialIcons name="photo-library" size={24} color="black" />
               {photos.length > 0 && (
                 <View style={styles.photoBadge}>
@@ -161,20 +149,29 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
               )}
             </TouchableOpacity>
           </View>
-        </CameraView>
-      ) : (
-        <View style={styles.container}>
-          <Text style={{ textAlign: 'center' }}>Maximum photo limit reached</Text>
-          <Button title="Review Photos" onPress={() => setCurrentIndex(0)} />
+          
+          {canFinish() && (
+            <TouchableOpacity
+              style={styles.finishButton}
+              onPress={() => onComplete({ [task.dataLabel]: photos })}
+            >
+              <Text style={styles.finishButtonText}>Finish Photo Task</Text>
+            </TouchableOpacity>
+          )}
         </View>
-      )}
+      </CameraView>
 
-      {isAtCamera && canFinish() && (
-        <Button
-          title="Finish Photo Task"
-          onPress={() => onComplete({ [task.dataLabel]: photos })}
-        />
-      )}
+      {/* Preview Container */}
+      <View
+        style={[
+          styles.previewContainer,
+          { opacity: !isAtCamera ? 1 : 0, zIndex: !isAtCamera ? 1 : 0 } // Toggle visibility
+        ]}
+      >
+        {previewBase64 && (
+          <Image style={styles.imagePreview} source={{ uri: `data:image/jpg;base64,${previewBase64}` }} />
+        )}
+      </View>
 
       <Modal visible={showInstructions} transparent animationType="slide">
         <View style={styles.centeredView}>
@@ -209,7 +206,19 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center' },
+  container: { flex: 1, justifyContent: 'center', backgroundColor: 'rgba(255, 0, 0, 0.2)' }, // Added temporary background color
+  camera: { flex: 1, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+  previewContainer: {
+    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
+  },
   imagePreview: { alignSelf: 'stretch', flex: 1 },
   captureButton: {
     backgroundColor: '#F2F2F2',
@@ -222,20 +231,31 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     zIndex: 1000,
   },
-  camera: { flex: 1 },
   buttonContainer: {
     position: 'absolute',
     bottom: 40,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    flexDirection: 'column',
+    alignItems: 'center',
     width: '100%',
     padding: 10,
     zIndex: 999,
   },
+  cameraControlsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    width: '100%',
+    marginBottom: 10,
+  },
   flipButton: { justifyContent: 'center', alignItems: 'center' },
   infoText: { color: 'white', fontWeight: 'bold', fontSize: 22 },
-  info: { position: 'absolute', top: 20, left: 10, width: 500, zIndex: 1 },
+  info: {
+    position: 'absolute',
+    top: 20,
+    left: 10,
+    width: 500,
+    zIndex: 2, // Ensure info is above camera and preview
+  },
   instructionsButton: {
     position: 'absolute',
     top: 20,
@@ -247,6 +267,19 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     zIndex: 10,
+  },
+  finishButton: {
+    backgroundColor: '#2196F3',
+    borderRadius: 10,
+    padding: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '90%',
+  },
+  finishButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   photoLibraryButton: {
     justifyContent: 'center',
@@ -274,8 +307,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-  buttonText: { color: 'black' },
-  instructions: { color: 'white' },
   centeredView: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 22 },
   modalView: {
     margin: 20, backgroundColor: "white", borderRadius: 20, padding: 35, alignItems: "center",
