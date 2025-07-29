@@ -118,7 +118,7 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
         {collection.parentName && <Text style={styles.infoText}>{collection.parentName}</Text>}
         <Text style={styles.infoText}>{collection.name}</Text>
         <Text style={styles.infoText}>{item.name}</Text>
-        <Text style={styles.infoText}>{`Photo ${currentIndex + 1} of ${photos.length}${canTakeMorePhotos() ? '' : ' (max reached)'}`}</Text>
+        <Text style={styles.infoText}>{`Photo ${currentIndex + 1} of ${photos.length}`}</Text>
       </View>
 
       {/* Camera View */}
@@ -139,7 +139,14 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
             <TouchableOpacity onPress={toggleCameraFacing} style={styles.flipButton}>
               <Ionicons name="camera-reverse" size={58} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={takePicture} style={styles.captureButton} />
+            <TouchableOpacity 
+              onPress={canTakeMorePhotos() ? takePicture : null} 
+              style={[
+                styles.captureButton,
+                !canTakeMorePhotos() && styles.captureButtonDisabled
+              ]}
+              disabled={!canTakeMorePhotos()}
+            />
             <TouchableOpacity style={styles.photoLibraryButton} onPress={() => setShowGallery(true)}>
               <MaterialIcons name="photo-library" size={24} color="black" />
               {photos.length > 0 && (
@@ -150,7 +157,7 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
             </TouchableOpacity>
           </View>
           
-          {canFinish() && (
+          {canFinish() && isAtCamera && (
             <TouchableOpacity
               style={styles.finishButton}
               onPress={() => onComplete({ [task.dataLabel]: photos })}
@@ -159,6 +166,12 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
             </TouchableOpacity>
           )}
         </View>
+        
+        {!canTakeMorePhotos() && (
+          <View style={styles.maxReachedOverlay}>
+            <Text style={styles.maxReachedText}>Maximum number of photos reached</Text>
+          </View>
+        )}
       </CameraView>
 
       {/* Preview Container */}
@@ -206,7 +219,7 @@ const MultiPhotoAction = ({ existingData, onComplete, task, item, collection }) 
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', backgroundColor: 'rgba(255, 0, 0, 0.2)' }, // Added temporary background color
+  container: { flex: 1, justifyContent: 'center' },
   camera: { flex: 1, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   previewContainer: {
     flex: 1,
@@ -230,6 +243,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'white',
     zIndex: 1000,
+  },
+  captureButtonDisabled: {
+    backgroundColor: '#888888',
+    borderColor: '#CCCCCC',
+    opacity: 0.5,
   },
   buttonContainer: {
     position: 'absolute',
@@ -280,6 +298,24 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  maxReachedOverlay: {
+    position: 'absolute',
+    top: '50%',
+    left: 20,
+    right: 20,
+    transform: [{ translateY: -25 }],
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    borderRadius: 10,
+    padding: 15,
+    alignItems: 'center',
+    zIndex: 1002,
+  },
+  maxReachedText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   photoLibraryButton: {
     justifyContent: 'center',
