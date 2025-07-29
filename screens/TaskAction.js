@@ -93,6 +93,9 @@ const TaskAction = ({ route, navigation }) => {
             console.log("Found existing data...")
             console.log(existingData)
             setObservationData(existingData)
+        } else {
+            // Clear observation data if no existing data found for this item
+            setObservationData({});
         }
     }, [currentItem]);
 

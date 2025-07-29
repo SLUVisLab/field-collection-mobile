@@ -30,6 +30,10 @@ import BarcodeTask from './barcode/BarcodeTask'
 import BarcodeSetup from './barcode/BarcodeSetup';
 import BarcodeAction from './barcode/BarcodeAction';
 
+import PetalCountTask from './petalcounter/PetalCountTask';
+import PetalCountSetup from './petalcounter/PetalCountSetup';
+import PetalCountAction from './petalcounter/PetalCountAction';
+
 const TaskManifest = {
   [PhotoTask.typeID]: {
     taskAction: PhotoAction,
@@ -70,6 +74,11 @@ const TaskManifest = {
     taskAction: GeoPointAction,
     taskSetup: GeoPointSetup,
     taskModule: GeoPointTask
+  },
+  [PetalCountTask.typeID]: {
+    taskAction: PetalCountAction,
+    taskSetup: PetalCountSetup,
+    taskModule: PetalCountTask
   },
 
 

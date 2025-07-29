@@ -121,13 +121,44 @@ export const SurveyDataProvider = ({ children }) => {
 
   };
 
-  //TODO: Does this get used?
+  // Update an existing observation by its ID
   const updateObservation = (updatedObs) => {
     setSurveyData((prevData) => ({
-    ...prevData,
-    observations: prevData.observations.map(obs =>
-        obs.id === updatedObs.id ? updatedObs : obs
-    )
+      ...prevData,
+      observations: prevData.observations.map(obs =>
+        obs.ID === updatedObs.ID ? updatedObs : obs
+      )
+    }));
+  };
+
+  // Move observation data from one item to another by updating item/collection fields
+  const moveObservationToItem = (sourceItemID, targetItem, targetCollection) => {
+    setSurveyData((prevData) => {
+      const updatedObservations = prevData.observations.map(obs => {
+        if (obs.itemID === sourceItemID) {
+          // Create updated observation with new item/collection info but same data
+          return {
+            ...obs,
+            itemName: targetItem.name,
+            itemID: targetItem.ID,
+            collectionName: targetCollection.name,
+            collectionID: targetCollection.ID,
+            parentCollectionName: targetCollection.parentName ? targetCollection.parentName : null,
+            parentCollectionID: targetCollection.parentId ? targetCollection.parentId : null,
+          };
+        }
+        return obs;
+      });
+      
+      return { ...prevData, observations: updatedObservations };
+    });
+  };
+
+  // Delete observation data for a specific item
+  const deleteObservationByItemID = (itemID) => {
+    setSurveyData((prevData) => ({
+      ...prevData,
+      observations: prevData.observations.filter(obs => obs.itemID !== itemID)
     }));
   };
 
@@ -334,6 +365,16 @@ export const SurveyDataProvider = ({ children }) => {
     }
   }
 
+  const resolvePath = (path) => {
+    if (path.startsWith('file://')) {
+        // Absolute path: Replace the old application ID with the current cache directory
+        const relativePath = path.replace(/^.*Library\/Caches\//, '');
+        return `${FileSystem.cacheDirectory}${relativePath}`;
+    }
+    // Relative path: Prepend the cache directory
+    return `${FileSystem.cacheDirectory}${path}`;
+  };
+
   const deleteLocalMedia = async (mediaPaths) => {
     try {
       for (const path of mediaPaths) {
@@ -417,7 +458,7 @@ export const SurveyDataProvider = ({ children }) => {
         errorType: 'authentication_error',
         path: path || 'unknown',
         surveyKey: surveyKey || 'unknown',
-        context: JSON.stringify(context)
+        context: JSON.stringify(context.itemName)
       });
       
       // Add descriptive logs
@@ -448,7 +489,7 @@ export const SurveyDataProvider = ({ children }) => {
           
           // Add descriptive logs
           crashlytics().log(`File does not exist: ${path}`);
-          crashlytics().log(`Context: ${JSON.stringify(context)}`);
+          crashlytics().log(`Context: ${JSON.stringify(context.itemName)}`);
           
           const error = new Error(`File does not exist: ${path}`);
           crashlytics().recordError(error);
@@ -463,7 +504,7 @@ export const SurveyDataProvider = ({ children }) => {
           path: path || 'unknown',
           surveyKey: surveyKey || 'unknown',
           errorMessage: error.message,
-          context: JSON.stringify(context)
+          context: JSON.stringify(context.itemName)
         });
         
         // Add descriptive logs
@@ -488,7 +529,7 @@ export const SurveyDataProvider = ({ children }) => {
           path: path || 'unknown',
           surveyKey: surveyKey || 'unknown',
           errorMessage: error.message,
-          context: JSON.stringify(context)
+          context: JSON.stringify(context.itemName)
         });
         
         // Add descriptive logs
@@ -514,7 +555,7 @@ export const SurveyDataProvider = ({ children }) => {
           surveyKey: surveyKey || 'unknown',
           responseStatus: String(response?.status), // Converted to string
           responseOk: response?.ok ? 'true' : 'false',
-          context: JSON.stringify(context)
+          context: JSON.stringify(context.itemName)
         });
         
         // Add descriptive logs
@@ -528,7 +569,7 @@ export const SurveyDataProvider = ({ children }) => {
       const ext = getFileExtensionFromPathOrBlob(path, blob) || 'jpg';
       
       // Include the surveyID when generating the filename
-      const fileName = generateDescriptiveFilename({
+      let fileName = generateDescriptiveFilename({
         parent: context.parentName,
         subcollection: context.subcollectionName,
         item: context.itemName,
@@ -541,11 +582,14 @@ export const SurveyDataProvider = ({ children }) => {
       console.log("Generated filename:", fileName);
 
       // create a reference in the storage server
-      const fileRef = ref(imagesRef, fileName);
+      let fileRef = ref(imagesRef, fileName);
       
       const metadata = { contentType: blob.type || `image/${ext}` };
 
       const uploadTask = uploadBytesResumable(fileRef, blob, metadata);
+
+      blob = null; //  Clear early to help GC
+      response = null; //  Clear early to help GC
 
       // If we have a surveyKey, register this task for tracking/cancellation
       if (surveyKey) {
@@ -615,6 +659,12 @@ export const SurveyDataProvider = ({ children }) => {
               const fileKey = `${context.itemID || ''}_${context.index || 0}`;
               delete activeUploads.current[surveyKey][fileKey];
             }
+
+            blob = null;
+            response = null;
+            fileName = null;
+            fileRef = null;
+            context = null;
             
             // Add context with attributes
             crashlytics().setAttributes({
@@ -622,10 +672,8 @@ export const SurveyDataProvider = ({ children }) => {
               path: path || 'unknown',
               fileName: fileName,
               firebaseErrorCode: error.code || 'unknown',
-              blobSize: String(blob?.size), // Converted to string
-              blobType: blob?.type,
               surveyKey: surveyKey || 'unknown',
-              context: JSON.stringify(context)
+              context: JSON.stringify(context.itemName)
             });
             
             // Add descriptive logs
@@ -646,7 +694,9 @@ export const SurveyDataProvider = ({ children }) => {
           }, 
           () => {
             // Upload completed successfully
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            fileRef = uploadTask.snapshot.ref;       
+
+            getDownloadURL(fileRef).then((downloadURL) => {
               console.log(`File ${fileName} uploaded successfully`);
               
               // Clean up the task reference if we were tracking it
@@ -654,7 +704,11 @@ export const SurveyDataProvider = ({ children }) => {
                 const fileKey = `${context.itemID || ''}_${context.index || 0}`;
                 delete activeUploads.current[surveyKey][fileKey];
               }
-              
+              // Explicitly null out heavy references
+              fileRef = null;
+              fileName = null;
+              context = null;
+
               resolve(downloadURL);
             });
           }
@@ -669,7 +723,7 @@ export const SurveyDataProvider = ({ children }) => {
         path: path || 'unknown',
         surveyKey: surveyKey || 'unknown',
         userId: auth.currentUser?.uid || 'unknown',
-        context: JSON.stringify(context)
+        context: JSON.stringify(context.itemName)
       });
       
       // Add descriptive logs
@@ -682,7 +736,7 @@ export const SurveyDataProvider = ({ children }) => {
   };
 
   // Set max concurrent uploads
-  const MAX_CONCURRENT_UPLOADS = 5;
+  const MAX_CONCURRENT_UPLOADS = 2;
 
   // Updated handleMediaItems function with concurrent uploads
   const handleMediaItems = async (survey, surveyKey) => {
@@ -699,7 +753,8 @@ export const SurveyDataProvider = ({ children }) => {
       let totalMediaFiles = 0;
       
       // First, collect all media files and build the queue
-      for (const observation of processedSurvey.observations) {
+      for (let i = 0; i < processedSurvey.observations.length; i++) {
+        const observation = processedSurvey.observations[i];
         const data = observation.data;
         
         const context = {
@@ -715,13 +770,13 @@ export const SurveyDataProvider = ({ children }) => {
           if (Array.isArray(value) && value.every(isMedia)) {
             for (let j = 0; j < value.length; j++) {
               uploadQueue.push({
-                uri: value[j],
+                uri: resolvePath(value[j]),
                 context: { 
                   ...context, 
                   index: j,
                   surveyID: surveyID // Pass the surveyID in the context
                 },
-                observationIndex: processedSurvey.observations.indexOf(observation),
+                observationIndex: i,
                 key,
                 arrayIndex: j,
                 isArray: true
@@ -730,12 +785,12 @@ export const SurveyDataProvider = ({ children }) => {
             }
           } else if (isMedia(value)) {
             uploadQueue.push({
-              uri: value,
+              uri: resolvePath(value),
               context: { 
                 ...context,
                 surveyID: surveyID // Pass the surveyID in the context
               },
-              observationIndex: processedSurvey.observations.indexOf(observation),
+              observationIndex: i,
               key,
               isArray: false
             });
@@ -770,15 +825,13 @@ export const SurveyDataProvider = ({ children }) => {
             localMediaPaths.push(item.uri);
             
             // Store the download URL for updating the survey data
-            if (!urls[item.observationIndex]) {
-              urls[item.observationIndex] = {};
-            }
-            
+            urls[item.observationIndex] = urls[item.observationIndex] || {};
+
             if (item.isArray) {
-              if (!urls[item.observationIndex][item.key]) {
-                urls[item.observationIndex][item.key] = [];
-              }
-              urls[item.observationIndex][item.key][item.arrayIndex] = downloadURL;
+              const existingArray = urls[item.observationIndex][item.key] || [];
+              const newArray = [...existingArray];
+              newArray[item.arrayIndex] = downloadURL;
+              urls[item.observationIndex][item.key] = newArray;
             } else {
               urls[item.observationIndex][item.key] = downloadURL;
             }
@@ -816,24 +869,58 @@ export const SurveyDataProvider = ({ children }) => {
       }
       
       // Update the processed survey with the URLs
-      for (const observationIndex in urls) {
-        const observation = processedSurvey.observations[observationIndex];
-        for (const key in urls[observationIndex]) {
-          if (Array.isArray(urls[observationIndex][key])) {
-            // Fill any gaps in array uploads (in case some uploads were missing)
-            const existingArray = observation.data[key] || [];
-            const newArray = [...existingArray];
+      // for (const observationIndex in urls) {
+      //   const observation = processedSurvey.observations[observationIndex];
+      //   for (const key in urls[observationIndex]) {
+      //     if (Array.isArray(urls[observationIndex][key])) {
+      //       // Fill any gaps in array uploads (in case some uploads were missing)
+      //       const existingArray = observation.data[key] || [];
+      //       const newArray = [...existingArray];
             
-            urls[observationIndex][key].forEach((url, index) => {
-              if (url) newArray[index] = url;
-            });
+      //       urls[observationIndex][key].forEach((url, index) => {
+      //         if (url) newArray[index] = url;
+      //       });
             
-            observation.data[key] = newArray;
-          } else {
-            observation.data[key] = urls[observationIndex][key];
-          }
+      //       observation.data[key] = newArray;
+      //     } else {
+      //       observation.data[key] = urls[observationIndex][key];
+      //     }
+      //   }
+      // }
+
+      // After all media is uploaded, update the processed survey
+    for (const observationIndex in urls) {
+      // Step 1: Clone the observation defensively to avoid mutating shared references
+      const observation = { ...processedSurvey.observations[observationIndex] };
+
+      // Step 2: Clone the `data` object separately to isolate writes
+      const cleanData = { ...(observation.data || {}) };
+
+      for (const key in urls[observationIndex]) {
+        const value = urls[observationIndex][key];
+
+        if (Array.isArray(value)) {
+          // Step 3: Safely fill in array elements, preserving previous entries
+          const existingArray = Array.isArray(cleanData[key]) ? [...cleanData[key]] : [];
+
+          value.forEach((url, i) => {
+            if (url) existingArray[i] = url;
+          });
+
+          cleanData[key] = existingArray;
+        } else {
+          // Step 4: Direct assignment for scalar/media values
+          cleanData[key] = value;
         }
       }
+
+        // Step 5: Re-assign clean `data` object back to observation
+        observation.data = cleanData;
+
+        // Step 6: Write observation back to processedSurvey
+        processedSurvey.observations[observationIndex] = observation;
+      }
+
       
       // After all media is uploaded, move to saving phase
       updateUploadProgress(surveyKey, 'saving', 90);
@@ -1003,6 +1090,8 @@ export const SurveyDataProvider = ({ children }) => {
           setStartTime,
           addObservation,
           updateObservation,
+          moveObservationToItem,
+          deleteObservationByItemID,
           getObservationByItemID,
           itemHasObservation,
           addCollection,

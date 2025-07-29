@@ -29,6 +29,7 @@ const UploadSurveys = ({ route, navigation }) => {
     const [completedUploads, setCompletedUploads] = useState([]);
     const [isConnected, setIsConnected] = useState(true);
     const [isEditMode, setIsEditMode] = useState(false);
+    const [longPressTimeout, setLongPressTimeout] = useState(null);
 
     const realm = useRealm();
 
@@ -177,10 +178,10 @@ const UploadSurveys = ({ route, navigation }) => {
             
             Toast.show({
                 type: 'error',
-                text1: 'Upload Failed',
-                text2: 'There was a problem uploading your survey. Please try again.',
+                text1: 'Upload Failed. Please try again.',
+                text2: `Error: ${error.message || 'Unknown error occurred.'}`,
                 position: 'bottom',
-                visibilityTime: 3000,
+                visibilityTime: 5000,
                 autoHide: true,
             });
         }
@@ -237,6 +238,51 @@ const UploadSurveys = ({ route, navigation }) => {
         );
     };
 
+    const openSurveyExplorer = async (survey) => {
+        try {
+            const surveyData = await AsyncStorage.getItem(survey.key);
+            if (surveyData) {
+                const parsedSurvey = JSON.parse(surveyData);
+                navigation.navigate('SurveyExplorer', {
+                    survey: parsedSurvey,
+                });
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Survey Not Found',
+                    text2: 'The survey data could not be loaded.',
+                    position: 'bottom',
+                    visibilityTime: 3000,
+                    autoHide: true,
+                });
+            }
+        } catch (error) {
+            console.error("Failed to load survey data:", error);
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: `Failed to load survey: ${error.message || 'Unknown error'}`,
+                position: 'bottom',
+                visibilityTime: 3000,
+                autoHide: true,
+            });
+        }
+    };
+
+    const handlePressIn = () => {
+        const timeout = setTimeout(() => {
+            setIsEditMode(true);
+        }, 5000); // 5 seconds
+        setLongPressTimeout(timeout);
+    };
+
+    const handlePressOut = () => {
+        if (longPressTimeout) {
+            clearTimeout(longPressTimeout);
+            setLongPressTimeout(null);
+        }
+    };
+
     // Render a pending survey item
     const renderPendingSurveyItem = (survey) => {
         const uploadInfo = contextUploadProgress[survey.key];
@@ -245,7 +291,12 @@ const UploadSurveys = ({ route, navigation }) => {
         const isCancelledUpload = uploadInfo && uploadInfo.status === 'cancelled';
         
         return (
-            <View key={survey.key} style={localStyles.card}>
+            <TouchableOpacity 
+                key={survey.key} 
+                style={localStyles.card} 
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+            >
                 <View style={localStyles.cardContent}>
                     <View style={localStyles.surveyInfo}>
                         <Text style={localStyles.surveyName}>{survey.surveyName}</Text>
@@ -278,12 +329,20 @@ const UploadSurveys = ({ route, navigation }) => {
                 
                 <View style={localStyles.buttonContainer}>
                     {isEditMode ? (
-                        <TouchableOpacity 
-                            style={localStyles.iconButton}
-                            onPress={() => handleDeleteSurveyData(survey.key)}
-                        >
-                            <Ionicons name="close-circle" size={24} color="red" />
-                        </TouchableOpacity>
+                        <View>
+                            <TouchableOpacity 
+                                style={localStyles.iconButton}
+                                onPress={() => openSurveyExplorer(survey)}
+                            >
+                                <Ionicons name="search" size={24} color="#000000" />
+                            </TouchableOpacity>
+                            <TouchableOpacity 
+                                style={localStyles.iconButton}
+                                onPress={() => handleDeleteSurveyData(survey.key)}
+                            >
+                                <Ionicons name="close-circle" size={24} color="red" />
+                            </TouchableOpacity>
+                        </View>
                     ) : isActiveUpload ? (
                         // Show cancel button only during active upload
                         <TouchableOpacity 
@@ -293,7 +352,7 @@ const UploadSurveys = ({ route, navigation }) => {
                             <Ionicons name="stop-circle" size={24} color="#ff6600" />
                         </TouchableOpacity>
                     ) : (
-                        // Show upload button when not uploading or after cancel/fail
+                        //* Show upload button when not uploading or after cancel/fail
                         <TouchableOpacity 
                             style={localStyles.iconButton}
                             onPress={() => uploadHandler(survey)}
@@ -321,7 +380,7 @@ const UploadSurveys = ({ route, navigation }) => {
                     Upload was cancelled. Click the upload button to try again.
                 </Text>
             )}
-        </View>
+        </TouchableOpacity>
     )};
 
     // Render a completed upload item
@@ -371,6 +430,11 @@ const UploadSurveys = ({ route, navigation }) => {
 
     return (
         <ScrollView style={localStyles.container}>
+            {isEditMode && (
+                <View style={localStyles.editModeBar}>
+                    <Text style={localStyles.editModeText}>Edit Mode</Text>
+                </View>
+            )}
             {!isConnected && (
                 <Text style={localStyles.networkWarning}>
                     No Network Connection: Upload Not Available
@@ -544,6 +608,16 @@ const localStyles = StyleSheet.create({
     clearHistoryText: {
         color: '#cc0000',
         fontWeight: '500',
+    },
+    editModeBar: {
+        backgroundColor: 'red',
+        padding: 10,
+        alignItems: 'center',
+    },
+    editModeText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
 });
 

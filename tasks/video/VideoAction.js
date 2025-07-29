@@ -60,7 +60,8 @@ const VideoAction = ({ existingData, onComplete, task, item, collection }) => {
 
       recordingPromiseRef.current = cameraRef.current.recordAsync({ maxDuration: 60 });
       const video = await recordingPromiseRef.current;
-      setVideoURI(video.uri);
+      const relativePath = video.uri.replace(FileSystem.cacheDirectory, '');
+      setVideoURI(relativePath);
       setIsReviewing(true);
     } catch (err) {
       console.error('Recording error:', err);
@@ -116,7 +117,7 @@ const VideoAction = ({ existingData, onComplete, task, item, collection }) => {
         <View style={{ flex: 1 }}>
           <Video
             ref={videoRef}
-            source={{ uri: videoURI }}
+            source={{ uri: `${FileSystem.cacheDirectory}${videoURI}` }}
             style={styles.videoPlayer}
             useNativeControls
             resizeMode="contain"
