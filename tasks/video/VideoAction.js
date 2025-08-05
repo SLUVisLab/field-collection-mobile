@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, Modal } from 'r
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { Video } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
+import * as FileSystem from 'expo-file-system';
 
 const VideoAction = ({ existingData, onComplete, task, item, collection }) => {
   const [facing, setFacing] = useState('back');
@@ -75,6 +76,9 @@ const VideoAction = ({ existingData, onComplete, task, item, collection }) => {
 
   const saveVideo = () => {
     onComplete({ [task.dataLabel]: videoURI });
+    setVideoURI(null);
+    setIsReviewing(false);
+    setElapsedTime(0);
   };
 
   const discardVideo = () => {
