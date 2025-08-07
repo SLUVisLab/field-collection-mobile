@@ -75,11 +75,11 @@ const TaskManifest = {
     taskSetup: GeoPointSetup,
     taskModule: GeoPointTask
   },
-  [PetalCountTask.typeID]: {
-    taskAction: PetalCountAction,
-    taskSetup: PetalCountSetup,
-    taskModule: PetalCountTask
-  },
+  // [PetalCountTask.typeID]: {
+  //   taskAction: PetalCountAction,
+  //   taskSetup: PetalCountSetup,
+  //   taskModule: PetalCountTask
+  // },
 
 
 }
