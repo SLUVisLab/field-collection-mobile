@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0](https://github.com/SLUVisLab/field-collection-mobile/compare/v1.2.0...v1.3.0) (2025-08-07)
+
+
+### Features
+
+* disable OTA builds, trigger release ([#60](https://github.com/SLUVisLab/field-collection-mobile/issues/60)) ([47ded71](https://github.com/SLUVisLab/field-collection-mobile/commit/47ded717e52eeae6724417361e2e588892d6ea9b))
+* upload fixes and video task fixes ([#59](https://github.com/SLUVisLab/field-collection-mobile/issues/59)) ([0475d82](https://github.com/SLUVisLab/field-collection-mobile/commit/0475d8267a97b3409355989cc5bde5cffd416dfa))
+
 ## [1.2.0](https://github.com/SLUVisLab/field-collection-mobile/compare/v1.1.2...v1.2.0) (2025-06-02)
 
 
