@@ -100,11 +100,11 @@ jobs:
             echo "Triggering EAS build with profile: $EAS_BUILD_PROFILE"
             eas build --platform all --profile $EAS_BUILD_PROFILE --non-interactive
           else
-            echo "Triggering OTA update to 'production' channel"
-            COMMIT_MESSAGE=$(git log -1 --pretty=%B | head -n 1)
-            eas update --channel production --message "${COMMIT_MESSAGE}" --non-interactive
+            echo "OTA Update Disabled. Skipping. No build triggered."
+            
           fi
-
+      # COMMIT_MESSAGE=$(git log -1 --pretty=%B | head -n 1)
+      # eas update --channel production --message "${COMMIT_MESSAGE}" --non-interactive
       - name: Install QR Code Generator
         if: ${{ env.RUN_BUILD == 'true' }}
         run: npm install qrcode
