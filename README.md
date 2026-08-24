@@ -32,13 +32,71 @@ cd gather
 yarn install
 ```
 
-### 2. Start the Development Server
+### 2. Configure Environment Variables
+
+Copy the example env file and fill in the values (ask a maintainer for the keys):
 
 ```bash
-npx expo start
+cp .env.example .env
 ```
 
-Use the QR code in your terminal to open the app on a physical device **with a development build**.
+`.env` must define:
+
+- `EXPO_PUBLIC_FIREBASE_KEY` — Firebase Web API key (auth + storage)
+- `EXPO_PUBLIC_API_BASE_URL` — API base, e.g. `https://openfieldworks.org/api` (must end in `/api`, no trailing slash)
+- `EXPO_PUBLIC_GATHER_HUB_API_KEY` — API key sent as the `x-api-key` header on every request
+
+> These values are inlined at bundle time, so after changing `.env` you must restart Metro with `--clear` (see step 4).
+
+### 3. Install a Development Build (required for first run on a new device)
+
+Gather uses custom native modules (Realm, Firebase, OpenCV, camera, maps), so it **cannot run in Expo Go**. You must install a *development build* on the target device/emulator **before** `npx expo start` can open the app. If you run `expo start` and press `a`/`i` without one installed, you'll see:
+
+```
+CommandError: No development build (com.sluvislab.BIIManualPhenotyper) for this project is installed.
+Please make and install a development build on the device first.
+```
+
+Choose one of the following.
+
+**Option A — Build locally** (compiles, installs, and launches in one step; requires the native toolchain):
+
+```bash
+npx expo run:android   # Android Studio + SDK + emulator or USB device
+npx expo run:ios       # macOS + Xcode + CocoaPods + simulator or device
+```
+
+**Option B — Build with EAS** (no local native toolchain required; install the resulting artifact):
+
+```bash
+# Android device / emulator
+eas build --profile development --platform android
+# iOS device
+eas build --profile development --platform ios
+# iOS simulator
+eas build --profile development-simulator --platform ios
+```
+
+**Prerequisites for local builds (Option A):**
+
+- **Android:** Android Studio with the Android SDK + platform-tools, JDK 17, and a running emulator or a physical device with USB debugging enabled (`adb devices` should list it).
+- **iOS:** macOS with Xcode + Command Line Tools and CocoaPods, plus a booted simulator or a registered device.
+
+> You only need to (re)build the development client when native dependencies change. For everyday JS changes, just start the dev server (step 4).
+
+### 4. Start the Development Server
+
+Once a development build is installed on the device/emulator:
+
+```bash
+npx expo start --dev-client
+```
+
+Then press `a` (Android) or `i` (iOS), or scan the QR code from the installed dev build. Add `--clear` after any `.env` or native change to reset the Metro cache:
+
+```bash
+npx expo start --dev-client --clear
+```
 
 📖 [Expo Development Builds](https://docs.expo.dev/develop/development-builds/introduction/)
 

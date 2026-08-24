@@ -10,6 +10,22 @@ on:
       - '**.md'
   workflow_dispatch:
     inputs:
+      profile:
+        description: 'EAS build profile to run'
+        type: choice
+        options:
+          - development
+          - testing
+          - production
+        default: development
+      platform:
+        description: 'Platform(s) to build'
+        type: choice
+        options:
+          - all
+          - ios
+          - android
+        default: all
       debug-mode:
         description: 'Run in debug mode (skips EAS builds)'
         type: boolean
@@ -32,6 +48,7 @@ jobs:
   eas-build:
     needs: determine-release-type
     if: >-
+      github.event_name == 'workflow_dispatch' ||
       github.ref == 'refs/heads/main' ||
       (startsWith(github.ref, 'refs/heads/hotfix/') && contains(github.event.head_commit.message, '[build]')) ||
       (startsWith(github.ref, 'refs/heads/feature/') && contains(github.event.head_commit.message, '[build]'))
@@ -58,7 +75,16 @@ jobs:
         run: |
           VERSION=${{ needs.determine-release-type.outputs.release-version }}
           echo "App version: $VERSION"
-          
+
+          # Manual dispatch: use the profile/platform selected in the Actions tab.
+          if [[ "${{ github.event_name }}" == 'workflow_dispatch' ]]; then
+            echo "Manual dispatch - profile: ${{ github.event.inputs.profile }}, platform: ${{ github.event.inputs.platform }}"
+            echo "EAS_BUILD_PROFILE=${{ github.event.inputs.profile }}" >> $GITHUB_ENV
+            echo "EAS_BUILD_PLATFORM=${{ github.event.inputs.platform }}" >> $GITHUB_ENV
+            echo "RUN_BUILD=true" >> $GITHUB_ENV
+            exit 0
+          fi
+
           if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
             # Check if this is a release-please commit
             COMMIT_MESSAGE=$(git log -1 --pretty=%B)
@@ -97,8 +123,8 @@ jobs:
             echo "RUN_BUILD=true" >> $GITHUB_ENV
             echo "Skipping EAS build (debug mode)"
           elif [[ "$RUN_BUILD" == "true" ]]; then
-            echo "Triggering EAS build with profile: $EAS_BUILD_PROFILE"
-            eas build --platform all --profile $EAS_BUILD_PROFILE --non-interactive
+            echo "Triggering EAS build with profile: $EAS_BUILD_PROFILE on platform: ${EAS_BUILD_PLATFORM:-all}"
+            eas build --platform ${EAS_BUILD_PLATFORM:-all} --profile $EAS_BUILD_PROFILE --non-interactive
           else
             echo "OTA update disabled, skipping EAS build"
           fi
