@@ -1,54 +1,34 @@
-import { AppProvider, UserProvider, RealmProvider } from '@realm/react';
-import { OpenRealmBehaviorType, OpenRealmTimeOutBehavior, SyncError, WaitForSync } from 'realm';
-import React, { useState } from 'react';
+import { RealmProvider } from '@realm/react';
+import React from 'react';
 
-import SurveyResults from '../models/SurveyResults';
 import SurveyDesign from '../models/SurveyDesign';
 
 import RealmLoading from '../screens/RealmLoading';
 import LoginWrapper from '../screens/LoginWrapper';
+import { AuthProvider, useAuth } from './AuthContext';
 
-const APP_ID = 'data-collection-0-pybsrtz';
+const AuthGate = ({ children }) => {
+    const { isAuthenticated, isLoading } = useAuth();
 
-const RealmWrapper = ({children}) => {
+    if (isLoading) {
+        return <RealmLoading />;
+    }
 
-    const [syncError, setSyncError] = useState(null);
-    const realmAccessBehavior = {
-        type: OpenRealmBehaviorType.OpenImmediately,
-    };
+    if (!isAuthenticated) {
+        return <LoginWrapper />;
+    }
 
     return (
-        <AppProvider id={APP_ID} logLevel={'trace'} logger={(level, message) => console.log(`[${level}]: ${message}`)}>
-            <UserProvider fallback={LoginWrapper}>
-                <RealmProvider
-                    schema={[SurveyResults, SurveyDesign]}
-                    fallback={<RealmLoading />}
-                    sync={{
-                        flexible: true,
-                        existingRealmBehavior: realmAccessBehavior,
-                        newRealmFileBehavior: realmAccessBehavior,
-                        
-                        onError: (_, error) => {
-                            console.log("I'm In the sync error handler!");
-                            setSyncError(error);               
-                        },
-
-                        initialSubscriptions: {
-                            update(subs, realm) {
-                            subs.add(realm.objects(SurveyDesign).filtered("name != nil"), {
-                                name: "All Survey Designs",
-                                behavior: WaitForSync.Never,
-                            });
-                            },
-                        },
-                    }}
-                >
-                    {children}
-                </RealmProvider>
-            </UserProvider>
-        </AppProvider>
-
+        <RealmProvider schema={[SurveyDesign]} fallback={<RealmLoading />}>
+            {children}
+        </RealmProvider>
     );
-}
+};
+
+const RealmWrapper = ({ children }) => (
+    <AuthProvider>
+        <AuthGate>{children}</AuthGate>
+    </AuthProvider>
+);
 
 export default RealmWrapper;

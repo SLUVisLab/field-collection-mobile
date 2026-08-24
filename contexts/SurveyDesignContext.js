@@ -6,6 +6,7 @@ import SurveyDesign from '../models/SurveyDesign';
 import {BSON} from 'realm';
 import SurveyItem from '../utils/SurveyItem';
 import { id } from 'date-fns/locale';
+import api from '../utils/api';
 
 const SurveyDesignContext = createContext();
 
@@ -223,13 +224,15 @@ export const SurveyDesignProvider = ({ children }) => {
       
 
       try {
+        const designId = surveyDesign.id ? surveyDesign.id : new BSON.ObjectId();
+
         realm.write(() => {
           if (surveyDesign.id) {
             console.log("Updating existing survey design")
             const existingSurvey = realm.objectForPrimaryKey('SurveyDesign', surveyDesign.id);
 
             if (existingSurvey) {
-              console.log("Existing survey found in mongo")
+              console.log("Existing survey found")
               existingSurvey.name = surveyDesign["name"];
               existingSurvey.tasks = tasksObjArr;
               existingSurvey.collections = collectionsObjArr;
@@ -238,12 +241,20 @@ export const SurveyDesignProvider = ({ children }) => {
           } else {
             console.log("Creating new survey design")
             realm.create('SurveyDesign', {
-              _id: new BSON.ObjectId(),
+              _id: designId,
               name: surveyDesign["name"],
               tasks: tasksObjArr,
               collections: collectionsObjArr
             });
           }
+        });
+
+        // Push the design to the custom API (replaces Atlas sync).
+        await api.upsertDesign({
+          _id: designId.toHexString(),
+          name: surveyDesign["name"],
+          tasks: tasksObjArr,
+          collections: collectionsObjArr
         });
 
         resolve();
@@ -344,6 +355,36 @@ export const SurveyDesignProvider = ({ children }) => {
 
   }
 
+  // Pull all designs from the custom API and hydrate the local Realm cache so the
+  // existing useRealm() screens keep working (replaces Atlas flexible sync).
+  const loadDesignsFromAPI = async (realm) => {
+    const documents = await api.getDesigns();
+
+    realm.write(() => {
+      for (const doc of documents) {
+        if (!doc || !doc._id) continue;
+
+        const _id = new BSON.ObjectId(doc._id);
+        const existing = realm.objectForPrimaryKey('SurveyDesign', _id);
+
+        if (existing) {
+          existing.name = doc.name;
+          existing.tasks = doc.tasks ?? [];
+          existing.collections = doc.collections ?? [];
+        } else {
+          realm.create('SurveyDesign', {
+            _id,
+            name: doc.name,
+            tasks: doc.tasks ?? [],
+            collections: doc.collections ?? []
+          });
+        }
+      }
+    });
+
+    return documents.length;
+  };
+
   return (
     <SurveyDesignContext.Provider 
       value={{
@@ -351,6 +392,7 @@ export const SurveyDesignProvider = ({ children }) => {
           setSurveyDesign,
           saveSurveyDesign,
           surveyFromMongo,
+          loadDesignsFromAPI,
           setName,
           addTask,
           updateTask,
