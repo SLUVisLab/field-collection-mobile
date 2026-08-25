@@ -22,7 +22,7 @@ module.exports = {
       ],
       ios: {
         supportsTablet: true,
-        bundleIdentifier: "com.astylianou.bii-phenotyper",
+        bundleIdentifier: "org.imagingforgood.gather",
         googleServicesFile: process.env.GOOGLE_SERVICES_IOS,
         config: {
           // Here we can directly use process.env
