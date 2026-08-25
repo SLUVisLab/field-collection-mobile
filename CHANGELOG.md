@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/SLUVisLab/field-collection-mobile/compare/v1.3.0...v2.0.0) (2026-08-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* Point mobile app at gather API instead of Atlas ([#62](https://github.com/SLUVisLab/field-collection-mobile/issues/62))
+
+### Features
+
+* Point mobile app at gather API instead of Atlas ([#62](https://github.com/SLUVisLab/field-collection-mobile/issues/62)) ([083a3df](https://github.com/SLUVisLab/field-collection-mobile/commit/083a3dfeb2d05a5031d05e3cafdedbda82ccce95))
+
 ## [1.3.0](https://github.com/SLUVisLab/field-collection-mobile/compare/v1.2.0...v1.3.0) (2025-08-07)
 
 
