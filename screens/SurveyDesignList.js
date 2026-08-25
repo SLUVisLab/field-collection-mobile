@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useSurveyDesign } from '../contexts/SurveyDesignContext'
 import styles from '../Styles';
@@ -10,7 +10,7 @@ import { tr } from 'date-fns/locale';
 
 const SurveyDesignList = ({ navigation }) => {
 
-  const { clearSurveyDesign, surveyFromMongo } = useSurveyDesign()
+  const { clearSurveyDesign, surveyFromMongo, loadDesignsFromAPI } = useSurveyDesign()
 
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -20,6 +20,13 @@ const SurveyDesignList = ({ navigation }) => {
 
   // retrieve the set of objects and sort them alphabetically
   const designs = realm.objects("SurveyDesign").sorted("name");
+
+  // Refresh designs from the API into the local Realm cache on mount.
+  useEffect(() => {
+    loadDesignsFromAPI(realm).catch((error) => {
+      console.error('Failed to load designs from API:', error);
+    });
+  }, []);
 
   // Function to exit edit mode
   const exitEditMode = () => {

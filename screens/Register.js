@@ -1,41 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 import styles from '../Styles';
 import Toast from 'react-native-toast-message';
-import { useEmailPasswordAuth, AuthOperationName } from '@realm/react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const {register, result, logIn} = useEmailPasswordAuth();
+    const { register } = useAuth();
 
-    useEffect(() => {
-        console.log("checking for succefful registration")
-        if (result.success && result.operation === AuthOperationName.Register) {
-            console.log("registration successful")
-            logIn({email, password});
-            
-        } else {
-            console.log("registration failed")
-            Toast.show({
-              type: 'failure',
-              position: 'bottom',
-              text1: 'Registration Failed',
-              visibilityTime: 1000,
-              autoHide: true,
-              topOffset: 30,
-              bottomOffset: 40,
-            });
-        }
-
-        
-
-    }, [result, logIn, email, password]);
-
-    const performRegistration = () => {
-      console.log("submit button clicked")
-      register({email, password});
+    const performRegistration = async () => {
+      console.log("submit button clicked");
+      try {
+        // createUserWithEmailAndPassword also signs the new user in.
+        await register(email, password);
+        console.log("registration successful");
+      } catch (error) {
+        console.log("registration failed", error);
+        Toast.show({
+          type: 'failure',
+          position: 'bottom',
+          text1: 'Registration Failed',
+          visibilityTime: 1000,
+          autoHide: true,
+          topOffset: 30,
+          bottomOffset: 40,
+        });
+      }
     };
   
     return (

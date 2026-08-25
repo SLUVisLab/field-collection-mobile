@@ -13,6 +13,7 @@ import {BSON} from 'realm';
 // import Observation from '../models/Observation';
 // import SurveyResults from '../models/SurveyResults';
 import TaskManifest from '../tasks/TaskManifest';
+import api from '../utils/api';
 
 import { getFileExtensionFromPathOrBlob, generateDescriptiveFilename, isMedia } from '../utils/mediaUtils';
 
@@ -994,22 +995,19 @@ export const SurveyDataProvider = ({ children }) => {
           const {processedSurvey, localMediaPaths} = await handleMediaItems(surveyData, surveyKey);
           mediaPaths = localMediaPaths;
           
-          // Update progress to indicate we're saving to Realm
+          // Update progress to indicate we're saving to the API
           updateUploadProgress(surveyKey, 'saving to database', 90);
-          
-          // Save to Realm database
-          // console.log("Saving to realm with data:", JSON.stringify(processedSurvey, null, 2));
-          realm.write(() => {
-            realm.create('SurveyResults', {
-              _id: new BSON.ObjectId(),
-              name: processedSurvey["surveyName"],
-              dateStarted: new Date(processedSurvey["startTime"]),
-              dateCompleted: new Date(processedSurvey["stopTime"]),
-              user: processedSurvey["user"],
-              tasks: processedSurvey["tasks"],
-              collections: processedSurvey["collections"],
-              observations: processedSurvey["observations"]
-            });
+
+          // Send the completed survey to the custom API (replaces Atlas sync).
+          await api.postResult({
+            _id: new BSON.ObjectId().toHexString(),
+            name: processedSurvey["surveyName"],
+            dateStarted: new Date(processedSurvey["startTime"]).toISOString(),
+            dateCompleted: new Date(processedSurvey["stopTime"]).toISOString(),
+            user: processedSurvey["user"],
+            tasks: processedSurvey["tasks"],
+            collections: processedSurvey["collections"],
+            observations: processedSurvey["observations"]
           });
           
           // Clean up

@@ -27,51 +27,7 @@ import SaveSurvey from './screens/SaveSurvey';
 import UploadSurveys from './screens/UploadSurveys';
 import SurveyExplorer from './screens/SurveyExplorer';
 
-// Fallback log in component that's defined in another file.
-import LoginWrapper from './screens/LoginWrapper';
-
-// const APP_ID = 'data-collection-0-pybsrtz';
-
 const Stack = createNativeStackNavigator();
-
-// const SyncErrorFallback = ({errorMessage}) => (
-//   <View style={styles.ErrorBoundryFallbackContainer}>
-//     <Text style={styles.ErrorBoundryFallbackText}>App Failed to initialize. Please check for network connection and reload.</Text>
-//     {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
-//   </View>
-// );
-
-// const styles = StyleSheet.create({
-//   ErrorBoundryFallbackContainer: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#fff',
-//   },
-//   ErrorBoundryFallbackText: {
-//     fontSize: 16,
-//     color: 'red',
-//   },
-//   errorMessage: {
-//     marginTop: 10,
-//     fontSize: 14,
-//     color: 'black',
-//     textAlign: 'center',
-//   },
-// });
-
-// // an alternate option for realmAccessBehavior
-// // which will download the realm before opening it
-// // and if it takes more than 1 second, it will open the local realm
-// const realmAccessBehavior = {
-//   type: 'downloadBeforeOpen',
-//   timeOutBehavior: 'openLocalRealm',
-//   timeOut: 1000,
-// };
-
-// const realmAccessBehavior = {
-//   type: OpenRealmBehaviorType.OpenImmediately,
-// };
 
 class App extends React.Component {
 
