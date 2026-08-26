@@ -1,0 +1,63 @@
+- Creating native directory (./ios)
+✔ Created native directory
+- Updating package.json
+✔ Updated package.json | no changes
+- Running prebuild
+✔ Finished prebuild
+- Installing CocoaPods...
+> pod install
+- Installing CocoaPods...
+Couldn't install Pods. Updating the Pods project and trying again...
+- Couldn't install Pods. Updating the Pods project and trying again...
+> pod install --repo-update
+- Couldn't install Pods. Updating the Pods project and trying again...
+Couldn't install Pods. Updating the Pods project and trying again...
+- Couldn't install Pods. Updating the Pods project and trying again...
+⚠️  Something went wrong running `pod install` in the `ios` directory.
+Command `pod install` failed.
+└─ Cause: pod install --repo-update --ansi exited with non-zero code: 1
+[33mWARNING: CocoaPods requires your terminal to be using UTF-8 encoding.
+    Consider adding the following to ~/.profile:
+
+    export LANG=en_US.UTF-8
+    [0m
+Ignoring ffi-1.17.0 because its extensions are not built. Try: gem pristine ffi --version 1.17.0
+Ignoring ffi-1.17.0 because its extensions are not built. Try: gem pristine ffi --version 1.17.0
+Ignoring ffi-1.17.0 because its extensions are not built. Try: gem pristine ffi --version 1.17.0
+/opt/homebrew/Cellar/ruby/4.0.5/lib/ruby/4.0.0/unicode_normalize/normalize.rb:153:in 'UnicodeNormalize.normalize': Unicode Normalization not appropriate for ASCII-8BIT (Encoding::CompatibilityError)
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/config.rb:167:in 'String#unicode_normalize'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/config.rb:167:in 'Pod::Config#installation_root'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/config.rb:227:in 'Pod::Config#podfile_path'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/user_interface/error_report.rb:105:in 'Pod::UserInterface::ErrorReport.markdown_podfile'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/user_interface/error_report.rb:30:in 'Pod::UserInterface::ErrorReport.report'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/command.rb:66:in 'Pod::Command.report_error'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/claide-1.1.0/lib/claide/command.rb:396:in 'CLAide::Command.handle_exception'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/claide-1.1.0/lib/claide/command.rb:337:in 'CLAide::Command.run'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/command.rb:52:in 'Pod::Command.run'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/bin/pod:55:in '<top (required)>'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/bin/pod:25:in 'Kernel#load'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/bin/pod:25:in '<main>'
+/opt/homebrew/Cellar/ruby/4.0.5/lib/ruby/4.0.0/unicode_normalize/normalize.rb:153:in 'UnicodeNormalize.normalize': Unicode Normalization not appropriate for ASCII-8BIT (Encoding::CompatibilityError)
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/config.rb:167:in 'String#unicode_normalize'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/config.rb:167:in 'Pod::Config#installation_root'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/config.rb:227:in 'Pod::Config#podfile_path'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/config.rb:206:in 'Pod::Config#podfile'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/command.rb:160:in 'Pod::Command#verify_podfile_exists!'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/command/install.rb:46:in 'Pod::Command::Install#run'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/claide-1.1.0/lib/claide/command.rb:334:in 'CLAide::Command.run'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/lib/cocoapods/command.rb:52:in 'Pod::Command.run'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/gems/cocoapods-1.16.2/bin/pod:55:in '<top (required)>'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/bin/pod:25:in 'Kernel#load'
+	from /opt/homebrew/Cellar/cocoapods/1.16.2_1/libexec/bin/pod:25:in '<main>'
+› Skipping dev server
+› Using --device C8B75D4C-E7FA-4838-A569-A197E7F73D09
+› Planning build
+› Executing m24webviewxformssidecar » [CP] Check Pods Manifest.lock
+
+❌  error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.
+
+
+
+› 1 error(s), and 0 warning(s)
+
+CommandError: Failed to build iOS project. "xcodebuild" exited with error code 65.

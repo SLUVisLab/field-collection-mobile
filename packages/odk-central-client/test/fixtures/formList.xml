@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xforms xmlns="http://openrosa.org/xforms/xformsList">
+  <xform>
+    <formID>m2_4_fixture</formID>
+    <name>M2.4 Fixture</name>
+    <version>2024010100</version>
+    <hash>md5:abc123def456</hash>
+    <downloadUrl>https://central.example.org/v1/projects/1/forms/m2_4_fixture.xml</downloadUrl>
+  </xform>
+  <xform>
+    <formID>with_media</formID>
+    <name>Form With Media</name>
+    <version>1</version>
+    <hash>md5:0000</hash>
+    <downloadUrl>https://central.example.org/v1/projects/1/forms/with_media.xml</downloadUrl>
+    <manifestUrl>https://central.example.org/v1/projects/1/forms/with_media/manifest</manifestUrl>
+  </xform>
+</xforms>

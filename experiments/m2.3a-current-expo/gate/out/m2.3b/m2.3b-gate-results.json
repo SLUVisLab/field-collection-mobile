@@ -1,0 +1,7564 @@
+{
+  "generatedAt": "2026-08-26T03:59:26.043Z",
+  "versions": {
+    "node": "v22.15.0",
+    "expoSdk": "~57.0.16",
+    "expoCli": "57.0.18",
+    "reactNative": "0.86.2",
+    "reactNativePackageVersion": "0.86.2",
+    "metro": "0.84.5",
+    "hermesCompiler": "250829098.0.16"
+  },
+  "packageAnalysis": {
+    "packagePath": "node_modules/@getodk/xforms-engine/package.json",
+    "type": "module",
+    "main": null,
+    "module": null,
+    "browser": null,
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "solid": "./dist/solid.js",
+        "import": "./dist/index.js",
+        "browser": "./dist/index.js",
+        "development": "./src/index.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "subpathExports": [
+      "."
+    ],
+    "nodeResolvedEntry": "file:///Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@getodk/xforms-engine/dist/index.js",
+    "historicalMetroResolutionFailure": {
+      "sourcePath": "gate/out/m2.3a-gate-results.json",
+      "attemptedMainPath": "/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@getodk/xforms-engine/index",
+      "excerpt": "=================================================================================================\nFrom React Native 0.73, your project's Metro config should extend '@react-native/metro-config'\nor it will fail to build. Please copy the template at:\nhttps://github.com/react-native-community/template/blob/main/template/metro.config.js\nThis warning will be removed in future (https://github.com/facebook/metro/issues/1018).\n=================================================================================================\n● Validation Warning:\n\n  Unknown option \"watcher.unstable_workerThreads\" with value false was found.\n  This is probably a typing mistake. Fixing it will remove this message.\n\nerror While trying to resolve module `@getodk/xforms-engine` from file `/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/src/probeDefaultImport.js`, the package `/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@getodk/xforms-engine/package.json` was successfully found. However, this package itself specifies a `main` module field that could not be resolved (`/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@getodk/xforms-engine/index`. Indeed, none of these files exist:\n\n  * /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@getodk/xforms-engine/index(.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx|.android.mjs|.native.mjs|.mjs|.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.cjs|.native.cjs|.cjs|.android.scss|.native.scss|.sc\n...[truncated 540 chars]"
+    },
+    "stockReleaseMinimalResults": [
+      {
+        "label": "stock-minimal",
+        "modeName": "stock",
+        "entryFile": "gate/metroEntryMinimalDefault.js",
+        "platform": "android",
+        "buildMode": "release",
+        "ok": false,
+        "status": 1,
+        "hasModuleResolutionFailure": false,
+        "hasTopLevelAwaitFailure": true,
+        "outputPath": "gate/out/m2.3b/embed/stock-minimal-stock-android-release.min.jsbundle",
+        "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\nAndroid Bundling failed 7493ms gate/metroEntryMinimalDefault.js (2 modules)\n",
+        "stderr": "\nFailed to generate Hermes bytecode for: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/metroEntryMinimalDefault.js\n\n/var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.6100308847121387-1787716657472/index.js:3507:29: error: ';' expected\n  var BLOB_BEHAVIOR = await detectBlobBehavior();\n                            ^\nEmitted 1 errors. exiting.\n\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.6100308847121387-1787716657472/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.6100308847121387-1787716657472/index.js -O exited with non-zero code: 2\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.6100308847121387-1787716657472/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.6100308847121387-1787716657472/index.js -O exited with non-zero code: 2\n    at ChildProcess.completionListener (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:113:23)\n    at Object.onceWrapper (node:events:633:26)\n    at ChildProcess.emit (node:events:518:28)\n    at maybeClose (node:internal/child_process:1101:16)\n    at Socket.<anonymous> (node:internal/child_process:456:11)\n    at Socket.emit (node:events:518:28)\n    at Pipe.<anonymous> (node:net:351:12)\n    ...\n    at spawnAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:9:23)\n    at directlyBuildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:84:41)\n    at async buildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:62:12)\n    at async Chunk.serializeToAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:374:40)\n    at async /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:606:31\n    at async Promise.all (index 0)\n    at async serializeChunksAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:609:5)\n    at async graphToSerialAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:74:22)\n    at async expoSerializer (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/withExpoSerializers.js:244:24)\n    at async MetroBundlerDevServer._bundleDirectAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/cli/build/src/start/server/metro/MetroBundlerDevServer.js:1632:28)\n"
+      },
+      {
+        "label": "stock-minimal",
+        "modeName": "stock",
+        "entryFile": "gate/metroEntryMinimalDefault.js",
+        "platform": "ios",
+        "buildMode": "release",
+        "ok": false,
+        "status": 1,
+        "hasModuleResolutionFailure": false,
+        "hasTopLevelAwaitFailure": true,
+        "outputPath": "gate/out/m2.3b/embed/stock-minimal-stock-ios-release.min.jsbundle",
+        "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\niOS Bundling failed 7236ms gate/metroEntryMinimalDefault.js (2 modules)\n",
+        "stderr": "\nFailed to generate Hermes bytecode for: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/metroEntryMinimalDefault.js\n\n/var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.js:3507:29: error: ';' expected\n  var BLOB_BEHAVIOR = await detectBlobBehavior();\n                            ^\nEmitted 1 errors. exiting.\n\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.js -O exited with non-zero code: 2\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.js -O exited with non-zero code: 2\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.js -O exited with non-zero code: 2\n    at ChildProcess.completionListener (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:113:23)\n    at Object.onceWrapper (node:events:633:26)\n    at ChildProcess.emit (node:events:518:28)\n    at maybeClose (node:internal/child_process:1101:16)\n    at Socket.<anonymous> (node:internal/child_process:456:11)\n    at Socket.emit (node:events:518:28)\n    at Pipe.<anonymous> (node:net:351:12)\n    ...\n    at spawnAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:9:23)\n    at directlyBuildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:84:41)\n    at async buildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:62:12)\n    at async Chunk.serializeToAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:374:40)\n    at async /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:606:31\n    at async Promise.all (index 0)\n    at async serializeChunksAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:609:5)\n    at async graphToSerialAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:74:22)\n    at async expoSerializer (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/withExpoSerializers.js:244:24)\n    at async MetroBundlerDevServer._bundleDirectAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/cli/build/src/start/server/metro/MetroBundlerDevServer.js:1632:28)\n"
+      }
+    ],
+    "rootCause": "On current Expo bundling (`expo export:embed`), package entry resolves and Hermes then fails on top-level await; historical RN CLI bundling captured a separate main/index resolution path failure."
+  },
+  "syntaxInventory": {
+    "files": [
+      {
+        "sourcePath": "node_modules/@getodk/xforms-engine/dist/index.js",
+        "topLevelAwaitLocations": [
+          {
+            "line": 99,
+            "column": 23
+          },
+          {
+            "line": 7688,
+            "column": 26
+          }
+        ],
+        "classFieldLocations": [
+          {
+            "line": 189,
+            "column": 3
+          },
+          {
+            "line": 204,
+            "column": 3
+          },
+          {
+            "line": 7594,
+            "column": 3
+          },
+          {
+            "line": 7621,
+            "column": 3
+          },
+          {
+            "line": 7622,
+            "column": 3
+          },
+          {
+            "line": 7623,
+            "column": 3
+          },
+          {
+            "line": 7624,
+            "column": 3
+          },
+          {
+            "line": 7642,
+            "column": 3
+          },
+          {
+            "line": 7648,
+            "column": 3
+          },
+          {
+            "line": 7649,
+            "column": 3
+          },
+          {
+            "line": 7660,
+            "column": 3
+          },
+          {
+            "line": 7674,
+            "column": 3
+          },
+          {
+            "line": 7928,
+            "column": 3
+          },
+          {
+            "line": 8039,
+            "column": 3
+          },
+          {
+            "line": 8040,
+            "column": 3
+          },
+          {
+            "line": 8041,
+            "column": 3
+          },
+          {
+            "line": 8042,
+            "column": 3
+          },
+          {
+            "line": 8043,
+            "column": 3
+          },
+          {
+            "line": 8044,
+            "column": 3
+          },
+          {
+            "line": 8045,
+            "column": 3
+          },
+          {
+            "line": 8046,
+            "column": 3
+          },
+          {
+            "line": 8056,
+            "column": 3
+          },
+          {
+            "line": 8057,
+            "column": 3
+          },
+          {
+            "line": 8058,
+            "column": 3
+          },
+          {
+            "line": 8059,
+            "column": 3
+          },
+          {
+            "line": 8060,
+            "column": 3
+          },
+          {
+            "line": 8341,
+            "column": 3
+          },
+          {
+            "line": 8342,
+            "column": 3
+          },
+          {
+            "line": 8346,
+            "column": 3
+          },
+          {
+            "line": 8352,
+            "column": 3
+          },
+          {
+            "line": 8354,
+            "column": 3
+          },
+          {
+            "line": 8355,
+            "column": 3
+          },
+          {
+            "line": 8357,
+            "column": 3
+          },
+          {
+            "line": 8358,
+            "column": 3
+          },
+          {
+            "line": 8362,
+            "column": 3
+          },
+          {
+            "line": 8363,
+            "column": 3
+          },
+          {
+            "line": 8364,
+            "column": 3
+          },
+          {
+            "line": 8365,
+            "column": 3
+          },
+          {
+            "line": 8366,
+            "column": 3
+          },
+          {
+            "line": 8367,
+            "column": 3
+          },
+          {
+            "line": 8368,
+            "column": 3
+          },
+          {
+            "line": 8369,
+            "column": 3
+          },
+          {
+            "line": 8370,
+            "column": 3
+          },
+          {
+            "line": 8430,
+            "column": 3
+          },
+          {
+            "line": 8440,
+            "column": 3
+          },
+          {
+            "line": 8593,
+            "column": 3
+          },
+          {
+            "line": 8594,
+            "column": 3
+          },
+          {
+            "line": 8634,
+            "column": 3
+          },
+          {
+            "line": 8635,
+            "column": 3
+          },
+          {
+            "line": 8636,
+            "column": 3
+          },
+          {
+            "line": 8651,
+            "column": 3
+          },
+          {
+            "line": 8657,
+            "column": 3
+          },
+          {
+            "line": 8694,
+            "column": 3
+          },
+          {
+            "line": 8695,
+            "column": 3
+          },
+          {
+            "line": 8699,
+            "column": 3
+          },
+          {
+            "line": 8700,
+            "column": 3
+          },
+          {
+            "line": 8701,
+            "column": 3
+          },
+          {
+            "line": 8702,
+            "column": 3
+          },
+          {
+            "line": 8703,
+            "column": 3
+          },
+          {
+            "line": 8704,
+            "column": 3
+          },
+          {
+            "line": 8705,
+            "column": 3
+          },
+          {
+            "line": 8773,
+            "column": 3
+          },
+          {
+            "line": 8774,
+            "column": 3
+          },
+          {
+            "line": 8775,
+            "column": 3
+          },
+          {
+            "line": 8776,
+            "column": 3
+          },
+          {
+            "line": 8821,
+            "column": 3
+          },
+          {
+            "line": 8822,
+            "column": 3
+          },
+          {
+            "line": 8848,
+            "column": 3
+          },
+          {
+            "line": 8849,
+            "column": 3
+          },
+          {
+            "line": 8850,
+            "column": 3
+          },
+          {
+            "line": 8851,
+            "column": 3
+          },
+          {
+            "line": 8852,
+            "column": 3
+          },
+          {
+            "line": 8853,
+            "column": 3
+          },
+          {
+            "line": 8854,
+            "column": 3
+          },
+          {
+            "line": 8946,
+            "column": 3
+          },
+          {
+            "line": 8947,
+            "column": 3
+          },
+          {
+            "line": 8948,
+            "column": 3
+          },
+          {
+            "line": 8949,
+            "column": 3
+          },
+          {
+            "line": 8950,
+            "column": 3
+          },
+          {
+            "line": 8951,
+            "column": 3
+          },
+          {
+            "line": 8952,
+            "column": 3
+          },
+          {
+            "line": 9364,
+            "column": 3
+          },
+          {
+            "line": 9367,
+            "column": 3
+          },
+          {
+            "line": 9368,
+            "column": 3
+          },
+          {
+            "line": 9369,
+            "column": 3
+          },
+          {
+            "line": 9370,
+            "column": 3
+          },
+          {
+            "line": 9371,
+            "column": 3
+          },
+          {
+            "line": 9372,
+            "column": 3
+          },
+          {
+            "line": 9373,
+            "column": 3
+          },
+          {
+            "line": 9374,
+            "column": 3
+          },
+          {
+            "line": 9380,
+            "column": 3
+          },
+          {
+            "line": 9381,
+            "column": 3
+          },
+          {
+            "line": 9382,
+            "column": 3
+          },
+          {
+            "line": 9383,
+            "column": 3
+          },
+          {
+            "line": 9384,
+            "column": 3
+          },
+          {
+            "line": 9385,
+            "column": 3
+          },
+          {
+            "line": 9386,
+            "column": 3
+          },
+          {
+            "line": 9387,
+            "column": 3
+          },
+          {
+            "line": 9393,
+            "column": 3
+          },
+          {
+            "line": 9394,
+            "column": 3
+          },
+          {
+            "line": 9395,
+            "column": 3
+          },
+          {
+            "line": 9396,
+            "column": 3
+          },
+          {
+            "line": 9397,
+            "column": 3
+          },
+          {
+            "line": 9398,
+            "column": 3
+          },
+          {
+            "line": 9399,
+            "column": 3
+          },
+          {
+            "line": 9400,
+            "column": 3
+          },
+          {
+            "line": 9412,
+            "column": 3
+          },
+          {
+            "line": 9413,
+            "column": 3
+          },
+          {
+            "line": 9414,
+            "column": 3
+          },
+          {
+            "line": 9415,
+            "column": 3
+          },
+          {
+            "line": 9416,
+            "column": 3
+          },
+          {
+            "line": 9417,
+            "column": 3
+          },
+          {
+            "line": 9418,
+            "column": 3
+          },
+          {
+            "line": 9419,
+            "column": 3
+          },
+          {
+            "line": 9422,
+            "column": 3
+          },
+          {
+            "line": 9431,
+            "column": 3
+          },
+          {
+            "line": 9432,
+            "column": 3
+          },
+          {
+            "line": 9433,
+            "column": 3
+          },
+          {
+            "line": 9434,
+            "column": 3
+          },
+          {
+            "line": 9435,
+            "column": 3
+          },
+          {
+            "line": 9436,
+            "column": 3
+          },
+          {
+            "line": 9437,
+            "column": 3
+          },
+          {
+            "line": 9438,
+            "column": 3
+          },
+          {
+            "line": 9448,
+            "column": 3
+          },
+          {
+            "line": 9449,
+            "column": 3
+          },
+          {
+            "line": 9450,
+            "column": 3
+          },
+          {
+            "line": 9451,
+            "column": 3
+          },
+          {
+            "line": 9452,
+            "column": 3
+          },
+          {
+            "line": 9453,
+            "column": 3
+          },
+          {
+            "line": 9454,
+            "column": 3
+          },
+          {
+            "line": 9463,
+            "column": 3
+          },
+          {
+            "line": 9464,
+            "column": 3
+          },
+          {
+            "line": 9465,
+            "column": 3
+          },
+          {
+            "line": 9466,
+            "column": 3
+          },
+          {
+            "line": 9467,
+            "column": 3
+          },
+          {
+            "line": 9468,
+            "column": 3
+          },
+          {
+            "line": 9469,
+            "column": 3
+          },
+          {
+            "line": 9478,
+            "column": 3
+          },
+          {
+            "line": 9479,
+            "column": 3
+          },
+          {
+            "line": 9480,
+            "column": 3
+          },
+          {
+            "line": 9481,
+            "column": 3
+          },
+          {
+            "line": 9482,
+            "column": 3
+          },
+          {
+            "line": 9483,
+            "column": 3
+          },
+          {
+            "line": 9484,
+            "column": 3
+          },
+          {
+            "line": 9492,
+            "column": 3
+          },
+          {
+            "line": 9493,
+            "column": 3
+          },
+          {
+            "line": 9494,
+            "column": 3
+          },
+          {
+            "line": 9495,
+            "column": 3
+          },
+          {
+            "line": 9496,
+            "column": 3
+          },
+          {
+            "line": 9497,
+            "column": 3
+          },
+          {
+            "line": 9498,
+            "column": 3
+          },
+          {
+            "line": 9626,
+            "column": 3
+          },
+          {
+            "line": 9643,
+            "column": 3
+          },
+          {
+            "line": 9644,
+            "column": 3
+          },
+          {
+            "line": 9645,
+            "column": 3
+          },
+          {
+            "line": 9646,
+            "column": 3
+          },
+          {
+            "line": 9647,
+            "column": 3
+          },
+          {
+            "line": 9648,
+            "column": 3
+          },
+          {
+            "line": 9720,
+            "column": 3
+          },
+          {
+            "line": 9730,
+            "column": 3
+          },
+          {
+            "line": 9731,
+            "column": 3
+          },
+          {
+            "line": 9732,
+            "column": 3
+          },
+          {
+            "line": 9736,
+            "column": 3
+          },
+          {
+            "line": 9790,
+            "column": 3
+          },
+          {
+            "line": 9791,
+            "column": 3
+          },
+          {
+            "line": 9792,
+            "column": 3
+          },
+          {
+            "line": 9831,
+            "column": 3
+          },
+          {
+            "line": 9832,
+            "column": 3
+          },
+          {
+            "line": 9833,
+            "column": 3
+          },
+          {
+            "line": 9854,
+            "column": 3
+          },
+          {
+            "line": 9861,
+            "column": 3
+          },
+          {
+            "line": 9912,
+            "column": 3
+          },
+          {
+            "line": 9919,
+            "column": 3
+          },
+          {
+            "line": 9933,
+            "column": 3
+          },
+          {
+            "line": 9945,
+            "column": 3
+          },
+          {
+            "line": 9946,
+            "column": 3
+          },
+          {
+            "line": 9960,
+            "column": 3
+          },
+          {
+            "line": 9961,
+            "column": 3
+          },
+          {
+            "line": 9962,
+            "column": 3
+          },
+          {
+            "line": 10052,
+            "column": 3
+          },
+          {
+            "line": 10053,
+            "column": 3
+          },
+          {
+            "line": 10132,
+            "column": 3
+          },
+          {
+            "line": 10133,
+            "column": 3
+          },
+          {
+            "line": 10134,
+            "column": 3
+          },
+          {
+            "line": 10135,
+            "column": 3
+          },
+          {
+            "line": 10136,
+            "column": 3
+          },
+          {
+            "line": 10137,
+            "column": 3
+          },
+          {
+            "line": 10138,
+            "column": 3
+          },
+          {
+            "line": 10139,
+            "column": 3
+          },
+          {
+            "line": 10140,
+            "column": 3
+          },
+          {
+            "line": 10141,
+            "column": 3
+          },
+          {
+            "line": 10142,
+            "column": 3
+          },
+          {
+            "line": 10143,
+            "column": 3
+          },
+          {
+            "line": 10144,
+            "column": 3
+          },
+          {
+            "line": 10145,
+            "column": 3
+          },
+          {
+            "line": 10146,
+            "column": 3
+          },
+          {
+            "line": 10147,
+            "column": 3
+          },
+          {
+            "line": 10148,
+            "column": 3
+          },
+          {
+            "line": 10149,
+            "column": 3
+          },
+          {
+            "line": 10150,
+            "column": 3
+          },
+          {
+            "line": 10151,
+            "column": 3
+          },
+          {
+            "line": 10166,
+            "column": 3
+          },
+          {
+            "line": 10176,
+            "column": 3
+          },
+          {
+            "line": 10177,
+            "column": 3
+          },
+          {
+            "line": 10178,
+            "column": 3
+          },
+          {
+            "line": 10179,
+            "column": 3
+          },
+          {
+            "line": 10180,
+            "column": 3
+          },
+          {
+            "line": 10195,
+            "column": 3
+          },
+          {
+            "line": 10196,
+            "column": 3
+          },
+          {
+            "line": 10197,
+            "column": 3
+          },
+          {
+            "line": 10198,
+            "column": 3
+          },
+          {
+            "line": 10199,
+            "column": 3
+          },
+          {
+            "line": 10212,
+            "column": 3
+          },
+          {
+            "line": 10244,
+            "column": 3
+          },
+          {
+            "line": 10246,
+            "column": 3
+          },
+          {
+            "line": 10248,
+            "column": 3
+          },
+          {
+            "line": 10249,
+            "column": 3
+          },
+          {
+            "line": 10251,
+            "column": 3
+          },
+          {
+            "line": 10252,
+            "column": 3
+          },
+          {
+            "line": 10275,
+            "column": 3
+          },
+          {
+            "line": 10276,
+            "column": 3
+          },
+          {
+            "line": 10278,
+            "column": 3
+          },
+          {
+            "line": 10279,
+            "column": 3
+          },
+          {
+            "line": 10308,
+            "column": 3
+          },
+          {
+            "line": 10309,
+            "column": 3
+          },
+          {
+            "line": 10310,
+            "column": 3
+          },
+          {
+            "line": 10311,
+            "column": 3
+          },
+          {
+            "line": 10312,
+            "column": 3
+          },
+          {
+            "line": 10322,
+            "column": 3
+          },
+          {
+            "line": 10323,
+            "column": 3
+          },
+          {
+            "line": 10324,
+            "column": 3
+          },
+          {
+            "line": 10325,
+            "column": 3
+          },
+          {
+            "line": 10326,
+            "column": 3
+          },
+          {
+            "line": 10398,
+            "column": 3
+          },
+          {
+            "line": 10401,
+            "column": 3
+          },
+          {
+            "line": 10402,
+            "column": 3
+          },
+          {
+            "line": 10403,
+            "column": 3
+          },
+          {
+            "line": 10404,
+            "column": 3
+          },
+          {
+            "line": 10405,
+            "column": 3
+          },
+          {
+            "line": 10841,
+            "column": 3
+          },
+          {
+            "line": 10842,
+            "column": 3
+          },
+          {
+            "line": 10843,
+            "column": 3
+          },
+          {
+            "line": 10844,
+            "column": 3
+          },
+          {
+            "line": 10845,
+            "column": 3
+          },
+          {
+            "line": 10846,
+            "column": 3
+          },
+          {
+            "line": 10847,
+            "column": 3
+          },
+          {
+            "line": 10848,
+            "column": 3
+          },
+          {
+            "line": 10849,
+            "column": 3
+          },
+          {
+            "line": 10850,
+            "column": 3
+          },
+          {
+            "line": 10851,
+            "column": 3
+          },
+          {
+            "line": 11389,
+            "column": 3
+          },
+          {
+            "line": 11390,
+            "column": 3
+          },
+          {
+            "line": 11418,
+            "column": 3
+          },
+          {
+            "line": 11419,
+            "column": 3
+          },
+          {
+            "line": 11452,
+            "column": 3
+          },
+          {
+            "line": 11478,
+            "column": 3
+          },
+          {
+            "line": 18231,
+            "column": 3
+          },
+          {
+            "line": 18971,
+            "column": 3
+          },
+          {
+            "line": 18972,
+            "column": 3
+          },
+          {
+            "line": 18973,
+            "column": 3
+          },
+          {
+            "line": 18974,
+            "column": 3
+          },
+          {
+            "line": 18975,
+            "column": 3
+          },
+          {
+            "line": 18976,
+            "column": 3
+          },
+          {
+            "line": 19097,
+            "column": 3
+          },
+          {
+            "line": 19102,
+            "column": 3
+          },
+          {
+            "line": 19107,
+            "column": 3
+          },
+          {
+            "line": 19374,
+            "column": 3
+          },
+          {
+            "line": 19378,
+            "column": 3
+          },
+          {
+            "line": 19383,
+            "column": 3
+          },
+          {
+            "line": 19385,
+            "column": 3
+          },
+          {
+            "line": 19386,
+            "column": 3
+          },
+          {
+            "line": 19387,
+            "column": 3
+          },
+          {
+            "line": 19388,
+            "column": 3
+          },
+          {
+            "line": 19389,
+            "column": 3
+          },
+          {
+            "line": 19390,
+            "column": 3
+          },
+          {
+            "line": 19391,
+            "column": 3
+          },
+          {
+            "line": 19392,
+            "column": 3
+          },
+          {
+            "line": 19393,
+            "column": 3
+          },
+          {
+            "line": 19394,
+            "column": 3
+          },
+          {
+            "line": 19395,
+            "column": 3
+          },
+          {
+            "line": 19396,
+            "column": 3
+          },
+          {
+            "line": 19397,
+            "column": 3
+          },
+          {
+            "line": 19450,
+            "column": 3
+          },
+          {
+            "line": 19451,
+            "column": 3
+          },
+          {
+            "line": 19507,
+            "column": 3
+          },
+          {
+            "line": 19552,
+            "column": 3
+          },
+          {
+            "line": 19553,
+            "column": 3
+          },
+          {
+            "line": 19835,
+            "column": 3
+          },
+          {
+            "line": 19836,
+            "column": 3
+          },
+          {
+            "line": 19837,
+            "column": 3
+          },
+          {
+            "line": 19838,
+            "column": 3
+          },
+          {
+            "line": 19839,
+            "column": 3
+          },
+          {
+            "line": 19840,
+            "column": 3
+          },
+          {
+            "line": 19856,
+            "column": 3
+          },
+          {
+            "line": 19858,
+            "column": 3
+          },
+          {
+            "line": 19859,
+            "column": 3
+          },
+          {
+            "line": 20110,
+            "column": 3
+          },
+          {
+            "line": 20111,
+            "column": 3
+          },
+          {
+            "line": 20112,
+            "column": 3
+          },
+          {
+            "line": 20113,
+            "column": 3
+          },
+          {
+            "line": 20114,
+            "column": 3
+          },
+          {
+            "line": 20131,
+            "column": 3
+          },
+          {
+            "line": 20164,
+            "column": 3
+          },
+          {
+            "line": 20192,
+            "column": 3
+          },
+          {
+            "line": 20207,
+            "column": 3
+          },
+          {
+            "line": 20208,
+            "column": 3
+          },
+          {
+            "line": 20209,
+            "column": 3
+          },
+          {
+            "line": 20216,
+            "column": 3
+          },
+          {
+            "line": 20217,
+            "column": 3
+          },
+          {
+            "line": 20218,
+            "column": 3
+          },
+          {
+            "line": 20219,
+            "column": 3
+          },
+          {
+            "line": 20220,
+            "column": 3
+          },
+          {
+            "line": 20228,
+            "column": 3
+          },
+          {
+            "line": 20229,
+            "column": 3
+          },
+          {
+            "line": 20230,
+            "column": 3
+          },
+          {
+            "line": 20231,
+            "column": 3
+          },
+          {
+            "line": 20307,
+            "column": 3
+          },
+          {
+            "line": 20308,
+            "column": 3
+          },
+          {
+            "line": 20309,
+            "column": 3
+          },
+          {
+            "line": 20310,
+            "column": 3
+          },
+          {
+            "line": 20311,
+            "column": 3
+          },
+          {
+            "line": 20364,
+            "column": 3
+          },
+          {
+            "line": 20365,
+            "column": 3
+          },
+          {
+            "line": 20366,
+            "column": 3
+          },
+          {
+            "line": 20378,
+            "column": 3
+          },
+          {
+            "line": 20379,
+            "column": 3
+          },
+          {
+            "line": 20380,
+            "column": 3
+          },
+          {
+            "line": 20411,
+            "column": 3
+          },
+          {
+            "line": 20422,
+            "column": 3
+          },
+          {
+            "line": 20423,
+            "column": 3
+          },
+          {
+            "line": 20463,
+            "column": 3
+          },
+          {
+            "line": 20464,
+            "column": 3
+          },
+          {
+            "line": 20465,
+            "column": 3
+          },
+          {
+            "line": 20466,
+            "column": 3
+          },
+          {
+            "line": 20467,
+            "column": 3
+          },
+          {
+            "line": 20468,
+            "column": 3
+          },
+          {
+            "line": 20469,
+            "column": 3
+          },
+          {
+            "line": 20483,
+            "column": 3
+          },
+          {
+            "line": 20501,
+            "column": 3
+          },
+          {
+            "line": 20502,
+            "column": 3
+          },
+          {
+            "line": 20503,
+            "column": 3
+          },
+          {
+            "line": 20504,
+            "column": 3
+          },
+          {
+            "line": 20505,
+            "column": 3
+          },
+          {
+            "line": 20514,
+            "column": 3
+          },
+          {
+            "line": 20515,
+            "column": 3
+          },
+          {
+            "line": 20516,
+            "column": 3
+          },
+          {
+            "line": 20517,
+            "column": 3
+          },
+          {
+            "line": 20583,
+            "column": 3
+          },
+          {
+            "line": 20584,
+            "column": 3
+          },
+          {
+            "line": 20585,
+            "column": 3
+          },
+          {
+            "line": 20586,
+            "column": 3
+          },
+          {
+            "line": 20587,
+            "column": 3
+          },
+          {
+            "line": 20620,
+            "column": 3
+          },
+          {
+            "line": 20621,
+            "column": 3
+          },
+          {
+            "line": 20670,
+            "column": 3
+          },
+          {
+            "line": 20671,
+            "column": 3
+          },
+          {
+            "line": 20672,
+            "column": 3
+          },
+          {
+            "line": 20686,
+            "column": 3
+          },
+          {
+            "line": 20687,
+            "column": 3
+          },
+          {
+            "line": 20688,
+            "column": 3
+          },
+          {
+            "line": 20689,
+            "column": 3
+          },
+          {
+            "line": 20690,
+            "column": 3
+          },
+          {
+            "line": 20691,
+            "column": 3
+          },
+          {
+            "line": 20712,
+            "column": 3
+          },
+          {
+            "line": 20713,
+            "column": 3
+          },
+          {
+            "line": 20714,
+            "column": 3
+          },
+          {
+            "line": 20715,
+            "column": 3
+          },
+          {
+            "line": 20716,
+            "column": 3
+          },
+          {
+            "line": 20717,
+            "column": 3
+          },
+          {
+            "line": 20718,
+            "column": 3
+          },
+          {
+            "line": 20719,
+            "column": 3
+          },
+          {
+            "line": 20748,
+            "column": 3
+          },
+          {
+            "line": 20749,
+            "column": 3
+          },
+          {
+            "line": 20750,
+            "column": 3
+          },
+          {
+            "line": 20821,
+            "column": 3
+          },
+          {
+            "line": 20822,
+            "column": 3
+          },
+          {
+            "line": 20823,
+            "column": 3
+          },
+          {
+            "line": 20840,
+            "column": 3
+          },
+          {
+            "line": 20841,
+            "column": 3
+          },
+          {
+            "line": 20842,
+            "column": 3
+          },
+          {
+            "line": 20844,
+            "column": 3
+          },
+          {
+            "line": 20845,
+            "column": 3
+          },
+          {
+            "line": 20876,
+            "column": 3
+          },
+          {
+            "line": 20885,
+            "column": 3
+          },
+          {
+            "line": 20886,
+            "column": 3
+          },
+          {
+            "line": 20890,
+            "column": 3
+          },
+          {
+            "line": 20891,
+            "column": 3
+          },
+          {
+            "line": 20972,
+            "column": 3
+          },
+          {
+            "line": 20973,
+            "column": 3
+          },
+          {
+            "line": 20974,
+            "column": 3
+          },
+          {
+            "line": 20975,
+            "column": 3
+          },
+          {
+            "line": 20976,
+            "column": 3
+          },
+          {
+            "line": 20977,
+            "column": 3
+          },
+          {
+            "line": 20978,
+            "column": 3
+          },
+          {
+            "line": 20979,
+            "column": 3
+          },
+          {
+            "line": 20980,
+            "column": 3
+          },
+          {
+            "line": 20981,
+            "column": 3
+          },
+          {
+            "line": 20982,
+            "column": 3
+          },
+          {
+            "line": 20990,
+            "column": 3
+          },
+          {
+            "line": 20991,
+            "column": 3
+          },
+          {
+            "line": 21007,
+            "column": 3
+          },
+          {
+            "line": 21008,
+            "column": 3
+          },
+          {
+            "line": 21009,
+            "column": 3
+          },
+          {
+            "line": 21010,
+            "column": 3
+          },
+          {
+            "line": 21011,
+            "column": 3
+          },
+          {
+            "line": 21012,
+            "column": 3
+          },
+          {
+            "line": 21013,
+            "column": 3
+          },
+          {
+            "line": 21108,
+            "column": 3
+          },
+          {
+            "line": 21109,
+            "column": 3
+          },
+          {
+            "line": 21110,
+            "column": 3
+          },
+          {
+            "line": 21111,
+            "column": 3
+          },
+          {
+            "line": 21112,
+            "column": 3
+          },
+          {
+            "line": 21113,
+            "column": 3
+          },
+          {
+            "line": 21114,
+            "column": 3
+          },
+          {
+            "line": 21115,
+            "column": 3
+          },
+          {
+            "line": 21116,
+            "column": 3
+          },
+          {
+            "line": 21117,
+            "column": 3
+          },
+          {
+            "line": 21163,
+            "column": 3
+          },
+          {
+            "line": 21164,
+            "column": 3
+          },
+          {
+            "line": 21165,
+            "column": 3
+          },
+          {
+            "line": 21166,
+            "column": 3
+          },
+          {
+            "line": 21167,
+            "column": 3
+          },
+          {
+            "line": 21168,
+            "column": 3
+          },
+          {
+            "line": 21169,
+            "column": 3
+          },
+          {
+            "line": 21294,
+            "column": 3
+          },
+          {
+            "line": 21307,
+            "column": 3
+          },
+          {
+            "line": 21308,
+            "column": 3
+          },
+          {
+            "line": 21309,
+            "column": 3
+          },
+          {
+            "line": 21310,
+            "column": 3
+          },
+          {
+            "line": 21311,
+            "column": 3
+          },
+          {
+            "line": 21397,
+            "column": 3
+          },
+          {
+            "line": 21405,
+            "column": 3
+          },
+          {
+            "line": 21419,
+            "column": 3
+          },
+          {
+            "line": 21427,
+            "column": 3
+          },
+          {
+            "line": 21451,
+            "column": 3
+          },
+          {
+            "line": 21452,
+            "column": 3
+          },
+          {
+            "line": 21453,
+            "column": 3
+          },
+          {
+            "line": 21589,
+            "column": 3
+          },
+          {
+            "line": 21590,
+            "column": 3
+          },
+          {
+            "line": 21628,
+            "column": 3
+          },
+          {
+            "line": 21629,
+            "column": 3
+          },
+          {
+            "line": 21630,
+            "column": 3
+          },
+          {
+            "line": 21631,
+            "column": 3
+          },
+          {
+            "line": 21632,
+            "column": 3
+          },
+          {
+            "line": 21633,
+            "column": 3
+          },
+          {
+            "line": 21634,
+            "column": 3
+          },
+          {
+            "line": 21635,
+            "column": 3
+          },
+          {
+            "line": 21636,
+            "column": 3
+          },
+          {
+            "line": 21637,
+            "column": 3
+          },
+          {
+            "line": 21638,
+            "column": 3
+          },
+          {
+            "line": 21639,
+            "column": 3
+          },
+          {
+            "line": 21649,
+            "column": 3
+          },
+          {
+            "line": 21650,
+            "column": 3
+          },
+          {
+            "line": 21651,
+            "column": 3
+          },
+          {
+            "line": 21654,
+            "column": 3
+          },
+          {
+            "line": 21655,
+            "column": 3
+          },
+          {
+            "line": 21692,
+            "column": 3
+          },
+          {
+            "line": 21693,
+            "column": 3
+          },
+          {
+            "line": 21717,
+            "column": 3
+          },
+          {
+            "line": 21718,
+            "column": 3
+          },
+          {
+            "line": 21834,
+            "column": 3
+          },
+          {
+            "line": 21844,
+            "column": 3
+          },
+          {
+            "line": 21850,
+            "column": 3
+          },
+          {
+            "line": 21913,
+            "column": 3
+          },
+          {
+            "line": 22057,
+            "column": 3
+          },
+          {
+            "line": 22058,
+            "column": 3
+          },
+          {
+            "line": 22078,
+            "column": 3
+          },
+          {
+            "line": 22079,
+            "column": 3
+          },
+          {
+            "line": 22080,
+            "column": 3
+          },
+          {
+            "line": 22081,
+            "column": 3
+          },
+          {
+            "line": 22082,
+            "column": 3
+          },
+          {
+            "line": 22083,
+            "column": 3
+          },
+          {
+            "line": 22084,
+            "column": 3
+          },
+          {
+            "line": 22085,
+            "column": 3
+          },
+          {
+            "line": 22086,
+            "column": 3
+          },
+          {
+            "line": 22087,
+            "column": 3
+          },
+          {
+            "line": 22088,
+            "column": 3
+          },
+          {
+            "line": 22089,
+            "column": 3
+          },
+          {
+            "line": 22090,
+            "column": 3
+          },
+          {
+            "line": 22091,
+            "column": 3
+          },
+          {
+            "line": 22132,
+            "column": 3
+          },
+          {
+            "line": 22133,
+            "column": 3
+          },
+          {
+            "line": 22134,
+            "column": 3
+          },
+          {
+            "line": 22135,
+            "column": 3
+          },
+          {
+            "line": 22152,
+            "column": 3
+          },
+          {
+            "line": 22153,
+            "column": 3
+          },
+          {
+            "line": 22154,
+            "column": 3
+          },
+          {
+            "line": 22155,
+            "column": 3
+          },
+          {
+            "line": 22156,
+            "column": 3
+          },
+          {
+            "line": 22157,
+            "column": 3
+          },
+          {
+            "line": 22158,
+            "column": 3
+          },
+          {
+            "line": 22178,
+            "column": 3
+          },
+          {
+            "line": 22179,
+            "column": 3
+          },
+          {
+            "line": 22180,
+            "column": 3
+          },
+          {
+            "line": 22181,
+            "column": 3
+          },
+          {
+            "line": 22182,
+            "column": 3
+          },
+          {
+            "line": 22183,
+            "column": 3
+          },
+          {
+            "line": 22184,
+            "column": 3
+          },
+          {
+            "line": 22185,
+            "column": 3
+          },
+          {
+            "line": 22202,
+            "column": 3
+          },
+          {
+            "line": 22203,
+            "column": 3
+          },
+          {
+            "line": 22204,
+            "column": 3
+          },
+          {
+            "line": 22264,
+            "column": 3
+          },
+          {
+            "line": 22265,
+            "column": 3
+          },
+          {
+            "line": 22266,
+            "column": 3
+          },
+          {
+            "line": 22267,
+            "column": 3
+          },
+          {
+            "line": 22281,
+            "column": 3
+          },
+          {
+            "line": 22286,
+            "column": 3
+          },
+          {
+            "line": 22287,
+            "column": 3
+          },
+          {
+            "line": 22441,
+            "column": 3
+          },
+          {
+            "line": 22444,
+            "column": 3
+          },
+          {
+            "line": 22447,
+            "column": 3
+          },
+          {
+            "line": 22450,
+            "column": 3
+          },
+          {
+            "line": 22453,
+            "column": 3
+          },
+          {
+            "line": 22461,
+            "column": 3
+          },
+          {
+            "line": 22778,
+            "column": 3
+          },
+          {
+            "line": 22779,
+            "column": 3
+          },
+          {
+            "line": 22780,
+            "column": 3
+          },
+          {
+            "line": 22797,
+            "column": 3
+          },
+          {
+            "line": 22798,
+            "column": 3
+          },
+          {
+            "line": 22803,
+            "column": 3
+          },
+          {
+            "line": 22881,
+            "column": 3
+          },
+          {
+            "line": 22885,
+            "column": 3
+          },
+          {
+            "line": 22886,
+            "column": 3
+          },
+          {
+            "line": 22887,
+            "column": 3
+          },
+          {
+            "line": 22888,
+            "column": 3
+          },
+          {
+            "line": 22889,
+            "column": 3
+          },
+          {
+            "line": 22890,
+            "column": 3
+          },
+          {
+            "line": 22891,
+            "column": 3
+          },
+          {
+            "line": 22929,
+            "column": 3
+          },
+          {
+            "line": 22930,
+            "column": 3
+          },
+          {
+            "line": 22931,
+            "column": 3
+          },
+          {
+            "line": 22932,
+            "column": 3
+          },
+          {
+            "line": 22933,
+            "column": 3
+          },
+          {
+            "line": 22934,
+            "column": 3
+          },
+          {
+            "line": 22935,
+            "column": 3
+          },
+          {
+            "line": 22936,
+            "column": 3
+          },
+          {
+            "line": 22937,
+            "column": 3
+          },
+          {
+            "line": 22938,
+            "column": 3
+          },
+          {
+            "line": 22939,
+            "column": 3
+          },
+          {
+            "line": 22940,
+            "column": 3
+          },
+          {
+            "line": 22941,
+            "column": 3
+          },
+          {
+            "line": 22942,
+            "column": 3
+          },
+          {
+            "line": 23003,
+            "column": 3
+          },
+          {
+            "line": 23004,
+            "column": 3
+          },
+          {
+            "line": 23005,
+            "column": 3
+          },
+          {
+            "line": 23068,
+            "column": 3
+          },
+          {
+            "line": 23069,
+            "column": 3
+          },
+          {
+            "line": 23070,
+            "column": 3
+          },
+          {
+            "line": 23071,
+            "column": 3
+          },
+          {
+            "line": 23072,
+            "column": 3
+          },
+          {
+            "line": 23073,
+            "column": 3
+          },
+          {
+            "line": 23074,
+            "column": 3
+          },
+          {
+            "line": 23075,
+            "column": 3
+          },
+          {
+            "line": 23078,
+            "column": 3
+          },
+          {
+            "line": 23126,
+            "column": 3
+          },
+          {
+            "line": 23127,
+            "column": 3
+          },
+          {
+            "line": 23128,
+            "column": 3
+          },
+          {
+            "line": 23129,
+            "column": 3
+          },
+          {
+            "line": 23130,
+            "column": 3
+          },
+          {
+            "line": 23131,
+            "column": 3
+          },
+          {
+            "line": 23132,
+            "column": 3
+          },
+          {
+            "line": 23191,
+            "column": 3
+          },
+          {
+            "line": 23192,
+            "column": 3
+          },
+          {
+            "line": 23193,
+            "column": 3
+          },
+          {
+            "line": 23194,
+            "column": 3
+          },
+          {
+            "line": 23413,
+            "column": 3
+          },
+          {
+            "line": 23414,
+            "column": 3
+          },
+          {
+            "line": 23476,
+            "column": 3
+          },
+          {
+            "line": 23477,
+            "column": 3
+          },
+          {
+            "line": 23478,
+            "column": 3
+          },
+          {
+            "line": 23548,
+            "column": 3
+          },
+          {
+            "line": 23549,
+            "column": 3
+          },
+          {
+            "line": 23550,
+            "column": 3
+          },
+          {
+            "line": 23574,
+            "column": 3
+          },
+          {
+            "line": 23855,
+            "column": 3
+          },
+          {
+            "line": 23856,
+            "column": 3
+          },
+          {
+            "line": 23857,
+            "column": 3
+          },
+          {
+            "line": 23871,
+            "column": 3
+          },
+          {
+            "line": 23872,
+            "column": 3
+          },
+          {
+            "line": 23873,
+            "column": 3
+          },
+          {
+            "line": 23874,
+            "column": 3
+          },
+          {
+            "line": 23957,
+            "column": 3
+          },
+          {
+            "line": 24051,
+            "column": 3
+          },
+          {
+            "line": 24052,
+            "column": 3
+          },
+          {
+            "line": 25540,
+            "column": 3
+          },
+          {
+            "line": 25541,
+            "column": 3
+          },
+          {
+            "line": 25542,
+            "column": 3
+          },
+          {
+            "line": 25543,
+            "column": 3
+          },
+          {
+            "line": 25544,
+            "column": 3
+          },
+          {
+            "line": 33140,
+            "column": 3
+          },
+          {
+            "line": 33141,
+            "column": 3
+          },
+          {
+            "line": 33142,
+            "column": 3
+          },
+          {
+            "line": 33144,
+            "column": 3
+          },
+          {
+            "line": 33145,
+            "column": 3
+          },
+          {
+            "line": 33236,
+            "column": 3
+          },
+          {
+            "line": 33237,
+            "column": 3
+          },
+          {
+            "line": 33301,
+            "column": 3
+          },
+          {
+            "line": 33302,
+            "column": 3
+          },
+          {
+            "line": 33697,
+            "column": 3
+          },
+          {
+            "line": 33698,
+            "column": 3
+          },
+          {
+            "line": 33699,
+            "column": 3
+          },
+          {
+            "line": 33700,
+            "column": 3
+          },
+          {
+            "line": 33701,
+            "column": 3
+          },
+          {
+            "line": 33703,
+            "column": 3
+          },
+          {
+            "line": 33704,
+            "column": 3
+          },
+          {
+            "line": 33705,
+            "column": 3
+          },
+          {
+            "line": 33706,
+            "column": 3
+          },
+          {
+            "line": 33715,
+            "column": 3
+          },
+          {
+            "line": 33723,
+            "column": 3
+          },
+          {
+            "line": 33850,
+            "column": 3
+          },
+          {
+            "line": 33851,
+            "column": 3
+          },
+          {
+            "line": 33852,
+            "column": 3
+          },
+          {
+            "line": 44387,
+            "column": 3
+          },
+          {
+            "line": 44393,
+            "column": 3
+          },
+          {
+            "line": 44394,
+            "column": 3
+          },
+          {
+            "line": 44401,
+            "column": 3
+          },
+          {
+            "line": 44404,
+            "column": 3
+          },
+          {
+            "line": 44407,
+            "column": 3
+          },
+          {
+            "line": 44410,
+            "column": 3
+          },
+          {
+            "line": 44413,
+            "column": 3
+          },
+          {
+            "line": 44416,
+            "column": 3
+          },
+          {
+            "line": 44419,
+            "column": 3
+          },
+          {
+            "line": 44422,
+            "column": 3
+          },
+          {
+            "line": 44425,
+            "column": 3
+          },
+          {
+            "line": 44428,
+            "column": 3
+          },
+          {
+            "line": 44431,
+            "column": 3
+          },
+          {
+            "line": 44434,
+            "column": 3
+          },
+          {
+            "line": 44437,
+            "column": 3
+          },
+          {
+            "line": 44438,
+            "column": 3
+          },
+          {
+            "line": 44439,
+            "column": 3
+          },
+          {
+            "line": 44445,
+            "column": 3
+          },
+          {
+            "line": 44446,
+            "column": 3
+          },
+          {
+            "line": 44453,
+            "column": 3
+          },
+          {
+            "line": 44454,
+            "column": 3
+          },
+          {
+            "line": 44455,
+            "column": 3
+          },
+          {
+            "line": 44456,
+            "column": 3
+          },
+          {
+            "line": 44464,
+            "column": 3
+          },
+          {
+            "line": 44467,
+            "column": 3
+          },
+          {
+            "line": 44470,
+            "column": 3
+          },
+          {
+            "line": 44473,
+            "column": 3
+          },
+          {
+            "line": 44474,
+            "column": 3
+          },
+          {
+            "line": 44481,
+            "column": 3
+          },
+          {
+            "line": 44482,
+            "column": 3
+          },
+          {
+            "line": 44685,
+            "column": 3
+          },
+          {
+            "line": 44686,
+            "column": 3
+          },
+          {
+            "line": 44687,
+            "column": 3
+          },
+          {
+            "line": 44938,
+            "column": 3
+          },
+          {
+            "line": 44939,
+            "column": 3
+          },
+          {
+            "line": 44940,
+            "column": 3
+          },
+          {
+            "line": 44945,
+            "column": 3
+          },
+          {
+            "line": 44946,
+            "column": 3
+          },
+          {
+            "line": 44950,
+            "column": 3
+          },
+          {
+            "line": 44951,
+            "column": 3
+          },
+          {
+            "line": 44957,
+            "column": 3
+          },
+          {
+            "line": 44961,
+            "column": 3
+          },
+          {
+            "line": 44962,
+            "column": 3
+          },
+          {
+            "line": 44968,
+            "column": 3
+          },
+          {
+            "line": 44980,
+            "column": 3
+          },
+          {
+            "line": 44993,
+            "column": 3
+          },
+          {
+            "line": 44994,
+            "column": 3
+          },
+          {
+            "line": 44996,
+            "column": 3
+          },
+          {
+            "line": 44997,
+            "column": 3
+          },
+          {
+            "line": 44998,
+            "column": 3
+          },
+          {
+            "line": 44999,
+            "column": 3
+          },
+          {
+            "line": 45000,
+            "column": 3
+          },
+          {
+            "line": 45065,
+            "column": 3
+          },
+          {
+            "line": 45066,
+            "column": 3
+          },
+          {
+            "line": 45067,
+            "column": 3
+          },
+          {
+            "line": 45068,
+            "column": 3
+          },
+          {
+            "line": 45069,
+            "column": 3
+          },
+          {
+            "line": 45071,
+            "column": 3
+          },
+          {
+            "line": 45072,
+            "column": 3
+          },
+          {
+            "line": 45074,
+            "column": 3
+          },
+          {
+            "line": 45075,
+            "column": 3
+          },
+          {
+            "line": 45079,
+            "column": 3
+          },
+          {
+            "line": 45081,
+            "column": 3
+          },
+          {
+            "line": 45359,
+            "column": 3
+          },
+          {
+            "line": 45360,
+            "column": 3
+          },
+          {
+            "line": 45361,
+            "column": 3
+          },
+          {
+            "line": 45362,
+            "column": 3
+          },
+          {
+            "line": 45363,
+            "column": 3
+          },
+          {
+            "line": 45364,
+            "column": 3
+          },
+          {
+            "line": 45365,
+            "column": 3
+          },
+          {
+            "line": 45366,
+            "column": 3
+          },
+          {
+            "line": 45367,
+            "column": 3
+          },
+          {
+            "line": 45368,
+            "column": 3
+          },
+          {
+            "line": 45369,
+            "column": 3
+          },
+          {
+            "line": 45370,
+            "column": 3
+          },
+          {
+            "line": 45371,
+            "column": 3
+          },
+          {
+            "line": 45372,
+            "column": 3
+          },
+          {
+            "line": 45373,
+            "column": 3
+          },
+          {
+            "line": 45374,
+            "column": 3
+          },
+          {
+            "line": 45375,
+            "column": 3
+          },
+          {
+            "line": 45376,
+            "column": 3
+          },
+          {
+            "line": 45379,
+            "column": 3
+          },
+          {
+            "line": 45380,
+            "column": 3
+          },
+          {
+            "line": 45439,
+            "column": 3
+          },
+          {
+            "line": 45440,
+            "column": 3
+          },
+          {
+            "line": 45554,
+            "column": 3
+          },
+          {
+            "line": 45555,
+            "column": 3
+          },
+          {
+            "line": 45557,
+            "column": 3
+          },
+          {
+            "line": 45558,
+            "column": 3
+          },
+          {
+            "line": 45559,
+            "column": 3
+          },
+          {
+            "line": 45561,
+            "column": 3
+          },
+          {
+            "line": 45562,
+            "column": 3
+          },
+          {
+            "line": 45563,
+            "column": 3
+          },
+          {
+            "line": 45564,
+            "column": 3
+          },
+          {
+            "line": 45565,
+            "column": 3
+          },
+          {
+            "line": 45566,
+            "column": 3
+          },
+          {
+            "line": 45645,
+            "column": 3
+          },
+          {
+            "line": 45647,
+            "column": 3
+          },
+          {
+            "line": 45648,
+            "column": 3
+          },
+          {
+            "line": 45649,
+            "column": 3
+          },
+          {
+            "line": 45651,
+            "column": 3
+          },
+          {
+            "line": 45652,
+            "column": 3
+          },
+          {
+            "line": 45653,
+            "column": 3
+          },
+          {
+            "line": 45654,
+            "column": 3
+          },
+          {
+            "line": 45697,
+            "column": 3
+          },
+          {
+            "line": 45699,
+            "column": 3
+          },
+          {
+            "line": 45700,
+            "column": 3
+          },
+          {
+            "line": 45701,
+            "column": 3
+          },
+          {
+            "line": 45703,
+            "column": 3
+          },
+          {
+            "line": 45704,
+            "column": 3
+          },
+          {
+            "line": 45705,
+            "column": 3
+          },
+          {
+            "line": 45706,
+            "column": 3
+          },
+          {
+            "line": 45808,
+            "column": 3
+          },
+          {
+            "line": 45810,
+            "column": 3
+          },
+          {
+            "line": 45811,
+            "column": 3
+          },
+          {
+            "line": 45812,
+            "column": 3
+          },
+          {
+            "line": 45814,
+            "column": 3
+          },
+          {
+            "line": 45815,
+            "column": 3
+          },
+          {
+            "line": 45816,
+            "column": 3
+          },
+          {
+            "line": 45817,
+            "column": 3
+          },
+          {
+            "line": 45908,
+            "column": 3
+          },
+          {
+            "line": 45910,
+            "column": 3
+          },
+          {
+            "line": 45911,
+            "column": 3
+          },
+          {
+            "line": 45912,
+            "column": 3
+          },
+          {
+            "line": 45914,
+            "column": 3
+          },
+          {
+            "line": 45915,
+            "column": 3
+          },
+          {
+            "line": 45916,
+            "column": 3
+          },
+          {
+            "line": 45917,
+            "column": 3
+          },
+          {
+            "line": 45974,
+            "column": 3
+          },
+          {
+            "line": 46057,
+            "column": 3
+          },
+          {
+            "line": 46058,
+            "column": 3
+          },
+          {
+            "line": 46059,
+            "column": 3
+          },
+          {
+            "line": 46060,
+            "column": 3
+          },
+          {
+            "line": 46061,
+            "column": 3
+          },
+          {
+            "line": 46062,
+            "column": 3
+          },
+          {
+            "line": 46138,
+            "column": 3
+          },
+          {
+            "line": 46139,
+            "column": 3
+          },
+          {
+            "line": 46141,
+            "column": 3
+          },
+          {
+            "line": 46143,
+            "column": 3
+          },
+          {
+            "line": 46144,
+            "column": 3
+          },
+          {
+            "line": 46145,
+            "column": 3
+          },
+          {
+            "line": 46147,
+            "column": 3
+          },
+          {
+            "line": 46148,
+            "column": 3
+          },
+          {
+            "line": 46149,
+            "column": 3
+          },
+          {
+            "line": 46150,
+            "column": 3
+          },
+          {
+            "line": 46332,
+            "column": 3
+          },
+          {
+            "line": 46333,
+            "column": 3
+          },
+          {
+            "line": 46334,
+            "column": 3
+          },
+          {
+            "line": 46335,
+            "column": 3
+          },
+          {
+            "line": 46336,
+            "column": 3
+          },
+          {
+            "line": 46338,
+            "column": 3
+          },
+          {
+            "line": 46339,
+            "column": 3
+          },
+          {
+            "line": 46353,
+            "column": 3
+          },
+          {
+            "line": 46357,
+            "column": 3
+          },
+          {
+            "line": 46361,
+            "column": 3
+          },
+          {
+            "line": 46362,
+            "column": 3
+          },
+          {
+            "line": 46363,
+            "column": 3
+          },
+          {
+            "line": 46364,
+            "column": 3
+          },
+          {
+            "line": 46365,
+            "column": 3
+          },
+          {
+            "line": 46375,
+            "column": 3
+          },
+          {
+            "line": 46376,
+            "column": 3
+          },
+          {
+            "line": 46405,
+            "column": 3
+          },
+          {
+            "line": 46407,
+            "column": 3
+          },
+          {
+            "line": 46408,
+            "column": 3
+          },
+          {
+            "line": 46409,
+            "column": 3
+          },
+          {
+            "line": 46410,
+            "column": 3
+          },
+          {
+            "line": 46411,
+            "column": 3
+          },
+          {
+            "line": 46505,
+            "column": 3
+          },
+          {
+            "line": 46507,
+            "column": 3
+          },
+          {
+            "line": 46508,
+            "column": 3
+          },
+          {
+            "line": 46509,
+            "column": 3
+          },
+          {
+            "line": 46558,
+            "column": 3
+          },
+          {
+            "line": 46559,
+            "column": 3
+          },
+          {
+            "line": 46560,
+            "column": 3
+          },
+          {
+            "line": 46650,
+            "column": 3
+          },
+          {
+            "line": 46651,
+            "column": 3
+          },
+          {
+            "line": 46653,
+            "column": 3
+          },
+          {
+            "line": 46655,
+            "column": 3
+          },
+          {
+            "line": 46656,
+            "column": 3
+          },
+          {
+            "line": 46657,
+            "column": 3
+          },
+          {
+            "line": 46659,
+            "column": 3
+          },
+          {
+            "line": 46660,
+            "column": 3
+          },
+          {
+            "line": 46661,
+            "column": 3
+          },
+          {
+            "line": 46662,
+            "column": 3
+          },
+          {
+            "line": 46663,
+            "column": 3
+          },
+          {
+            "line": 46812,
+            "column": 3
+          },
+          {
+            "line": 46814,
+            "column": 3
+          },
+          {
+            "line": 46815,
+            "column": 3
+          },
+          {
+            "line": 46816,
+            "column": 3
+          },
+          {
+            "line": 46818,
+            "column": 3
+          },
+          {
+            "line": 46819,
+            "column": 3
+          },
+          {
+            "line": 46820,
+            "column": 3
+          },
+          {
+            "line": 46821,
+            "column": 3
+          },
+          {
+            "line": 46889,
+            "column": 3
+          },
+          {
+            "line": 46890,
+            "column": 3
+          },
+          {
+            "line": 46891,
+            "column": 3
+          },
+          {
+            "line": 46892,
+            "column": 3
+          },
+          {
+            "line": 46893,
+            "column": 3
+          },
+          {
+            "line": 46894,
+            "column": 3
+          },
+          {
+            "line": 46895,
+            "column": 3
+          },
+          {
+            "line": 46896,
+            "column": 3
+          },
+          {
+            "line": 46897,
+            "column": 3
+          },
+          {
+            "line": 47107,
+            "column": 3
+          },
+          {
+            "line": 47112,
+            "column": 3
+          },
+          {
+            "line": 47113,
+            "column": 3
+          },
+          {
+            "line": 47115,
+            "column": 3
+          },
+          {
+            "line": 47116,
+            "column": 3
+          },
+          {
+            "line": 47118,
+            "column": 3
+          },
+          {
+            "line": 47119,
+            "column": 3
+          },
+          {
+            "line": 47120,
+            "column": 3
+          },
+          {
+            "line": 47122,
+            "column": 3
+          },
+          {
+            "line": 47124,
+            "column": 3
+          },
+          {
+            "line": 47125,
+            "column": 3
+          },
+          {
+            "line": 47126,
+            "column": 3
+          },
+          {
+            "line": 47127,
+            "column": 3
+          },
+          {
+            "line": 47128,
+            "column": 3
+          },
+          {
+            "line": 47129,
+            "column": 3
+          },
+          {
+            "line": 47133,
+            "column": 3
+          },
+          {
+            "line": 47436,
+            "column": 3
+          },
+          {
+            "line": 47438,
+            "column": 3
+          },
+          {
+            "line": 47440,
+            "column": 3
+          },
+          {
+            "line": 47441,
+            "column": 3
+          },
+          {
+            "line": 47442,
+            "column": 3
+          },
+          {
+            "line": 47443,
+            "column": 3
+          },
+          {
+            "line": 47444,
+            "column": 3
+          },
+          {
+            "line": 47445,
+            "column": 3
+          },
+          {
+            "line": 47446,
+            "column": 3
+          },
+          {
+            "line": 47447,
+            "column": 3
+          },
+          {
+            "line": 47448,
+            "column": 3
+          },
+          {
+            "line": 47449,
+            "column": 3
+          },
+          {
+            "line": 47451,
+            "column": 3
+          },
+          {
+            "line": 47452,
+            "column": 3
+          },
+          {
+            "line": 47453,
+            "column": 3
+          },
+          {
+            "line": 47454,
+            "column": 3
+          },
+          {
+            "line": 47455,
+            "column": 3
+          },
+          {
+            "line": 47456,
+            "column": 3
+          },
+          {
+            "line": 47457,
+            "column": 3
+          },
+          {
+            "line": 47458,
+            "column": 3
+          },
+          {
+            "line": 47520,
+            "column": 3
+          },
+          {
+            "line": 47521,
+            "column": 3
+          },
+          {
+            "line": 47522,
+            "column": 3
+          },
+          {
+            "line": 47524,
+            "column": 3
+          },
+          {
+            "line": 47525,
+            "column": 3
+          },
+          {
+            "line": 47526,
+            "column": 3
+          },
+          {
+            "line": 47527,
+            "column": 3
+          },
+          {
+            "line": 47528,
+            "column": 3
+          },
+          {
+            "line": 47529,
+            "column": 3
+          },
+          {
+            "line": 47530,
+            "column": 3
+          },
+          {
+            "line": 47531,
+            "column": 3
+          },
+          {
+            "line": 47532,
+            "column": 3
+          },
+          {
+            "line": 47533,
+            "column": 3
+          },
+          {
+            "line": 47534,
+            "column": 3
+          },
+          {
+            "line": 47536,
+            "column": 3
+          },
+          {
+            "line": 47538,
+            "column": 3
+          },
+          {
+            "line": 47540,
+            "column": 3
+          },
+          {
+            "line": 47541,
+            "column": 3
+          },
+          {
+            "line": 47542,
+            "column": 3
+          },
+          {
+            "line": 47543,
+            "column": 3
+          },
+          {
+            "line": 47544,
+            "column": 3
+          },
+          {
+            "line": 47545,
+            "column": 3
+          },
+          {
+            "line": 47546,
+            "column": 3
+          },
+          {
+            "line": 47547,
+            "column": 3
+          },
+          {
+            "line": 47548,
+            "column": 3
+          },
+          {
+            "line": 47550,
+            "column": 3
+          },
+          {
+            "line": 47552,
+            "column": 3
+          },
+          {
+            "line": 47553,
+            "column": 3
+          },
+          {
+            "line": 47554,
+            "column": 3
+          },
+          {
+            "line": 47690,
+            "column": 3
+          },
+          {
+            "line": 47691,
+            "column": 3
+          },
+          {
+            "line": 47692,
+            "column": 3
+          },
+          {
+            "line": 47696,
+            "column": 3
+          },
+          {
+            "line": 47697,
+            "column": 3
+          },
+          {
+            "line": 47698,
+            "column": 3
+          },
+          {
+            "line": 47699,
+            "column": 3
+          }
+        ],
+        "privateFieldLocations": [],
+        "staticBlockLocations": [],
+        "importMetaLocations": [],
+        "dynamicImportLocations": [],
+        "usingLocations": [],
+        "featureCounts": {
+          "topLevelAwait": 2,
+          "classFields": 888,
+          "privateFields": 0,
+          "staticInitializationBlocks": 0,
+          "importMeta": 0,
+          "dynamicImport": 0,
+          "usingSyntax": 0
+        },
+        "runtimeApiTokenCounts": {
+          "Blob": 6,
+          "File": 14,
+          "FileReader": 6,
+          "URL": 14,
+          "fetch": 10,
+          "TextDecoder": 9,
+          "Temporal": 3
+        },
+        "topLevelAwaitExcerpts": [
+          {
+            "line": 99,
+            "column": 23,
+            "lineText": "const BLOB_BEHAVIOR = await detectBlobBehavior();"
+          },
+          {
+            "line": 7688,
+            "column": 26,
+            "lineText": "const expressionParser = await ExpressionParser.init({"
+          }
+        ]
+      },
+      {
+        "sourcePath": "node_modules/@getodk/xforms-engine/dist/solid.js",
+        "topLevelAwaitLocations": [
+          {
+            "line": 101,
+            "column": 23
+          },
+          {
+            "line": 7690,
+            "column": 26
+          }
+        ],
+        "classFieldLocations": [
+          {
+            "line": 191,
+            "column": 3
+          },
+          {
+            "line": 206,
+            "column": 3
+          },
+          {
+            "line": 7596,
+            "column": 3
+          },
+          {
+            "line": 7623,
+            "column": 3
+          },
+          {
+            "line": 7624,
+            "column": 3
+          },
+          {
+            "line": 7625,
+            "column": 3
+          },
+          {
+            "line": 7626,
+            "column": 3
+          },
+          {
+            "line": 7644,
+            "column": 3
+          },
+          {
+            "line": 7650,
+            "column": 3
+          },
+          {
+            "line": 7651,
+            "column": 3
+          },
+          {
+            "line": 7662,
+            "column": 3
+          },
+          {
+            "line": 7676,
+            "column": 3
+          },
+          {
+            "line": 7930,
+            "column": 3
+          },
+          {
+            "line": 8041,
+            "column": 3
+          },
+          {
+            "line": 8042,
+            "column": 3
+          },
+          {
+            "line": 8043,
+            "column": 3
+          },
+          {
+            "line": 8044,
+            "column": 3
+          },
+          {
+            "line": 8045,
+            "column": 3
+          },
+          {
+            "line": 8046,
+            "column": 3
+          },
+          {
+            "line": 8047,
+            "column": 3
+          },
+          {
+            "line": 8048,
+            "column": 3
+          },
+          {
+            "line": 8058,
+            "column": 3
+          },
+          {
+            "line": 8059,
+            "column": 3
+          },
+          {
+            "line": 8060,
+            "column": 3
+          },
+          {
+            "line": 8061,
+            "column": 3
+          },
+          {
+            "line": 8062,
+            "column": 3
+          },
+          {
+            "line": 8343,
+            "column": 3
+          },
+          {
+            "line": 8344,
+            "column": 3
+          },
+          {
+            "line": 8348,
+            "column": 3
+          },
+          {
+            "line": 8354,
+            "column": 3
+          },
+          {
+            "line": 8356,
+            "column": 3
+          },
+          {
+            "line": 8357,
+            "column": 3
+          },
+          {
+            "line": 8359,
+            "column": 3
+          },
+          {
+            "line": 8360,
+            "column": 3
+          },
+          {
+            "line": 8364,
+            "column": 3
+          },
+          {
+            "line": 8365,
+            "column": 3
+          },
+          {
+            "line": 8366,
+            "column": 3
+          },
+          {
+            "line": 8367,
+            "column": 3
+          },
+          {
+            "line": 8368,
+            "column": 3
+          },
+          {
+            "line": 8369,
+            "column": 3
+          },
+          {
+            "line": 8370,
+            "column": 3
+          },
+          {
+            "line": 8371,
+            "column": 3
+          },
+          {
+            "line": 8372,
+            "column": 3
+          },
+          {
+            "line": 8432,
+            "column": 3
+          },
+          {
+            "line": 8442,
+            "column": 3
+          },
+          {
+            "line": 8595,
+            "column": 3
+          },
+          {
+            "line": 8596,
+            "column": 3
+          },
+          {
+            "line": 8636,
+            "column": 3
+          },
+          {
+            "line": 8637,
+            "column": 3
+          },
+          {
+            "line": 8638,
+            "column": 3
+          },
+          {
+            "line": 8653,
+            "column": 3
+          },
+          {
+            "line": 8659,
+            "column": 3
+          },
+          {
+            "line": 8696,
+            "column": 3
+          },
+          {
+            "line": 8697,
+            "column": 3
+          },
+          {
+            "line": 8701,
+            "column": 3
+          },
+          {
+            "line": 8702,
+            "column": 3
+          },
+          {
+            "line": 8703,
+            "column": 3
+          },
+          {
+            "line": 8704,
+            "column": 3
+          },
+          {
+            "line": 8705,
+            "column": 3
+          },
+          {
+            "line": 8706,
+            "column": 3
+          },
+          {
+            "line": 8707,
+            "column": 3
+          },
+          {
+            "line": 8775,
+            "column": 3
+          },
+          {
+            "line": 8776,
+            "column": 3
+          },
+          {
+            "line": 8777,
+            "column": 3
+          },
+          {
+            "line": 8778,
+            "column": 3
+          },
+          {
+            "line": 8823,
+            "column": 3
+          },
+          {
+            "line": 8824,
+            "column": 3
+          },
+          {
+            "line": 8850,
+            "column": 3
+          },
+          {
+            "line": 8851,
+            "column": 3
+          },
+          {
+            "line": 8852,
+            "column": 3
+          },
+          {
+            "line": 8853,
+            "column": 3
+          },
+          {
+            "line": 8854,
+            "column": 3
+          },
+          {
+            "line": 8855,
+            "column": 3
+          },
+          {
+            "line": 8856,
+            "column": 3
+          },
+          {
+            "line": 8948,
+            "column": 3
+          },
+          {
+            "line": 8949,
+            "column": 3
+          },
+          {
+            "line": 8950,
+            "column": 3
+          },
+          {
+            "line": 8951,
+            "column": 3
+          },
+          {
+            "line": 8952,
+            "column": 3
+          },
+          {
+            "line": 8953,
+            "column": 3
+          },
+          {
+            "line": 8954,
+            "column": 3
+          },
+          {
+            "line": 9366,
+            "column": 3
+          },
+          {
+            "line": 9369,
+            "column": 3
+          },
+          {
+            "line": 9370,
+            "column": 3
+          },
+          {
+            "line": 9371,
+            "column": 3
+          },
+          {
+            "line": 9372,
+            "column": 3
+          },
+          {
+            "line": 9373,
+            "column": 3
+          },
+          {
+            "line": 9374,
+            "column": 3
+          },
+          {
+            "line": 9375,
+            "column": 3
+          },
+          {
+            "line": 9376,
+            "column": 3
+          },
+          {
+            "line": 9382,
+            "column": 3
+          },
+          {
+            "line": 9383,
+            "column": 3
+          },
+          {
+            "line": 9384,
+            "column": 3
+          },
+          {
+            "line": 9385,
+            "column": 3
+          },
+          {
+            "line": 9386,
+            "column": 3
+          },
+          {
+            "line": 9387,
+            "column": 3
+          },
+          {
+            "line": 9388,
+            "column": 3
+          },
+          {
+            "line": 9389,
+            "column": 3
+          },
+          {
+            "line": 9395,
+            "column": 3
+          },
+          {
+            "line": 9396,
+            "column": 3
+          },
+          {
+            "line": 9397,
+            "column": 3
+          },
+          {
+            "line": 9398,
+            "column": 3
+          },
+          {
+            "line": 9399,
+            "column": 3
+          },
+          {
+            "line": 9400,
+            "column": 3
+          },
+          {
+            "line": 9401,
+            "column": 3
+          },
+          {
+            "line": 9402,
+            "column": 3
+          },
+          {
+            "line": 9414,
+            "column": 3
+          },
+          {
+            "line": 9415,
+            "column": 3
+          },
+          {
+            "line": 9416,
+            "column": 3
+          },
+          {
+            "line": 9417,
+            "column": 3
+          },
+          {
+            "line": 9418,
+            "column": 3
+          },
+          {
+            "line": 9419,
+            "column": 3
+          },
+          {
+            "line": 9420,
+            "column": 3
+          },
+          {
+            "line": 9421,
+            "column": 3
+          },
+          {
+            "line": 9424,
+            "column": 3
+          },
+          {
+            "line": 9433,
+            "column": 3
+          },
+          {
+            "line": 9434,
+            "column": 3
+          },
+          {
+            "line": 9435,
+            "column": 3
+          },
+          {
+            "line": 9436,
+            "column": 3
+          },
+          {
+            "line": 9437,
+            "column": 3
+          },
+          {
+            "line": 9438,
+            "column": 3
+          },
+          {
+            "line": 9439,
+            "column": 3
+          },
+          {
+            "line": 9440,
+            "column": 3
+          },
+          {
+            "line": 9450,
+            "column": 3
+          },
+          {
+            "line": 9451,
+            "column": 3
+          },
+          {
+            "line": 9452,
+            "column": 3
+          },
+          {
+            "line": 9453,
+            "column": 3
+          },
+          {
+            "line": 9454,
+            "column": 3
+          },
+          {
+            "line": 9455,
+            "column": 3
+          },
+          {
+            "line": 9456,
+            "column": 3
+          },
+          {
+            "line": 9465,
+            "column": 3
+          },
+          {
+            "line": 9466,
+            "column": 3
+          },
+          {
+            "line": 9467,
+            "column": 3
+          },
+          {
+            "line": 9468,
+            "column": 3
+          },
+          {
+            "line": 9469,
+            "column": 3
+          },
+          {
+            "line": 9470,
+            "column": 3
+          },
+          {
+            "line": 9471,
+            "column": 3
+          },
+          {
+            "line": 9480,
+            "column": 3
+          },
+          {
+            "line": 9481,
+            "column": 3
+          },
+          {
+            "line": 9482,
+            "column": 3
+          },
+          {
+            "line": 9483,
+            "column": 3
+          },
+          {
+            "line": 9484,
+            "column": 3
+          },
+          {
+            "line": 9485,
+            "column": 3
+          },
+          {
+            "line": 9486,
+            "column": 3
+          },
+          {
+            "line": 9494,
+            "column": 3
+          },
+          {
+            "line": 9495,
+            "column": 3
+          },
+          {
+            "line": 9496,
+            "column": 3
+          },
+          {
+            "line": 9497,
+            "column": 3
+          },
+          {
+            "line": 9498,
+            "column": 3
+          },
+          {
+            "line": 9499,
+            "column": 3
+          },
+          {
+            "line": 9500,
+            "column": 3
+          },
+          {
+            "line": 9628,
+            "column": 3
+          },
+          {
+            "line": 9645,
+            "column": 3
+          },
+          {
+            "line": 9646,
+            "column": 3
+          },
+          {
+            "line": 9647,
+            "column": 3
+          },
+          {
+            "line": 9648,
+            "column": 3
+          },
+          {
+            "line": 9649,
+            "column": 3
+          },
+          {
+            "line": 9650,
+            "column": 3
+          },
+          {
+            "line": 9722,
+            "column": 3
+          },
+          {
+            "line": 9732,
+            "column": 3
+          },
+          {
+            "line": 9733,
+            "column": 3
+          },
+          {
+            "line": 9734,
+            "column": 3
+          },
+          {
+            "line": 9738,
+            "column": 3
+          },
+          {
+            "line": 9792,
+            "column": 3
+          },
+          {
+            "line": 9793,
+            "column": 3
+          },
+          {
+            "line": 9794,
+            "column": 3
+          },
+          {
+            "line": 9833,
+            "column": 3
+          },
+          {
+            "line": 9834,
+            "column": 3
+          },
+          {
+            "line": 9835,
+            "column": 3
+          },
+          {
+            "line": 9856,
+            "column": 3
+          },
+          {
+            "line": 9863,
+            "column": 3
+          },
+          {
+            "line": 9914,
+            "column": 3
+          },
+          {
+            "line": 9921,
+            "column": 3
+          },
+          {
+            "line": 9935,
+            "column": 3
+          },
+          {
+            "line": 9947,
+            "column": 3
+          },
+          {
+            "line": 9948,
+            "column": 3
+          },
+          {
+            "line": 9962,
+            "column": 3
+          },
+          {
+            "line": 9963,
+            "column": 3
+          },
+          {
+            "line": 9964,
+            "column": 3
+          },
+          {
+            "line": 10054,
+            "column": 3
+          },
+          {
+            "line": 10055,
+            "column": 3
+          },
+          {
+            "line": 10134,
+            "column": 3
+          },
+          {
+            "line": 10135,
+            "column": 3
+          },
+          {
+            "line": 10136,
+            "column": 3
+          },
+          {
+            "line": 10137,
+            "column": 3
+          },
+          {
+            "line": 10138,
+            "column": 3
+          },
+          {
+            "line": 10139,
+            "column": 3
+          },
+          {
+            "line": 10140,
+            "column": 3
+          },
+          {
+            "line": 10141,
+            "column": 3
+          },
+          {
+            "line": 10142,
+            "column": 3
+          },
+          {
+            "line": 10143,
+            "column": 3
+          },
+          {
+            "line": 10144,
+            "column": 3
+          },
+          {
+            "line": 10145,
+            "column": 3
+          },
+          {
+            "line": 10146,
+            "column": 3
+          },
+          {
+            "line": 10147,
+            "column": 3
+          },
+          {
+            "line": 10148,
+            "column": 3
+          },
+          {
+            "line": 10149,
+            "column": 3
+          },
+          {
+            "line": 10150,
+            "column": 3
+          },
+          {
+            "line": 10151,
+            "column": 3
+          },
+          {
+            "line": 10152,
+            "column": 3
+          },
+          {
+            "line": 10153,
+            "column": 3
+          },
+          {
+            "line": 10168,
+            "column": 3
+          },
+          {
+            "line": 10178,
+            "column": 3
+          },
+          {
+            "line": 10179,
+            "column": 3
+          },
+          {
+            "line": 10180,
+            "column": 3
+          },
+          {
+            "line": 10181,
+            "column": 3
+          },
+          {
+            "line": 10182,
+            "column": 3
+          },
+          {
+            "line": 10197,
+            "column": 3
+          },
+          {
+            "line": 10198,
+            "column": 3
+          },
+          {
+            "line": 10199,
+            "column": 3
+          },
+          {
+            "line": 10200,
+            "column": 3
+          },
+          {
+            "line": 10201,
+            "column": 3
+          },
+          {
+            "line": 10214,
+            "column": 3
+          },
+          {
+            "line": 10246,
+            "column": 3
+          },
+          {
+            "line": 10248,
+            "column": 3
+          },
+          {
+            "line": 10250,
+            "column": 3
+          },
+          {
+            "line": 10251,
+            "column": 3
+          },
+          {
+            "line": 10253,
+            "column": 3
+          },
+          {
+            "line": 10254,
+            "column": 3
+          },
+          {
+            "line": 10277,
+            "column": 3
+          },
+          {
+            "line": 10278,
+            "column": 3
+          },
+          {
+            "line": 10280,
+            "column": 3
+          },
+          {
+            "line": 10281,
+            "column": 3
+          },
+          {
+            "line": 10310,
+            "column": 3
+          },
+          {
+            "line": 10311,
+            "column": 3
+          },
+          {
+            "line": 10312,
+            "column": 3
+          },
+          {
+            "line": 10313,
+            "column": 3
+          },
+          {
+            "line": 10314,
+            "column": 3
+          },
+          {
+            "line": 10324,
+            "column": 3
+          },
+          {
+            "line": 10325,
+            "column": 3
+          },
+          {
+            "line": 10326,
+            "column": 3
+          },
+          {
+            "line": 10327,
+            "column": 3
+          },
+          {
+            "line": 10328,
+            "column": 3
+          },
+          {
+            "line": 10400,
+            "column": 3
+          },
+          {
+            "line": 10403,
+            "column": 3
+          },
+          {
+            "line": 10404,
+            "column": 3
+          },
+          {
+            "line": 10405,
+            "column": 3
+          },
+          {
+            "line": 10406,
+            "column": 3
+          },
+          {
+            "line": 10407,
+            "column": 3
+          },
+          {
+            "line": 10843,
+            "column": 3
+          },
+          {
+            "line": 10844,
+            "column": 3
+          },
+          {
+            "line": 10845,
+            "column": 3
+          },
+          {
+            "line": 10846,
+            "column": 3
+          },
+          {
+            "line": 10847,
+            "column": 3
+          },
+          {
+            "line": 10848,
+            "column": 3
+          },
+          {
+            "line": 10849,
+            "column": 3
+          },
+          {
+            "line": 10850,
+            "column": 3
+          },
+          {
+            "line": 10851,
+            "column": 3
+          },
+          {
+            "line": 10852,
+            "column": 3
+          },
+          {
+            "line": 10853,
+            "column": 3
+          },
+          {
+            "line": 11391,
+            "column": 3
+          },
+          {
+            "line": 11392,
+            "column": 3
+          },
+          {
+            "line": 11420,
+            "column": 3
+          },
+          {
+            "line": 11421,
+            "column": 3
+          },
+          {
+            "line": 11454,
+            "column": 3
+          },
+          {
+            "line": 11480,
+            "column": 3
+          },
+          {
+            "line": 18233,
+            "column": 3
+          },
+          {
+            "line": 18973,
+            "column": 3
+          },
+          {
+            "line": 18974,
+            "column": 3
+          },
+          {
+            "line": 18975,
+            "column": 3
+          },
+          {
+            "line": 18976,
+            "column": 3
+          },
+          {
+            "line": 18977,
+            "column": 3
+          },
+          {
+            "line": 18978,
+            "column": 3
+          },
+          {
+            "line": 19099,
+            "column": 3
+          },
+          {
+            "line": 19104,
+            "column": 3
+          },
+          {
+            "line": 19109,
+            "column": 3
+          },
+          {
+            "line": 19376,
+            "column": 3
+          },
+          {
+            "line": 19380,
+            "column": 3
+          },
+          {
+            "line": 19385,
+            "column": 3
+          },
+          {
+            "line": 19387,
+            "column": 3
+          },
+          {
+            "line": 19388,
+            "column": 3
+          },
+          {
+            "line": 19389,
+            "column": 3
+          },
+          {
+            "line": 19390,
+            "column": 3
+          },
+          {
+            "line": 19391,
+            "column": 3
+          },
+          {
+            "line": 19392,
+            "column": 3
+          },
+          {
+            "line": 19393,
+            "column": 3
+          },
+          {
+            "line": 19394,
+            "column": 3
+          },
+          {
+            "line": 19395,
+            "column": 3
+          },
+          {
+            "line": 19396,
+            "column": 3
+          },
+          {
+            "line": 19397,
+            "column": 3
+          },
+          {
+            "line": 19398,
+            "column": 3
+          },
+          {
+            "line": 19399,
+            "column": 3
+          },
+          {
+            "line": 19452,
+            "column": 3
+          },
+          {
+            "line": 19453,
+            "column": 3
+          },
+          {
+            "line": 19509,
+            "column": 3
+          },
+          {
+            "line": 19554,
+            "column": 3
+          },
+          {
+            "line": 19555,
+            "column": 3
+          },
+          {
+            "line": 19837,
+            "column": 3
+          },
+          {
+            "line": 19838,
+            "column": 3
+          },
+          {
+            "line": 19839,
+            "column": 3
+          },
+          {
+            "line": 19840,
+            "column": 3
+          },
+          {
+            "line": 19841,
+            "column": 3
+          },
+          {
+            "line": 19842,
+            "column": 3
+          },
+          {
+            "line": 19858,
+            "column": 3
+          },
+          {
+            "line": 19860,
+            "column": 3
+          },
+          {
+            "line": 19861,
+            "column": 3
+          },
+          {
+            "line": 20112,
+            "column": 3
+          },
+          {
+            "line": 20113,
+            "column": 3
+          },
+          {
+            "line": 20114,
+            "column": 3
+          },
+          {
+            "line": 20115,
+            "column": 3
+          },
+          {
+            "line": 20116,
+            "column": 3
+          },
+          {
+            "line": 20133,
+            "column": 3
+          },
+          {
+            "line": 20166,
+            "column": 3
+          },
+          {
+            "line": 20194,
+            "column": 3
+          },
+          {
+            "line": 20209,
+            "column": 3
+          },
+          {
+            "line": 20210,
+            "column": 3
+          },
+          {
+            "line": 20211,
+            "column": 3
+          },
+          {
+            "line": 20218,
+            "column": 3
+          },
+          {
+            "line": 20219,
+            "column": 3
+          },
+          {
+            "line": 20220,
+            "column": 3
+          },
+          {
+            "line": 20221,
+            "column": 3
+          },
+          {
+            "line": 20222,
+            "column": 3
+          },
+          {
+            "line": 20230,
+            "column": 3
+          },
+          {
+            "line": 20231,
+            "column": 3
+          },
+          {
+            "line": 20232,
+            "column": 3
+          },
+          {
+            "line": 20233,
+            "column": 3
+          },
+          {
+            "line": 20309,
+            "column": 3
+          },
+          {
+            "line": 20310,
+            "column": 3
+          },
+          {
+            "line": 20311,
+            "column": 3
+          },
+          {
+            "line": 20312,
+            "column": 3
+          },
+          {
+            "line": 20313,
+            "column": 3
+          },
+          {
+            "line": 20366,
+            "column": 3
+          },
+          {
+            "line": 20367,
+            "column": 3
+          },
+          {
+            "line": 20368,
+            "column": 3
+          },
+          {
+            "line": 20380,
+            "column": 3
+          },
+          {
+            "line": 20381,
+            "column": 3
+          },
+          {
+            "line": 20382,
+            "column": 3
+          },
+          {
+            "line": 20413,
+            "column": 3
+          },
+          {
+            "line": 20424,
+            "column": 3
+          },
+          {
+            "line": 20425,
+            "column": 3
+          },
+          {
+            "line": 20465,
+            "column": 3
+          },
+          {
+            "line": 20466,
+            "column": 3
+          },
+          {
+            "line": 20467,
+            "column": 3
+          },
+          {
+            "line": 20468,
+            "column": 3
+          },
+          {
+            "line": 20469,
+            "column": 3
+          },
+          {
+            "line": 20470,
+            "column": 3
+          },
+          {
+            "line": 20471,
+            "column": 3
+          },
+          {
+            "line": 20485,
+            "column": 3
+          },
+          {
+            "line": 20503,
+            "column": 3
+          },
+          {
+            "line": 20504,
+            "column": 3
+          },
+          {
+            "line": 20505,
+            "column": 3
+          },
+          {
+            "line": 20506,
+            "column": 3
+          },
+          {
+            "line": 20507,
+            "column": 3
+          },
+          {
+            "line": 20516,
+            "column": 3
+          },
+          {
+            "line": 20517,
+            "column": 3
+          },
+          {
+            "line": 20518,
+            "column": 3
+          },
+          {
+            "line": 20519,
+            "column": 3
+          },
+          {
+            "line": 20585,
+            "column": 3
+          },
+          {
+            "line": 20586,
+            "column": 3
+          },
+          {
+            "line": 20587,
+            "column": 3
+          },
+          {
+            "line": 20588,
+            "column": 3
+          },
+          {
+            "line": 20589,
+            "column": 3
+          },
+          {
+            "line": 20622,
+            "column": 3
+          },
+          {
+            "line": 20623,
+            "column": 3
+          },
+          {
+            "line": 20672,
+            "column": 3
+          },
+          {
+            "line": 20673,
+            "column": 3
+          },
+          {
+            "line": 20674,
+            "column": 3
+          },
+          {
+            "line": 20688,
+            "column": 3
+          },
+          {
+            "line": 20689,
+            "column": 3
+          },
+          {
+            "line": 20690,
+            "column": 3
+          },
+          {
+            "line": 20691,
+            "column": 3
+          },
+          {
+            "line": 20692,
+            "column": 3
+          },
+          {
+            "line": 20693,
+            "column": 3
+          },
+          {
+            "line": 20714,
+            "column": 3
+          },
+          {
+            "line": 20715,
+            "column": 3
+          },
+          {
+            "line": 20716,
+            "column": 3
+          },
+          {
+            "line": 20717,
+            "column": 3
+          },
+          {
+            "line": 20718,
+            "column": 3
+          },
+          {
+            "line": 20719,
+            "column": 3
+          },
+          {
+            "line": 20720,
+            "column": 3
+          },
+          {
+            "line": 20721,
+            "column": 3
+          },
+          {
+            "line": 20750,
+            "column": 3
+          },
+          {
+            "line": 20751,
+            "column": 3
+          },
+          {
+            "line": 20752,
+            "column": 3
+          },
+          {
+            "line": 20823,
+            "column": 3
+          },
+          {
+            "line": 20824,
+            "column": 3
+          },
+          {
+            "line": 20825,
+            "column": 3
+          },
+          {
+            "line": 20842,
+            "column": 3
+          },
+          {
+            "line": 20843,
+            "column": 3
+          },
+          {
+            "line": 20844,
+            "column": 3
+          },
+          {
+            "line": 20846,
+            "column": 3
+          },
+          {
+            "line": 20847,
+            "column": 3
+          },
+          {
+            "line": 20878,
+            "column": 3
+          },
+          {
+            "line": 20887,
+            "column": 3
+          },
+          {
+            "line": 20888,
+            "column": 3
+          },
+          {
+            "line": 20892,
+            "column": 3
+          },
+          {
+            "line": 20893,
+            "column": 3
+          },
+          {
+            "line": 20974,
+            "column": 3
+          },
+          {
+            "line": 20975,
+            "column": 3
+          },
+          {
+            "line": 20976,
+            "column": 3
+          },
+          {
+            "line": 20977,
+            "column": 3
+          },
+          {
+            "line": 20978,
+            "column": 3
+          },
+          {
+            "line": 20979,
+            "column": 3
+          },
+          {
+            "line": 20980,
+            "column": 3
+          },
+          {
+            "line": 20981,
+            "column": 3
+          },
+          {
+            "line": 20982,
+            "column": 3
+          },
+          {
+            "line": 20983,
+            "column": 3
+          },
+          {
+            "line": 20984,
+            "column": 3
+          },
+          {
+            "line": 20992,
+            "column": 3
+          },
+          {
+            "line": 20993,
+            "column": 3
+          },
+          {
+            "line": 21009,
+            "column": 3
+          },
+          {
+            "line": 21010,
+            "column": 3
+          },
+          {
+            "line": 21011,
+            "column": 3
+          },
+          {
+            "line": 21012,
+            "column": 3
+          },
+          {
+            "line": 21013,
+            "column": 3
+          },
+          {
+            "line": 21014,
+            "column": 3
+          },
+          {
+            "line": 21015,
+            "column": 3
+          },
+          {
+            "line": 21110,
+            "column": 3
+          },
+          {
+            "line": 21111,
+            "column": 3
+          },
+          {
+            "line": 21112,
+            "column": 3
+          },
+          {
+            "line": 21113,
+            "column": 3
+          },
+          {
+            "line": 21114,
+            "column": 3
+          },
+          {
+            "line": 21115,
+            "column": 3
+          },
+          {
+            "line": 21116,
+            "column": 3
+          },
+          {
+            "line": 21117,
+            "column": 3
+          },
+          {
+            "line": 21118,
+            "column": 3
+          },
+          {
+            "line": 21119,
+            "column": 3
+          },
+          {
+            "line": 21165,
+            "column": 3
+          },
+          {
+            "line": 21166,
+            "column": 3
+          },
+          {
+            "line": 21167,
+            "column": 3
+          },
+          {
+            "line": 21168,
+            "column": 3
+          },
+          {
+            "line": 21169,
+            "column": 3
+          },
+          {
+            "line": 21170,
+            "column": 3
+          },
+          {
+            "line": 21171,
+            "column": 3
+          },
+          {
+            "line": 21296,
+            "column": 3
+          },
+          {
+            "line": 21309,
+            "column": 3
+          },
+          {
+            "line": 21310,
+            "column": 3
+          },
+          {
+            "line": 21311,
+            "column": 3
+          },
+          {
+            "line": 21312,
+            "column": 3
+          },
+          {
+            "line": 21313,
+            "column": 3
+          },
+          {
+            "line": 21399,
+            "column": 3
+          },
+          {
+            "line": 21407,
+            "column": 3
+          },
+          {
+            "line": 21421,
+            "column": 3
+          },
+          {
+            "line": 21429,
+            "column": 3
+          },
+          {
+            "line": 21453,
+            "column": 3
+          },
+          {
+            "line": 21454,
+            "column": 3
+          },
+          {
+            "line": 21455,
+            "column": 3
+          },
+          {
+            "line": 21591,
+            "column": 3
+          },
+          {
+            "line": 21592,
+            "column": 3
+          },
+          {
+            "line": 21630,
+            "column": 3
+          },
+          {
+            "line": 21631,
+            "column": 3
+          },
+          {
+            "line": 21632,
+            "column": 3
+          },
+          {
+            "line": 21633,
+            "column": 3
+          },
+          {
+            "line": 21634,
+            "column": 3
+          },
+          {
+            "line": 21635,
+            "column": 3
+          },
+          {
+            "line": 21636,
+            "column": 3
+          },
+          {
+            "line": 21637,
+            "column": 3
+          },
+          {
+            "line": 21638,
+            "column": 3
+          },
+          {
+            "line": 21639,
+            "column": 3
+          },
+          {
+            "line": 21640,
+            "column": 3
+          },
+          {
+            "line": 21641,
+            "column": 3
+          },
+          {
+            "line": 21651,
+            "column": 3
+          },
+          {
+            "line": 21652,
+            "column": 3
+          },
+          {
+            "line": 21653,
+            "column": 3
+          },
+          {
+            "line": 21656,
+            "column": 3
+          },
+          {
+            "line": 21657,
+            "column": 3
+          },
+          {
+            "line": 21694,
+            "column": 3
+          },
+          {
+            "line": 21695,
+            "column": 3
+          },
+          {
+            "line": 21719,
+            "column": 3
+          },
+          {
+            "line": 21720,
+            "column": 3
+          },
+          {
+            "line": 21836,
+            "column": 3
+          },
+          {
+            "line": 21846,
+            "column": 3
+          },
+          {
+            "line": 21852,
+            "column": 3
+          },
+          {
+            "line": 21915,
+            "column": 3
+          },
+          {
+            "line": 22059,
+            "column": 3
+          },
+          {
+            "line": 22060,
+            "column": 3
+          },
+          {
+            "line": 22080,
+            "column": 3
+          },
+          {
+            "line": 22081,
+            "column": 3
+          },
+          {
+            "line": 22082,
+            "column": 3
+          },
+          {
+            "line": 22083,
+            "column": 3
+          },
+          {
+            "line": 22084,
+            "column": 3
+          },
+          {
+            "line": 22085,
+            "column": 3
+          },
+          {
+            "line": 22086,
+            "column": 3
+          },
+          {
+            "line": 22087,
+            "column": 3
+          },
+          {
+            "line": 22088,
+            "column": 3
+          },
+          {
+            "line": 22089,
+            "column": 3
+          },
+          {
+            "line": 22090,
+            "column": 3
+          },
+          {
+            "line": 22091,
+            "column": 3
+          },
+          {
+            "line": 22092,
+            "column": 3
+          },
+          {
+            "line": 22093,
+            "column": 3
+          },
+          {
+            "line": 22134,
+            "column": 3
+          },
+          {
+            "line": 22135,
+            "column": 3
+          },
+          {
+            "line": 22136,
+            "column": 3
+          },
+          {
+            "line": 22137,
+            "column": 3
+          },
+          {
+            "line": 22154,
+            "column": 3
+          },
+          {
+            "line": 22155,
+            "column": 3
+          },
+          {
+            "line": 22156,
+            "column": 3
+          },
+          {
+            "line": 22157,
+            "column": 3
+          },
+          {
+            "line": 22158,
+            "column": 3
+          },
+          {
+            "line": 22159,
+            "column": 3
+          },
+          {
+            "line": 22160,
+            "column": 3
+          },
+          {
+            "line": 22180,
+            "column": 3
+          },
+          {
+            "line": 22181,
+            "column": 3
+          },
+          {
+            "line": 22182,
+            "column": 3
+          },
+          {
+            "line": 22183,
+            "column": 3
+          },
+          {
+            "line": 22184,
+            "column": 3
+          },
+          {
+            "line": 22185,
+            "column": 3
+          },
+          {
+            "line": 22186,
+            "column": 3
+          },
+          {
+            "line": 22187,
+            "column": 3
+          },
+          {
+            "line": 22204,
+            "column": 3
+          },
+          {
+            "line": 22205,
+            "column": 3
+          },
+          {
+            "line": 22206,
+            "column": 3
+          },
+          {
+            "line": 22266,
+            "column": 3
+          },
+          {
+            "line": 22267,
+            "column": 3
+          },
+          {
+            "line": 22268,
+            "column": 3
+          },
+          {
+            "line": 22269,
+            "column": 3
+          },
+          {
+            "line": 22283,
+            "column": 3
+          },
+          {
+            "line": 22288,
+            "column": 3
+          },
+          {
+            "line": 22289,
+            "column": 3
+          },
+          {
+            "line": 22443,
+            "column": 3
+          },
+          {
+            "line": 22446,
+            "column": 3
+          },
+          {
+            "line": 22449,
+            "column": 3
+          },
+          {
+            "line": 22452,
+            "column": 3
+          },
+          {
+            "line": 22455,
+            "column": 3
+          },
+          {
+            "line": 22463,
+            "column": 3
+          },
+          {
+            "line": 22780,
+            "column": 3
+          },
+          {
+            "line": 22781,
+            "column": 3
+          },
+          {
+            "line": 22782,
+            "column": 3
+          },
+          {
+            "line": 22799,
+            "column": 3
+          },
+          {
+            "line": 22800,
+            "column": 3
+          },
+          {
+            "line": 22805,
+            "column": 3
+          },
+          {
+            "line": 22883,
+            "column": 3
+          },
+          {
+            "line": 22887,
+            "column": 3
+          },
+          {
+            "line": 22888,
+            "column": 3
+          },
+          {
+            "line": 22889,
+            "column": 3
+          },
+          {
+            "line": 22890,
+            "column": 3
+          },
+          {
+            "line": 22891,
+            "column": 3
+          },
+          {
+            "line": 22892,
+            "column": 3
+          },
+          {
+            "line": 22893,
+            "column": 3
+          },
+          {
+            "line": 22931,
+            "column": 3
+          },
+          {
+            "line": 22932,
+            "column": 3
+          },
+          {
+            "line": 22933,
+            "column": 3
+          },
+          {
+            "line": 22934,
+            "column": 3
+          },
+          {
+            "line": 22935,
+            "column": 3
+          },
+          {
+            "line": 22936,
+            "column": 3
+          },
+          {
+            "line": 22937,
+            "column": 3
+          },
+          {
+            "line": 22938,
+            "column": 3
+          },
+          {
+            "line": 22939,
+            "column": 3
+          },
+          {
+            "line": 22940,
+            "column": 3
+          },
+          {
+            "line": 22941,
+            "column": 3
+          },
+          {
+            "line": 22942,
+            "column": 3
+          },
+          {
+            "line": 22943,
+            "column": 3
+          },
+          {
+            "line": 22944,
+            "column": 3
+          },
+          {
+            "line": 23005,
+            "column": 3
+          },
+          {
+            "line": 23006,
+            "column": 3
+          },
+          {
+            "line": 23007,
+            "column": 3
+          },
+          {
+            "line": 23070,
+            "column": 3
+          },
+          {
+            "line": 23071,
+            "column": 3
+          },
+          {
+            "line": 23072,
+            "column": 3
+          },
+          {
+            "line": 23073,
+            "column": 3
+          },
+          {
+            "line": 23074,
+            "column": 3
+          },
+          {
+            "line": 23075,
+            "column": 3
+          },
+          {
+            "line": 23076,
+            "column": 3
+          },
+          {
+            "line": 23077,
+            "column": 3
+          },
+          {
+            "line": 23080,
+            "column": 3
+          },
+          {
+            "line": 23128,
+            "column": 3
+          },
+          {
+            "line": 23129,
+            "column": 3
+          },
+          {
+            "line": 23130,
+            "column": 3
+          },
+          {
+            "line": 23131,
+            "column": 3
+          },
+          {
+            "line": 23132,
+            "column": 3
+          },
+          {
+            "line": 23133,
+            "column": 3
+          },
+          {
+            "line": 23134,
+            "column": 3
+          },
+          {
+            "line": 23193,
+            "column": 3
+          },
+          {
+            "line": 23194,
+            "column": 3
+          },
+          {
+            "line": 23195,
+            "column": 3
+          },
+          {
+            "line": 23196,
+            "column": 3
+          },
+          {
+            "line": 23415,
+            "column": 3
+          },
+          {
+            "line": 23416,
+            "column": 3
+          },
+          {
+            "line": 23478,
+            "column": 3
+          },
+          {
+            "line": 23479,
+            "column": 3
+          },
+          {
+            "line": 23480,
+            "column": 3
+          },
+          {
+            "line": 23550,
+            "column": 3
+          },
+          {
+            "line": 23551,
+            "column": 3
+          },
+          {
+            "line": 23552,
+            "column": 3
+          },
+          {
+            "line": 23576,
+            "column": 3
+          },
+          {
+            "line": 23857,
+            "column": 3
+          },
+          {
+            "line": 23858,
+            "column": 3
+          },
+          {
+            "line": 23859,
+            "column": 3
+          },
+          {
+            "line": 23873,
+            "column": 3
+          },
+          {
+            "line": 23874,
+            "column": 3
+          },
+          {
+            "line": 23875,
+            "column": 3
+          },
+          {
+            "line": 23876,
+            "column": 3
+          },
+          {
+            "line": 23959,
+            "column": 3
+          },
+          {
+            "line": 24053,
+            "column": 3
+          },
+          {
+            "line": 24054,
+            "column": 3
+          },
+          {
+            "line": 25193,
+            "column": 3
+          },
+          {
+            "line": 25194,
+            "column": 3
+          },
+          {
+            "line": 25195,
+            "column": 3
+          },
+          {
+            "line": 25196,
+            "column": 3
+          },
+          {
+            "line": 25197,
+            "column": 3
+          },
+          {
+            "line": 32793,
+            "column": 3
+          },
+          {
+            "line": 32794,
+            "column": 3
+          },
+          {
+            "line": 32795,
+            "column": 3
+          },
+          {
+            "line": 32797,
+            "column": 3
+          },
+          {
+            "line": 32798,
+            "column": 3
+          },
+          {
+            "line": 32889,
+            "column": 3
+          },
+          {
+            "line": 32890,
+            "column": 3
+          },
+          {
+            "line": 32954,
+            "column": 3
+          },
+          {
+            "line": 32955,
+            "column": 3
+          },
+          {
+            "line": 33350,
+            "column": 3
+          },
+          {
+            "line": 33351,
+            "column": 3
+          },
+          {
+            "line": 33352,
+            "column": 3
+          },
+          {
+            "line": 33353,
+            "column": 3
+          },
+          {
+            "line": 33354,
+            "column": 3
+          },
+          {
+            "line": 33356,
+            "column": 3
+          },
+          {
+            "line": 33357,
+            "column": 3
+          },
+          {
+            "line": 33358,
+            "column": 3
+          },
+          {
+            "line": 33359,
+            "column": 3
+          },
+          {
+            "line": 33368,
+            "column": 3
+          },
+          {
+            "line": 33376,
+            "column": 3
+          },
+          {
+            "line": 33503,
+            "column": 3
+          },
+          {
+            "line": 33504,
+            "column": 3
+          },
+          {
+            "line": 33505,
+            "column": 3
+          },
+          {
+            "line": 44040,
+            "column": 3
+          },
+          {
+            "line": 44046,
+            "column": 3
+          },
+          {
+            "line": 44047,
+            "column": 3
+          },
+          {
+            "line": 44054,
+            "column": 3
+          },
+          {
+            "line": 44057,
+            "column": 3
+          },
+          {
+            "line": 44060,
+            "column": 3
+          },
+          {
+            "line": 44063,
+            "column": 3
+          },
+          {
+            "line": 44066,
+            "column": 3
+          },
+          {
+            "line": 44069,
+            "column": 3
+          },
+          {
+            "line": 44072,
+            "column": 3
+          },
+          {
+            "line": 44075,
+            "column": 3
+          },
+          {
+            "line": 44078,
+            "column": 3
+          },
+          {
+            "line": 44081,
+            "column": 3
+          },
+          {
+            "line": 44084,
+            "column": 3
+          },
+          {
+            "line": 44087,
+            "column": 3
+          },
+          {
+            "line": 44090,
+            "column": 3
+          },
+          {
+            "line": 44091,
+            "column": 3
+          },
+          {
+            "line": 44092,
+            "column": 3
+          },
+          {
+            "line": 44098,
+            "column": 3
+          },
+          {
+            "line": 44099,
+            "column": 3
+          },
+          {
+            "line": 44106,
+            "column": 3
+          },
+          {
+            "line": 44107,
+            "column": 3
+          },
+          {
+            "line": 44108,
+            "column": 3
+          },
+          {
+            "line": 44109,
+            "column": 3
+          },
+          {
+            "line": 44117,
+            "column": 3
+          },
+          {
+            "line": 44120,
+            "column": 3
+          },
+          {
+            "line": 44123,
+            "column": 3
+          },
+          {
+            "line": 44126,
+            "column": 3
+          },
+          {
+            "line": 44127,
+            "column": 3
+          },
+          {
+            "line": 44134,
+            "column": 3
+          },
+          {
+            "line": 44135,
+            "column": 3
+          },
+          {
+            "line": 44338,
+            "column": 3
+          },
+          {
+            "line": 44339,
+            "column": 3
+          },
+          {
+            "line": 44340,
+            "column": 3
+          },
+          {
+            "line": 44591,
+            "column": 3
+          },
+          {
+            "line": 44592,
+            "column": 3
+          },
+          {
+            "line": 44593,
+            "column": 3
+          },
+          {
+            "line": 44598,
+            "column": 3
+          },
+          {
+            "line": 44599,
+            "column": 3
+          },
+          {
+            "line": 44603,
+            "column": 3
+          },
+          {
+            "line": 44604,
+            "column": 3
+          },
+          {
+            "line": 44610,
+            "column": 3
+          },
+          {
+            "line": 44614,
+            "column": 3
+          },
+          {
+            "line": 44615,
+            "column": 3
+          },
+          {
+            "line": 44621,
+            "column": 3
+          },
+          {
+            "line": 44633,
+            "column": 3
+          },
+          {
+            "line": 44646,
+            "column": 3
+          },
+          {
+            "line": 44647,
+            "column": 3
+          },
+          {
+            "line": 44649,
+            "column": 3
+          },
+          {
+            "line": 44650,
+            "column": 3
+          },
+          {
+            "line": 44651,
+            "column": 3
+          },
+          {
+            "line": 44652,
+            "column": 3
+          },
+          {
+            "line": 44653,
+            "column": 3
+          },
+          {
+            "line": 44718,
+            "column": 3
+          },
+          {
+            "line": 44719,
+            "column": 3
+          },
+          {
+            "line": 44720,
+            "column": 3
+          },
+          {
+            "line": 44721,
+            "column": 3
+          },
+          {
+            "line": 44722,
+            "column": 3
+          },
+          {
+            "line": 44724,
+            "column": 3
+          },
+          {
+            "line": 44725,
+            "column": 3
+          },
+          {
+            "line": 44727,
+            "column": 3
+          },
+          {
+            "line": 44728,
+            "column": 3
+          },
+          {
+            "line": 44732,
+            "column": 3
+          },
+          {
+            "line": 44734,
+            "column": 3
+          },
+          {
+            "line": 45012,
+            "column": 3
+          },
+          {
+            "line": 45013,
+            "column": 3
+          },
+          {
+            "line": 45014,
+            "column": 3
+          },
+          {
+            "line": 45015,
+            "column": 3
+          },
+          {
+            "line": 45016,
+            "column": 3
+          },
+          {
+            "line": 45017,
+            "column": 3
+          },
+          {
+            "line": 45018,
+            "column": 3
+          },
+          {
+            "line": 45019,
+            "column": 3
+          },
+          {
+            "line": 45020,
+            "column": 3
+          },
+          {
+            "line": 45021,
+            "column": 3
+          },
+          {
+            "line": 45022,
+            "column": 3
+          },
+          {
+            "line": 45023,
+            "column": 3
+          },
+          {
+            "line": 45024,
+            "column": 3
+          },
+          {
+            "line": 45025,
+            "column": 3
+          },
+          {
+            "line": 45026,
+            "column": 3
+          },
+          {
+            "line": 45027,
+            "column": 3
+          },
+          {
+            "line": 45028,
+            "column": 3
+          },
+          {
+            "line": 45029,
+            "column": 3
+          },
+          {
+            "line": 45032,
+            "column": 3
+          },
+          {
+            "line": 45033,
+            "column": 3
+          },
+          {
+            "line": 45092,
+            "column": 3
+          },
+          {
+            "line": 45093,
+            "column": 3
+          },
+          {
+            "line": 45207,
+            "column": 3
+          },
+          {
+            "line": 45208,
+            "column": 3
+          },
+          {
+            "line": 45210,
+            "column": 3
+          },
+          {
+            "line": 45211,
+            "column": 3
+          },
+          {
+            "line": 45212,
+            "column": 3
+          },
+          {
+            "line": 45214,
+            "column": 3
+          },
+          {
+            "line": 45215,
+            "column": 3
+          },
+          {
+            "line": 45216,
+            "column": 3
+          },
+          {
+            "line": 45217,
+            "column": 3
+          },
+          {
+            "line": 45218,
+            "column": 3
+          },
+          {
+            "line": 45219,
+            "column": 3
+          },
+          {
+            "line": 45298,
+            "column": 3
+          },
+          {
+            "line": 45300,
+            "column": 3
+          },
+          {
+            "line": 45301,
+            "column": 3
+          },
+          {
+            "line": 45302,
+            "column": 3
+          },
+          {
+            "line": 45304,
+            "column": 3
+          },
+          {
+            "line": 45305,
+            "column": 3
+          },
+          {
+            "line": 45306,
+            "column": 3
+          },
+          {
+            "line": 45307,
+            "column": 3
+          },
+          {
+            "line": 45350,
+            "column": 3
+          },
+          {
+            "line": 45352,
+            "column": 3
+          },
+          {
+            "line": 45353,
+            "column": 3
+          },
+          {
+            "line": 45354,
+            "column": 3
+          },
+          {
+            "line": 45356,
+            "column": 3
+          },
+          {
+            "line": 45357,
+            "column": 3
+          },
+          {
+            "line": 45358,
+            "column": 3
+          },
+          {
+            "line": 45359,
+            "column": 3
+          },
+          {
+            "line": 45461,
+            "column": 3
+          },
+          {
+            "line": 45463,
+            "column": 3
+          },
+          {
+            "line": 45464,
+            "column": 3
+          },
+          {
+            "line": 45465,
+            "column": 3
+          },
+          {
+            "line": 45467,
+            "column": 3
+          },
+          {
+            "line": 45468,
+            "column": 3
+          },
+          {
+            "line": 45469,
+            "column": 3
+          },
+          {
+            "line": 45470,
+            "column": 3
+          },
+          {
+            "line": 45561,
+            "column": 3
+          },
+          {
+            "line": 45563,
+            "column": 3
+          },
+          {
+            "line": 45564,
+            "column": 3
+          },
+          {
+            "line": 45565,
+            "column": 3
+          },
+          {
+            "line": 45567,
+            "column": 3
+          },
+          {
+            "line": 45568,
+            "column": 3
+          },
+          {
+            "line": 45569,
+            "column": 3
+          },
+          {
+            "line": 45570,
+            "column": 3
+          },
+          {
+            "line": 45627,
+            "column": 3
+          },
+          {
+            "line": 45710,
+            "column": 3
+          },
+          {
+            "line": 45711,
+            "column": 3
+          },
+          {
+            "line": 45712,
+            "column": 3
+          },
+          {
+            "line": 45713,
+            "column": 3
+          },
+          {
+            "line": 45714,
+            "column": 3
+          },
+          {
+            "line": 45715,
+            "column": 3
+          },
+          {
+            "line": 45791,
+            "column": 3
+          },
+          {
+            "line": 45792,
+            "column": 3
+          },
+          {
+            "line": 45794,
+            "column": 3
+          },
+          {
+            "line": 45796,
+            "column": 3
+          },
+          {
+            "line": 45797,
+            "column": 3
+          },
+          {
+            "line": 45798,
+            "column": 3
+          },
+          {
+            "line": 45800,
+            "column": 3
+          },
+          {
+            "line": 45801,
+            "column": 3
+          },
+          {
+            "line": 45802,
+            "column": 3
+          },
+          {
+            "line": 45803,
+            "column": 3
+          },
+          {
+            "line": 45985,
+            "column": 3
+          },
+          {
+            "line": 45986,
+            "column": 3
+          },
+          {
+            "line": 45987,
+            "column": 3
+          },
+          {
+            "line": 45988,
+            "column": 3
+          },
+          {
+            "line": 45989,
+            "column": 3
+          },
+          {
+            "line": 45991,
+            "column": 3
+          },
+          {
+            "line": 45992,
+            "column": 3
+          },
+          {
+            "line": 46006,
+            "column": 3
+          },
+          {
+            "line": 46010,
+            "column": 3
+          },
+          {
+            "line": 46014,
+            "column": 3
+          },
+          {
+            "line": 46015,
+            "column": 3
+          },
+          {
+            "line": 46016,
+            "column": 3
+          },
+          {
+            "line": 46017,
+            "column": 3
+          },
+          {
+            "line": 46018,
+            "column": 3
+          },
+          {
+            "line": 46028,
+            "column": 3
+          },
+          {
+            "line": 46029,
+            "column": 3
+          },
+          {
+            "line": 46058,
+            "column": 3
+          },
+          {
+            "line": 46060,
+            "column": 3
+          },
+          {
+            "line": 46061,
+            "column": 3
+          },
+          {
+            "line": 46062,
+            "column": 3
+          },
+          {
+            "line": 46063,
+            "column": 3
+          },
+          {
+            "line": 46064,
+            "column": 3
+          },
+          {
+            "line": 46158,
+            "column": 3
+          },
+          {
+            "line": 46160,
+            "column": 3
+          },
+          {
+            "line": 46161,
+            "column": 3
+          },
+          {
+            "line": 46162,
+            "column": 3
+          },
+          {
+            "line": 46211,
+            "column": 3
+          },
+          {
+            "line": 46212,
+            "column": 3
+          },
+          {
+            "line": 46213,
+            "column": 3
+          },
+          {
+            "line": 46303,
+            "column": 3
+          },
+          {
+            "line": 46304,
+            "column": 3
+          },
+          {
+            "line": 46306,
+            "column": 3
+          },
+          {
+            "line": 46308,
+            "column": 3
+          },
+          {
+            "line": 46309,
+            "column": 3
+          },
+          {
+            "line": 46310,
+            "column": 3
+          },
+          {
+            "line": 46312,
+            "column": 3
+          },
+          {
+            "line": 46313,
+            "column": 3
+          },
+          {
+            "line": 46314,
+            "column": 3
+          },
+          {
+            "line": 46315,
+            "column": 3
+          },
+          {
+            "line": 46316,
+            "column": 3
+          },
+          {
+            "line": 46465,
+            "column": 3
+          },
+          {
+            "line": 46467,
+            "column": 3
+          },
+          {
+            "line": 46468,
+            "column": 3
+          },
+          {
+            "line": 46469,
+            "column": 3
+          },
+          {
+            "line": 46471,
+            "column": 3
+          },
+          {
+            "line": 46472,
+            "column": 3
+          },
+          {
+            "line": 46473,
+            "column": 3
+          },
+          {
+            "line": 46474,
+            "column": 3
+          },
+          {
+            "line": 46542,
+            "column": 3
+          },
+          {
+            "line": 46543,
+            "column": 3
+          },
+          {
+            "line": 46544,
+            "column": 3
+          },
+          {
+            "line": 46545,
+            "column": 3
+          },
+          {
+            "line": 46546,
+            "column": 3
+          },
+          {
+            "line": 46547,
+            "column": 3
+          },
+          {
+            "line": 46548,
+            "column": 3
+          },
+          {
+            "line": 46549,
+            "column": 3
+          },
+          {
+            "line": 46550,
+            "column": 3
+          },
+          {
+            "line": 46760,
+            "column": 3
+          },
+          {
+            "line": 46765,
+            "column": 3
+          },
+          {
+            "line": 46766,
+            "column": 3
+          },
+          {
+            "line": 46768,
+            "column": 3
+          },
+          {
+            "line": 46769,
+            "column": 3
+          },
+          {
+            "line": 46771,
+            "column": 3
+          },
+          {
+            "line": 46772,
+            "column": 3
+          },
+          {
+            "line": 46773,
+            "column": 3
+          },
+          {
+            "line": 46775,
+            "column": 3
+          },
+          {
+            "line": 46777,
+            "column": 3
+          },
+          {
+            "line": 46778,
+            "column": 3
+          },
+          {
+            "line": 46779,
+            "column": 3
+          },
+          {
+            "line": 46780,
+            "column": 3
+          },
+          {
+            "line": 46781,
+            "column": 3
+          },
+          {
+            "line": 46782,
+            "column": 3
+          },
+          {
+            "line": 46786,
+            "column": 3
+          },
+          {
+            "line": 47089,
+            "column": 3
+          },
+          {
+            "line": 47091,
+            "column": 3
+          },
+          {
+            "line": 47093,
+            "column": 3
+          },
+          {
+            "line": 47094,
+            "column": 3
+          },
+          {
+            "line": 47095,
+            "column": 3
+          },
+          {
+            "line": 47096,
+            "column": 3
+          },
+          {
+            "line": 47097,
+            "column": 3
+          },
+          {
+            "line": 47098,
+            "column": 3
+          },
+          {
+            "line": 47099,
+            "column": 3
+          },
+          {
+            "line": 47100,
+            "column": 3
+          },
+          {
+            "line": 47101,
+            "column": 3
+          },
+          {
+            "line": 47102,
+            "column": 3
+          },
+          {
+            "line": 47104,
+            "column": 3
+          },
+          {
+            "line": 47105,
+            "column": 3
+          },
+          {
+            "line": 47106,
+            "column": 3
+          },
+          {
+            "line": 47107,
+            "column": 3
+          },
+          {
+            "line": 47108,
+            "column": 3
+          },
+          {
+            "line": 47109,
+            "column": 3
+          },
+          {
+            "line": 47110,
+            "column": 3
+          },
+          {
+            "line": 47111,
+            "column": 3
+          },
+          {
+            "line": 47173,
+            "column": 3
+          },
+          {
+            "line": 47174,
+            "column": 3
+          },
+          {
+            "line": 47175,
+            "column": 3
+          },
+          {
+            "line": 47177,
+            "column": 3
+          },
+          {
+            "line": 47178,
+            "column": 3
+          },
+          {
+            "line": 47179,
+            "column": 3
+          },
+          {
+            "line": 47180,
+            "column": 3
+          },
+          {
+            "line": 47181,
+            "column": 3
+          },
+          {
+            "line": 47182,
+            "column": 3
+          },
+          {
+            "line": 47183,
+            "column": 3
+          },
+          {
+            "line": 47184,
+            "column": 3
+          },
+          {
+            "line": 47185,
+            "column": 3
+          },
+          {
+            "line": 47186,
+            "column": 3
+          },
+          {
+            "line": 47187,
+            "column": 3
+          },
+          {
+            "line": 47189,
+            "column": 3
+          },
+          {
+            "line": 47191,
+            "column": 3
+          },
+          {
+            "line": 47193,
+            "column": 3
+          },
+          {
+            "line": 47194,
+            "column": 3
+          },
+          {
+            "line": 47195,
+            "column": 3
+          },
+          {
+            "line": 47196,
+            "column": 3
+          },
+          {
+            "line": 47197,
+            "column": 3
+          },
+          {
+            "line": 47198,
+            "column": 3
+          },
+          {
+            "line": 47199,
+            "column": 3
+          },
+          {
+            "line": 47200,
+            "column": 3
+          },
+          {
+            "line": 47201,
+            "column": 3
+          },
+          {
+            "line": 47203,
+            "column": 3
+          },
+          {
+            "line": 47205,
+            "column": 3
+          },
+          {
+            "line": 47206,
+            "column": 3
+          },
+          {
+            "line": 47207,
+            "column": 3
+          },
+          {
+            "line": 47343,
+            "column": 3
+          },
+          {
+            "line": 47344,
+            "column": 3
+          },
+          {
+            "line": 47345,
+            "column": 3
+          },
+          {
+            "line": 47349,
+            "column": 3
+          },
+          {
+            "line": 47350,
+            "column": 3
+          },
+          {
+            "line": 47351,
+            "column": 3
+          },
+          {
+            "line": 47352,
+            "column": 3
+          }
+        ],
+        "privateFieldLocations": [],
+        "staticBlockLocations": [],
+        "importMetaLocations": [],
+        "dynamicImportLocations": [],
+        "usingLocations": [],
+        "featureCounts": {
+          "topLevelAwait": 2,
+          "classFields": 888,
+          "privateFields": 0,
+          "staticInitializationBlocks": 0,
+          "importMeta": 0,
+          "dynamicImport": 0,
+          "usingSyntax": 0
+        },
+        "runtimeApiTokenCounts": {
+          "Blob": 6,
+          "File": 14,
+          "FileReader": 6,
+          "URL": 14,
+          "fetch": 10,
+          "TextDecoder": 9,
+          "Temporal": 3
+        },
+        "topLevelAwaitExcerpts": [
+          {
+            "line": 101,
+            "column": 23,
+            "lineText": "const BLOB_BEHAVIOR = await detectBlobBehavior();"
+          },
+          {
+            "line": 7690,
+            "column": 26,
+            "lineText": "const expressionParser = await ExpressionParser.init({"
+          }
+        ]
+      }
+    ],
+    "summary": {
+      "totalTopLevelAwait": 4,
+      "filesWithTopLevelAwait": [
+        "node_modules/@getodk/xforms-engine/dist/index.js",
+        "node_modules/@getodk/xforms-engine/dist/solid.js"
+      ]
+    }
+  },
+  "blobTrace": {
+    "detectBlobBehaviorLine": 87,
+    "blobBehaviorTopLevelAwaitLine": 99,
+    "expressionParserTopLevelAwaitLine": 7688,
+    "retrieveSourceXmlBlobReadLine": 211,
+    "attachmentBinaryReadLine": 23951,
+    "instanceBlobReadLine": 24010,
+    "encryptedAttachmentReadLine": 33163,
+    "interpretation": {
+      "detectBlobBehavior": "detectBlobBehavior is async because it probes Blob.text() behavior at runtime and may catch rejected Blob implementations.",
+      "blobScope": "Blob behavior impacts Blob-backed form source reads, submission payload extraction, and encrypted attachments, not plain XML string form source.",
+      "expressionParser": "expressionParser top-level await initializes the Tree-sitter XPath parser before parser usage; module-level await blocks Hermes parse/compile.",
+      "lazyRepresentation": "BLOB behavior and parser initialization can both be represented as shared promises, then awaited at async API boundaries."
+    }
+  },
+  "compatibilityBuild": {
+    "compatIndexPath": "gate/m23b/compat/index.js",
+    "compatSolidPath": "gate/m23b/compat/solid.js",
+    "verification": {
+      "indexTopLevelAwaitBefore": 2,
+      "indexTopLevelAwaitAfter": 0,
+      "solidTopLevelAwaitBefore": 2,
+      "solidTopLevelAwaitAfter": 0
+    }
+  },
+  "stockRelease": [
+    {
+      "label": "stock-minimal",
+      "modeName": "stock",
+      "entryFile": "gate/metroEntryMinimalDefault.js",
+      "platform": "android",
+      "buildMode": "release",
+      "ok": false,
+      "status": 1,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": true,
+      "outputPath": "gate/out/m2.3b/embed/stock-minimal-stock-android-release.min.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\nAndroid Bundling failed 7493ms gate/metroEntryMinimalDefault.js (2 modules)\n",
+      "stderr": "\nFailed to generate Hermes bytecode for: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/metroEntryMinimalDefault.js\n\n/var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.6100308847121387-1787716657472/index.js:3507:29: error: ';' expected\n  var BLOB_BEHAVIOR = await detectBlobBehavior();\n                            ^\nEmitted 1 errors. exiting.\n\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.6100308847121387-1787716657472/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.6100308847121387-1787716657472/index.js -O exited with non-zero code: 2\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.6100308847121387-1787716657472/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.6100308847121387-1787716657472/index.js -O exited with non-zero code: 2\n    at ChildProcess.completionListener (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:113:23)\n    at Object.onceWrapper (node:events:633:26)\n    at ChildProcess.emit (node:events:518:28)\n    at maybeClose (node:internal/child_process:1101:16)\n    at Socket.<anonymous> (node:internal/child_process:456:11)\n    at Socket.emit (node:events:518:28)\n    at Pipe.<anonymous> (node:net:351:12)\n    ...\n    at spawnAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:9:23)\n    at directlyBuildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:84:41)\n    at async buildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:62:12)\n    at async Chunk.serializeToAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:374:40)\n    at async /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:606:31\n    at async Promise.all (index 0)\n    at async serializeChunksAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:609:5)\n    at async graphToSerialAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:74:22)\n    at async expoSerializer (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/withExpoSerializers.js:244:24)\n    at async MetroBundlerDevServer._bundleDirectAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/cli/build/src/start/server/metro/MetroBundlerDevServer.js:1632:28)\n"
+    },
+    {
+      "label": "stock-minimal",
+      "modeName": "stock",
+      "entryFile": "gate/metroEntryMinimalDefault.js",
+      "platform": "ios",
+      "buildMode": "release",
+      "ok": false,
+      "status": 1,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": true,
+      "outputPath": "gate/out/m2.3b/embed/stock-minimal-stock-ios-release.min.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\niOS Bundling failed 7236ms gate/metroEntryMinimalDefault.js (2 modules)\n",
+      "stderr": "\nFailed to generate Hermes bytecode for: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/metroEntryMinimalDefault.js\n\n/var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.js:3507:29: error: ';' expected\n  var BLOB_BEHAVIOR = await detectBlobBehavior();\n                            ^\nEmitted 1 errors. exiting.\n\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.js -O exited with non-zero code: 2\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.js -O exited with non-zero code: 2\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.8600178576699495-1787716683151/index.js -O exited with non-zero code: 2\n    at ChildProcess.completionListener (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:113:23)\n    at Object.onceWrapper (node:events:633:26)\n    at ChildProcess.emit (node:events:518:28)\n    at maybeClose (node:internal/child_process:1101:16)\n    at Socket.<anonymous> (node:internal/child_process:456:11)\n    at Socket.emit (node:events:518:28)\n    at Pipe.<anonymous> (node:net:351:12)\n    ...\n    at spawnAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:9:23)\n    at directlyBuildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:84:41)\n    at async buildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:62:12)\n    at async Chunk.serializeToAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:374:40)\n    at async /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:606:31\n    at async Promise.all (index 0)\n    at async serializeChunksAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:609:5)\n    at async graphToSerialAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:74:22)\n    at async expoSerializer (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/withExpoSerializers.js:244:24)\n    at async MetroBundlerDevServer._bundleDirectAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/cli/build/src/start/server/metro/MetroBundlerDevServer.js:1632:28)\n"
+    }
+  ],
+  "aliasDistRelease": [
+    {
+      "label": "alias-dist-minimal",
+      "modeName": "alias-dist",
+      "entryFile": "gate/metroEntryMinimalDefault.js",
+      "platform": "android",
+      "buildMode": "release",
+      "ok": false,
+      "status": 1,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": true,
+      "outputPath": "gate/out/m2.3b/embed/alias-dist-minimal-alias-dist-android-release.min.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\nAndroid Bundling failed 6706ms gate/metroEntryMinimalDefault.js (2 modules)\n",
+      "stderr": "\nFailed to generate Hermes bytecode for: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/metroEntryMinimalDefault.js\n\n/var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.41212424081366805-1787716665028/index.js:3507:29: error: ';' expected\n  var BLOB_BEHAVIOR = await detectBlobBehavior();\n                            ^\nEmitted 1 errors. exiting.\n\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.41212424081366805-1787716665028/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.41212424081366805-1787716665028/index.js -O exited with non-zero code: 2\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.41212424081366805-1787716665028/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.41212424081366805-1787716665028/index.js -O exited with non-zero code: 2\n    at ChildProcess.completionListener (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:113:23)\n    at Object.onceWrapper (node:events:633:26)\n    at ChildProcess.emit (node:events:518:28)\n    at maybeClose (node:internal/child_process:1101:16)\n    at Socket.<anonymous> (node:internal/child_process:456:11)\n    at Socket.emit (node:events:518:28)\n    at Pipe.<anonymous> (node:net:351:12)\n    ...\n    at spawnAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:9:23)\n    at directlyBuildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:84:41)\n    at async buildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:62:12)\n    at async Chunk.serializeToAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:374:40)\n    at async /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:606:31\n    at async Promise.all (index 0)\n    at async serializeChunksAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:609:5)\n    at async graphToSerialAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:74:22)\n    at async expoSerializer (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/withExpoSerializers.js:244:24)\n    at async MetroBundlerDevServer._bundleDirectAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/cli/build/src/start/server/metro/MetroBundlerDevServer.js:1632:28)\n"
+    },
+    {
+      "label": "alias-dist-minimal",
+      "modeName": "alias-dist",
+      "entryFile": "gate/metroEntryMinimalDefault.js",
+      "platform": "ios",
+      "buildMode": "release",
+      "ok": false,
+      "status": 1,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": true,
+      "outputPath": "gate/out/m2.3b/embed/alias-dist-minimal-alias-dist-ios-release.min.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\niOS Bundling failed 6709ms gate/metroEntryMinimalDefault.js (2 modules)\n",
+      "stderr": "\nFailed to generate Hermes bytecode for: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/metroEntryMinimalDefault.js\n\n/var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.9359345811824034-1787716690698/index.js:3507:29: error: ';' expected\n  var BLOB_BEHAVIOR = await detectBlobBehavior();\n                            ^\nEmitted 1 errors. exiting.\n\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.9359345811824034-1787716690698/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.9359345811824034-1787716690698/index.js -O exited with non-zero code: 2\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.9359345811824034-1787716690698/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.9359345811824034-1787716690698/index.js -O exited with non-zero code: 2\nError: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/hermes-compiler/hermesc/osx-bin/hermesc -emit-binary -out /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.9359345811824034-1787716690698/index.hbc /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/expo-bundler-0.9359345811824034-1787716690698/index.js -O exited with non-zero code: 2\n    at ChildProcess.completionListener (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:113:23)\n    at Object.onceWrapper (node:events:633:26)\n    at ChildProcess.emit (node:events:518:28)\n    at maybeClose (node:internal/child_process:1101:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:304:5)\n    ...\n    at spawnAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/@expo/spawn-async/build/spawnAsync.js:9:23)\n    at directlyBuildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:84:41)\n    at async buildHermesBundleAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/exportHermes.js:62:12)\n    at async Chunk.serializeToAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:374:40)\n    at async /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:606:31\n    at async Promise.all (index 0)\n    at async serializeChunksAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:609:5)\n    at async graphToSerialAssetsAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/serializeChunks.js:74:22)\n    at async expoSerializer (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/metro-config/build/serializer/withExpoSerializers.js:244:24)\n    at async MetroBundlerDevServer._bundleDirectAsync (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/node_modules/expo/node_modules/@expo/cli/build/src/start/server/metro/MetroBundlerDevServer.js:1632:28)\n"
+    }
+  ],
+  "compatRelease": [
+    {
+      "label": "compat-minimal",
+      "modeName": "compat",
+      "entryFile": "gate/metroEntryMinimalDefault.js",
+      "platform": "android",
+      "buildMode": "release",
+      "ok": true,
+      "status": 0,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": false,
+      "outputPath": "gate/out/m2.3b/embed/compat-minimal-compat-android-release.min.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\nAndroid Bundled 8811ms gate/metroEntryMinimalDefault.js (2 modules)\nWriting bundle output to: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/out/m2.3b/embed/compat-minimal-compat-android-release.min.jsbundle\nDone writing bundle output\n",
+      "stderr": ""
+    },
+    {
+      "label": "compat-minimal",
+      "modeName": "compat",
+      "entryFile": "gate/metroEntryMinimalDefault.js",
+      "platform": "ios",
+      "buildMode": "release",
+      "ok": true,
+      "status": 0,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": false,
+      "outputPath": "gate/out/m2.3b/embed/compat-minimal-compat-ios-release.min.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\niOS Bundled 7161ms gate/metroEntryMinimalDefault.js (2 modules)\nWriting bundle output to: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/out/m2.3b/embed/compat-minimal-compat-ios-release.min.jsbundle\nDone writing bundle output\n",
+      "stderr": ""
+    }
+  ],
+  "minimalProof": [
+    {
+      "label": "compat-minimal-matrix",
+      "modeName": "compat",
+      "entryFile": "gate/metroEntryMinimalDefault.js",
+      "platform": "android",
+      "buildMode": "debug",
+      "ok": true,
+      "status": 0,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": false,
+      "outputPath": "gate/out/m2.3b/embed/compat-minimal-matrix-compat-android-debug.nomini.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\nAndroid Bundled 5611ms gate/metroEntryMinimalDefault.js (2 modules)\nWriting bundle output to: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/out/m2.3b/embed/compat-minimal-matrix-compat-android-debug.nomini.jsbundle\nDone writing bundle output\n",
+      "stderr": ""
+    },
+    {
+      "label": "compat-minimal-matrix",
+      "modeName": "compat",
+      "entryFile": "gate/metroEntryMinimalDefault.js",
+      "platform": "android",
+      "buildMode": "release",
+      "ok": true,
+      "status": 0,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": false,
+      "outputPath": "gate/out/m2.3b/embed/compat-minimal-matrix-compat-android-release.min.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\nAndroid Bundled 8745ms gate/metroEntryMinimalDefault.js (2 modules)\nWriting bundle output to: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/out/m2.3b/embed/compat-minimal-matrix-compat-android-release.min.jsbundle\nDone writing bundle output\n",
+      "stderr": ""
+    },
+    {
+      "label": "compat-minimal-matrix",
+      "modeName": "compat",
+      "entryFile": "gate/metroEntryMinimalDefault.js",
+      "platform": "ios",
+      "buildMode": "debug",
+      "ok": true,
+      "status": 0,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": false,
+      "outputPath": "gate/out/m2.3b/embed/compat-minimal-matrix-compat-ios-debug.nomini.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\niOS Bundled 5322ms gate/metroEntryMinimalDefault.js (2 modules)\nWriting bundle output to: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/out/m2.3b/embed/compat-minimal-matrix-compat-ios-debug.nomini.jsbundle\nDone writing bundle output\n",
+      "stderr": ""
+    },
+    {
+      "label": "compat-minimal-matrix",
+      "modeName": "compat",
+      "entryFile": "gate/metroEntryMinimalDefault.js",
+      "platform": "ios",
+      "buildMode": "release",
+      "ok": true,
+      "status": 0,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": false,
+      "outputPath": "gate/out/m2.3b/embed/compat-minimal-matrix-compat-ios-release.min.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\niOS Bundled 8764ms gate/metroEntryMinimalDefault.js (2 modules)\nWriting bundle output to: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/out/m2.3b/embed/compat-minimal-matrix-compat-ios-release.min.jsbundle\nDone writing bundle output\n",
+      "stderr": ""
+    }
+  ],
+  "semanticProbe": [
+    {
+      "label": "compat-semantic-matrix",
+      "modeName": "compat",
+      "entryFile": "gate/metroEntryDefault.js",
+      "platform": "android",
+      "buildMode": "debug",
+      "ok": true,
+      "status": 0,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": false,
+      "outputPath": "gate/out/m2.3b/embed/compat-semantic-matrix-compat-android-debug.nomini.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\nAndroid Bundled 5918ms gate/metroEntryDefault.js (8 modules)\nWriting bundle output to: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/out/m2.3b/embed/compat-semantic-matrix-compat-android-debug.nomini.jsbundle\nDone writing bundle output\n",
+      "stderr": ""
+    },
+    {
+      "label": "compat-semantic-matrix",
+      "modeName": "compat",
+      "entryFile": "gate/metroEntryDefault.js",
+      "platform": "android",
+      "buildMode": "release",
+      "ok": true,
+      "status": 0,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": false,
+      "outputPath": "gate/out/m2.3b/embed/compat-semantic-matrix-compat-android-release.min.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\nAndroid Bundled 9991ms gate/metroEntryDefault.js (8 modules)\nWriting bundle output to: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/out/m2.3b/embed/compat-semantic-matrix-compat-android-release.min.jsbundle\nDone writing bundle output\n",
+      "stderr": ""
+    },
+    {
+      "label": "compat-semantic-matrix",
+      "modeName": "compat",
+      "entryFile": "gate/metroEntryDefault.js",
+      "platform": "ios",
+      "buildMode": "debug",
+      "ok": true,
+      "status": 0,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": false,
+      "outputPath": "gate/out/m2.3b/embed/compat-semantic-matrix-compat-ios-debug.nomini.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\niOS Bundled 5630ms gate/metroEntryDefault.js (8 modules)\nWriting bundle output to: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/out/m2.3b/embed/compat-semantic-matrix-compat-ios-debug.nomini.jsbundle\nDone writing bundle output\n",
+      "stderr": ""
+    },
+    {
+      "label": "compat-semantic-matrix",
+      "modeName": "compat",
+      "entryFile": "gate/metroEntryDefault.js",
+      "platform": "ios",
+      "buildMode": "release",
+      "ok": true,
+      "status": 0,
+      "hasModuleResolutionFailure": false,
+      "hasTopLevelAwaitFailure": false,
+      "outputPath": "gate/out/m2.3b/embed/compat-semantic-matrix-compat-ios-release.min.jsbundle",
+      "stdout": "Starting Metro Bundler\n\nwarning: Bundler cache is empty, rebuilding (this may take a minute)\niOS Bundled 9526ms gate/metroEntryDefault.js (8 modules)\nWriting bundle output to: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/out/m2.3b/embed/compat-semantic-matrix-compat-ios-release.min.jsbundle\nDone writing bundle output\n",
+      "stderr": ""
+    }
+  ],
+  "nodeSemanticProbe": {
+    "ok": true,
+    "status": 0,
+    "payload": {
+      "ok": true,
+      "importMode": "m23b-compat-node",
+      "steps": [
+        {
+          "name": "slimdom compatibility init",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "loadForm representative fixture",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "loadForm status",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "createInstance",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "inspect known state",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "setValue and dependent behavior",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "serialize instance payload",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    "stdout": "{\"ok\":true,\"importMode\":\"m23b-compat-node\",\"steps\":[{\"name\":\"slimdom compatibility init\",\"ok\":true,\"error\":null},{\"name\":\"loadForm representative fixture\",\"ok\":true,\"error\":null},{\"name\":\"loadForm status\",\"ok\":true,\"error\":null},{\"name\":\"createInstance\",\"ok\":true,\"error\":null},{\"name\":\"inspect known state\",\"ok\":true,\"error\":null},{\"name\":\"setValue and dependent behavior\",\"ok\":true,\"error\":null},{\"name\":\"serialize instance payload\",\"ok\":true,\"error\":null}]}\n",
+    "stderr": "(node:82948) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/gate/m23b/compat/index.js is not specified and it doesn't parse as CommonJS.\nReparsing as ES module because module syntax was detected. This incurs a performance overhead.\nTo eliminate this warning, add \"type\": \"module\" to /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.3a-current-expo/package.json.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+  },
+  "verdict": "GREEN",
+  "recommendation": "Proceed to M3 with an isolated generated compatibility transform for xforms-engine and open an upstream issue/PR to remove module-level top-level await."
+}

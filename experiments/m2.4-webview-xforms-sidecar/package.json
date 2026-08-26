@@ -1,0 +1,22 @@
+{
+  "name": "m2.4-webview-xforms-sidecar",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@getodk/xforms-engine": "^1.0.3",
+    "expo": "~57.0.16",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.2",
+    "react-native-webview": "^14.0.1"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "run:android": "expo run:android",
+    "run:ios": "expo run:ios"
+  },
+  "private": true
+}

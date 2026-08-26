@@ -1,0 +1,1169 @@
+{
+  "generatedAt": "2026-08-26T01:35:56.107Z",
+  "versions": {
+    "node": "v22.15.0",
+    "yarn": "1.22.19",
+    "reactNative": "0.74.3",
+    "expo": "~51.0.39",
+    "hermes": "LLVM (http://llvm.org/):\n  LLVH version 8.0.0svn\n  Optimized build\n\nHermes JavaScript compiler and Virtual Machine.\n  Hermes release version: for RN 0.74.3\n  HBC bytecode version: 96\n\n  Features:\n    Zip file input"
+  },
+  "packageVersionTested": "4.3.5",
+  "portabilityInspection": {
+    "package": {
+      "name": "slimdom",
+      "version": "4.3.5",
+      "type": "module",
+      "main": "./dist/slimdom.umd.cjs",
+      "module": "./dist/slimdom.esm.js",
+      "exports": {
+        ".": {
+          "types": "./dist/slimdom.d.ts",
+          "import": "./dist/slimdom.esm.js",
+          "require": "./dist/slimdom.umd.cjs",
+          "default": "./dist/slimdom.esm.js"
+        }
+      },
+      "browser": null,
+      "reactNative": null,
+      "engines": null
+    },
+    "runtimeDependencyCount": 0,
+    "runtimeDependencies": [],
+    "declaredJsTarget": null,
+    "signals": {
+      "nodeCoreImports": [],
+      "browserGlobals": [
+        "node_modules/slimdom/dist/slimdom.d.ts",
+        "node_modules/slimdom/dist/slimdom.esm.js",
+        "node_modules/slimdom/dist/slimdom.umd.cjs"
+      ],
+      "processOrBufferUse": [],
+      "wasmFiles": [],
+      "nativeAddonFiles": []
+    }
+  },
+  "filesChanged": [
+    "package.json",
+    "yarn.lock",
+    "experiments/m2-slimdom-hermes-gate/probeLogic.js",
+    "experiments/m2-slimdom-hermes-gate/metroEntry.js",
+    "experiments/m2-slimdom-hermes-gate/runGate.js",
+    "experiments/m2-slimdom-hermes-gate/out/m2.0-hermes-gate-results.json",
+    "experiments/m2-slimdom-hermes-gate/out/m2.0-hermes-gate-results.md",
+    "experiments/m2-oozcitak-hermes-gate/out/decision-record.md"
+  ],
+  "matrix": {
+    "android-debug": {
+      "platform": "android",
+      "mode": "debug",
+      "dev": true,
+      "minify": false,
+      "metroResolution": "ok",
+      "bundle": {
+        "ok": true,
+        "status": 0,
+        "outputPath": "experiments/m2-slimdom-hermes-gate/out/android-debug.bundle.js",
+        "stdout": "warning: the transform cache was reset.\n                Welcome to Metro v0.80.9\n              Fast - Scalable - Integrated\n\n\ninfo Writing bundle output to:, experiments/m2-slimdom-hermes-gate/out/android-debug.bundle.js\ninfo Done writing bundle output\n",
+        "stderr": "warn =================================================================================================\nwarn From React Native 0.73, your project's Metro config should extend '@react-native/metro-config'\nwarn or it will fail to build. Please copy the template at:\nwarn https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js\nwarn This warning will be removed in future (https://github.com/facebook/metro/issues/1018).\nwarn =================================================================================================\n"
+      },
+      "hermes": {
+        "ok": true,
+        "status": 0,
+        "gatePayload": {
+          "runtime": {
+            "hermesInternal": true
+          },
+          "ok": true,
+          "runtimeLabel": "slimdom",
+          "fixtureLength": 292,
+          "observations": {
+            "parsing": {
+              "rootLocalName": "html",
+              "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "rootPrefix": "h",
+              "nodeType": 1,
+              "nodeName": "h:html"
+            },
+            "namespaces": {
+              "rootLocalName": "html",
+              "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "rootPrefix": "h",
+              "lookupPrefixXhtml": "h",
+              "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+              "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+              "createdElement": {
+                "localName": "probe",
+                "namespaceURI": "urn:probe-element",
+                "prefix": "p"
+              },
+              "attribute": {
+                "localName": "flag",
+                "namespaceURI": "urn:probe-attr",
+                "prefix": "a",
+                "value": "yes"
+              },
+              "getAttributeNsValue": "yes"
+            },
+            "tree": {
+              "childNodesLength": 4,
+              "childrenLength": 2,
+              "ownerDocumentMatches": true,
+              "firstChildNodeType": 3,
+              "firstElementChildLocalName": "head",
+              "lastElementChildLocalName": "probe",
+              "cloneNodeName": "h:html",
+              "cloneChildNodesLength": 4
+            },
+            "mutation": {
+              "childElementCount": 1,
+              "firstElementChildLocalName": "replacement",
+              "plainAttribute": "1",
+              "namespacedAttribute": "ns-value"
+            },
+            "serialization": {
+              "serializedLength": 470,
+              "containsXhtmlNamespace": true,
+              "containsXformsNamespace": true,
+              "containsJrNamespace": true,
+              "containsMutNsAttribute": true,
+              "roundTripRootLocalName": "html",
+              "roundTripRootPrefix": "h",
+              "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+              "roundTripTextContentIncludesPlant": true
+            }
+          },
+          "knownGapChecks": {
+            "elementMatches": false,
+            "elementQuerySelector": false,
+            "elementQuerySelectorAll": false,
+            "documentCurrentScript": false
+          },
+          "unsupportedApis": [
+            "documentCurrentScript",
+            "elementMatches",
+            "elementQuerySelector",
+            "elementQuerySelectorAll"
+          ],
+          "steps": [
+            {
+              "name": "new DOMParser()",
+              "ok": true,
+              "value": {}
+            },
+            {
+              "name": "parseFromString(text/xml)",
+              "ok": true,
+              "value": {
+                "nodeType": 9,
+                "nodeName": "#document",
+                "localName": null
+              }
+            },
+            {
+              "name": "document.documentElement metadata",
+              "ok": true,
+              "value": {
+                "nodeType": 1,
+                "nodeName": "h:html",
+                "localName": null
+              }
+            },
+            {
+              "name": "namespace and attribute operations",
+              "ok": true,
+              "value": {
+                "rootLocalName": "html",
+                "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+                "rootPrefix": "h",
+                "lookupPrefixXhtml": "h",
+                "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+                "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+                "createdElement": {
+                  "localName": "probe",
+                  "namespaceURI": "urn:probe-element",
+                  "prefix": "p"
+                },
+                "attribute": {
+                  "localName": "flag",
+                  "namespaceURI": "urn:probe-attr",
+                  "prefix": "a",
+                  "value": "yes"
+                },
+                "getAttributeNsValue": "yes"
+              }
+            },
+            {
+              "name": "tree behavior checks",
+              "ok": true,
+              "value": {
+                "childNodesLength": 4,
+                "childrenLength": 2,
+                "ownerDocumentMatches": true,
+                "firstChildNodeType": 3,
+                "firstElementChildLocalName": "head",
+                "lastElementChildLocalName": "probe",
+                "cloneNodeName": "h:html",
+                "cloneChildNodesLength": 4
+              }
+            },
+            {
+              "name": "mutation API checks",
+              "ok": true,
+              "value": {
+                "childElementCount": 1,
+                "firstElementChildLocalName": "replacement",
+                "plainAttribute": "1",
+                "namespacedAttribute": "ns-value"
+              }
+            },
+            {
+              "name": "new XMLSerializer()",
+              "ok": true,
+              "value": {}
+            },
+            {
+              "name": "serializeToString and round-trip parse",
+              "ok": true,
+              "value": {
+                "serializedLength": 470,
+                "containsXhtmlNamespace": true,
+                "containsXformsNamespace": true,
+                "containsJrNamespace": true,
+                "containsMutNsAttribute": true,
+                "roundTripRootLocalName": "html",
+                "roundTripRootPrefix": "h",
+                "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+                "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+                "roundTripTextContentIncludesPlant": true
+              }
+            }
+          ]
+        },
+        "stdout": "M2_SLIMDOM_HERMES_GATE::{\"runtime\":{\"hermesInternal\":true},\"ok\":true,\"runtimeLabel\":\"slimdom\",\"fixtureLength\":292,\"observations\":{\"parsing\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"nodeType\":1,\"nodeName\":\"h:html\"},\"namespaces\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"lookupPrefixXhtml\":\"h\",\"lookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"lookupNamespaceUriDefault\":\"http://www.w3.org/2002/xforms\",\"createdElement\":{\"localName\":\"probe\",\"namespaceURI\":\"urn:probe-element\",\"prefix\":\"p\"},\"attribute\":{\"localName\":\"flag\",\"namespaceURI\":\"urn:probe-attr\",\"prefix\":\"a\",\"value\":\"yes\"},\"getAttributeNsValue\":\"yes\"},\"tree\":{\"childNodesLength\":4,\"childrenLength\":2,\"ownerDocumentMatches\":true,\"firstChildNodeType\":3,\"firstElementChildLocalName\":\"head\",\"lastElementChildLocalName\":\"probe\",\"cloneNodeName\":\"h:html\",\"cloneChildNodesLength\":4},\"mutation\":{\"childElementCount\":1,\"firstElementChildLocalName\":\"replacement\",\"plainAttribute\":\"1\",\"namespacedAttribute\":\"ns-value\"},\"serialization\":{\"serializedLength\":470,\"containsXhtmlNamespace\":true,\"containsXformsNamespace\":true,\"containsJrNamespace\":true,\"containsMutNsAttribute\":true,\"roundTripRootLocalName\":\"html\",\"roundTripRootPrefix\":\"h\",\"roundTripRootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"roundTripLookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"roundTripTextContentIncludesPlant\":true}},\"knownGapChecks\":{\"elementMatches\":false,\"elementQuerySelector\":false,\"elementQuerySelectorAll\":false,\"documentCurrentScript\":false},\"unsupportedApis\":[\"documentCurrentScript\",\"elementMatches\",\"elementQuerySelector\",\"elementQuerySelectorAll\"],\"steps\":[{\"name\":\"new DOMParser()\",\"ok\":true,\"value\":{}},{\"name\":\"parseFromString(text/xml)\",\"ok\":true,\"value\":{\"nodeType\":9,\"nodeName\":\"#document\",\"localName\":null}},{\"name\":\"document.documentElement metadata\",\"ok\":true,\"value\":{\"nodeType\":1,\"nodeName\":\"h:html\",\"localName\":null}},{\"name\":\"namespace and attribute operations\",\"ok\":true,\"value\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"lookupPrefixXhtml\":\"h\",\"lookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"lookupNamespaceUriDefault\":\"http://www.w3.org/2002/xforms\",\"createdElement\":{\"localName\":\"probe\",\"namespaceURI\":\"urn:probe-element\",\"prefix\":\"p\"},\"attribute\":{\"localName\":\"flag\",\"namespaceURI\":\"urn:probe-attr\",\"prefix\":\"a\",\"value\":\"yes\"},\"getAttributeNsValue\":\"yes\"}},{\"name\":\"tree behavior checks\",\"ok\":true,\"value\":{\"childNodesLength\":4,\"childrenLength\":2,\"ownerDocumentMatches\":true,\"firstChildNodeType\":3,\"firstElementChildLocalName\":\"head\",\"lastElementChildLocalName\":\"probe\",\"cloneNodeName\":\"h:html\",\"cloneChildNodesLength\":4}},{\"name\":\"mutation API checks\",\"ok\":true,\"value\":{\"childElementCount\":1,\"firstElementChildLocalName\":\"replacement\",\"plainAttribute\":\"1\",\"namespacedAttribute\":\"ns-value\"}},{\"name\":\"new XMLSerializer()\",\"ok\":true,\"value\":{}},{\"name\":\"serializeToString and round-trip parse\",\"ok\":true,\"value\":{\"serializedLength\":470,\"containsXhtmlNamespace\":true,\"containsXformsNamespace\":true,\"containsJrNamespace\":true,\"containsMutNsAttribute\":true,\"roundTripRootLocalName\":\"html\",\"roundTripRootPrefix\":\"h\",\"roundTripRootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"roundTripLookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"roundTripTextContentIncludesPlant\":true}}]}\n",
+        "stderr": "/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/android-debug.bundle.js:69:9: warning: the variable \"console\" was not declared in function \"metroRequire\"\n        console.warn(`Requiring module \"${verboseName}\" by name is only supported for ` + \"debugging purposes and will BREAK IN PRODUCTION!\");\n        ^~~~~~~\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/android-debug.bundle.js:434:33: warning: the variable \"setTimeout\" was not declared in function \"metroHotUpdateModule\"\n          reactRefreshTimeout = setTimeout(function () {\n                                ^~~~~~~~~~\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/android-debug.bundle.js:520:18: warning: the variable \"window\" was not declared in function \"performFullRefresh\"\n      if (typeof window !== \"undefined\" && window.location != null && typeof window.location.reload === \"function\") {\n                 ^~~~~~\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/android-debug.bundle.js:1799:28: warning: the variable \"queueMicrotask\" was not declared in function \"r\"\n      \"function\" != typeof queueMicrotask ? Promise.resolve().then(function () {\n                           ^~~~~~~~~~~~~~\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/android-debug.bundle.js:1799:45: warning: the variable \"Promise\" was not declared in function \"r\"\n      \"function\" != typeof queueMicrotask ? Promise.resolve().then(function () {\n                                            ^~~~~~~\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/android-debug.bundle.js:1872:48: warning: the variable \"WeakRef\" was not declared in function \"addRange\"\n          var n = (e = t, \"function\" == typeof WeakRef ? new WeakRef(e) : new i(e));\n                                               ^~~~~~~\n"
+      }
+    },
+    "ios-debug": {
+      "platform": "ios",
+      "mode": "debug",
+      "dev": true,
+      "minify": false,
+      "metroResolution": "ok",
+      "bundle": {
+        "ok": true,
+        "status": 0,
+        "outputPath": "experiments/m2-slimdom-hermes-gate/out/ios-debug.bundle.js",
+        "stdout": "warning: the transform cache was reset.\n                Welcome to Metro v0.80.9\n              Fast - Scalable - Integrated\n\n\ninfo Writing bundle output to:, experiments/m2-slimdom-hermes-gate/out/ios-debug.bundle.js\ninfo Done writing bundle output\n",
+        "stderr": "warn =================================================================================================\nwarn From React Native 0.73, your project's Metro config should extend '@react-native/metro-config'\nwarn or it will fail to build. Please copy the template at:\nwarn https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js\nwarn This warning will be removed in future (https://github.com/facebook/metro/issues/1018).\nwarn =================================================================================================\n"
+      },
+      "hermes": {
+        "ok": true,
+        "status": 0,
+        "gatePayload": {
+          "runtime": {
+            "hermesInternal": true
+          },
+          "ok": true,
+          "runtimeLabel": "slimdom",
+          "fixtureLength": 292,
+          "observations": {
+            "parsing": {
+              "rootLocalName": "html",
+              "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "rootPrefix": "h",
+              "nodeType": 1,
+              "nodeName": "h:html"
+            },
+            "namespaces": {
+              "rootLocalName": "html",
+              "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "rootPrefix": "h",
+              "lookupPrefixXhtml": "h",
+              "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+              "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+              "createdElement": {
+                "localName": "probe",
+                "namespaceURI": "urn:probe-element",
+                "prefix": "p"
+              },
+              "attribute": {
+                "localName": "flag",
+                "namespaceURI": "urn:probe-attr",
+                "prefix": "a",
+                "value": "yes"
+              },
+              "getAttributeNsValue": "yes"
+            },
+            "tree": {
+              "childNodesLength": 4,
+              "childrenLength": 2,
+              "ownerDocumentMatches": true,
+              "firstChildNodeType": 3,
+              "firstElementChildLocalName": "head",
+              "lastElementChildLocalName": "probe",
+              "cloneNodeName": "h:html",
+              "cloneChildNodesLength": 4
+            },
+            "mutation": {
+              "childElementCount": 1,
+              "firstElementChildLocalName": "replacement",
+              "plainAttribute": "1",
+              "namespacedAttribute": "ns-value"
+            },
+            "serialization": {
+              "serializedLength": 470,
+              "containsXhtmlNamespace": true,
+              "containsXformsNamespace": true,
+              "containsJrNamespace": true,
+              "containsMutNsAttribute": true,
+              "roundTripRootLocalName": "html",
+              "roundTripRootPrefix": "h",
+              "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+              "roundTripTextContentIncludesPlant": true
+            }
+          },
+          "knownGapChecks": {
+            "elementMatches": false,
+            "elementQuerySelector": false,
+            "elementQuerySelectorAll": false,
+            "documentCurrentScript": false
+          },
+          "unsupportedApis": [
+            "documentCurrentScript",
+            "elementMatches",
+            "elementQuerySelector",
+            "elementQuerySelectorAll"
+          ],
+          "steps": [
+            {
+              "name": "new DOMParser()",
+              "ok": true,
+              "value": {}
+            },
+            {
+              "name": "parseFromString(text/xml)",
+              "ok": true,
+              "value": {
+                "nodeType": 9,
+                "nodeName": "#document",
+                "localName": null
+              }
+            },
+            {
+              "name": "document.documentElement metadata",
+              "ok": true,
+              "value": {
+                "nodeType": 1,
+                "nodeName": "h:html",
+                "localName": null
+              }
+            },
+            {
+              "name": "namespace and attribute operations",
+              "ok": true,
+              "value": {
+                "rootLocalName": "html",
+                "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+                "rootPrefix": "h",
+                "lookupPrefixXhtml": "h",
+                "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+                "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+                "createdElement": {
+                  "localName": "probe",
+                  "namespaceURI": "urn:probe-element",
+                  "prefix": "p"
+                },
+                "attribute": {
+                  "localName": "flag",
+                  "namespaceURI": "urn:probe-attr",
+                  "prefix": "a",
+                  "value": "yes"
+                },
+                "getAttributeNsValue": "yes"
+              }
+            },
+            {
+              "name": "tree behavior checks",
+              "ok": true,
+              "value": {
+                "childNodesLength": 4,
+                "childrenLength": 2,
+                "ownerDocumentMatches": true,
+                "firstChildNodeType": 3,
+                "firstElementChildLocalName": "head",
+                "lastElementChildLocalName": "probe",
+                "cloneNodeName": "h:html",
+                "cloneChildNodesLength": 4
+              }
+            },
+            {
+              "name": "mutation API checks",
+              "ok": true,
+              "value": {
+                "childElementCount": 1,
+                "firstElementChildLocalName": "replacement",
+                "plainAttribute": "1",
+                "namespacedAttribute": "ns-value"
+              }
+            },
+            {
+              "name": "new XMLSerializer()",
+              "ok": true,
+              "value": {}
+            },
+            {
+              "name": "serializeToString and round-trip parse",
+              "ok": true,
+              "value": {
+                "serializedLength": 470,
+                "containsXhtmlNamespace": true,
+                "containsXformsNamespace": true,
+                "containsJrNamespace": true,
+                "containsMutNsAttribute": true,
+                "roundTripRootLocalName": "html",
+                "roundTripRootPrefix": "h",
+                "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+                "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+                "roundTripTextContentIncludesPlant": true
+              }
+            }
+          ]
+        },
+        "stdout": "M2_SLIMDOM_HERMES_GATE::{\"runtime\":{\"hermesInternal\":true},\"ok\":true,\"runtimeLabel\":\"slimdom\",\"fixtureLength\":292,\"observations\":{\"parsing\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"nodeType\":1,\"nodeName\":\"h:html\"},\"namespaces\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"lookupPrefixXhtml\":\"h\",\"lookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"lookupNamespaceUriDefault\":\"http://www.w3.org/2002/xforms\",\"createdElement\":{\"localName\":\"probe\",\"namespaceURI\":\"urn:probe-element\",\"prefix\":\"p\"},\"attribute\":{\"localName\":\"flag\",\"namespaceURI\":\"urn:probe-attr\",\"prefix\":\"a\",\"value\":\"yes\"},\"getAttributeNsValue\":\"yes\"},\"tree\":{\"childNodesLength\":4,\"childrenLength\":2,\"ownerDocumentMatches\":true,\"firstChildNodeType\":3,\"firstElementChildLocalName\":\"head\",\"lastElementChildLocalName\":\"probe\",\"cloneNodeName\":\"h:html\",\"cloneChildNodesLength\":4},\"mutation\":{\"childElementCount\":1,\"firstElementChildLocalName\":\"replacement\",\"plainAttribute\":\"1\",\"namespacedAttribute\":\"ns-value\"},\"serialization\":{\"serializedLength\":470,\"containsXhtmlNamespace\":true,\"containsXformsNamespace\":true,\"containsJrNamespace\":true,\"containsMutNsAttribute\":true,\"roundTripRootLocalName\":\"html\",\"roundTripRootPrefix\":\"h\",\"roundTripRootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"roundTripLookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"roundTripTextContentIncludesPlant\":true}},\"knownGapChecks\":{\"elementMatches\":false,\"elementQuerySelector\":false,\"elementQuerySelectorAll\":false,\"documentCurrentScript\":false},\"unsupportedApis\":[\"documentCurrentScript\",\"elementMatches\",\"elementQuerySelector\",\"elementQuerySelectorAll\"],\"steps\":[{\"name\":\"new DOMParser()\",\"ok\":true,\"value\":{}},{\"name\":\"parseFromString(text/xml)\",\"ok\":true,\"value\":{\"nodeType\":9,\"nodeName\":\"#document\",\"localName\":null}},{\"name\":\"document.documentElement metadata\",\"ok\":true,\"value\":{\"nodeType\":1,\"nodeName\":\"h:html\",\"localName\":null}},{\"name\":\"namespace and attribute operations\",\"ok\":true,\"value\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"lookupPrefixXhtml\":\"h\",\"lookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"lookupNamespaceUriDefault\":\"http://www.w3.org/2002/xforms\",\"createdElement\":{\"localName\":\"probe\",\"namespaceURI\":\"urn:probe-element\",\"prefix\":\"p\"},\"attribute\":{\"localName\":\"flag\",\"namespaceURI\":\"urn:probe-attr\",\"prefix\":\"a\",\"value\":\"yes\"},\"getAttributeNsValue\":\"yes\"}},{\"name\":\"tree behavior checks\",\"ok\":true,\"value\":{\"childNodesLength\":4,\"childrenLength\":2,\"ownerDocumentMatches\":true,\"firstChildNodeType\":3,\"firstElementChildLocalName\":\"head\",\"lastElementChildLocalName\":\"probe\",\"cloneNodeName\":\"h:html\",\"cloneChildNodesLength\":4}},{\"name\":\"mutation API checks\",\"ok\":true,\"value\":{\"childElementCount\":1,\"firstElementChildLocalName\":\"replacement\",\"plainAttribute\":\"1\",\"namespacedAttribute\":\"ns-value\"}},{\"name\":\"new XMLSerializer()\",\"ok\":true,\"value\":{}},{\"name\":\"serializeToString and round-trip parse\",\"ok\":true,\"value\":{\"serializedLength\":470,\"containsXhtmlNamespace\":true,\"containsXformsNamespace\":true,\"containsJrNamespace\":true,\"containsMutNsAttribute\":true,\"roundTripRootLocalName\":\"html\",\"roundTripRootPrefix\":\"h\",\"roundTripRootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"roundTripLookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"roundTripTextContentIncludesPlant\":true}}]}\n",
+        "stderr": "/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/ios-debug.bundle.js:69:9: warning: the variable \"console\" was not declared in function \"metroRequire\"\n        console.warn(`Requiring module \"${verboseName}\" by name is only supported for ` + \"debugging purposes and will BREAK IN PRODUCTION!\");\n        ^~~~~~~\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/ios-debug.bundle.js:434:33: warning: the variable \"setTimeout\" was not declared in function \"metroHotUpdateModule\"\n          reactRefreshTimeout = setTimeout(function () {\n                                ^~~~~~~~~~\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/ios-debug.bundle.js:520:18: warning: the variable \"window\" was not declared in function \"performFullRefresh\"\n      if (typeof window !== \"undefined\" && window.location != null && typeof window.location.reload === \"function\") {\n                 ^~~~~~\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/ios-debug.bundle.js:1799:28: warning: the variable \"queueMicrotask\" was not declared in function \"r\"\n      \"function\" != typeof queueMicrotask ? Promise.resolve().then(function () {\n                           ^~~~~~~~~~~~~~\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/ios-debug.bundle.js:1799:45: warning: the variable \"Promise\" was not declared in function \"r\"\n      \"function\" != typeof queueMicrotask ? Promise.resolve().then(function () {\n                                            ^~~~~~~\n/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/ios-debug.bundle.js:1872:48: warning: the variable \"WeakRef\" was not declared in function \"addRange\"\n          var n = (e = t, \"function\" == typeof WeakRef ? new WeakRef(e) : new i(e));\n                                               ^~~~~~~\n"
+      }
+    },
+    "android-release": {
+      "platform": "android",
+      "mode": "release",
+      "dev": false,
+      "minify": true,
+      "metroResolution": "ok",
+      "bundle": {
+        "ok": true,
+        "status": 0,
+        "outputPath": "experiments/m2-slimdom-hermes-gate/out/android-release.bundle.js",
+        "stdout": "warning: the transform cache was reset.\n                Welcome to Metro v0.80.9\n              Fast - Scalable - Integrated\n\n\ninfo Writing bundle output to:, experiments/m2-slimdom-hermes-gate/out/android-release.bundle.js\ninfo Done writing bundle output\n",
+        "stderr": "warn =================================================================================================\nwarn From React Native 0.73, your project's Metro config should extend '@react-native/metro-config'\nwarn or it will fail to build. Please copy the template at:\nwarn https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js\nwarn This warning will be removed in future (https://github.com/facebook/metro/issues/1018).\nwarn =================================================================================================\n"
+      },
+      "hermes": {
+        "ok": true,
+        "status": 0,
+        "gatePayload": {
+          "runtime": {
+            "hermesInternal": true
+          },
+          "ok": true,
+          "runtimeLabel": "slimdom",
+          "fixtureLength": 292,
+          "observations": {
+            "parsing": {
+              "rootLocalName": "html",
+              "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "rootPrefix": "h",
+              "nodeType": 1,
+              "nodeName": "h:html"
+            },
+            "namespaces": {
+              "rootLocalName": "html",
+              "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "rootPrefix": "h",
+              "lookupPrefixXhtml": "h",
+              "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+              "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+              "createdElement": {
+                "localName": "probe",
+                "namespaceURI": "urn:probe-element",
+                "prefix": "p"
+              },
+              "attribute": {
+                "localName": "flag",
+                "namespaceURI": "urn:probe-attr",
+                "prefix": "a",
+                "value": "yes"
+              },
+              "getAttributeNsValue": "yes"
+            },
+            "tree": {
+              "childNodesLength": 4,
+              "childrenLength": 2,
+              "ownerDocumentMatches": true,
+              "firstChildNodeType": 3,
+              "firstElementChildLocalName": "head",
+              "lastElementChildLocalName": "probe",
+              "cloneNodeName": "h:html",
+              "cloneChildNodesLength": 4
+            },
+            "mutation": {
+              "childElementCount": 1,
+              "firstElementChildLocalName": "replacement",
+              "plainAttribute": "1",
+              "namespacedAttribute": "ns-value"
+            },
+            "serialization": {
+              "serializedLength": 470,
+              "containsXhtmlNamespace": true,
+              "containsXformsNamespace": true,
+              "containsJrNamespace": true,
+              "containsMutNsAttribute": true,
+              "roundTripRootLocalName": "html",
+              "roundTripRootPrefix": "h",
+              "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+              "roundTripTextContentIncludesPlant": true
+            }
+          },
+          "knownGapChecks": {
+            "elementMatches": false,
+            "elementQuerySelector": false,
+            "elementQuerySelectorAll": false,
+            "documentCurrentScript": false
+          },
+          "unsupportedApis": [
+            "documentCurrentScript",
+            "elementMatches",
+            "elementQuerySelector",
+            "elementQuerySelectorAll"
+          ],
+          "steps": [
+            {
+              "name": "new DOMParser()",
+              "ok": true,
+              "value": {}
+            },
+            {
+              "name": "parseFromString(text/xml)",
+              "ok": true,
+              "value": {
+                "nodeType": 9,
+                "nodeName": "#document",
+                "localName": null
+              }
+            },
+            {
+              "name": "document.documentElement metadata",
+              "ok": true,
+              "value": {
+                "nodeType": 1,
+                "nodeName": "h:html",
+                "localName": null
+              }
+            },
+            {
+              "name": "namespace and attribute operations",
+              "ok": true,
+              "value": {
+                "rootLocalName": "html",
+                "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+                "rootPrefix": "h",
+                "lookupPrefixXhtml": "h",
+                "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+                "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+                "createdElement": {
+                  "localName": "probe",
+                  "namespaceURI": "urn:probe-element",
+                  "prefix": "p"
+                },
+                "attribute": {
+                  "localName": "flag",
+                  "namespaceURI": "urn:probe-attr",
+                  "prefix": "a",
+                  "value": "yes"
+                },
+                "getAttributeNsValue": "yes"
+              }
+            },
+            {
+              "name": "tree behavior checks",
+              "ok": true,
+              "value": {
+                "childNodesLength": 4,
+                "childrenLength": 2,
+                "ownerDocumentMatches": true,
+                "firstChildNodeType": 3,
+                "firstElementChildLocalName": "head",
+                "lastElementChildLocalName": "probe",
+                "cloneNodeName": "h:html",
+                "cloneChildNodesLength": 4
+              }
+            },
+            {
+              "name": "mutation API checks",
+              "ok": true,
+              "value": {
+                "childElementCount": 1,
+                "firstElementChildLocalName": "replacement",
+                "plainAttribute": "1",
+                "namespacedAttribute": "ns-value"
+              }
+            },
+            {
+              "name": "new XMLSerializer()",
+              "ok": true,
+              "value": {}
+            },
+            {
+              "name": "serializeToString and round-trip parse",
+              "ok": true,
+              "value": {
+                "serializedLength": 470,
+                "containsXhtmlNamespace": true,
+                "containsXformsNamespace": true,
+                "containsJrNamespace": true,
+                "containsMutNsAttribute": true,
+                "roundTripRootLocalName": "html",
+                "roundTripRootPrefix": "h",
+                "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+                "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+                "roundTripTextContentIncludesPlant": true
+              }
+            }
+          ]
+        },
+        "stdout": "M2_SLIMDOM_HERMES_GATE::{\"runtime\":{\"hermesInternal\":true},\"ok\":true,\"runtimeLabel\":\"slimdom\",\"fixtureLength\":292,\"observations\":{\"parsing\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"nodeType\":1,\"nodeName\":\"h:html\"},\"namespaces\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"lookupPrefixXhtml\":\"h\",\"lookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"lookupNamespaceUriDefault\":\"http://www.w3.org/2002/xforms\",\"createdElement\":{\"localName\":\"probe\",\"namespaceURI\":\"urn:probe-element\",\"prefix\":\"p\"},\"attribute\":{\"localName\":\"flag\",\"namespaceURI\":\"urn:probe-attr\",\"prefix\":\"a\",\"value\":\"yes\"},\"getAttributeNsValue\":\"yes\"},\"tree\":{\"childNodesLength\":4,\"childrenLength\":2,\"ownerDocumentMatches\":true,\"firstChildNodeType\":3,\"firstElementChildLocalName\":\"head\",\"lastElementChildLocalName\":\"probe\",\"cloneNodeName\":\"h:html\",\"cloneChildNodesLength\":4},\"mutation\":{\"childElementCount\":1,\"firstElementChildLocalName\":\"replacement\",\"plainAttribute\":\"1\",\"namespacedAttribute\":\"ns-value\"},\"serialization\":{\"serializedLength\":470,\"containsXhtmlNamespace\":true,\"containsXformsNamespace\":true,\"containsJrNamespace\":true,\"containsMutNsAttribute\":true,\"roundTripRootLocalName\":\"html\",\"roundTripRootPrefix\":\"h\",\"roundTripRootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"roundTripLookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"roundTripTextContentIncludesPlant\":true}},\"knownGapChecks\":{\"elementMatches\":false,\"elementQuerySelector\":false,\"elementQuerySelectorAll\":false,\"documentCurrentScript\":false},\"unsupportedApis\":[\"documentCurrentScript\",\"elementMatches\",\"elementQuerySelector\",\"elementQuerySelectorAll\"],\"steps\":[{\"name\":\"new DOMParser()\",\"ok\":true,\"value\":{}},{\"name\":\"parseFromString(text/xml)\",\"ok\":true,\"value\":{\"nodeType\":9,\"nodeName\":\"#document\",\"localName\":null}},{\"name\":\"document.documentElement metadata\",\"ok\":true,\"value\":{\"nodeType\":1,\"nodeName\":\"h:html\",\"localName\":null}},{\"name\":\"namespace and attribute operations\",\"ok\":true,\"value\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"lookupPrefixXhtml\":\"h\",\"lookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"lookupNamespaceUriDefault\":\"http://www.w3.org/2002/xforms\",\"createdElement\":{\"localName\":\"probe\",\"namespaceURI\":\"urn:probe-element\",\"prefix\":\"p\"},\"attribute\":{\"localName\":\"flag\",\"namespaceURI\":\"urn:probe-attr\",\"prefix\":\"a\",\"value\":\"yes\"},\"getAttributeNsValue\":\"yes\"}},{\"name\":\"tree behavior checks\",\"ok\":true,\"value\":{\"childNodesLength\":4,\"childrenLength\":2,\"ownerDocumentMatches\":true,\"firstChildNodeType\":3,\"firstElementChildLocalName\":\"head\",\"lastElementChildLocalName\":\"probe\",\"cloneNodeName\":\"h:html\",\"cloneChildNodesLength\":4}},{\"name\":\"mutation API checks\",\"ok\":true,\"value\":{\"childElementCount\":1,\"firstElementChildLocalName\":\"replacement\",\"plainAttribute\":\"1\",\"namespacedAttribute\":\"ns-value\"}},{\"name\":\"new XMLSerializer()\",\"ok\":true,\"value\":{}},{\"name\":\"serializeToString and round-trip parse\",\"ok\":true,\"value\":{\"serializedLength\":470,\"containsXhtmlNamespace\":true,\"containsXformsNamespace\":true,\"containsJrNamespace\":true,\"containsMutNsAttribute\":true,\"roundTripRootLocalName\":\"html\",\"roundTripRootPrefix\":\"h\",\"roundTripRootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"roundTripLookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"roundTripTextContentIncludesPlant\":true}}]}\n",
+        "stderr": "/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/android-release.bundle.js:17:2251: warning: the variable \"queueMicrotask\" was not declared in function \"u 2#\"\n__d((function(_g,_r12,_i11,_a,_m,_e3,_d){var e,t,n=_r12(_d[0]),r=_r12(_d[1]),i=_r12(_d[2]),a=_r12(_d[3]),o=_r12(_d[4]),u=_r12(_d[5]),s=_r12(_d[6]),l=_r12(_d[7]),c=_r12(_d[8]),f=_r12(_d[9]);function d(e,t,n){return t=u(t),o(e,h()?Reflect.construct(t,n||[],u(e).constructor):t.apply(e,n))}function h(){try{var e=!Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],(function(){})))}catch(e){}return(h=function(){return!!e})()}e=this,t=function(e){\"use strict\";var t=(function(){return f((function e(t,n,r,i){c(this,e),this.source=null,this.observer=t,this.node=n,this.options=r,this.source=i||null,i&&t.t.push(this)}),[{key:\"collectInterestedObservers\",value:function(e,t,n,r,i){if((this.node===t||this.options.subtree)&&(\"attributes\"!==e||this.options.attributes)&&(\"characterData\"!==e||this.options.characterData)&&(\"childList\"!==e||this.options.childList)){var a=r.indexOf(this.observer);a<0&&(a=r.length,r.push(this.observer),i.push(void 0)),(\"attributes\"===e&&this.options.attributeOldValue||\"characterData\"===e&&this.options.characterDataOldValue)&&(i[a]=n.oldValue)}}}])})(),o=(function(){return f((function e(t){c(this,e),this.o=[],this.i=t}),[{key:\"register\",value:function(e,n){var r=this.o,i=!1;r.forEach((function(t){t.observer===e&&(i=!0,(function(e){for(var t=e.observer.t.length-1;t>=0;--t){var n=e.observer.t[t];if(n.source!==e)return;n.node.o.removeTransientRegisteredObserver(n),e.observer.t.splice(t,1)}})(t),t.options=n)})),i||(this.o.push(new t(e,this.i,n)),e.u.push(this.i))}},{key:\"removeTransientRegisteredObserver\",value:function(e){this.o.splice(this.o.indexOf(e),1)}},{key:\"removeForObserver\",value:function(e){for(var t=0,n=0,r=this.o.length;n<r;++n){var i=this.o[n];i.observer!==e&&(n!==t&&(this.o[t]=i),++t)}this.o.length=t}},{key:\"collectInterestedObservers\",value:function(e,t,n,r,i){this.o.forEach((function(a){a.collectInterestedObservers(e,t,n,r,i)}))}},{key:\"appendTransientRegisteredObservers\",value:function(e){this.o.forEach((function(t){t.options.subtree&&e.o.registerTransient(t)}))}},{key:\"registerTransient\",value:function(e){this.o.push(new t(e.observer,this.i,e.options,e))}}])})();function u(e,t){for(var n=arguments.length,r=new Array(n>2?n-2:0),i=2;i<n;i++)r[i-2]=arguments[i];\"function\"!=typeof queueMicrotask?Promise.resolve().then((function(){return e.apply(t,r)})):queueMicrotask((function(){return e.apply(t,r)}))}var h=(function(){return f((function e(){c(this,e),this.l=new Set,this.h=!1}),[{key:\"appendRecord\",value:function(e,t){e.m.push(t),this.l.add(e)}},{key:\"queueMutationObserverMicrotask\",value:function(){var e=this;this.h||(this.h=!0,u((function(){e.p()}),this))}},{key:\"p\",value:function(){var e=this;this.h=!1;var t=Array.from(this.l);this.l.clear(),t.forEach((function(t){u((function(e){var t,n=e.takeRecords();(t=e).t.forEach((function(e){e.node.o.removeTransientRegisteredObserver(e)})),t.t.length=0,n.length>0&&e.g(n,e)}),e,t)}))}}])})(),v=(function(){return f((function e(t){c(this,e),this.v=t}),[{key:\"deref\",value:function(){return this.v}}])})(),m=new((function(){return f((function e(){c(this,e),this.l=new h,this.N=[],this.S=new WeakSet}),[{key:\"forEachRange\",value:function(e){for(var t=this.N.length,n=t-1;n>=0;--n){var r=this.N[n].deref(),i=null==r,a=!i&&!this.S.has(r);i||a?(this.N[n]=this.N[t-1],this.N.pop(),t-=1):e(r)}}},{key:\"addRange\",value:function(e){var t,n=(t=e,\"function\"==typeof WeakRef?new WeakRef(t):new v(t));this.N.push(n),this.S.add(e)}},{key:\"removeRange\",value:function(e){this.S.delete(e)}}])})());function p(e){return m}function g(e){for(var t=arguments.length,n=new Array(t>1?t-1:0),r=1;r<t;r++)n[r-1]=arguments[r];return n.some((function(t){return e.nodeType===t}))}function y(e){return 2===e.nodeType}function N(e){return 3===e.nodeType||4===e.nodeType||8===e.nodeType||7===e.nodeType}function E(e){return 3===e.nodeType||4===e.nodeType}function C(e){return 1===e.nodeType}function b(e){return 10===e.nodeType}function O(e){switch(e.nodeType){case 3:case 7:case 8:return e.data.length;default:return e.childNodes.length}}function T(e){for(var t=e,n=[];t;)n.unshift(t),t=t.parentNode;return n}function x(e){return g(e,9)?e:e.ownerDocument}function w(e){return e.parentNode.childNodes.indexOf(e)}function k(e){for(;e.parentNode;)e=e.parentNode;return e}function D(e,t){t(e);for(var n=e.firstChild;n;n=n.nextSibling)D(n,t)}function S(e,t){var n=[];return D(t,(function(r){if(r!==t&&1===r.nodeType){var i=r;\"*\"!==e&&i.nodeName!==e||n.push(i)}})),n}function I(e,t,n){\"\"===e&&(e=null);var r=[];return D(n,(function(i){if(i!==n&&1===i.nodeType){var a=i;\"*\"!==e&&a.namespaceURI!==e||\"*\"!==t&&a.localName!==t||r.push(a)}})),r}function A(e,t,n){n||(n=x(e));var r=e.T(n);if(t)for(var i=e.firstChild;i;i=i.nextSibling)r.appendChild(A(i,!0,n));return r}function R(e,t){if(e.length<t)throw new TypeError(`Function should be called with at least ${t} arguments`)}var _={IndexSizeError:1,HierarchyRequestError:3,WrongDocumentError:4,InvalidCharacterError:5,NotFoundError:8,NotSupportedError:9,InUseAttributeError:10,InvalidStateError:11,NamespaceError:14,InvalidNodeTypeError:24},P=(function(e){function t(){var e,n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:\"\",r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:\"Error\";return c(this,t),(e=d(this,t,[n])).message=n,e.name=r,e.code=_[r]||0,e.stack=new Error(n).stack,e}return s(t,e),f(t)})(l(Error));function M(e,t){return new P(`${e}: ${t}`,e)}function U(e){throw M(\"HierarchyRequestError\",e)}function $(e){throw M(\"IndexSizeError\",e)}function L(e){throw M(\"InvalidCharacterError\",e)}function F(e){throw M(\"InvalidNodeTypeError\",e)}function j(e){throw M(\"InvalidStateError\",e)}function z(e){throw M(\"NamespaceError\",e)}function B(e){throw M(\"NotFoundError\",e)}function W(e){throw M(\"NotSupportedError\",e)}function X(e){throw M(\"WrongDocumentError\",e)}var V=f((function e(t,n){c(this,e),this.addedNodes=[],this.removedNodes=[],this.previousSibling=null,this.nextSibling=null,this.attributeName=null,this.attributeNamespace=null,this.oldValue=null,this.type=t,this.target=n}));function q(e,t,n){for(var r=[],i=[],a=t;a;a=a.parentNode)a.o.collectInterestedObservers(e,t,n,r,i);var o=p();r.forEach((function(r,a){var u=i[a],s=new V(e,t);void 0!==n.name&&void 0!==n.namespace&&(s.attributeName=n.name,s.attributeNamespace=n.namespace),void 0!==u&&(s.oldValue=u),void 0!==n.addedNodes&&(s.addedNodes=n.addedNodes),void 0!==n.removedNodes&&(s.removedNodes=n.removedNodes),void 0!==n.previousSibling&&(s.previousSibling=n.previousSibling),void 0!==n.nextSibling&&(s.nextSibling=n.nextSibling),o.l.appendRecord(r,s)})),o.l.queueMutationObserverMicrotask()}function Y(e){for(var t=[],n=e.firstElementChild;n;n=n.nextElementSibling)t.push(n);return t}function G(e){for(var t=e.previousSibling;t;t=t.previousSibling)if(C(t))return t;return null}function H(e){for(var t=e.nextSibling;t;t=t.nextSibling)if(C(t))return t;return null}function K(e,t){var n=e.previousSibling,r=e.nextSibling,i=g(e,1),a=i?e.previousElementSibling:null,o=i?e.nextElementSibling:null;if(e.parentNode=null,e.previousSibling=null,e.nextSibling=null,n?n.nextSibling=r:t.firstChild=r,r?r.previousSibling=n:t.lastChild=n,t.childNodes.splice(t.childNodes.indexOf(e),1),i){var u=(function(e){return g(e,1,9,11)?e:null})(t);u&&(u.firstElementChild===e&&(u.firstElementChild=o),u.lastElementChild===e&&(u.lastElementChild=a),u.childElementCount-=1)}if(g(t,9)){var s=t;g(e,1)?s.documentElement=null:g(e,10)&&(s.doctype=null)}}function J(e,t,n){if(g(t,9,11,1)||U(\"parent must be a Document, DocumentFragment or Element node\"),e.contains(t)&&U(\"node must not be an inclusive ancestor of parent\"),n&&n.parentNode!==t&&B(\"child is not a child of parent\"),g(e,11,10,1,3,4,7,8)||U(\"node must be a DocumentFragment, DocumentType, Element, Text, ProcessingI\n...[truncated 232330 chars]"
+      }
+    },
+    "ios-release": {
+      "platform": "ios",
+      "mode": "release",
+      "dev": false,
+      "minify": true,
+      "metroResolution": "ok",
+      "bundle": {
+        "ok": true,
+        "status": 0,
+        "outputPath": "experiments/m2-slimdom-hermes-gate/out/ios-release.bundle.js",
+        "stdout": "warning: the transform cache was reset.\n                Welcome to Metro v0.80.9\n              Fast - Scalable - Integrated\n\n\ninfo Writing bundle output to:, experiments/m2-slimdom-hermes-gate/out/ios-release.bundle.js\ninfo Done writing bundle output\n",
+        "stderr": "warn =================================================================================================\nwarn From React Native 0.73, your project's Metro config should extend '@react-native/metro-config'\nwarn or it will fail to build. Please copy the template at:\nwarn https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js\nwarn This warning will be removed in future (https://github.com/facebook/metro/issues/1018).\nwarn =================================================================================================\n"
+      },
+      "hermes": {
+        "ok": true,
+        "status": 0,
+        "gatePayload": {
+          "runtime": {
+            "hermesInternal": true
+          },
+          "ok": true,
+          "runtimeLabel": "slimdom",
+          "fixtureLength": 292,
+          "observations": {
+            "parsing": {
+              "rootLocalName": "html",
+              "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "rootPrefix": "h",
+              "nodeType": 1,
+              "nodeName": "h:html"
+            },
+            "namespaces": {
+              "rootLocalName": "html",
+              "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "rootPrefix": "h",
+              "lookupPrefixXhtml": "h",
+              "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+              "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+              "createdElement": {
+                "localName": "probe",
+                "namespaceURI": "urn:probe-element",
+                "prefix": "p"
+              },
+              "attribute": {
+                "localName": "flag",
+                "namespaceURI": "urn:probe-attr",
+                "prefix": "a",
+                "value": "yes"
+              },
+              "getAttributeNsValue": "yes"
+            },
+            "tree": {
+              "childNodesLength": 4,
+              "childrenLength": 2,
+              "ownerDocumentMatches": true,
+              "firstChildNodeType": 3,
+              "firstElementChildLocalName": "head",
+              "lastElementChildLocalName": "probe",
+              "cloneNodeName": "h:html",
+              "cloneChildNodesLength": 4
+            },
+            "mutation": {
+              "childElementCount": 1,
+              "firstElementChildLocalName": "replacement",
+              "plainAttribute": "1",
+              "namespacedAttribute": "ns-value"
+            },
+            "serialization": {
+              "serializedLength": 470,
+              "containsXhtmlNamespace": true,
+              "containsXformsNamespace": true,
+              "containsJrNamespace": true,
+              "containsMutNsAttribute": true,
+              "roundTripRootLocalName": "html",
+              "roundTripRootPrefix": "h",
+              "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+              "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+              "roundTripTextContentIncludesPlant": true
+            }
+          },
+          "knownGapChecks": {
+            "elementMatches": false,
+            "elementQuerySelector": false,
+            "elementQuerySelectorAll": false,
+            "documentCurrentScript": false
+          },
+          "unsupportedApis": [
+            "documentCurrentScript",
+            "elementMatches",
+            "elementQuerySelector",
+            "elementQuerySelectorAll"
+          ],
+          "steps": [
+            {
+              "name": "new DOMParser()",
+              "ok": true,
+              "value": {}
+            },
+            {
+              "name": "parseFromString(text/xml)",
+              "ok": true,
+              "value": {
+                "nodeType": 9,
+                "nodeName": "#document",
+                "localName": null
+              }
+            },
+            {
+              "name": "document.documentElement metadata",
+              "ok": true,
+              "value": {
+                "nodeType": 1,
+                "nodeName": "h:html",
+                "localName": null
+              }
+            },
+            {
+              "name": "namespace and attribute operations",
+              "ok": true,
+              "value": {
+                "rootLocalName": "html",
+                "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+                "rootPrefix": "h",
+                "lookupPrefixXhtml": "h",
+                "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+                "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+                "createdElement": {
+                  "localName": "probe",
+                  "namespaceURI": "urn:probe-element",
+                  "prefix": "p"
+                },
+                "attribute": {
+                  "localName": "flag",
+                  "namespaceURI": "urn:probe-attr",
+                  "prefix": "a",
+                  "value": "yes"
+                },
+                "getAttributeNsValue": "yes"
+              }
+            },
+            {
+              "name": "tree behavior checks",
+              "ok": true,
+              "value": {
+                "childNodesLength": 4,
+                "childrenLength": 2,
+                "ownerDocumentMatches": true,
+                "firstChildNodeType": 3,
+                "firstElementChildLocalName": "head",
+                "lastElementChildLocalName": "probe",
+                "cloneNodeName": "h:html",
+                "cloneChildNodesLength": 4
+              }
+            },
+            {
+              "name": "mutation API checks",
+              "ok": true,
+              "value": {
+                "childElementCount": 1,
+                "firstElementChildLocalName": "replacement",
+                "plainAttribute": "1",
+                "namespacedAttribute": "ns-value"
+              }
+            },
+            {
+              "name": "new XMLSerializer()",
+              "ok": true,
+              "value": {}
+            },
+            {
+              "name": "serializeToString and round-trip parse",
+              "ok": true,
+              "value": {
+                "serializedLength": 470,
+                "containsXhtmlNamespace": true,
+                "containsXformsNamespace": true,
+                "containsJrNamespace": true,
+                "containsMutNsAttribute": true,
+                "roundTripRootLocalName": "html",
+                "roundTripRootPrefix": "h",
+                "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+                "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+                "roundTripTextContentIncludesPlant": true
+              }
+            }
+          ]
+        },
+        "stdout": "M2_SLIMDOM_HERMES_GATE::{\"runtime\":{\"hermesInternal\":true},\"ok\":true,\"runtimeLabel\":\"slimdom\",\"fixtureLength\":292,\"observations\":{\"parsing\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"nodeType\":1,\"nodeName\":\"h:html\"},\"namespaces\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"lookupPrefixXhtml\":\"h\",\"lookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"lookupNamespaceUriDefault\":\"http://www.w3.org/2002/xforms\",\"createdElement\":{\"localName\":\"probe\",\"namespaceURI\":\"urn:probe-element\",\"prefix\":\"p\"},\"attribute\":{\"localName\":\"flag\",\"namespaceURI\":\"urn:probe-attr\",\"prefix\":\"a\",\"value\":\"yes\"},\"getAttributeNsValue\":\"yes\"},\"tree\":{\"childNodesLength\":4,\"childrenLength\":2,\"ownerDocumentMatches\":true,\"firstChildNodeType\":3,\"firstElementChildLocalName\":\"head\",\"lastElementChildLocalName\":\"probe\",\"cloneNodeName\":\"h:html\",\"cloneChildNodesLength\":4},\"mutation\":{\"childElementCount\":1,\"firstElementChildLocalName\":\"replacement\",\"plainAttribute\":\"1\",\"namespacedAttribute\":\"ns-value\"},\"serialization\":{\"serializedLength\":470,\"containsXhtmlNamespace\":true,\"containsXformsNamespace\":true,\"containsJrNamespace\":true,\"containsMutNsAttribute\":true,\"roundTripRootLocalName\":\"html\",\"roundTripRootPrefix\":\"h\",\"roundTripRootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"roundTripLookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"roundTripTextContentIncludesPlant\":true}},\"knownGapChecks\":{\"elementMatches\":false,\"elementQuerySelector\":false,\"elementQuerySelectorAll\":false,\"documentCurrentScript\":false},\"unsupportedApis\":[\"documentCurrentScript\",\"elementMatches\",\"elementQuerySelector\",\"elementQuerySelectorAll\"],\"steps\":[{\"name\":\"new DOMParser()\",\"ok\":true,\"value\":{}},{\"name\":\"parseFromString(text/xml)\",\"ok\":true,\"value\":{\"nodeType\":9,\"nodeName\":\"#document\",\"localName\":null}},{\"name\":\"document.documentElement metadata\",\"ok\":true,\"value\":{\"nodeType\":1,\"nodeName\":\"h:html\",\"localName\":null}},{\"name\":\"namespace and attribute operations\",\"ok\":true,\"value\":{\"rootLocalName\":\"html\",\"rootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"rootPrefix\":\"h\",\"lookupPrefixXhtml\":\"h\",\"lookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"lookupNamespaceUriDefault\":\"http://www.w3.org/2002/xforms\",\"createdElement\":{\"localName\":\"probe\",\"namespaceURI\":\"urn:probe-element\",\"prefix\":\"p\"},\"attribute\":{\"localName\":\"flag\",\"namespaceURI\":\"urn:probe-attr\",\"prefix\":\"a\",\"value\":\"yes\"},\"getAttributeNsValue\":\"yes\"}},{\"name\":\"tree behavior checks\",\"ok\":true,\"value\":{\"childNodesLength\":4,\"childrenLength\":2,\"ownerDocumentMatches\":true,\"firstChildNodeType\":3,\"firstElementChildLocalName\":\"head\",\"lastElementChildLocalName\":\"probe\",\"cloneNodeName\":\"h:html\",\"cloneChildNodesLength\":4}},{\"name\":\"mutation API checks\",\"ok\":true,\"value\":{\"childElementCount\":1,\"firstElementChildLocalName\":\"replacement\",\"plainAttribute\":\"1\",\"namespacedAttribute\":\"ns-value\"}},{\"name\":\"new XMLSerializer()\",\"ok\":true,\"value\":{}},{\"name\":\"serializeToString and round-trip parse\",\"ok\":true,\"value\":{\"serializedLength\":470,\"containsXhtmlNamespace\":true,\"containsXformsNamespace\":true,\"containsJrNamespace\":true,\"containsMutNsAttribute\":true,\"roundTripRootLocalName\":\"html\",\"roundTripRootPrefix\":\"h\",\"roundTripRootNamespaceURI\":\"http://www.w3.org/1999/xhtml\",\"roundTripLookupNamespaceUriH\":\"http://www.w3.org/1999/xhtml\",\"roundTripTextContentIncludesPlant\":true}}]}\n",
+        "stderr": "/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-hermes-gate/out/ios-release.bundle.js:17:2251: warning: the variable \"queueMicrotask\" was not declared in function \"u 2#\"\n__d((function(_g,_r12,_i11,_a,_m,_e3,_d){var e,t,n=_r12(_d[0]),r=_r12(_d[1]),i=_r12(_d[2]),a=_r12(_d[3]),o=_r12(_d[4]),u=_r12(_d[5]),s=_r12(_d[6]),l=_r12(_d[7]),c=_r12(_d[8]),f=_r12(_d[9]);function d(e,t,n){return t=u(t),o(e,h()?Reflect.construct(t,n||[],u(e).constructor):t.apply(e,n))}function h(){try{var e=!Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],(function(){})))}catch(e){}return(h=function(){return!!e})()}e=this,t=function(e){\"use strict\";var t=(function(){return f((function e(t,n,r,i){c(this,e),this.source=null,this.observer=t,this.node=n,this.options=r,this.source=i||null,i&&t.t.push(this)}),[{key:\"collectInterestedObservers\",value:function(e,t,n,r,i){if((this.node===t||this.options.subtree)&&(\"attributes\"!==e||this.options.attributes)&&(\"characterData\"!==e||this.options.characterData)&&(\"childList\"!==e||this.options.childList)){var a=r.indexOf(this.observer);a<0&&(a=r.length,r.push(this.observer),i.push(void 0)),(\"attributes\"===e&&this.options.attributeOldValue||\"characterData\"===e&&this.options.characterDataOldValue)&&(i[a]=n.oldValue)}}}])})(),o=(function(){return f((function e(t){c(this,e),this.o=[],this.i=t}),[{key:\"register\",value:function(e,n){var r=this.o,i=!1;r.forEach((function(t){t.observer===e&&(i=!0,(function(e){for(var t=e.observer.t.length-1;t>=0;--t){var n=e.observer.t[t];if(n.source!==e)return;n.node.o.removeTransientRegisteredObserver(n),e.observer.t.splice(t,1)}})(t),t.options=n)})),i||(this.o.push(new t(e,this.i,n)),e.u.push(this.i))}},{key:\"removeTransientRegisteredObserver\",value:function(e){this.o.splice(this.o.indexOf(e),1)}},{key:\"removeForObserver\",value:function(e){for(var t=0,n=0,r=this.o.length;n<r;++n){var i=this.o[n];i.observer!==e&&(n!==t&&(this.o[t]=i),++t)}this.o.length=t}},{key:\"collectInterestedObservers\",value:function(e,t,n,r,i){this.o.forEach((function(a){a.collectInterestedObservers(e,t,n,r,i)}))}},{key:\"appendTransientRegisteredObservers\",value:function(e){this.o.forEach((function(t){t.options.subtree&&e.o.registerTransient(t)}))}},{key:\"registerTransient\",value:function(e){this.o.push(new t(e.observer,this.i,e.options,e))}}])})();function u(e,t){for(var n=arguments.length,r=new Array(n>2?n-2:0),i=2;i<n;i++)r[i-2]=arguments[i];\"function\"!=typeof queueMicrotask?Promise.resolve().then((function(){return e.apply(t,r)})):queueMicrotask((function(){return e.apply(t,r)}))}var h=(function(){return f((function e(){c(this,e),this.l=new Set,this.h=!1}),[{key:\"appendRecord\",value:function(e,t){e.m.push(t),this.l.add(e)}},{key:\"queueMutationObserverMicrotask\",value:function(){var e=this;this.h||(this.h=!0,u((function(){e.p()}),this))}},{key:\"p\",value:function(){var e=this;this.h=!1;var t=Array.from(this.l);this.l.clear(),t.forEach((function(t){u((function(e){var t,n=e.takeRecords();(t=e).t.forEach((function(e){e.node.o.removeTransientRegisteredObserver(e)})),t.t.length=0,n.length>0&&e.g(n,e)}),e,t)}))}}])})(),v=(function(){return f((function e(t){c(this,e),this.v=t}),[{key:\"deref\",value:function(){return this.v}}])})(),m=new((function(){return f((function e(){c(this,e),this.l=new h,this.N=[],this.S=new WeakSet}),[{key:\"forEachRange\",value:function(e){for(var t=this.N.length,n=t-1;n>=0;--n){var r=this.N[n].deref(),i=null==r,a=!i&&!this.S.has(r);i||a?(this.N[n]=this.N[t-1],this.N.pop(),t-=1):e(r)}}},{key:\"addRange\",value:function(e){var t,n=(t=e,\"function\"==typeof WeakRef?new WeakRef(t):new v(t));this.N.push(n),this.S.add(e)}},{key:\"removeRange\",value:function(e){this.S.delete(e)}}])})());function p(e){return m}function g(e){for(var t=arguments.length,n=new Array(t>1?t-1:0),r=1;r<t;r++)n[r-1]=arguments[r];return n.some((function(t){return e.nodeType===t}))}function y(e){return 2===e.nodeType}function N(e){return 3===e.nodeType||4===e.nodeType||8===e.nodeType||7===e.nodeType}function E(e){return 3===e.nodeType||4===e.nodeType}function C(e){return 1===e.nodeType}function b(e){return 10===e.nodeType}function O(e){switch(e.nodeType){case 3:case 7:case 8:return e.data.length;default:return e.childNodes.length}}function T(e){for(var t=e,n=[];t;)n.unshift(t),t=t.parentNode;return n}function x(e){return g(e,9)?e:e.ownerDocument}function w(e){return e.parentNode.childNodes.indexOf(e)}function k(e){for(;e.parentNode;)e=e.parentNode;return e}function D(e,t){t(e);for(var n=e.firstChild;n;n=n.nextSibling)D(n,t)}function S(e,t){var n=[];return D(t,(function(r){if(r!==t&&1===r.nodeType){var i=r;\"*\"!==e&&i.nodeName!==e||n.push(i)}})),n}function I(e,t,n){\"\"===e&&(e=null);var r=[];return D(n,(function(i){if(i!==n&&1===i.nodeType){var a=i;\"*\"!==e&&a.namespaceURI!==e||\"*\"!==t&&a.localName!==t||r.push(a)}})),r}function A(e,t,n){n||(n=x(e));var r=e.T(n);if(t)for(var i=e.firstChild;i;i=i.nextSibling)r.appendChild(A(i,!0,n));return r}function R(e,t){if(e.length<t)throw new TypeError(`Function should be called with at least ${t} arguments`)}var _={IndexSizeError:1,HierarchyRequestError:3,WrongDocumentError:4,InvalidCharacterError:5,NotFoundError:8,NotSupportedError:9,InUseAttributeError:10,InvalidStateError:11,NamespaceError:14,InvalidNodeTypeError:24},P=(function(e){function t(){var e,n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:\"\",r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:\"Error\";return c(this,t),(e=d(this,t,[n])).message=n,e.name=r,e.code=_[r]||0,e.stack=new Error(n).stack,e}return s(t,e),f(t)})(l(Error));function M(e,t){return new P(`${e}: ${t}`,e)}function U(e){throw M(\"HierarchyRequestError\",e)}function $(e){throw M(\"IndexSizeError\",e)}function L(e){throw M(\"InvalidCharacterError\",e)}function F(e){throw M(\"InvalidNodeTypeError\",e)}function j(e){throw M(\"InvalidStateError\",e)}function z(e){throw M(\"NamespaceError\",e)}function B(e){throw M(\"NotFoundError\",e)}function W(e){throw M(\"NotSupportedError\",e)}function X(e){throw M(\"WrongDocumentError\",e)}var V=f((function e(t,n){c(this,e),this.addedNodes=[],this.removedNodes=[],this.previousSibling=null,this.nextSibling=null,this.attributeName=null,this.attributeNamespace=null,this.oldValue=null,this.type=t,this.target=n}));function q(e,t,n){for(var r=[],i=[],a=t;a;a=a.parentNode)a.o.collectInterestedObservers(e,t,n,r,i);var o=p();r.forEach((function(r,a){var u=i[a],s=new V(e,t);void 0!==n.name&&void 0!==n.namespace&&(s.attributeName=n.name,s.attributeNamespace=n.namespace),void 0!==u&&(s.oldValue=u),void 0!==n.addedNodes&&(s.addedNodes=n.addedNodes),void 0!==n.removedNodes&&(s.removedNodes=n.removedNodes),void 0!==n.previousSibling&&(s.previousSibling=n.previousSibling),void 0!==n.nextSibling&&(s.nextSibling=n.nextSibling),o.l.appendRecord(r,s)})),o.l.queueMutationObserverMicrotask()}function Y(e){for(var t=[],n=e.firstElementChild;n;n=n.nextElementSibling)t.push(n);return t}function G(e){for(var t=e.previousSibling;t;t=t.previousSibling)if(C(t))return t;return null}function H(e){for(var t=e.nextSibling;t;t=t.nextSibling)if(C(t))return t;return null}function K(e,t){var n=e.previousSibling,r=e.nextSibling,i=g(e,1),a=i?e.previousElementSibling:null,o=i?e.nextElementSibling:null;if(e.parentNode=null,e.previousSibling=null,e.nextSibling=null,n?n.nextSibling=r:t.firstChild=r,r?r.previousSibling=n:t.lastChild=n,t.childNodes.splice(t.childNodes.indexOf(e),1),i){var u=(function(e){return g(e,1,9,11)?e:null})(t);u&&(u.firstElementChild===e&&(u.firstElementChild=o),u.lastElementChild===e&&(u.lastElementChild=a),u.childElementCount-=1)}if(g(t,9)){var s=t;g(e,1)?s.documentElement=null:g(e,10)&&(s.doctype=null)}}function J(e,t,n){if(g(t,9,11,1)||U(\"parent must be a Document, DocumentFragment or Element node\"),e.contains(t)&&U(\"node must not be an inclusive ancestor of parent\"),n&&n.parentNode!==t&&B(\"child is not a child of parent\"),g(e,11,10,1,3,4,7,8)||U(\"node must be a DocumentFragment, DocumentType, Element, Text, ProcessingInstr\n...[truncated 232318 chars]"
+      }
+    }
+  },
+  "releasePassPlatforms": [
+    "android",
+    "ios"
+  ],
+  "namespaceEquivalence": {
+    "slimdom": {
+      "ok": true,
+      "runtimeLabel": "slimdom",
+      "fixtureLength": 292,
+      "observations": {
+        "parsing": {
+          "rootLocalName": "html",
+          "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+          "rootPrefix": "h",
+          "nodeType": 1,
+          "nodeName": "h:html"
+        },
+        "namespaces": {
+          "rootLocalName": "html",
+          "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+          "rootPrefix": "h",
+          "lookupPrefixXhtml": "h",
+          "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+          "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+          "createdElement": {
+            "localName": "probe",
+            "namespaceURI": "urn:probe-element",
+            "prefix": "p"
+          },
+          "attribute": {
+            "localName": "flag",
+            "namespaceURI": "urn:probe-attr",
+            "prefix": "a",
+            "value": "yes"
+          },
+          "getAttributeNsValue": "yes"
+        },
+        "tree": {
+          "childNodesLength": 4,
+          "childrenLength": 2,
+          "ownerDocumentMatches": true,
+          "firstChildNodeType": 3,
+          "firstElementChildLocalName": "head",
+          "lastElementChildLocalName": "probe",
+          "cloneNodeName": "h:html",
+          "cloneChildNodesLength": 4
+        },
+        "mutation": {
+          "childElementCount": 1,
+          "firstElementChildLocalName": "replacement",
+          "plainAttribute": "1",
+          "namespacedAttribute": "ns-value"
+        },
+        "serialization": {
+          "serializedLength": 470,
+          "containsXhtmlNamespace": true,
+          "containsXformsNamespace": true,
+          "containsJrNamespace": true,
+          "containsMutNsAttribute": true,
+          "roundTripRootLocalName": "html",
+          "roundTripRootPrefix": "h",
+          "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+          "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+          "roundTripTextContentIncludesPlant": true
+        }
+      },
+      "knownGapChecks": {
+        "elementMatches": false,
+        "elementQuerySelector": false,
+        "elementQuerySelectorAll": false,
+        "documentCurrentScript": false
+      },
+      "unsupportedApis": [
+        "documentCurrentScript",
+        "elementMatches",
+        "elementQuerySelector",
+        "elementQuerySelectorAll"
+      ],
+      "steps": [
+        {
+          "name": "new DOMParser()",
+          "ok": true,
+          "value": {}
+        },
+        {
+          "name": "parseFromString(text/xml)",
+          "ok": true,
+          "value": {
+            "nodeType": 9,
+            "nodeName": "#document",
+            "localName": null
+          }
+        },
+        {
+          "name": "document.documentElement metadata",
+          "ok": true,
+          "value": {
+            "nodeType": 1,
+            "nodeName": "h:html",
+            "localName": null
+          }
+        },
+        {
+          "name": "namespace and attribute operations",
+          "ok": true,
+          "value": {
+            "rootLocalName": "html",
+            "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+            "rootPrefix": "h",
+            "lookupPrefixXhtml": "h",
+            "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+            "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+            "createdElement": {
+              "localName": "probe",
+              "namespaceURI": "urn:probe-element",
+              "prefix": "p"
+            },
+            "attribute": {
+              "localName": "flag",
+              "namespaceURI": "urn:probe-attr",
+              "prefix": "a",
+              "value": "yes"
+            },
+            "getAttributeNsValue": "yes"
+          }
+        },
+        {
+          "name": "tree behavior checks",
+          "ok": true,
+          "value": {
+            "childNodesLength": 4,
+            "childrenLength": 2,
+            "ownerDocumentMatches": true,
+            "firstChildNodeType": 3,
+            "firstElementChildLocalName": "head",
+            "lastElementChildLocalName": "probe",
+            "cloneNodeName": "h:html",
+            "cloneChildNodesLength": 4
+          }
+        },
+        {
+          "name": "mutation API checks",
+          "ok": true,
+          "value": {
+            "childElementCount": 1,
+            "firstElementChildLocalName": "replacement",
+            "plainAttribute": "1",
+            "namespacedAttribute": "ns-value"
+          }
+        },
+        {
+          "name": "new XMLSerializer()",
+          "ok": true,
+          "value": {}
+        },
+        {
+          "name": "serializeToString and round-trip parse",
+          "ok": true,
+          "value": {
+            "serializedLength": 470,
+            "containsXhtmlNamespace": true,
+            "containsXformsNamespace": true,
+            "containsJrNamespace": true,
+            "containsMutNsAttribute": true,
+            "roundTripRootLocalName": "html",
+            "roundTripRootPrefix": "h",
+            "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+            "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+            "roundTripTextContentIncludesPlant": true
+          }
+        }
+      ]
+    },
+    "jsdom": {
+      "ok": true,
+      "runtimeLabel": "jsdom-reference",
+      "fixtureLength": 292,
+      "observations": {
+        "parsing": {
+          "rootLocalName": "html",
+          "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+          "rootPrefix": "h",
+          "nodeType": 1,
+          "nodeName": "h:html"
+        },
+        "namespaces": {
+          "rootLocalName": "html",
+          "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+          "rootPrefix": "h",
+          "lookupPrefixXhtml": "h",
+          "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+          "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+          "createdElement": {
+            "localName": "probe",
+            "namespaceURI": "urn:probe-element",
+            "prefix": "p"
+          },
+          "attribute": {
+            "localName": "flag",
+            "namespaceURI": "urn:probe-attr",
+            "prefix": "a",
+            "value": "yes"
+          },
+          "getAttributeNsValue": "yes"
+        },
+        "tree": {
+          "childNodesLength": 4,
+          "childrenLength": 2,
+          "ownerDocumentMatches": true,
+          "firstChildNodeType": 3,
+          "firstElementChildLocalName": "head",
+          "lastElementChildLocalName": "probe",
+          "cloneNodeName": "h:html",
+          "cloneChildNodesLength": 4
+        },
+        "mutation": {
+          "childElementCount": 1,
+          "firstElementChildLocalName": "replacement",
+          "plainAttribute": "1",
+          "namespacedAttribute": "ns-value"
+        },
+        "serialization": {
+          "serializedLength": 476,
+          "containsXhtmlNamespace": true,
+          "containsXformsNamespace": true,
+          "containsJrNamespace": true,
+          "containsMutNsAttribute": false,
+          "roundTripRootLocalName": "html",
+          "roundTripRootPrefix": "h",
+          "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+          "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+          "roundTripTextContentIncludesPlant": true
+        }
+      },
+      "knownGapChecks": {
+        "elementMatches": true,
+        "elementQuerySelector": true,
+        "elementQuerySelectorAll": true,
+        "documentCurrentScript": true
+      },
+      "unsupportedApis": [],
+      "steps": [
+        {
+          "name": "new DOMParser()",
+          "ok": true,
+          "value": {}
+        },
+        {
+          "name": "parseFromString(text/xml)",
+          "ok": true,
+          "value": {
+            "nodeType": 9,
+            "nodeName": "#document",
+            "localName": null
+          }
+        },
+        {
+          "name": "document.documentElement metadata",
+          "ok": true,
+          "value": {
+            "nodeType": 1,
+            "nodeName": "h:html",
+            "localName": null
+          }
+        },
+        {
+          "name": "namespace and attribute operations",
+          "ok": true,
+          "value": {
+            "rootLocalName": "html",
+            "rootNamespaceURI": "http://www.w3.org/1999/xhtml",
+            "rootPrefix": "h",
+            "lookupPrefixXhtml": "h",
+            "lookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+            "lookupNamespaceUriDefault": "http://www.w3.org/2002/xforms",
+            "createdElement": {
+              "localName": "probe",
+              "namespaceURI": "urn:probe-element",
+              "prefix": "p"
+            },
+            "attribute": {
+              "localName": "flag",
+              "namespaceURI": "urn:probe-attr",
+              "prefix": "a",
+              "value": "yes"
+            },
+            "getAttributeNsValue": "yes"
+          }
+        },
+        {
+          "name": "tree behavior checks",
+          "ok": true,
+          "value": {
+            "childNodesLength": 4,
+            "childrenLength": 2,
+            "ownerDocumentMatches": true,
+            "firstChildNodeType": 3,
+            "firstElementChildLocalName": "head",
+            "lastElementChildLocalName": "probe",
+            "cloneNodeName": "h:html",
+            "cloneChildNodesLength": 4
+          }
+        },
+        {
+          "name": "mutation API checks",
+          "ok": true,
+          "value": {
+            "childElementCount": 1,
+            "firstElementChildLocalName": "replacement",
+            "plainAttribute": "1",
+            "namespacedAttribute": "ns-value"
+          }
+        },
+        {
+          "name": "new XMLSerializer()",
+          "ok": true,
+          "value": {}
+        },
+        {
+          "name": "serializeToString and round-trip parse",
+          "ok": true,
+          "value": {
+            "serializedLength": 476,
+            "containsXhtmlNamespace": true,
+            "containsXformsNamespace": true,
+            "containsJrNamespace": true,
+            "containsMutNsAttribute": false,
+            "roundTripRootLocalName": "html",
+            "roundTripRootPrefix": "h",
+            "roundTripRootNamespaceURI": "http://www.w3.org/1999/xhtml",
+            "roundTripLookupNamespaceUriH": "http://www.w3.org/1999/xhtml",
+            "roundTripTextContentIncludesPlant": true
+          }
+        }
+      ]
+    },
+    "equivalentForCheckedFields": true,
+    "differences": []
+  },
+  "knownSelectorApiUnsupported": {
+    "elementMatches": true,
+    "elementQuerySelector": true,
+    "elementQuerySelectorAll": true,
+    "documentCurrentScript": true
+  },
+  "verdict": "GREEN",
+  "reasons": [],
+  "recommendation": "Proceed to M2.1 selector-adapter evaluation using slimdom."
+}

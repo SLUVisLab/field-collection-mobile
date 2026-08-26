@@ -5,7 +5,13 @@
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "m2:oozcitak:gate": "node experiments/m2-oozcitak-hermes-gate/runGate.js",
+    "m2:slimdom:gate": "node experiments/m2-slimdom-hermes-gate/runGate.js",
+    "m2.1:selector:inventory": "node experiments/m2-slimdom-xforms/buildSelectorInventory.js",
+    "m2.1:selector:compare": "node experiments/m2-slimdom-xforms/runSelectorSemanticComparison.js",
+    "m2.2:xforms:equivalence": "node experiments/m2-slimdom-xforms/runNodeEquivalence.js",
+    "m2.3:xforms:hermes": "node experiments/m2-slimdom-xforms/runM23HermesGate.js"
   },
   "dependencies": {
     "@expo/cli": "^0.18.26",
@@ -13,6 +19,8 @@
     "@expo/metro-config": "~0.18.1",
     "@expo/prebuild-config": "~7.0.0",
     "@expo/vector-icons": "^14.0.2",
+    "@getodk/xforms-engine": "1.0.3",
+    "@oozcitak/dom": "3.0.0",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/netinfo": "11.3.1",
     "@react-native-community/slider": "^4.5.7",
@@ -67,6 +75,7 @@
     "react-native-web": "~0.19.10",
     "react-native-webview": "13.8.6",
     "realm": "12.12.1",
+    "slimdom": "4.3.5",
     "tsv": "^0.2.0",
     "uuid": "^9.0.1",
     "xlsx": "^0.18.5"

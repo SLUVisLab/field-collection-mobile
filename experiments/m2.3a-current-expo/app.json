@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "m2.3a-current-expo",
+    "slug": "m2.3a-current-expo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sluvislab.m2.x3acurrentexpo"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "package": "com.sluvislab.m2.x3acurrentexpo"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

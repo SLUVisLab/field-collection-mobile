@@ -1,0 +1,29 @@
+{
+  "name": "m2.3a-current-expo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@getodk/xforms-engine": "^1.0.3",
+    "expo": "~57.0.16",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.2",
+    "slimdom": "^4.3.5"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "gate:m23a": "node gate/runGate.cjs",
+    "gate:m23b": "node gate/runGateM23b.cjs",
+    "gate:ios:debug": "expo run:ios --configuration Debug --no-install --no-bundler",
+    "gate:ios:release": "expo run:ios --configuration Release --no-install --no-bundler",
+    "gate:android:debug": "expo run:android --variant debug --no-install --no-bundler",
+    "gate:android:release": "expo run:android --variant release --no-install --no-bundler"
+  },
+  "private": true,
+  "devDependencies": {
+    "@react-native/metro-config": "^0.86.2"
+  }
+}

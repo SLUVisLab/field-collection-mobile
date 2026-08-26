@@ -1,0 +1,695 @@
+{
+  "generatedAt": "2026-08-26T02:56:15.655Z",
+  "reference": {
+    "scoped": [
+      {
+        "selector": ":scope > hint",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/hint[1]",
+          "localName": "hint",
+          "nodeName": "hint",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "hint-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/hint[1]",
+            "localName": "hint",
+            "nodeName": "hint",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "hint-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > item",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/item[1]",
+          "localName": "item",
+          "nodeName": "item",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "item-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/item[1]",
+            "localName": "item",
+            "nodeName": "item",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "item-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > itemset[nodeset]",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/itemset[1]",
+          "localName": "itemset",
+          "nodeName": "itemset",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "itemset-nodeset-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/itemset[1]",
+            "localName": "itemset",
+            "nodeName": "itemset",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "itemset-nodeset-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > label",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/label[1]",
+          "localName": "label",
+          "nodeName": "label",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "label-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/label[1]",
+            "localName": "label",
+            "nodeName": "label",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "label-node"
+          },
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/label[2]",
+            "localName": "label",
+            "nodeName": "label",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-group-label-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > label[form-definition-source=\"repeat-group\"]",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/label[2]",
+          "localName": "label",
+          "nodeName": "label",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "repeat-group-label-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/label[2]",
+            "localName": "label",
+            "nodeName": "label",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-group-label-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > repeat[nodeset]",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/repeat[1]",
+          "localName": "repeat",
+          "nodeName": "repeat",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "repeat-nodeset-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/repeat[1]",
+            "localName": "repeat",
+            "nodeName": "repeat",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-nodeset-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > value",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/value[1]",
+          "localName": "value",
+          "nodeName": "value",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "value-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/value[1]",
+            "localName": "value",
+            "nodeName": "value",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "value-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > submission",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/submission[1]",
+          "localName": "submission",
+          "nodeName": "submission",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "submission-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/submission[1]",
+            "localName": "submission",
+            "nodeName": "submission",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "submission-node"
+          }
+        ]
+      }
+    ],
+    "unscoped": [
+      {
+        "selector": "itemset[ref], repeat[ref], *[nodeset]:not(itemset, repeat)",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/itemset[2]",
+          "localName": "itemset",
+          "nodeName": "itemset",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "itemset-ref-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/itemset[2]",
+            "localName": "itemset",
+            "nodeName": "itemset",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "itemset-ref-node"
+          },
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/repeat[2]",
+            "localName": "repeat",
+            "nodeName": "repeat",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-ref-node"
+          },
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/input[1]",
+            "localName": "input",
+            "nodeName": "input",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "legacy-nodeset-input"
+          },
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/jr:special[1]",
+            "localName": "special",
+            "nodeName": "jr:special",
+            "namespaceURI": "http://openrosa.org/javarosa",
+            "prefix": "jr",
+            "id": "jr-special-node"
+          }
+        ]
+      },
+      {
+        "selector": "repeat",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/repeat[1]",
+          "localName": "repeat",
+          "nodeName": "repeat",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "repeat-nodeset-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/repeat[1]",
+            "localName": "repeat",
+            "nodeName": "repeat",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-nodeset-node"
+          },
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/repeat[2]",
+            "localName": "repeat",
+            "nodeName": "repeat",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-ref-node"
+          }
+        ]
+      },
+      {
+        "selector": "itemset[nodeset]",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/itemset[1]",
+          "localName": "itemset",
+          "nodeName": "itemset",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "itemset-nodeset-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/itemset[1]",
+            "localName": "itemset",
+            "nodeName": "itemset",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "itemset-nodeset-node"
+          }
+        ]
+      }
+    ],
+    "matches": [
+      {
+        "targetId": "hint-node",
+        "target": {
+          "path": "h:html[1]/h:body[1]/group[1]/hint[1]",
+          "localName": "hint",
+          "nodeName": "hint",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "hint-node"
+        },
+        "selector": "hint",
+        "matches": true
+      },
+      {
+        "targetId": "itemset-nodeset-node",
+        "target": {
+          "path": "h:html[1]/h:body[1]/group[1]/itemset[1]",
+          "localName": "itemset",
+          "nodeName": "itemset",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "itemset-nodeset-node"
+        },
+        "selector": "itemset[nodeset]",
+        "matches": true
+      },
+      {
+        "targetId": "repeat-group-label-node",
+        "target": {
+          "path": "h:html[1]/h:body[1]/group[1]/label[2]",
+          "localName": "label",
+          "nodeName": "label",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "repeat-group-label-node"
+        },
+        "selector": "label[form-definition-source=\"repeat-group\"]",
+        "matches": true
+      },
+      {
+        "targetId": "repeat-nodeset-node",
+        "target": {
+          "path": "h:html[1]/h:body[1]/group[1]/repeat[1]",
+          "localName": "repeat",
+          "nodeName": "repeat",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "repeat-nodeset-node"
+        },
+        "selector": "repeat[nodeset]",
+        "matches": true
+      },
+      {
+        "targetId": "submission-node",
+        "target": {
+          "path": "h:html[1]/h:body[1]/group[1]/submission[1]",
+          "localName": "submission",
+          "nodeName": "submission",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "submission-node"
+        },
+        "selector": "submission",
+        "matches": true
+      }
+    ]
+  },
+  "candidate": {
+    "scoped": [
+      {
+        "selector": ":scope > hint",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/hint[1]",
+          "localName": "hint",
+          "nodeName": "hint",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "hint-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/hint[1]",
+            "localName": "hint",
+            "nodeName": "hint",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "hint-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > item",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/item[1]",
+          "localName": "item",
+          "nodeName": "item",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "item-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/item[1]",
+            "localName": "item",
+            "nodeName": "item",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "item-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > itemset[nodeset]",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/itemset[1]",
+          "localName": "itemset",
+          "nodeName": "itemset",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "itemset-nodeset-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/itemset[1]",
+            "localName": "itemset",
+            "nodeName": "itemset",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "itemset-nodeset-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > label",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/label[1]",
+          "localName": "label",
+          "nodeName": "label",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "label-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/label[1]",
+            "localName": "label",
+            "nodeName": "label",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "label-node"
+          },
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/label[2]",
+            "localName": "label",
+            "nodeName": "label",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-group-label-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > label[form-definition-source=\"repeat-group\"]",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/label[2]",
+          "localName": "label",
+          "nodeName": "label",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "repeat-group-label-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/label[2]",
+            "localName": "label",
+            "nodeName": "label",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-group-label-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > repeat[nodeset]",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/repeat[1]",
+          "localName": "repeat",
+          "nodeName": "repeat",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "repeat-nodeset-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/repeat[1]",
+            "localName": "repeat",
+            "nodeName": "repeat",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-nodeset-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > value",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/value[1]",
+          "localName": "value",
+          "nodeName": "value",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "value-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/value[1]",
+            "localName": "value",
+            "nodeName": "value",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "value-node"
+          }
+        ]
+      },
+      {
+        "selector": ":scope > submission",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/submission[1]",
+          "localName": "submission",
+          "nodeName": "submission",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "submission-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/submission[1]",
+            "localName": "submission",
+            "nodeName": "submission",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "submission-node"
+          }
+        ]
+      }
+    ],
+    "unscoped": [
+      {
+        "selector": "itemset[ref], repeat[ref], *[nodeset]:not(itemset, repeat)",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/itemset[2]",
+          "localName": "itemset",
+          "nodeName": "itemset",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "itemset-ref-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/itemset[2]",
+            "localName": "itemset",
+            "nodeName": "itemset",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "itemset-ref-node"
+          },
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/repeat[2]",
+            "localName": "repeat",
+            "nodeName": "repeat",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-ref-node"
+          },
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/input[1]",
+            "localName": "input",
+            "nodeName": "input",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "legacy-nodeset-input"
+          },
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/jr:special[1]",
+            "localName": "special",
+            "nodeName": "jr:special",
+            "namespaceURI": "http://openrosa.org/javarosa",
+            "prefix": "jr",
+            "id": "jr-special-node"
+          }
+        ]
+      },
+      {
+        "selector": "repeat",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/repeat[1]",
+          "localName": "repeat",
+          "nodeName": "repeat",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "repeat-nodeset-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/repeat[1]",
+            "localName": "repeat",
+            "nodeName": "repeat",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-nodeset-node"
+          },
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/repeat[2]",
+            "localName": "repeat",
+            "nodeName": "repeat",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "repeat-ref-node"
+          }
+        ]
+      },
+      {
+        "selector": "itemset[nodeset]",
+        "querySelector": {
+          "path": "h:html[1]/h:body[1]/group[1]/itemset[1]",
+          "localName": "itemset",
+          "nodeName": "itemset",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "itemset-nodeset-node"
+        },
+        "querySelectorAll": [
+          {
+            "path": "h:html[1]/h:body[1]/group[1]/itemset[1]",
+            "localName": "itemset",
+            "nodeName": "itemset",
+            "namespaceURI": "http://www.w3.org/2002/xforms",
+            "prefix": null,
+            "id": "itemset-nodeset-node"
+          }
+        ]
+      }
+    ],
+    "matches": [
+      {
+        "targetId": "hint-node",
+        "target": {
+          "path": "h:html[1]/h:body[1]/group[1]/hint[1]",
+          "localName": "hint",
+          "nodeName": "hint",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "hint-node"
+        },
+        "selector": "hint",
+        "matches": true
+      },
+      {
+        "targetId": "itemset-nodeset-node",
+        "target": {
+          "path": "h:html[1]/h:body[1]/group[1]/itemset[1]",
+          "localName": "itemset",
+          "nodeName": "itemset",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "itemset-nodeset-node"
+        },
+        "selector": "itemset[nodeset]",
+        "matches": true
+      },
+      {
+        "targetId": "repeat-group-label-node",
+        "target": {
+          "path": "h:html[1]/h:body[1]/group[1]/label[2]",
+          "localName": "label",
+          "nodeName": "label",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "repeat-group-label-node"
+        },
+        "selector": "label[form-definition-source=\"repeat-group\"]",
+        "matches": true
+      },
+      {
+        "targetId": "repeat-nodeset-node",
+        "target": {
+          "path": "h:html[1]/h:body[1]/group[1]/repeat[1]",
+          "localName": "repeat",
+          "nodeName": "repeat",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "repeat-nodeset-node"
+        },
+        "selector": "repeat[nodeset]",
+        "matches": true
+      },
+      {
+        "targetId": "submission-node",
+        "target": {
+          "path": "h:html[1]/h:body[1]/group[1]/submission[1]",
+          "localName": "submission",
+          "nodeName": "submission",
+          "namespaceURI": "http://www.w3.org/2002/xforms",
+          "prefix": null,
+          "id": "submission-node"
+        },
+        "selector": "submission",
+        "matches": true
+      }
+    ]
+  },
+  "comparison": {
+    "equivalent": true,
+    "differences": []
+  }
+}

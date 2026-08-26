@@ -1,0 +1,19 @@
+{
+  "name": "odk-xforms-webview",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.mjs\""
+  },
+  "dependencies": {
+    "react-native-webview": "13.8.6"
+  },
+  "peerDependencies": {
+    "react-native": ">=0.74"
+  }
+}

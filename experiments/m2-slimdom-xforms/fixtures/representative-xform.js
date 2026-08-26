@@ -1,0 +1,93 @@
+const REPRESENTATIVE_XFORM_XML = `<?xml version="1.0"?>
+<h:html
+  xmlns="http://www.w3.org/2002/xforms"
+  xmlns:h="http://www.w3.org/1999/xhtml"
+  xmlns:jr="http://openrosa.org/javarosa">
+  <h:head>
+    <h:title>M2 Slimdom Representative Fixture</h:title>
+    <model>
+      <instance>
+        <data id="m2_slimdom_fixture">
+          <name/>
+          <age/>
+          <height/>
+          <calc/>
+          <show_extra>0</show_extra>
+          <extra/>
+          <choice/>
+          <fruit>
+            <item>
+              <name>Apple</name>
+              <value>apple</value>
+            </item>
+          </fruit>
+          <rep>
+            <note/>
+            <qty/>
+          </rep>
+        </data>
+      </instance>
+
+      <bind nodeset="/data/name" type="string" required="true()"/>
+      <bind nodeset="/data/age" type="int" constraint=". &gt;= 18"/>
+      <bind nodeset="/data/height" type="decimal"/>
+      <bind
+        nodeset="/data/calc"
+        type="decimal"
+        calculate="number(/data/age) + number(/data/height)"/>
+      <bind nodeset="/data/show_extra" type="int"/>
+      <bind nodeset="/data/extra" type="string" relevant="/data/show_extra = 1"/>
+      <bind nodeset="/data/choice" type="string"/>
+      <bind nodeset="/data/rep/note" type="string"/>
+      <bind nodeset="/data/rep/qty" type="int" required="true()" constraint=". &gt;= 1"/>
+    </model>
+  </h:head>
+
+  <h:body class="pages theme-grid">
+    <input ref="/data/name">
+      <label>Name</label>
+      <hint>Name hint</hint>
+    </input>
+    <input ref="/data/age">
+      <label>Age</label>
+    </input>
+    <input ref="/data/height">
+      <label>Height</label>
+    </input>
+    <input ref="/data/calc">
+      <label>Calculated total</label>
+    </input>
+    <input ref="/data/show_extra">
+      <label>Show extra</label>
+    </input>
+    <input ref="/data/extra">
+      <label>Extra details</label>
+    </input>
+
+    <select1 ref="/data/choice">
+      <label>Choice</label>
+      <itemset nodeset="/data/fruit/item">
+        <label ref="name"/>
+        <value ref="value"/>
+      </itemset>
+    </select1>
+
+    <group ref="/data/rep">
+      <label jr:itext="/data/rep:label">Repeat Group</label>
+      <repeat nodeset="/data/rep">
+        <label>Repeat item</label>
+        <input ref="note">
+          <label>Note</label>
+        </input>
+        <input ref="qty">
+          <label>Quantity</label>
+        </input>
+      </repeat>
+    </group>
+  </h:body>
+</h:html>
+`;
+
+module.exports = {
+  REPRESENTATIVE_XFORM_XML,
+};

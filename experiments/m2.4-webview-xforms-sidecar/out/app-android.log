@@ -1,0 +1,24 @@
+--------- beginning of main
+08-26 16:58:51.365  2375  2528 I ReactNativeJS: Running "main" with {"rootTag":1,"initialProps":{},"fabric":true}
+08-26 16:58:52.069  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_START::loadForm
+08-26 16:58:55.636  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_OK::loadForm
+08-26 16:58:55.640  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_START::setValue age=19
+08-26 16:58:55.744  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_OK::setValue age=19
+08-26 16:58:55.815  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_START::setValue height=2.5
+08-26 16:58:55.986  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_OK::setValue height=2.5
+08-26 16:58:55.988  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_START::setValue show_extra=1
+08-26 16:58:56.224  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_OK::setValue show_extra=1
+08-26 16:58:56.227  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_START::setValue choice=apple
+08-26 16:58:56.486  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_OK::setValue choice=apple
+08-26 16:58:56.488  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_START::setValue age=17
+08-26 16:58:56.686  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_OK::setValue age=17
+08-26 16:58:56.708  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_START::addRepeat(/data/rep)
+08-26 16:58:56.819  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_OK::addRepeat(/data/rep)
+08-26 16:58:56.824  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_START::serialize
+08-26 16:58:56.994  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_OK::serialize
+08-26 16:58:56.996  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_START::inspectMediaSeam
+08-26 16:58:57.032  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_OK::inspectMediaSeam
+08-26 16:58:57.033  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_START::refreshSnapshot
+08-26 16:58:57.087  2375  2528 I ReactNativeJS: M3_RUNTIME_STEP_OK::refreshSnapshot
+08-26 16:58:57.162  2375  2528 I ReactNativeJS: M3_RUNTIME_SUMMARY::{"platform":"android","hermes":true,"durationMs":5098,"phase":"ready","checks":{"valuesUpdated":true,"calculateUpdated":true,"relevanceUpdated":true,"constraintUpdated":true,"requiredReflected":true,"readonlyReflected":true,"choiceReflected":true,"repeatUpdated":true,"serializationHasFixture":true,"mediaReferenceModel":true},"stepOutcomes":[{"name":"loadForm","ok":true},{"name":"setValue age=19","ok":true},{"name":"setValue height=2.5","ok":true},{"name":"setValue show_extra=1","ok":true},{"name":"setValue choice=apple","ok":true},{"name":"setValue age=17","ok":true},{"name":"addRepeat(/data/rep)","ok":true},{"name":"serialize","ok":true},{"name":"inspectMediaSeam","ok":true},{"name":"refreshSnapshot","ok":true}],"hookState":{"age":"17","calc":19.5,"extraRelevant":true,"ageConstraintValid":false,"nameRequired":true,"readonlyNoteReadonly":true,"choiceValue":["apple"],"repeatCount":2},"ok":true}
+08-26 16:58:57.171  2375  2528 I ReactNativeJS: M3_RUNTIME_RESULT::{"summary":{"platform":"android","hermes":true,"durationMs":5098,"phase":"ready","checks":{"valuesUpdated":true,"calculateUpdated":true,"relevanceUpdated":true,"constraintUpdated":true,"requiredReflected":true,"readonlyReflected":true,"choiceReflected":true,"repeatUpdated":true,"serializationHasFixture":true,"mediaReferenceModel":true},"stepOutcomes":[{"name":"loadForm","ok":true},{"name":"setValue age=19","ok":true},{"name":"setValue height=2.5","ok":true},{"name":"setValue show_extra=1","ok":true},{"name":"setValue choice=apple","ok":true},{"name":"setValue age=17","ok":true},{"name":"addRepeat(/data/rep)","ok":true},{"name":"serialize","ok":true},{"name":"inspectMediaSeam","ok":true},{"name":"refreshSnapshot","ok":true}],"hookState":{"age":"17","calc":19.5,"extraRelevant":true,"ageConstraintValid":false,"nameRequired":true,"readonlyNoteReadonly":true,"choiceValue":["apple"],"repeatCount":2},"ok":true},"serializeResult":{"status":"pending","violationCount":4,"xml":"<data id=\"m2_4_fixture\"><name/><age>17</age><height>2.5</height><calc>19.5</calc><show_extra>1</show_extra><extra/><readonly_note>fixed</readonly_note><choice>apple</choice><fruit><item><name>Apple</name><value>apple</value></item></fruit><rep><note/><qty/></rep><rep><note/><qty/></rep><meta><instanceID>uuid:4f5d24b2-af6d-4e4f-acae-8eaa20bc8b2c</instanceID></meta></data>"},"mediaResult":{"binaryLikeReferences":[],"example":{"field":"flower_photo","valueStoredInForm":"IMG_1234.jpg"},"note":"XForms state in this sidecar is text/value oriented. Native app can keep file bytes and send only filename/reference strings to XForms nodes."}}

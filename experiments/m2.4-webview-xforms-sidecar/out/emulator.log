@@ -1,0 +1,18 @@
+INFO    | Android emulator version 32.1.15.0 (build_id 10696886) (CL:N/A)
+INFO    | Found systemPath /Users/dev/Library/Android/sdk/system-images/android-34/google_apis/arm64-v8a/
+WARNING | cannot add library /Users/dev/Library/Android/sdk/emulator/qemu/darwin-aarch64/lib64/vulkan/libvulkan.dylib: failed
+INFO    | Crashreporting disabled, not reporting crashes.
+INFO    | Duplicate loglines will be removed, if you wish to see each indiviudal line launch with the -log-nofilter flag.
+INFO    | added library /Users/dev/Library/Android/sdk/emulator/lib64/vulkan/libvulkan.dylib
+INFO    | Sending adb public key [QAAAAEMooXKVmzEA5LDjDoJm3Sx80v7o3FfT6o2DiniPM5+2M/Y9AE7/fAZVxwhRGz7+iVTR9recsaSEJfegB3wb61/97ljglcVzjou/nmj0bn16IVNeUDH+o6PlHFJQAIDzhMKqqiM73i9UUCj8VAvVK3LNNxB0DATQ8/O9C3DCG58joOcDoeAEOD4CectD08569rI+vTlLnBfeIQmUEImaKCzn/XMllb0URSYc+FU8M7zH8QCa2HBt2uFPE9x5fHrPI6ZwkUrtX3vugT3Oc6y2G0129lhJE1jqfPxQc3JP/4gKSLDjMFYoDxw0jxJyVy20F3bwoL01mqA8o4Hsf7W68Xh4umff3ZdXc7C5WOTbUscmMxMHX3FNLFA8g3MRBQhcduEWCbGmvDR5E57bUFHRfyw2VIDrALozxWQ9amld0kYxpJj2SvHei8y6r3bdlLygXJ/fwMMLkG1W5PlZgEyro/rdw/vziGzKPZuySFT0ctySWHi5YO5mCZTZO1cfXRUsO3RWdObN+Jn/lMLSg8BxT+VxivaKPK1hojgHl5/9JHe40hPOLue9swbLMQoYGhQUMMxsNdEWIoG54/fb56xSw2IWKStRI0juYwaVExCf1FdTpOkfngJmfXCC8Nuxi+hC/LZcEwBv0eaV8nj49Djdz/nbV9brtL0uFWlJxLkbyvOuAZffrAEAAQA= dev@unknown]
+WARNING | *** No gRPC protection active, consider launching with the -grpc-use-jwt flag.***
+INFO    | Started GRPC server at 127.0.0.1:8554, security: Local, auth: none
+INFO    | Advertising in: /Users/dev/Library/Caches/TemporaryItems/avd/running/pid_35463.ini
+INFO    | Setting display: 0 configuration to: 1080x2220, dpi: 440x440 
+INFO    | Cold boot: requested by the user
+INFO    | Boot completed in 28608 ms
+INFO    | Increasing screen off timeout, logcat buffer size to 2M.
+INFO    | Revoking microphone permissions for Google App.
+INFO    | Wait for emulator (pid 35463) 20 seconds to shutdown gracefully before kill;you can set environment variable ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL(in seconds) to change the default value (20 seconds)
+INFO    | Discarding the changed state: command-line flag
+WARNING | Discarding the changed state (command-line flag).

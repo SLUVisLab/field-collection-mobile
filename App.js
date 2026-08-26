@@ -26,6 +26,7 @@ import TaskAction from './screens/TaskAction';
 import SaveSurvey from './screens/SaveSurvey';
 import UploadSurveys from './screens/UploadSurveys';
 import SurveyExplorer from './screens/SurveyExplorer';
+import OozcitakHermesGateScreen from './experiments/m2-oozcitak-hermes-gate/OozcitakHermesGateScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -62,6 +63,7 @@ class App extends React.Component {
                 <Stack.Screen options={{headerShown: true, title: 'New Item',}} name="NewItem" component={NewItem} />
                 <Stack.Screen options={{headerShown: true}} name="TaskSetup" component={TaskSetup} />
                 <Stack.Screen options={{headerShown: true, title: 'Survey Explorer',}} name="SurveyExplorer" component={SurveyExplorer} />
+                <Stack.Screen options={{headerShown: true, title: 'M2 Oozcitak Hermes Gate'}} name="M2OozcitakHermesGate" component={OozcitakHermesGateScreen} />
                 
               </Stack.Navigator>
             </SurveyDataProvider>

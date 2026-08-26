@@ -1,0 +1,55 @@
+Could not find a shared URI scheme for the dev client between the local /ios and /android directories. App launches (QR code, interstitial, terminal keys) may not work as expected. You can configure a custom scheme using the --scheme option, or by running npx expo prebuild to regenerate the native directories with URI schemes.
+Starting project at /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.4-webview-xforms-sidecar
+Logs: /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.4-webview-xforms-sidecar/.expo/dev/logs/start.log
+Metro is running in CI mode, reloads are disabled. Remove CI=true to enable watch mode.
+Starting Metro Bundler
+
+Waiting on http://localhost:8081
+
+Logs for your project will appear below.
+iOS Bundled 1121ms index.js (721 modules)
+ LOG  M3_RUNTIME_STEP_START::loadForm
+ LOG  M3_RUNTIME_STEP_OK::loadForm
+ LOG  M3_RUNTIME_STEP_START::setValue age=19
+ LOG  M3_RUNTIME_STEP_OK::setValue age=19
+ LOG  M3_RUNTIME_STEP_START::setValue height=2.5
+ LOG  M3_RUNTIME_STEP_OK::setValue height=2.5
+ LOG  M3_RUNTIME_STEP_START::setValue show_extra=1
+ LOG  M3_RUNTIME_STEP_OK::setValue show_extra=1
+ LOG  M3_RUNTIME_STEP_START::setValue choice=apple
+ LOG  M3_RUNTIME_STEP_OK::setValue choice=apple
+ LOG  M3_RUNTIME_STEP_START::setValue age=17
+ LOG  M3_RUNTIME_STEP_OK::setValue age=17
+ LOG  M3_RUNTIME_STEP_START::addRepeat(/data/rep)
+ LOG  M3_RUNTIME_STEP_OK::addRepeat(/data/rep)
+ LOG  M3_RUNTIME_STEP_START::serialize
+ LOG  M3_RUNTIME_STEP_OK::serialize
+ LOG  M3_RUNTIME_STEP_START::inspectMediaSeam
+ LOG  M3_RUNTIME_STEP_OK::inspectMediaSeam
+ LOG  M3_RUNTIME_STEP_START::refreshSnapshot
+ LOG  M3_RUNTIME_STEP_OK::refreshSnapshot
+ LOG  M3_RUNTIME_SUMMARY::{"platform":"ios","hermes":true,"durationMs":2523,"phase":"ready","checks":{"valuesUpdated":true,"calculateUpdated":true,"relevanceUpdated":true,"constraintUpdated":true,"requiredReflected":true,"readonlyReflected":true,"choiceReflected":true,"repeatUpdated":true,"serializationHasFixture":true,"mediaReferenceModel":true},"stepOutcomes":[{"name":"loadForm","ok":true},{"name":"setValue age=19","ok":true},{"name":"setValue height=2.5","ok":true},{"name":"setValue show_extra=1","ok":true},{"name":"setValue choice=apple","ok":true},{"name":"setValue age=17","ok":true},{"name":"addRepeat(/data/rep)","ok":true},{"name":"serialize","ok":true},{"name":"inspectMediaSeam","ok":true},{"name":"refreshSnapshot","ok":true}],"hookState":{"age":"17","calc":19.5,"extraRelevant":true,"ageConstraintValid":false,"nameRequired":true,"readonlyNoteReadonly":true,"choiceValue":["apple"],"repeatCount":2},"ok":true}
+ LOG  M3_RUNTIME_RESULT::{"summary":{"platform":"ios","hermes":true,"durationMs":2523,"phase":"ready","checks":{"valuesUpdated":true,"calculateUpdated":true,"relevanceUpdated":true,"constraintUpdated":true,"requiredReflected":true,"readonlyReflected":true,"choiceReflected":true,"repeatUpdated":true,"serializationHasFixture":true,"mediaReferenceModel":true},"stepOutcomes":[{"name":"loadForm","ok":true},{"name":"setValue age=19","ok":true},{"name":"setValue height=2.5","ok":true},{"name":"setValue show_extra=1","ok":true},{"name":"setValue choice=apple","ok":true},{"name":"setValue age=17","ok":true},{"name":"addRepeat(/data/rep)","ok":true},{"name":"serialize","ok":true},{"name":"inspectMediaSeam","ok":true},{"name":"refreshSnapshot","ok":true}],"hookState":{"age":"17","calc":19.5,"extraRelevant":true,"ageConstraintValid":false,"nameRequired":true,"readonlyNoteReadonly":true,"choiceValue":["apple"],"repeatCount":2},"ok":true},"serializeResult":{"status":"pending","violationCount":4,"xml":"<data id=\"m2_4_fixture\"><name/><age>17</age><height>2.5</height><calc>19.5</calc><show_extra>1</show_extra><extra/><readonly_note>fixed</readonly_note><choice>apple</choice><fruit><item><name>Apple</name><value>apple</value></item></fruit><rep><note/><qty/></rep><rep><note/><qty/></rep><meta><instanceID>uuid:8a7ec0ea-b339-4c29-bf16-e92e9208194c</instanceID></meta></data>"},"mediaResult":{"binaryLikeReferences":[],"example":{"field":"flower_photo","valueStoredInForm":"IMG_1234.jpg"},"note":"XForms state in this sidecar is text/value oriented. Native app can keep file bytes and send only filename/reference strings to XForms nodes."}}
+Android Bundled 655ms index.js (645 modules)
+ LOG  M3_RUNTIME_STEP_START::loadForm
+ LOG  M3_RUNTIME_STEP_OK::loadForm
+ LOG  M3_RUNTIME_STEP_START::setValue age=19
+ LOG  M3_RUNTIME_STEP_OK::setValue age=19
+ LOG  M3_RUNTIME_STEP_START::setValue height=2.5
+ LOG  M3_RUNTIME_STEP_OK::setValue height=2.5
+ LOG  M3_RUNTIME_STEP_START::setValue show_extra=1
+ LOG  M3_RUNTIME_STEP_OK::setValue show_extra=1
+ LOG  M3_RUNTIME_STEP_START::setValue choice=apple
+ LOG  M3_RUNTIME_STEP_OK::setValue choice=apple
+ LOG  M3_RUNTIME_STEP_START::setValue age=17
+ LOG  M3_RUNTIME_STEP_OK::setValue age=17
+ LOG  M3_RUNTIME_STEP_START::addRepeat(/data/rep)
+ LOG  M3_RUNTIME_STEP_OK::addRepeat(/data/rep)
+ LOG  M3_RUNTIME_STEP_START::serialize
+ LOG  M3_RUNTIME_STEP_OK::serialize
+ LOG  M3_RUNTIME_STEP_START::inspectMediaSeam
+ LOG  M3_RUNTIME_STEP_OK::inspectMediaSeam
+ LOG  M3_RUNTIME_STEP_START::refreshSnapshot
+ LOG  M3_RUNTIME_STEP_OK::refreshSnapshot
+ LOG  M3_RUNTIME_SUMMARY::{"platform":"android","hermes":true,"durationMs":5098,"phase":"ready","checks":{"valuesUpdated":true,"calculateUpdated":true,"relevanceUpdated":true,"constraintUpdated":true,"requiredReflected":true,"readonlyReflected":true,"choiceReflected":true,"repeatUpdated":true,"serializationHasFixture":true,"mediaReferenceModel":true},"stepOutcomes":[{"name":"loadForm","ok":true},{"name":"setValue age=19","ok":true},{"name":"setValue height=2.5","ok":true},{"name":"setValue show_extra=1","ok":true},{"name":"setValue choice=apple","ok":true},{"name":"setValue age=17","ok":true},{"name":"addRepeat(/data/rep)","ok":true},{"name":"serialize","ok":true},{"name":"inspectMediaSeam","ok":true},{"name":"refreshSnapshot","ok":true}],"hookState":{"age":"17","calc":19.5,"extraRelevant":true,"ageConstraintValid":false,"nameRequired":true,"readonlyNoteReadonly":true,"choiceValue":["apple"],"repeatCount":2},"ok":true}
+ LOG  M3_RUNTIME_RESULT::{"summary":{"platform":"android","hermes":true,"durationMs":5098,"phase":"ready","checks":{"valuesUpdated":true,"calculateUpdated":true,"relevanceUpdated":true,"constraintUpdated":true,"requiredReflected":true,"readonlyReflected":true,"choiceReflected":true,"repeatUpdated":true,"serializationHasFixture":true,"mediaReferenceModel":true},"stepOutcomes":[{"name":"loadForm","ok":true},{"name":"setValue age=19","ok":true},{"name":"setValue height=2.5","ok":true},{"name":"setValue show_extra=1","ok":true},{"name":"setValue choice=apple","ok":true},{"name":"setValue age=17","ok":true},{"name":"addRepeat(/data/rep)","ok":true},{"name":"serialize","ok":true},{"name":"inspectMediaSeam","ok":true},{"name":"refreshSnapshot","ok":true}],"hookState":{"age":"17","calc":19.5,"extraRelevant":true,"ageConstraintValid":false,"nameRequired":true,"readonlyNoteReadonly":true,"choiceValue":["apple"],"repeatCount":2},"ok":true},"serializeResult":{"status":"pending","violationCount":4,"xml":"<data id=\"m2_4_fixture\"><name/><age>17</age><height>2.5</height><calc>19.5</calc><show_extra>1</show_extra><extra/><readonly_note>fixed</readonly_note><choice>apple</choice><fruit><item><name>Apple</name><value>apple</value></item></fruit><rep><note/><qty/></rep><rep><note/><qty/></rep><meta><instanceID>uuid:4f5d24b2-af6d-4e4f-acae-8eaa20bc8b2c</instanceID></meta></data>"},"mediaResult":{"binaryLikeReferences":[],"example":{"field":"flower_photo","valueStoredInForm":"IMG_1234.jpg"},"note":"XForms state in this sidecar is text/value oriented. Native app can keep file bytes and send only filename/reference strings to XForms nodes."}}

@@ -1,0 +1,683 @@
+{
+  "generatedAt": "2026-08-26T02:56:15.013Z",
+  "entries": [
+    {
+      "classification": "A",
+      "sourceType": "runtime",
+      "method": "querySelectorAll",
+      "file": "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts",
+      "line": 176,
+      "selectorType": "static",
+      "selector": "itemset[ref], repeat[ref], *[nodeset]:not(itemset, repeat)"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime",
+      "method": "querySelectorAll",
+      "file": "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts",
+      "line": 280,
+      "selectorType": "static",
+      "selector": "repeat"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/src/lib/dom/query.ts",
+      "line": 7,
+      "selectorType": "static",
+      "selector": ":scope > hint",
+      "fallbackSelector": "hint"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/src/lib/dom/query.ts",
+      "line": 8,
+      "selectorType": "static",
+      "selector": ":scope > item",
+      "fallbackSelector": "item"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/src/lib/dom/query.ts",
+      "line": 9,
+      "selectorType": "static",
+      "selector": ":scope > itemset[nodeset]",
+      "fallbackSelector": "itemset[nodeset]"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/src/lib/dom/query.ts",
+      "line": 10,
+      "selectorType": "static",
+      "selector": ":scope > label",
+      "fallbackSelector": "label"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/src/lib/dom/query.ts",
+      "line": 11,
+      "selectorType": "static",
+      "selector": ":scope > label[form-definition-source=\"repeat-group\"]",
+      "fallbackSelector": "label[form-definition-source=\"repeat-group\"]"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/src/lib/dom/query.ts",
+      "line": 15,
+      "selectorType": "static",
+      "selector": ":scope > repeat[nodeset]",
+      "fallbackSelector": "repeat[nodeset]"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/src/lib/dom/query.ts",
+      "line": 16,
+      "selectorType": "static",
+      "selector": ":scope > value",
+      "fallbackSelector": "value"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/src/lib/dom/query.ts",
+      "line": 17,
+      "selectorType": "static",
+      "selector": ":scope > submission",
+      "fallbackSelector": "submission"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime-bundled",
+      "method": "querySelectorAll",
+      "file": "node_modules/@getodk/xforms-engine/dist/index.js",
+      "line": 19211,
+      "selectorType": "static",
+      "selector": "itemset[ref], repeat[ref], *[nodeset]:not(itemset, repeat)"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime-bundled",
+      "method": "querySelectorAll",
+      "file": "node_modules/@getodk/xforms-engine/dist/index.js",
+      "line": 19275,
+      "selectorType": "static",
+      "selector": "repeat"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime-bundled",
+      "method": "querySelector",
+      "file": "node_modules/@getodk/xforms-engine/dist/index.js",
+      "line": 19516,
+      "selectorType": "static",
+      "selector": ":scope > child1"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime-bundled",
+      "method": "querySelector",
+      "file": "node_modules/@getodk/xforms-engine/dist/index.js",
+      "line": 19516,
+      "selectorType": "static",
+      "selector": ":scope > child2"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime-bundled",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/dist/index.js",
+      "line": 19568,
+      "selectorType": "static",
+      "selector": ":scope > hint",
+      "fallbackSelector": "hint"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime-bundled",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/dist/index.js",
+      "line": 19569,
+      "selectorType": "static",
+      "selector": ":scope > item",
+      "fallbackSelector": "item"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime-bundled",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/dist/index.js",
+      "line": 19570,
+      "selectorType": "static",
+      "selector": ":scope > itemset[nodeset]",
+      "fallbackSelector": "itemset[nodeset]"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime-bundled",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/dist/index.js",
+      "line": 19571,
+      "selectorType": "static",
+      "selector": ":scope > label",
+      "fallbackSelector": "label"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime-bundled",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/dist/index.js",
+      "line": 19572,
+      "selectorType": "static",
+      "selector": ":scope > label[form-definition-source=\"repeat-group\"]",
+      "fallbackSelector": "label[form-definition-source=\"repeat-group\"]"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime-bundled",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/dist/index.js",
+      "line": 19576,
+      "selectorType": "static",
+      "selector": ":scope > value",
+      "fallbackSelector": "value"
+    },
+    {
+      "classification": "A",
+      "sourceType": "runtime-bundled",
+      "method": "ScopedElementLookup",
+      "file": "node_modules/@getodk/xforms-engine/dist/index.js",
+      "line": 19577,
+      "selectorType": "static",
+      "selector": ":scope > submission",
+      "fallbackSelector": "submission"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/indexed-repeat.test.ts",
+      "line": 195,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/indexed-repeat.test.ts",
+      "line": 200,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/indexed-repeat.test.ts",
+      "line": 218,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/indexed-repeat.test.ts",
+      "line": 286,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/jr-itext.test.ts",
+      "line": 52,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/jr-itext.test.ts",
+      "line": 161,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/jr-itext.test.ts",
+      "line": 232,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelectorAll",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/jr-itext.test.ts",
+      "line": 286,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/root-node-context.test.ts",
+      "line": 67,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/root-node-context.test.ts",
+      "line": 85,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/root-node-context.test.ts",
+      "line": 146,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/root-node-context.test.ts",
+      "line": 157,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelectorAll",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/root-node-context.test.ts",
+      "line": 199,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/root-node-context.test.ts",
+      "line": 214,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/root-node-context.test.ts",
+      "line": 234,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/root-node-context.test.ts",
+      "line": 239,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelectorAll",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/position.test.ts",
+      "line": 90,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelectorAll",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/position.test.ts",
+      "line": 110,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/lang.test.ts",
+      "line": 44,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/path.test.ts",
+      "line": 98,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/path.test.ts",
+      "line": 106,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/path.test.ts",
+      "line": 134,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/instance.test.ts",
+      "line": 69,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelectorAll",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/xforms/instance.test.ts",
+      "line": 72,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/current.test.ts",
+      "line": 32,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/current.test.ts",
+      "line": 33,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/current.test.ts",
+      "line": 34,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/current.test.ts",
+      "line": 35,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/current.test.ts",
+      "line": 36,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/evaluator/Evaluator.test.ts",
+      "line": 38,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/evaluator/Evaluator.test.ts",
+      "line": 60,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/evaluator/Evaluator.test.ts",
+      "line": 82,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/evaluator/Evaluator.test.ts",
+      "line": 93,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/evaluator/Evaluator.test.ts",
+      "line": 100,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/evaluator/Evaluator.test.ts",
+      "line": 101,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelectorAll",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/evaluator/Evaluator.test.ts",
+      "line": 116,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/axis.test.ts",
+      "line": 507,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/axis.test.ts",
+      "line": 524,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/axis.test.ts",
+      "line": 542,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/axis.test.ts",
+      "line": 560,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/axis.test.ts",
+      "line": 578,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/axis.test.ts",
+      "line": 610,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/axis.test.ts",
+      "line": 628,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/axis.test.ts",
+      "line": 647,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/axis.test.ts",
+      "line": 666,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/axis.test.ts",
+      "line": 685,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelector",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/node-name.test.ts",
+      "line": 74,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    },
+    {
+      "classification": "C",
+      "sourceType": "tests/reference-only",
+      "method": "querySelectorAll",
+      "file": "experiments/m1-dom-contract/vendor/xpath/test/native/node-name.test.ts",
+      "line": 102,
+      "selectorType": "dynamic-or-test",
+      "selector": "<test expression or dynamic value>"
+    }
+  ],
+  "counts": {
+    "A": 21,
+    "B": 0,
+    "C": 48
+  },
+  "capabilities": {
+    "selectors": [
+      ":scope > child1",
+      ":scope > child2",
+      ":scope > hint",
+      ":scope > item",
+      ":scope > itemset[nodeset]",
+      ":scope > label",
+      ":scope > label[form-definition-source=\"repeat-group\"]",
+      ":scope > repeat[nodeset]",
+      ":scope > submission",
+      ":scope > value",
+      "hint",
+      "item",
+      "itemset[nodeset]",
+      "itemset[ref], repeat[ref], *[nodeset]:not(itemset, repeat)",
+      "label",
+      "label[form-definition-source=\"repeat-group\"]",
+      "repeat",
+      "repeat[nodeset]",
+      "submission",
+      "value"
+    ],
+    "featuresUsed": {
+      "typeSelector": true,
+      "selectorList": true,
+      "childCombinator": true,
+      "universalSelector": true,
+      "attributePresenceSelector": true,
+      "attributeValueSelector": true,
+      "scopePseudoClass": true,
+      "notPseudoClass": true,
+      "namespaceSensitiveSelectorSyntax": true,
+      "idSelector": false,
+      "nthPseudoClass": false
+    }
+  }
+}
