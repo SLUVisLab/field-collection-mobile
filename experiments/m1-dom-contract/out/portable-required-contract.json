@@ -1,0 +1,1413 @@
+{
+  "metadata": {
+    "generatedAt": "2026-08-26T00:49:38.841Z",
+    "basedOn": "2026-08-26T00:49:38.839Z",
+    "staticRequirements": 46,
+    "dynamicRequirements": 41,
+    "normalizedRequirements": 52,
+    "portableRequirements": 47
+  },
+  "requirements": [
+    {
+      "interface": "Attr",
+      "member": "localName",
+      "interfacesObserved": [
+        "Attr"
+      ],
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 151,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:13"
+      ],
+      "dynamicSampleStacks": [
+        "at Object.getWHATLocalName (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2912:15)\nat nodePredicate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:824:30)\nat Array.filter (<anonymous>)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:865:36)\nat Array.flatMap (<anonymous>)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:862:49)\nat RelativeLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)",
+        "at recordNamespaceInformation (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:54:42)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:188:33)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at recordNamespaceInformation (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:55:22)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:188:33)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:60:53)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:111:13)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Attr",
+      "member": "namespaceURI",
+      "interfacesObserved": [
+        "Attr"
+      ],
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 193,
+      "sourcePackages": [
+        "xforms-engine",
+        "xpath"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:11",
+        "vendor/xpath/src/adapter/WHAT/kind.ts:113",
+        "vendor/xpath/src/adapter/WHAT/kind.ts:117",
+        "vendor/xpath/src/adapter/WHAT/kind.ts:65"
+      ],
+      "dynamicSampleStacks": [
+        "at isWHATAttribute (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2899:51)\nat Array.filter (<anonymous>)\nat Object.getWHATAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2941:25)\nat attribute (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:502:32)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:864:25)\nat Array.flatMap (<anonymous>)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:862:49)",
+        "at getOptionalNodeKind (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2863:16)\nat Object.getWHATNodeKind (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2879:20)\nat Object.isQualifiedNamedNode (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:63:25)\nat nodePredicate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:820:28)\nat Array.filter (<anonymous>)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:865:36)\nat Array.flatMap (<anonymous>)",
+        "at Object.getWHATNamespaceURI (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2906:15)\nat nodePredicate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:823:44)\nat Array.filter (<anonymous>)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:865:36)\nat Array.flatMap (<anonymous>)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:862:49)\nat RelativeLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)",
+        "at recordNamespaceInformation (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:29:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:188:33)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:52:32)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Attr",
+      "member": "prefix",
+      "interfacesObserved": [
+        "Attr"
+      ],
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 12,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:12"
+      ],
+      "dynamicSampleStacks": [
+        "at recordNamespaceInformation (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:30:16)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:188:33)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:67:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:72:17)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:73:17)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:89:18)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Attr",
+      "member": "value",
+      "interfacesObserved": [
+        "Attr"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 34,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:20"
+      ],
+      "dynamicSampleStacks": [
+        "at recordNamespaceInformation (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:31:42)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:188:33)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at recordNamespaceInformation (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:34:38)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:188:33)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:71:16)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:79:39)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:84:39)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "ChildNode",
+      "member": "nodeValue",
+      "interfacesObserved": [
+        "ChildNode"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": false,
+      "dynamicCount": 0,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:31"
+      ],
+      "dynamicSampleStacks": [],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Document",
+      "member": "children",
+      "interfacesObserved": [
+        "Document"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": false,
+      "dynamicObserved": true,
+      "dynamicCount": 1,
+      "sourcePackages": [
+        "dynamic-only"
+      ],
+      "sources": [],
+      "dynamicSampleStacks": [
+        "at Object.getChildWHATElements (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2958:26)\nat child (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:507:26)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:864:25)\nat Array.flatMap (<anonymous>)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:862:49)\nat AbsoluteLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)\nat LocationPathEvaluation.evaluateLocationPathExpression (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:874:30)"
+      ],
+      "dynamicAttribution": [
+        "A"
+      ]
+    },
+    {
+      "interface": "Document",
+      "member": "createElement",
+      "interfacesObserved": [
+        "Document"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": false,
+      "dynamicObserved": true,
+      "dynamicCount": 4,
+      "sourcePackages": [
+        "dynamic-only"
+      ],
+      "sources": [],
+      "dynamicSampleStacks": [
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:2:27)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:13:1)",
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:3:27)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:13:1)",
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:4:27)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:13:1)",
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/node_modules/decode-named-character-reference/index.dom.js:5:26)"
+      ],
+      "dynamicAttribution": [
+        "B"
+      ]
+    },
+    {
+      "interface": "Document",
+      "member": "createElementNS",
+      "interfacesObserved": [
+        "Document"
+      ],
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 3,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:24",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:31",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:35",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:40",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:41",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:47",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:48",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:74"
+      ],
+      "dynamicSampleStacks": [
+        "at createNamespacedChildElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:74:38)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:115:12)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at createNamespacedChildElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:74:38)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:118:18)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at createNamespacedChildElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:74:38)\nat createDefaultInstanceIDBinding (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:98:16)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:120:31)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Document",
+      "member": "currentScript",
+      "interfacesObserved": [
+        "Document"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": false,
+      "dynamicObserved": true,
+      "dynamicCount": 1,
+      "sourcePackages": [
+        "dynamic-only"
+      ],
+      "sources": [],
+      "dynamicSampleStacks": [
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/expressionParser-i89CXh5o.js:125:38)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/expressionParser-i89CXh5o.js:3324:4)\nat requireTreeSitter (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/expressionParser-i89CXh5o.js:3328:3)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/expressionParser-i89CXh5o.js:3332:25)"
+      ],
+      "dynamicAttribution": [
+        "A"
+      ]
+    },
+    {
+      "interface": "Document",
+      "member": "documentElement",
+      "interfacesObserved": [
+        "Document",
+        "XMLDocument"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 5,
+      "sourcePackages": [
+        "dynamic-only",
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:443"
+      ],
+      "dynamicSampleStacks": [
+        "at Factory (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:36:14)\nat initNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:10:10)\nat exports.addNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:38:24)\nat HTMLUnknownElementImpl.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:68:21)\nat HTMLUnknownElement.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1094:58)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:10:12)",
+        "at switchContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:286:20)\nat initialize (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:683:21)\nat Factory (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:2015:3)\nat initNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:10:10)\nat exports.addNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:38:24)\nat HTMLUnknownElementImpl.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:68:21)\nat HTMLUnknownElement.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1094:58)",
+        "at Factory (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:36:14)\nat initNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:10:10)\nat exports.addNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:38:24)\nat HTMLBodyElementImpl.querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:79:21)\nat HTMLBodyElement.querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1119:58)\nat normalizeBodyRefNodesetAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:176:34)",
+        "at switchContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:286:20)\nat initialize (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:683:21)\nat Factory (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:2015:3)\nat initNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:10:10)\nat exports.addNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:38:24)\nat HTMLBodyElementImpl.querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:79:21)\nat HTMLBodyElement.querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1119:58)",
+        "at new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:443:37)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)"
+      ],
+      "dynamicAttribution": [
+        "A"
+      ]
+    },
+    {
+      "interface": "DOMParser",
+      "member": "<constructor>",
+      "interfacesObserved": [
+        "DOMParser"
+      ],
+      "categories": [
+        "global-constructor"
+      ],
+      "usageKinds": [
+        "new"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 1,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseInstanceXML.ts:46",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:163"
+      ],
+      "dynamicSampleStacks": [
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:163:19)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "DOMParser",
+      "member": "parseFromString",
+      "interfacesObserved": [
+        "DOMParser"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 1,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseInstanceXML.ts:47",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:375"
+      ],
+      "dynamicSampleStacks": [
+        "at new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:375:50)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "append",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 5,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:76"
+      ],
+      "dynamicSampleStacks": [
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:6:10)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:13:1)",
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:7:10)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:13:1)",
+        "at createNamespacedChildElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:76:10)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:115:12)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at createNamespacedChildElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:76:10)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:118:18)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at createNamespacedChildElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:76:10)\nat createDefaultInstanceIDBinding (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:98:16)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:120:31)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "appendChild",
+      "interfacesObserved": [
+        "HTMLElement"
+      ],
+      "categories": [
+        "mutation"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": false,
+      "dynamicCount": 0,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:33",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:37",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:43",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:44",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:50",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:51"
+      ],
+      "dynamicSampleStacks": [],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "attributes",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 118,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:18",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:204"
+      ],
+      "dynamicSampleStacks": [
+        "at getAttrs (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2933:28)\nat Object.getWHATAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2941:10)\nat attribute (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:502:32)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:864:25)\nat Array.flatMap (<anonymous>)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:862:49)\nat RelativeLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)",
+        "at recordNamespaceInformation (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:27:31)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:188:33)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at recordNamespaceInformation (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:28:26)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:188:33)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:49:30)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at recordNamespaceInformation (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:27:31)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:188:33)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "children",
+      "interfacesObserved": [
+        "Element",
+        "HTMLElement"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 31,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/instance/abstract/DescendantNode.ts:215",
+        "node_modules/@getodk/xforms-engine/src/lib/reactivity/text/createTextRange.ts:54",
+        "node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:191",
+        "node_modules/@getodk/xforms-engine/src/parse/body/GroupElementDefinition.ts:36",
+        "node_modules/@getodk/xforms-engine/src/parse/body/RepeatElementDefinition.ts:45",
+        "node_modules/@getodk/xforms-engine/src/parse/model/RootDefinition.ts:66",
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseInstanceXML.ts:49",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:24",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:255",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:45"
+      ],
+      "dynamicSampleStacks": [
+        "at Object.getChildWHATElements (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2958:26)\nat child (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:507:26)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:864:25)\nat Array.flatMap (<anonymous>)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:862:49)\nat RelativeLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)\nat LocationPathEvaluation.evaluateLocationPathExpression (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:874:30)",
+        "at getMetaElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:24:43)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:112:14)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at BodyDefinition.getChildElementDefinitions (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:191:61)\nat new BodyDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:175:26)\nat new XFormDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:29:17)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:78:23)",
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:50:37)\nat ScopedElementLookup.getElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:100:12)\nat getLabelElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/lib/dom/query.ts:49:22)\nat Function.forControl (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/text/LabelDefinition.ts:19:26)\nat new ControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/ControlDefinition.ts:41:34)\nat new InputControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:20:5)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:198:18)",
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:50:37)\nat ScopedElementLookup.getElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:100:12)\nat getHintElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/lib/dom/query.ts:37:21)\nat Function.forElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/text/HintDefinition.ts:11:25)\nat new ControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/ControlDefinition.ts:42:32)\nat new InputControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:20:5)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:198:18)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "cloneNode",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "mutation"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": false,
+      "dynamicCount": 0,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:263"
+      ],
+      "dynamicSampleStacks": [],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "firstChild",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": false,
+      "dynamicCount": 0,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:29",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:31"
+      ],
+      "dynamicSampleStacks": [],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "getAttribute",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 75,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/lib/TokenListParser.ts:119",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:23",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:24",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:26",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/RangeControlDefinition.ts:50",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/RangeControlDefinition.ts:60",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/UploadControlDefinition.ts:18",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/UploadControlDefinition.ts:28",
+        "node_modules/@getodk/xforms-engine/src/parse/expression/TextChunkExpression.ts:53",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:12",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:15",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:27",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:41",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:18",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:243",
+        "node_modules/@getodk/xforms-engine/src/parse/xpath/reference-parsing.ts:71"
+      ],
+      "dynamicSampleStacks": [
+        "at new XFormDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:18:36)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:78:23)",
+        "at TokenListParser.parseFrom (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/lib/TokenListParser.ts:119:32)\nat new BodyDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:174:36)\nat new XFormDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:29:17)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:78:23)",
+        "at parseNodesetReference (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/xpath/reference-parsing.ts:71:39)\nat new ControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/ControlDefinition.ts:34:23)\nat new InputControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:20:5)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:198:18)\nat Array.map (<anonymous>)\nat BodyDefinition.getChildElementDefinitions (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:193:33)\nat new BodyDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:175:26)",
+        "at parseNodesetReference (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/xpath/reference-parsing.ts:71:39)\nat new TextElementDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/text/abstract/TextElementDefinition.ts:24:27)\nat new LabelDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/text/LabelDefinition.ts:54:5)\nat Function.forControl (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/text/LabelDefinition.ts:25:12)\nat new ControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/ControlDefinition.ts:41:34)\nat new InputControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:20:5)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:198:18)",
+        "at TokenListParser.parseFrom (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/lib/TokenListParser.ts:119:32)\nat new InputControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:22:46)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:198:18)\nat Array.map (<anonymous>)\nat BodyDefinition.getChildElementDefinitions (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:193:33)\nat new BodyDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:175:26)\nat new XFormDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:29:17)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "getAttributeNS",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 25,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/body/RepeatElementDefinition.ts:42",
+        "node_modules/@getodk/xforms-engine/src/parse/body/RepeatElementDefinition.ts:43"
+      ],
+      "dynamicSampleStacks": [
+        "at getPreloadInput (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindPreloadDefinition.ts:47:28)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindPreloadDefinition.ts:79:19)\nat new BindDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindDefinition.ts:91:42)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:43:22)\nat Array.map (<anonymous>)\nat new ModelBindMap (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:41:27)\nat Function.fromModel (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:33:12)",
+        "at Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/text/MessageDefinition.ts:14:38)\nat new BindDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindDefinition.ts:98:44)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:43:22)\nat Array.map (<anonymous>)\nat new ModelBindMap (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:41:27)\nat Function.fromModel (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:33:12)\nat new ModelDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelDefinition.ts:33:31)",
+        "at Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/text/MessageDefinition.ts:14:38)\nat new BindDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindDefinition.ts:99:42)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:43:22)\nat Array.map (<anonymous>)\nat new ModelBindMap (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:41:27)\nat Function.fromModel (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:33:12)\nat new ModelDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelDefinition.ts:33:31)",
+        "at parseMaxPixels (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindDefinition.ts:15:29)\nat new BindDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindDefinition.ts:100:22)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:43:22)\nat Array.map (<anonymous>)\nat new ModelBindMap (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:41:27)\nat Function.fromModel (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:33:12)\nat new ModelDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelDefinition.ts:33:31)",
+        "at getPreloadInput (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindPreloadDefinition.ts:53:64)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindPreloadDefinition.ts:79:19)\nat new BindDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindDefinition.ts:91:42)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:43:22)\nat Array.map (<anonymous>)\nat new ModelBindMap (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:41:27)\nat Function.fromModel (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:33:12)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "hasAttribute",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 8,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/expression/TextChunkExpression.ts:17",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:11",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:14",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:25",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:241"
+      ],
+      "dynamicSampleStacks": [
+        "at Array.Resolver (eval at compile (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:894:17), <anonymous>:3:154)\nat collect (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1747:21)\nat Object._querySelectorAll [as select] (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1699:36)\nat HTMLBodyElementImpl.querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:80:26)\nat HTMLBodyElement.querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1119:58)\nat normalizeBodyRefNodesetAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:176:34)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "localName",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 182,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/SelectControlDefinition.ts:20",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/SelectControlDefinition.ts:48",
+        "node_modules/@getodk/xforms-engine/src/parse/body/GroupElementDefinition.ts:37",
+        "node_modules/@getodk/xforms-engine/src/parse/expression/TextChunkExpression.ts:17",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:61",
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:13",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:256"
+      ],
+      "dynamicSampleStacks": [
+        "at Object.getWHATLocalName (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2912:15)\nat nodePredicate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:839:72)\nat Array.filter (<anonymous>)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:865:36)\nat Array.flatMap (<anonymous>)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:862:49)\nat AbsoluteLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)",
+        "at Object.getWHATLocalName (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2912:15)\nat nodePredicate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:839:72)\nat Array.filter (<anonymous>)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:865:36)\nat Array.flatMap (<anonymous>)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:862:49)\nat RelativeLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)",
+        "at Array.Resolver (eval at compile (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:894:17), <anonymous>:3:68)\nat match_assert (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1555:13)\nat Object._matches [as match] (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1629:14)\nat Array.Resolver (eval at compile (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:894:17), <anonymous>:3:105)\nat collect (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1747:21)\nat Object._querySelectorAll [as select] (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1699:36)\nat HTMLBodyElementImpl.querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:80:26)",
+        "at Array.Resolver (eval at compile (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:894:17), <anonymous>:3:68)\nat match_assert (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1555:13)\nat Object._matches [as match] (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1624:16)\nat Array.Resolver (eval at compile (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:894:17), <anonymous>:3:105)\nat collect (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1747:21)\nat Object._querySelectorAll [as select] (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1699:36)\nat HTMLBodyElementImpl.querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:80:26)",
+        "at getMetaElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:25:13)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:112:14)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "matches",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "selector"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": false,
+      "dynamicObserved": true,
+      "dynamicCount": 15,
+      "sourcePackages": [
+        "dynamic-only"
+      ],
+      "sources": [],
+      "dynamicSampleStacks": [
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:51:17)\nat ScopedElementLookup.getElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:100:12)\nat getLabelElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/lib/dom/query.ts:49:22)\nat Function.forControl (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/text/LabelDefinition.ts:19:26)\nat new ControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/ControlDefinition.ts:41:34)\nat new InputControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:20:5)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:198:18)",
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:51:17)\nat ScopedElementLookup.getElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:100:12)\nat getHintElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/lib/dom/query.ts:37:21)\nat Function.forElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/text/HintDefinition.ts:11:25)\nat new ControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/ControlDefinition.ts:42:32)\nat new InputControlDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:20:5)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:198:18)",
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:51:17)\nat ScopedElementLookup.getElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:100:12)\nat getSubmissionElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/lib/dom/query.ts:67:27)\nat new SubmissionDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/SubmissionDefinition.ts:11:31)\nat new ModelDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelDefinition.ts:31:24)\nat new XFormDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:30:18)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:78:23)"
+      ],
+      "dynamicAttribution": [
+        "A"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "namespaceURI",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 64,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:11",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:118",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:98"
+      ],
+      "dynamicSampleStacks": [
+        "at switchContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:290:34)\nat initialize (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:683:21)\nat Factory (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:2015:3)\nat initNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:10:10)\nat exports.addNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:38:24)\nat HTMLUnknownElementImpl.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:68:21)\nat HTMLUnknownElement.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1094:58)",
+        "at Object.getWHATNamespaceURI (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2906:15)\nat nodePredicate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:839:120)\nat Array.filter (<anonymous>)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:865:36)\nat Array.flatMap (<anonymous>)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:862:49)\nat AbsoluteLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)",
+        "at Object.getWHATNamespaceURI (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2906:15)\nat nodePredicate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:839:120)\nat Array.filter (<anonymous>)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:865:36)\nat Array.flatMap (<anonymous>)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:862:49)\nat RelativeLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)",
+        "at switchContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:290:34)\nat initialize (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:683:21)\nat Factory (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:2015:3)\nat initNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:10:10)\nat exports.addNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:38:24)\nat HTMLBodyElementImpl.querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:79:21)\nat HTMLBodyElement.querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1119:58)",
+        "at getMetaElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:25:24)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:112:14)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "outerHTML",
+      "interfacesObserved": [
+        "Element",
+        "HTMLElement"
+      ],
+      "categories": [
+        "serialization"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 1,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:165",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:443"
+      ],
+      "dynamicSampleStacks": [
+        "at new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:443:53)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "prefix",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 13,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:12"
+      ],
+      "dynamicSampleStacks": [
+        "at serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:206:11)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:206:11)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)",
+        "at serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:206:11)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)",
+        "at serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:206:11)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)",
+        "at parseNodeName (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:12:21)\nat parseStaticElementOptions (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:44:11)\nat parseStaticDocumentFromDOMSubtree (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:58:24)\nat new ModelDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelDefinition.ts:35:21)\nat new XFormDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:30:18)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:78:23)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "prepend",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": false,
+      "dynamicCount": 0,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:267"
+      ],
+      "dynamicSampleStacks": [],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "querySelector",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "selector"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": false,
+      "dynamicObserved": true,
+      "dynamicCount": 1,
+      "sourcePackages": [
+        "dynamic-only"
+      ],
+      "sources": [],
+      "dynamicSampleStacks": [
+        "at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:10:12)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:13:1)"
+      ],
+      "dynamicAttribution": [
+        "B"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "querySelectorAll",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "selector"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 2,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:176",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:280"
+      ],
+      "dynamicSampleStacks": [
+        "at normalizeBodyRefNodesetAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:176:34)\nat normalizeXFormBody (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:319:3)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:437:14)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at normalizeRepeatGroups (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:280:24)\nat normalizeXFormBody (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:320:3)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:437:14)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "remove",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": false,
+      "dynamicCount": 0,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:269"
+      ],
+      "dynamicSampleStacks": [],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "replaceWith",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": false,
+      "dynamicCount": 0,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:276"
+      ],
+      "dynamicSampleStacks": [],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "setAttribute",
+      "interfacesObserved": [
+        "Element",
+        "HTMLElement"
+      ],
+      "categories": [
+        "mutation"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 1,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:25",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:26",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:28",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:101",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:265"
+      ],
+      "dynamicSampleStacks": [
+        "at createDefaultInstanceIDBinding (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:101:8)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:120:31)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Element",
+      "member": "setAttributeNS",
+      "interfacesObserved": [
+        "Element"
+      ],
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 1,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:250",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:89"
+      ],
+      "dynamicSampleStacks": [
+        "at setNamespacedAttributeValue (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:89:11)\nat createDefaultInstanceIDBinding (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:102:3)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:120:31)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "NamedNodeMap",
+      "member": "length",
+      "interfacesObserved": [
+        "NamedNodeMap"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": false,
+      "dynamicObserved": true,
+      "dynamicCount": 135,
+      "sourcePackages": [
+        "dynamic-only"
+      ],
+      "sources": [],
+      "dynamicSampleStacks": [
+        "at Reflect.get (<anonymous>)\nat ProxyHandler.get (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/NamedNodeMap.js:374:22)\nat Array Iterator.next (<anonymous>)\nat Function.from (<anonymous>)\nat getAttrs (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2933:18)\nat Object.getWHATAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2941:10)\nat attribute (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:502:32)",
+        "at Reflect.get (<anonymous>)\nat ProxyHandler.get (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/NamedNodeMap.js:374:22)\nat recordNamespaceInformation (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:27:42)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:188:33)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)",
+        "at Reflect.get (<anonymous>)\nat ProxyHandler.get (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/NamedNodeMap.js:374:22)\nat Array Iterator.next (<anonymous>)\nat Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:49:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)",
+        "at Reflect.get (<anonymous>)\nat ProxyHandler.get (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/NamedNodeMap.js:374:22)\nat recordNamespaceInformation (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:27:42)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:188:33)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)",
+        "at Reflect.get (<anonymous>)\nat ProxyHandler.get (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/NamedNodeMap.js:374:22)\nat Array Iterator.next (<anonymous>)\nat Object.serializeAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/attributes.js:49:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:251:28)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)"
+      ],
+      "dynamicAttribution": [
+        "A"
+      ]
+    },
+    {
+      "interface": "Node",
+      "member": "childNodes",
+      "interfacesObserved": [
+        "Element",
+        "Node"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 56,
+      "sourcePackages": [
+        "dynamic-only",
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/lib/reactivity/text/createTextRange.ts:25",
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:27"
+      ],
+      "dynamicSampleStacks": [
+        "at serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:262:10)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:285:30)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1345:35)",
+        "at serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:262:10)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)",
+        "at serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:285:30)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)",
+        "at serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:262:10)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)"
+      ],
+      "dynamicAttribution": [
+        "B"
+      ]
+    },
+    {
+      "interface": "Node",
+      "member": "data",
+      "interfacesObserved": [
+        "CharacterData",
+        "Node"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 88,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/lib/reactivity/text/createTextRange.ts:44",
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:34"
+      ],
+      "dynamicSampleStacks": [
+        "at serializeText (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:151:48)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:327:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)",
+        "at serializeText (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:155:15)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:327:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)",
+        "at serializeText (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:151:48)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:327:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)",
+        "at serializeText (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:155:15)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:327:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)",
+        "at serializeText (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:151:48)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:327:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Node",
+      "member": "lookupNamespaceURI",
+      "interfacesObserved": [
+        "Node"
+      ],
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": false,
+      "dynamicObserved": true,
+      "dynamicCount": 4,
+      "sourcePackages": [
+        "dynamic-only"
+      ],
+      "sources": [],
+      "dynamicSampleStacks": [
+        "at Object.resolveWHATNamespaceURI (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2918:15)\nat NamespaceResolver.NamespaceResolver.contextResolver (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:935:28)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:979:19)\nat UpsertableMap.upsert (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/expressionParser-i89CXh5o.js:27:19)\nat NamespaceResolver.lookupNamespaceURI (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:978:80)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:837:48)\nat AbsoluteLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)",
+        "at Object.resolveWHATNamespaceURI (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2918:15)\nat NamespaceResolver.NamespaceResolver.contextResolver (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:935:28)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:979:19)\nat UpsertableMap.upsert (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/expressionParser-i89CXh5o.js:27:19)\nat NamespaceResolver.lookupNamespaceURI (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:978:80)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:837:48)\nat RelativeLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)",
+        "at Object.resolveWHATNamespaceURI (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2918:15)\nat NamespaceResolver.NamespaceResolver.contextResolver (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:935:28)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:979:19)\nat UpsertableMap.upsert (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/expressionParser-i89CXh5o.js:27:19)\nat NamespaceResolver.lookupNamespaceURI (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:978:80)\nat LocationPathEvaluation.step (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:818:52)\nat RelativeLocationPathExpressionEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:1980:39)"
+      ],
+      "dynamicAttribution": [
+        "A"
+      ]
+    },
+    {
+      "interface": "Node",
+      "member": "lookupPrefix",
+      "interfacesObserved": [
+        "Node"
+      ],
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 4,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:59"
+      ],
+      "dynamicSampleStacks": [
+        "at getQualifiedName (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:59:30)\nat createNamespacedChildElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:73:25)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:115:12)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at getQualifiedName (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:59:30)\nat createNamespacedChildElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:73:25)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:118:18)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at getQualifiedName (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:59:30)\nat createNamespacedChildElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:73:25)\nat createDefaultInstanceIDBinding (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:98:16)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:120:31)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at getQualifiedName (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:59:30)\nat setNamespacedAttributeValue (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:87:25)\nat createDefaultInstanceIDBinding (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:102:3)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:120:31)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Node",
+      "member": "nodeName",
+      "interfacesObserved": [
+        "Element",
+        "Node"
+      ],
+      "categories": [
+        "constants"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 23,
+      "sourcePackages": [
+        "dynamic-only",
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/RankControlDefinition.ts:34",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/SelectControlDefinition.ts:62",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:69",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:27",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:344",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:99"
+      ],
+      "dynamicSampleStacks": [
+        "at createDefaultInstanceIDBinding (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:99:43)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:120:31)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at createDefaultInstanceIDBinding (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:99:60)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:120:31)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at createDefaultInstanceIDBinding (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:99:83)\nat normalizeDefaultMetaBindings (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:120:31)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:438:15)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:77:31)",
+        "at new XFormDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:27:50)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:78:23)",
+        "at XFormDOM.isInstanceID (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:344:48)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindPreloadDefinition.ts:88:34)\nat new BindDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/BindDefinition.ts:91:42)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:43:22)\nat Array.map (<anonymous>)\nat new ModelBindMap (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:41:27)\nat Function.fromModel (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/model/ModelBindMap.ts:33:12)"
+      ],
+      "dynamicAttribution": [
+        "A"
+      ]
+    },
+    {
+      "interface": "Node",
+      "member": "nodeType",
+      "interfacesObserved": [
+        "Attr",
+        "ChildNode",
+        "Node"
+      ],
+      "categories": [
+        "constants"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 223,
+      "sourcePackages": [
+        "xforms-engine",
+        "xpath"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:28",
+        "vendor/xpath/src/adapter/WHAT/kind.ts:113",
+        "vendor/xpath/src/adapter/WHAT/kind.ts:117",
+        "vendor/xpath/src/adapter/WHAT/kind.ts:54"
+      ],
+      "dynamicSampleStacks": [
+        "at isHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:592:18)\nat switchContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:287:25)\nat initialize (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:683:21)\nat Factory (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:2015:3)\nat initNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:10:10)\nat exports.addNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:38:24)\nat HTMLUnknownElementImpl.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:68:21)",
+        "at Array.Resolver (eval at compile (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:894:17), <anonymous>:3:150)\nat collect (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1747:21)\nat _querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1699:36)\nat Object._querySelector [as first] (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1635:14)\nat HTMLUnknownElementImpl.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:69:44)\nat HTMLUnknownElement.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1094:58)",
+        "at getOptionalNodeKind (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2855:16)\nat Object.isWHATNode (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2886:20)\nat Object.assertXPathNode (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:24:15)\nat DefaultEvaluator.getEvaluationContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2739:22)\nat DefaultEvaluator.evaluate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2745:36)\nat DefaultEvaluator.evaluateNode (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2776:23)\nat DefaultEvaluator.evaluateElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2791:17)",
+        "at isWHATDocument (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2890:15)\nat Object.getContainingWHATDocument (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2922:7)\nat new EvaluationContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:990:54)\nat DefaultEvaluator.getEvaluationContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2740:12)\nat DefaultEvaluator.evaluate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2745:36)\nat DefaultEvaluator.evaluateNode (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2776:23)\nat DefaultEvaluator.evaluateElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2791:17)",
+        "at isWHATDocument (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2890:15)\nat Object.getContainingWHATDocument (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2922:7)\nat new EvaluationContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:991:41)\nat DefaultEvaluator.getEvaluationContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2740:12)\nat DefaultEvaluator.evaluate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2745:36)\nat DefaultEvaluator.evaluateNode (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2776:23)\nat DefaultEvaluator.evaluateElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2791:17)"
+      ],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "Node",
+      "member": "ownerDocument",
+      "interfacesObserved": [
+        "Element",
+        "Node"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 19,
+      "sourcePackages": [
+        "dynamic-only",
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:74"
+      ],
+      "dynamicSampleStacks": [
+        "at switchContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:282:21)\nat initialize (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:683:21)\nat Factory (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:2015:3)\nat initNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:10:10)\nat exports.addNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:38:24)\nat HTMLUnknownElementImpl.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:68:21)\nat HTMLUnknownElement.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1094:58)",
+        "at isHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:591:22)\nat switchContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:287:25)\nat initialize (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:683:21)\nat Factory (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:2015:3)\nat initNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:10:10)\nat exports.addNwsapi (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/helpers/selectors.js:38:24)\nat HTMLUnknownElementImpl.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:68:21)",
+        "at switchContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:282:21)\nat _querySelectorAll (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1658:26)\nat Object._querySelector [as first] (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/nwsapi/src/nwsapi.js:1635:14)\nat HTMLUnknownElementImpl.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/ParentNode-impl.js:69:44)\nat HTMLUnknownElement.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/Element.js:1094:58)\nat <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:10:12)",
+        "at Object.getContainingWHATDocument (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2925:15)\nat new EvaluationContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:990:54)\nat DefaultEvaluator.getEvaluationContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2740:12)\nat DefaultEvaluator.evaluate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2745:36)\nat DefaultEvaluator.evaluateNode (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2776:23)\nat DefaultEvaluator.evaluateElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2791:17)\nat DefaultEvaluator.evaluateNonNullElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2794:17)",
+        "at Object.getContainingWHATDocument (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2925:15)\nat new EvaluationContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:990:54)\nat DefaultEvaluator.getEvaluationContext (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2740:12)\nat DefaultEvaluator.evaluate (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2745:36)\nat DefaultEvaluator.evaluateNodes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xpath/dist/index.js:2801:33)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:388:54)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)"
+      ],
+      "dynamicAttribution": [
+        "A"
+      ]
+    },
+    {
+      "interface": "Node",
+      "member": "textContent",
+      "interfacesObserved": [
+        "Element",
+        "HTMLElement",
+        "Node"
+      ],
+      "categories": [
+        "serialization"
+      ],
+      "usageKinds": [
+        "get",
+        "set"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": true,
+      "dynamicCount": 1,
+      "sourcePackages": [
+        "dynamic-only",
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:32",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:36",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:42",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:49",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:26"
+      ],
+      "dynamicSampleStacks": [
+        "at new XFormDefinition (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:26:24)\nat loadFormResult (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/entrypoints/loadForm.ts:78:23)"
+      ],
+      "dynamicAttribution": [
+        "A"
+      ]
+    },
+    {
+      "interface": "NodeList",
+      "member": "length",
+      "interfacesObserved": [
+        "NodeList"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": false,
+      "dynamicObserved": true,
+      "dynamicCount": 141,
+      "sourcePackages": [
+        "dynamic-only"
+      ],
+      "sources": [],
+      "dynamicSampleStacks": [
+        "at Reflect.get (<anonymous>)\nat ProxyHandler.get (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/NodeList.js:175:22)\nat Array Iterator.next (<anonymous>)\nat normalizeBodyRefNodesetAttributes (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:180:14)\nat normalizeXFormBody (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:319:3)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:437:14)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)",
+        "at Reflect.get (<anonymous>)\nat ProxyHandler.get (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/NodeList.js:175:22)\nat Array Iterator.next (<anonymous>)\nat normalizeRepeatGroups (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:282:14)\nat normalizeXFormBody (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:320:3)\nat new XFormDOM (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:437:14)\nat Function.from (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:336:12)",
+        "at Reflect.get (<anonymous>)\nat ProxyHandler.get (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/NodeList.js:175:22)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:262:21)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)\nat get outerHTML (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/nodes/Element-impl.js:166:12)",
+        "at Reflect.get (<anonymous>)\nat ProxyHandler.get (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/NodeList.js:175:22)\nat Array Iterator.next (<anonymous>)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:285:16)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)\nat module.exports.fragmentSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/domparsing/serialization.js:27:21)",
+        "at Reflect.get (<anonymous>)\nat ProxyHandler.get (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/jsdom/lib/jsdom/living/generated/NodeList.js:175:22)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:262:21)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat serializeElement (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:286:17)\nat xmlSerialization (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:309:14)\nat module.exports (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/w3c-xmlserializer/lib/serialize.js:362:10)"
+      ],
+      "dynamicAttribution": [
+        "A"
+      ]
+    },
+    {
+      "interface": "ParentNode",
+      "member": "firstElementChild",
+      "interfacesObserved": [
+        "ParentNode"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": false,
+      "dynamicCount": 0,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseInstanceXML.ts:38"
+      ],
+      "dynamicSampleStacks": [],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "ParentNode",
+      "member": "lastElementChild",
+      "interfacesObserved": [
+        "ParentNode"
+      ],
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": false,
+      "dynamicCount": 0,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseInstanceXML.ts:38"
+      ],
+      "dynamicSampleStacks": [],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "XMLSerializer",
+      "member": "<constructor>",
+      "interfacesObserved": [
+        "XMLSerializer"
+      ],
+      "categories": [
+        "global-constructor",
+        "serialization"
+      ],
+      "usageKinds": [
+        "new"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": false,
+      "dynamicCount": 0,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:53"
+      ],
+      "dynamicSampleStacks": [],
+      "dynamicAttribution": []
+    },
+    {
+      "interface": "XMLSerializer",
+      "member": "serializeToString",
+      "interfacesObserved": [
+        "XMLSerializer"
+      ],
+      "categories": [
+        "serialization"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "staticReferenced": true,
+      "dynamicObserved": false,
+      "dynamicCount": 0,
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:53"
+      ],
+      "dynamicSampleStacks": [],
+      "dynamicAttribution": []
+    }
+  ]
+}

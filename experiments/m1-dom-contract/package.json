@@ -1,0 +1,29 @@
+{
+  "name": "m1-dom-contract-experiment",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare:xpath": "tsx src/prepareXPath.ts",
+    "analyze:static": "tsx src/staticScan.ts",
+    "analyze:dynamic": "tsx src/dynamicTrace.ts",
+    "analyze:merge": "tsx src/merge.ts",
+    "m2:oozcitak-smoke": "tsx src/m2OozcitakSmoke.ts",
+    "analyze": "yarn prepare:xpath && yarn analyze:static && yarn analyze:dynamic && yarn analyze:merge"
+  },
+  "dependencies": {
+    "@getodk/xforms-engine": "1.0.3"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.15.30",
+    "@oozcitak/dom": "^3.0.0",
+    "@xmldom/xmldom": "^0.8.10",
+    "jsdom": "^26.1.0",
+    "linkedom": "^0.18.6",
+    "slimdom": "^4.3.5",
+    "ts-morph": "^23.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

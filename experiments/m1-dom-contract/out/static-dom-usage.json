@@ -1,0 +1,820 @@
+{
+  "metadata": {
+    "generatedAt": "2026-08-26T00:49:36.751Z",
+    "engineVersion": "1.0.3",
+    "engineRoot": "node_modules/@getodk/xforms-engine",
+    "xpathMode": "vendored-source",
+    "filesScanned": 413,
+    "scanner": "ts-morph"
+  },
+  "requirements": [
+    {
+      "interface": "Attr",
+      "member": "localName",
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:13"
+      ]
+    },
+    {
+      "interface": "Attr",
+      "member": "namespaceURI",
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine",
+        "xpath"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:11",
+        "vendor/xpath/src/adapter/WHAT/kind.ts:113",
+        "vendor/xpath/src/adapter/WHAT/kind.ts:117",
+        "vendor/xpath/src/adapter/WHAT/kind.ts:65"
+      ]
+    },
+    {
+      "interface": "Attr",
+      "member": "nodeType",
+      "categories": [
+        "constants"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xpath"
+      ],
+      "sources": [
+        "vendor/xpath/src/adapter/WHAT/kind.ts:113",
+        "vendor/xpath/src/adapter/WHAT/kind.ts:117"
+      ]
+    },
+    {
+      "interface": "Attr",
+      "member": "prefix",
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:12"
+      ]
+    },
+    {
+      "interface": "Attr",
+      "member": "value",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:20"
+      ]
+    },
+    {
+      "interface": "CharacterData",
+      "member": "data",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:34"
+      ]
+    },
+    {
+      "interface": "ChildNode",
+      "member": "nodeType",
+      "categories": [
+        "constants"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:28"
+      ]
+    },
+    {
+      "interface": "ChildNode",
+      "member": "nodeValue",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:31"
+      ]
+    },
+    {
+      "interface": "Document",
+      "member": "createElementNS",
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:24",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:31",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:35",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:40",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:41",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:47",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:48",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:74"
+      ]
+    },
+    {
+      "interface": "DOMParser",
+      "member": "<constructor>",
+      "categories": [
+        "global-constructor"
+      ],
+      "usageKinds": [
+        "new"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseInstanceXML.ts:46",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:163"
+      ]
+    },
+    {
+      "interface": "DOMParser",
+      "member": "parseFromString",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseInstanceXML.ts:47",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:375"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "append",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:76"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "attributes",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:18",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:204"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "childNodes",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/lib/reactivity/text/createTextRange.ts:25",
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:27"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "children",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/instance/abstract/DescendantNode.ts:215",
+        "node_modules/@getodk/xforms-engine/src/lib/reactivity/text/createTextRange.ts:54",
+        "node_modules/@getodk/xforms-engine/src/parse/body/BodyDefinition.ts:191",
+        "node_modules/@getodk/xforms-engine/src/parse/body/GroupElementDefinition.ts:36",
+        "node_modules/@getodk/xforms-engine/src/parse/body/RepeatElementDefinition.ts:45",
+        "node_modules/@getodk/xforms-engine/src/parse/model/RootDefinition.ts:66",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:24",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:255",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:45"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "cloneNode",
+      "categories": [
+        "mutation"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:263"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "firstChild",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:29",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:31"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "getAttribute",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/lib/TokenListParser.ts:119",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:23",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:24",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/InputControlDefinition.ts:26",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/RangeControlDefinition.ts:50",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/RangeControlDefinition.ts:60",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/UploadControlDefinition.ts:18",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/UploadControlDefinition.ts:28",
+        "node_modules/@getodk/xforms-engine/src/parse/expression/TextChunkExpression.ts:53",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:12",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:15",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:27",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:41",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:18",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:243",
+        "node_modules/@getodk/xforms-engine/src/parse/xpath/reference-parsing.ts:71"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "getAttributeNS",
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/body/RepeatElementDefinition.ts:42",
+        "node_modules/@getodk/xforms-engine/src/parse/body/RepeatElementDefinition.ts:43"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "hasAttribute",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/expression/TextChunkExpression.ts:17",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:11",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:14",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:25",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:241"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "localName",
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/SelectControlDefinition.ts:20",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/SelectControlDefinition.ts:48",
+        "node_modules/@getodk/xforms-engine/src/parse/body/GroupElementDefinition.ts:37",
+        "node_modules/@getodk/xforms-engine/src/parse/expression/TextChunkExpression.ts:17",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:61",
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:13",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:256"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "namespaceURI",
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:11",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:118",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:98"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "nodeName",
+      "categories": [
+        "constants"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/RankControlDefinition.ts:34",
+        "node_modules/@getodk/xforms-engine/src/parse/body/control/SelectControlDefinition.ts:62",
+        "node_modules/@getodk/xforms-engine/src/parse/model/ActionDefinition.ts:69",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:27",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:344",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:99"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "outerHTML",
+      "categories": [
+        "serialization"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:165"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "ownerDocument",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:74"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "prefix",
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseStaticDocumentFromDOMSubtree.ts:12"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "prepend",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:267"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "querySelectorAll",
+      "categories": [
+        "selector"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:176",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:280"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "remove",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:269"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "replaceWith",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:276"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "setAttribute",
+      "categories": [
+        "mutation"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:101",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:265"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "setAttributeNS",
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:250",
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:89"
+      ]
+    },
+    {
+      "interface": "Element",
+      "member": "textContent",
+      "categories": [
+        "serialization"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDefinition.ts:26"
+      ]
+    },
+    {
+      "interface": "HTMLElement",
+      "member": "appendChild",
+      "categories": [
+        "mutation"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:33",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:37",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:43",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:44",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:50",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:51"
+      ]
+    },
+    {
+      "interface": "HTMLElement",
+      "member": "children",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseInstanceXML.ts:49"
+      ]
+    },
+    {
+      "interface": "HTMLElement",
+      "member": "outerHTML",
+      "categories": [
+        "serialization"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:443"
+      ]
+    },
+    {
+      "interface": "HTMLElement",
+      "member": "setAttribute",
+      "categories": [
+        "mutation"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:25",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:26",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:28"
+      ]
+    },
+    {
+      "interface": "HTMLElement",
+      "member": "textContent",
+      "categories": [
+        "serialization"
+      ],
+      "usageKinds": [
+        "set"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:32",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:36",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:42",
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:49"
+      ]
+    },
+    {
+      "interface": "Node",
+      "member": "data",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/lib/reactivity/text/createTextRange.ts:44"
+      ]
+    },
+    {
+      "interface": "Node",
+      "member": "lookupPrefix",
+      "categories": [
+        "namespace"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:59"
+      ]
+    },
+    {
+      "interface": "Node",
+      "member": "nodeType",
+      "categories": [
+        "constants"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xpath"
+      ],
+      "sources": [
+        "vendor/xpath/src/adapter/WHAT/kind.ts:54"
+      ]
+    },
+    {
+      "interface": "ParentNode",
+      "member": "firstElementChild",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseInstanceXML.ts:38"
+      ]
+    },
+    {
+      "interface": "ParentNode",
+      "member": "lastElementChild",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/shared/parseInstanceXML.ts:38"
+      ]
+    },
+    {
+      "interface": "XMLDocument",
+      "member": "documentElement",
+      "categories": [
+        "other"
+      ],
+      "usageKinds": [
+        "get"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/XFormDOM.ts:443"
+      ]
+    },
+    {
+      "interface": "XMLSerializer",
+      "member": "<constructor>",
+      "categories": [
+        "global-constructor",
+        "serialization"
+      ],
+      "usageKinds": [
+        "new"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:53"
+      ]
+    },
+    {
+      "interface": "XMLSerializer",
+      "member": "serializeToString",
+      "categories": [
+        "serialization"
+      ],
+      "usageKinds": [
+        "call"
+      ],
+      "sourcePackages": [
+        "xforms-engine"
+      ],
+      "sources": [
+        "node_modules/@getodk/xforms-engine/src/parse/model/EncryptedSubmissionManifestDefinition.ts:53"
+      ]
+    }
+  ]
+}
