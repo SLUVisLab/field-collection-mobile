@@ -7,12 +7,12 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web",
-    "run:android": "expo run:android",
-    "run:ios": "expo run:ios",
+    "start": "EXPO_NO_TYPESCRIPT_SETUP=1 expo start",
+    "android": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:android",
+    "ios": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:ios",
+    "web": "EXPO_NO_TYPESCRIPT_SETUP=1 expo start --web",
+    "run:android": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:android",
+    "run:ios": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:ios",
     "test:packages": "for p in odk-xforms-host odk-xforms-react odk-xforms-webview odk-central-client; do (cd packages/$p && node --test $(find test -name '*.test.mjs' -not -path '*/live/*')) || exit 1; done"
   },
   "dependencies": {

@@ -13,4 +13,11 @@ config.watchFolders = [path.resolve(projectRoot, 'packages')];
 // Resolve modules from the root node_modules (where workspace packages are linked).
 config.resolver.nodeModulesPaths = [path.resolve(projectRoot, 'node_modules')];
 
+// Keep the frozen legacy app + experiments (archive/) out of the module graph.
+// It contains large vendored trees (incl. ~1k TypeScript files) that are not part
+// of the app and would otherwise be scanned/watched by Metro.
+const archiveDir = path.resolve(projectRoot, 'archive');
+const escaped = archiveDir.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+config.resolver.blockList = new RegExp('^' + escaped + '/.*');
+
 module.exports = config;
