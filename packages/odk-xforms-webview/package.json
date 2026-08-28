@@ -10,10 +10,8 @@
   "scripts": {
     "test": "node --test \"test/**/*.test.mjs\""
   },
-  "dependencies": {
-    "react-native-webview": "13.8.6"
-  },
   "peerDependencies": {
-    "react-native": ">=0.74"
+    "react-native": ">=0.74",
+    "react-native-webview": ">=13"
   }
 }
