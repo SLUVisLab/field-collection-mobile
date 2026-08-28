@@ -76,6 +76,25 @@ export {
 } from './paths.js';
 export { createCredentialStore, projectTokenKey } from './credentials.js';
 export { MIGRATIONS } from './migrations/index.js';
+export {
+  createProjectsRepository,
+  rowToProject,
+  ProjectsRepositoryError,
+} from './repositories/projects.js';
+export {
+  createFormsRepository,
+  formKeyFor,
+  formVersionKeyFor,
+  manifestFingerprintFor,
+  FormsRepositoryError,
+} from './repositories/forms.js';
+export {
+  createInstancesRepository,
+  assertLocalInstanceId,
+  INSTANCE_STATES,
+  InstancesRepositoryError,
+  rowToMedia,
+} from './repositories/instances.js';
 
 // Native binding re-exports.
 export {

@@ -29,6 +29,11 @@ Exports from [src/index.js](/Users/dev/Code/field-collection-mobile.worktrees/mi
 - No WebView creation or RPC ownership.
 - No duplicated mutable form-state model.
 
+`useXForm().loadForm(xml, attachments?)` and `loadInstance(xml, instanceXml,
+attachments?)` forward the public host resource descriptors unchanged. This is
+how a composition root supplies cached `jr:` resources such as Entity List CSVs;
+the store still obtains controls, choices, relevance, and values from the engine.
+
 ## Dependencies
 
 Runtime dependencies:

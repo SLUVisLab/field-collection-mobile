@@ -87,6 +87,75 @@ const notImplemented = (methodName) =>
  */
 
 /**
+ * A single node in a {@link FormRenderModel}: the engine-derived, presentational
+ * metadata a native UI needs to *render* a form control, as distinct from the
+ * per-node runtime *value* state carried by {@link FormSnapshotNode}.
+ *
+ * Every field here is projected directly from the ODK XForms engine's live node
+ * tree — it is **not** parsed out of the XForm definition by the host. The host
+ * never interprets XForms body/bind semantics itself; it only forwards what the
+ * engine already computed. Keep this type to what the engine actually exposes.
+ *
+ * - `nodeType` is the engine's own control classification (`InstanceNodeType`),
+ *   e.g. `'input' | 'select' | 'note' | 'trigger' | 'range' | 'rank' | 'upload'
+ *   | 'group' | 'repeat-range:controlled' | 'repeat-range:uncontrolled'
+ *   | 'repeat-instance' | 'model-value' | 'root'`. This is the "control type".
+ * - `label` / `hint` are the engine `TextRange.asString` projections for the
+ *   active language (or `null` when the node has none). `labelMedia` carries the
+ *   `jr:` media URLs the engine resolved for the label, when present.
+ * - `appearances` is the engine's parsed appearance token list, in source order.
+ * - `selectType` is `'select' | 'select1'` for select controls, else `null`.
+ * - `mediaType` / `mediaAccept` are the engine's parsed upload media options
+ *   (for example, `'image'` / `'image/*'`), else `null`.
+ * - `choices` mirrors the engine's `valueOptions` for select controls.
+ * - `depth` and `parentReference` describe the node's place in the structural
+ *   sequence; the containing `nodes` array is already in engine document order.
+ *
+ * @typedef {{
+ *   nodeId: string,
+ *   reference: string,
+ *   nodeType: string,
+ *   label: string | null,
+ *   hint: string | null,
+ *   labelMedia?: { image?: string | null, audio?: string | null, video?: string | null } | null,
+ *   appearances: string[],
+ *   selectType?: string | null,
+ *   valueType?: string | null,
+ *   mediaType?: string | null,
+ *   mediaAccept?: string | null,
+ *   choices?: Array<{ label: string | number | boolean | null, value: string | number | boolean | null }>,
+ *   readonly: boolean | null,
+ *   required: boolean | null,
+ *   depth: number,
+ *   parentReference: string | null,
+ *   childCount: number | null
+ * }} RenderNode
+ */
+
+/**
+ * A `FormRenderModel` is an **engine-derived, ordered projection of render
+ * metadata** for the currently loaded form instance. Where {@link FormSnapshot}
+ * answers "what is each node's current value/relevance", the render model
+ * answers "what controls exist, in what order, with what labels/hints/type/
+ * appearance" — the structural + presentational information a native UI needs to
+ * lay out the form without re-parsing XForms.
+ *
+ * `nodes` is a **flat list in engine document order** (depth-first pre-order over
+ * the live node tree). That ordering *is* the structural sequence; `depth` and
+ * `parentReference` let a consumer reconstruct the tree. The host derives all of
+ * this from the engine's node objects and preserves engine authority: it does
+ * not build an independent app-side schema of the form.
+ *
+ * @typedef {{
+ *   generatedAt: string,
+ *   activeLanguage?: string | null,
+ *   languages?: string[],
+ *   nodeCount: number,
+ *   nodes: RenderNode[]
+ * }} FormRenderModel
+ */
+
+/**
  * @typedef {{
  *   type: 'stateChanged' | 'log' | 'lifecycle',
  *   payload: unknown
@@ -124,8 +193,40 @@ export class XFormsHost {
     throw notImplemented('loadForm');
   }
 
+  /**
+   * Loads a form definition **and restores a previously serialized instance**
+   * into it, returning the engine to the exact state captured in `_instanceXml`.
+   *
+   * This is the correct way to resume/open a saved submission: it delegates to
+   * the engine's `restoreInstance` entrypoint (an `odk-instance-load` /
+   * "subsequent load"), which replays the serialized primary-instance XML
+   * through the engine's own model. It is deliberately **not** implemented by
+   * replaying a sequence of {@link setValue} calls — doing so would re-run
+   * first-load computations, fire spurious state changes, and cannot faithfully
+   * reproduce engine-managed state (repeats, calculates, metadata, ordering).
+   *
+   * @param {string} _xml the XForm definition
+   * @param {string} _instanceXml the serialized primary-instance XML previously
+   *   produced by {@link serialize} (the `xml_submission_file` contents)
+   * @param {XFormsResourceAttachment[]} [_attachments] form attachments the
+   *   definition references via `jr:` URLs
+   */
+  async loadInstance(_xml, _instanceXml, _attachments) {
+    throw notImplemented('loadInstance');
+  }
+
   async getSnapshot() {
     throw notImplemented('getSnapshot');
+  }
+
+  /**
+   * Returns the engine-derived {@link FormRenderModel} for the loaded form: an
+   * ordered projection of render metadata (labels, hints, control type,
+   * appearance, structural sequence) taken directly from the engine's live node
+   * tree. Hosts must not synthesize this from their own XForms parsing.
+   */
+  async getRenderModel() {
+    throw notImplemented('getRenderModel');
   }
 
   async setValue(_nodeId, _value) {

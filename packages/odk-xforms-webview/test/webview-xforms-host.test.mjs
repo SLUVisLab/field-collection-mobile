@@ -63,6 +63,38 @@ test('createWebViewSidecarHtml exposes a generic fetchFormAttachment resource se
   assert.match(html, /state\.loadForm\(xml, options\)/);
 });
 
+test('createWebViewSidecarHtml restores instances via the engine restoreInstance entrypoint (not setValue replay)', () => {
+  const html = createWebViewSidecarHtml();
+  // A serialized instance is restored by building an InstanceData (FormData with
+  // an xml_submission_file entry) and handing it to the engine's own
+  // restoreInstance entrypoint — the engine-authoritative "subsequent load".
+  assert.match(html, /async loadInstance\(payload\)/);
+  assert.match(html, /buildInstanceData/);
+  assert.match(html, /xml_submission_file/);
+  assert.match(html, /loadResult\.restoreInstance\(\{ data: \[instanceData\] \}\)/);
+});
+
+test('createWebViewSidecarHtml projects an engine-derived ordered render model', () => {
+  const html = createWebViewSidecarHtml();
+  // getRenderModel walks the engine's live node tree in document order and
+  // projects labels/hints/control type/appearance/structural sequence.
+  assert.match(html, /async getRenderModel\(\)/);
+  assert.match(html, /buildRenderModel/);
+  assert.match(html, /readAppearances/);
+  assert.match(html, /textRangeToString/);
+  assert.match(html, /nodeType/);
+  assert.match(html, /parentReference/);
+  assert.match(html, /node\.nodeOptions\?\.media\?\.type/);
+  assert.match(html, /mediaAccept/);
+});
+
+test('createWebViewSidecarHtml binds a safe upload filename through an ephemeral web File', () => {
+  const html = createWebViewSidecarHtml();
+  assert.match(html, /node\.nodeType === "upload"/);
+  assert.match(html, /Upload values must be a safe filename/);
+  assert.match(html, /node\.setValue\(new File\(\[\], value/);
+});
+
 test('WebViewXFormsHost.loadForm forwards resource attachments in the request payload', async () => {
   const mock = createMockRef();
   const host = new WebViewXFormsHost({ webViewRef: mock.ref, requestTimeoutMs: 250 });
@@ -82,6 +114,62 @@ test('WebViewXFormsHost.loadForm forwards resource attachments in the request pa
     toMessageEvent({ id: request.id, type: 'response', ok: true, payload: { loadStatus: 'success' } })
   );
   await loadPromise;
+  await host.dispose();
+});
+
+test('WebViewXFormsHost.loadInstance forwards xml, instanceXml and attachments', async () => {
+  const mock = createMockRef();
+  const host = new WebViewXFormsHost({ webViewRef: mock.ref, requestTimeoutMs: 250 });
+  host.handleWebViewMessage(toMessageEvent({ type: 'ready', payload: {} }));
+  await flushMicrotasks();
+
+  const attachments = [{ filename: 'plants.csv', contentType: 'text/csv', text: 'name,label\n' }];
+  const loadPromise = host.loadInstance('<xml/>', '<data><a>1</a></data>', attachments);
+  await flushMicrotasks();
+
+  const request = extractRequest(mock.injectedScripts.at(-1));
+  assert.equal(request.type, 'loadInstance');
+  assert.equal(request.payload.xml, '<xml/>');
+  assert.equal(request.payload.instanceXml, '<data><a>1</a></data>');
+  assert.deepEqual(request.payload.attachments, attachments);
+
+  host.handleWebViewMessage(
+    toMessageEvent({
+      id: request.id,
+      type: 'response',
+      ok: true,
+      payload: { loadStatus: 'success', mode: 'restore' },
+    })
+  );
+  const result = await loadPromise;
+  assert.equal(result.mode, 'restore');
+  await host.dispose();
+});
+
+test('WebViewXFormsHost.getRenderModel issues a getRenderModel request and resolves the model', async () => {
+  const mock = createMockRef();
+  const host = new WebViewXFormsHost({ webViewRef: mock.ref, requestTimeoutMs: 250 });
+  host.handleWebViewMessage(toMessageEvent({ type: 'ready', payload: {} }));
+  await flushMicrotasks();
+
+  const modelPromise = host.getRenderModel();
+  await flushMicrotasks();
+
+  const request = extractRequest(mock.injectedScripts.at(-1));
+  assert.equal(request.type, 'getRenderModel');
+
+  const renderModel = {
+    generatedAt: new Date().toISOString(),
+    nodeCount: 2,
+    nodes: [
+      { nodeId: 'n1', reference: '/data', nodeType: 'root', depth: 0, parentReference: null },
+      { nodeId: 'n2', reference: '/data/name', nodeType: 'input', depth: 1, parentReference: '/data' },
+    ],
+  };
+  host.handleWebViewMessage(
+    toMessageEvent({ id: request.id, type: 'response', ok: true, payload: renderModel })
+  );
+  assert.deepEqual(await modelPromise, renderModel);
   await host.dispose();
 });
 

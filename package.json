@@ -13,12 +13,17 @@
     "web": "EXPO_NO_TYPESCRIPT_SETUP=1 expo start --web",
     "run:android": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:android",
     "run:ios": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:ios",
-    "test:packages": "for p in odk-xforms-host odk-xforms-react odk-xforms-webview odk-central-client gather-storage; do (cd packages/$p && node --test $(find test -name '*.test.mjs' -not -path '*/live/*')) || exit 1; done"
+    "test:packages": "for p in odk-xforms-host odk-xforms-react odk-xforms-webview odk-central-client gather-storage; do (cd packages/$p && node --test $(find test -name '*.test.mjs' -not -path '*/live/*')) || exit 1; done",
+    "test:app": "node --test $(find test -name '*.test.mjs' -not -path '*/live/*')",
+    "test:unit": "npm run test:packages && npm run test:app"
   },
   "dependencies": {
     "@getodk/xforms-engine": "^1.0.3",
+    "@maplibre/maplibre-react-native": "^11.3.7",
     "expo": "~57.0.16",
+    "expo-asset": "~57.0.15",
     "expo-file-system": "~57.0.6",
+    "expo-location": "~57.0.14",
     "expo-secure-store": "~57.0.2",
     "expo-sqlite": "~57.0.2",
     "expo-status-bar": "~57.0.1",
@@ -27,9 +32,15 @@
     "odk-xforms-host": "*",
     "odk-xforms-react": "*",
     "odk-xforms-webview": "*",
+    "pako": "^2.2.0",
     "react": "19.2.3",
     "react-native": "0.86.2",
-    "react-native-webview": "^14.0.1"
+    "react-native-nitro-image": "^0.15.2",
+    "react-native-nitro-modules": "^0.37.1",
+    "react-native-vision-camera": "^5.2.3",
+    "react-native-vision-camera-barcode-scanner": "^5.2.3",
+    "react-native-webview": "^14.0.1",
+    "react-router-native": "^6.30.6"
   },
   "devDependencies": {
     "@babel/core": "^7.25.0"

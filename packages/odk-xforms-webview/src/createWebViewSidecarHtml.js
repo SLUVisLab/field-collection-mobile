@@ -116,6 +116,127 @@ export const createWebViewSidecarHtml = ({
         return nodes;
       };
 
+      // Read an engine TextRange (label/hint/item-label) as a plain string.
+      // The engine owns the text: language resolution, output substitution and
+      // itext lookups have already happened. We only project .asString.
+      const textRangeToString = (textRange) => {
+        if (textRange == null) {
+          return null;
+        }
+        const asString = textRange.asString;
+        return typeof asString === "string" ? asString : null;
+      };
+
+      const jrUrlToString = (jrUrl) => {
+        if (jrUrl == null) {
+          return null;
+        }
+        if (typeof jrUrl === "string") {
+          return jrUrl;
+        }
+        if (typeof jrUrl.href === "string") {
+          return jrUrl.href;
+        }
+        const asString = String(jrUrl);
+        return asString.length > 0 ? asString : null;
+      };
+
+      const textRangeMedia = (textRange) => {
+        if (textRange == null) {
+          return null;
+        }
+        const image = jrUrlToString(textRange.imageSource);
+        const audio = jrUrlToString(textRange.audioSource);
+        const video = jrUrlToString(textRange.videoSource);
+        if (image == null && audio == null && video == null) {
+          return null;
+        }
+        return { image, audio, video };
+      };
+
+      // Project the engine's parsed appearance token list (a set-like,
+      // iterable TokenList) into an ordered array of strings. We never parse the
+      // appearance attribute ourselves — this reads what the engine produced.
+      const readAppearances = (node) => {
+        const appearances = node?.appearances;
+        if (appearances == null) {
+          return [];
+        }
+        try {
+          if (typeof appearances[Symbol.iterator] === "function") {
+            return Array.from(appearances, (token) => String(token));
+          }
+        } catch (error) {
+          // fall through to record-shaped handling
+        }
+        if (typeof appearances === "object") {
+          return Object.keys(appearances).filter((key) => appearances[key] === true);
+        }
+        return [];
+      };
+
+      // Build the engine-derived, ordered render model. The node array is in
+      // engine document order (depth-first pre-order); depth + parentReference
+      // convey the structural sequence/hierarchy. This preserves engine
+      // authority: every field is read from the live node objects, not parsed
+      // from the XForm definition into an app schema.
+      const buildRenderModel = (rootNode) => {
+        const nodes = [];
+        const visit = (node, depth, parentReference) => {
+          const currentState = node.currentState ?? {};
+          const reference = typeof currentState.reference === "string" ? currentState.reference : null;
+          const children = Array.isArray(currentState.children) ? currentState.children : null;
+          const label = currentState.label ?? null;
+          nodes.push({
+            nodeId: typeof node.nodeId === "string" ? node.nodeId : String(node.nodeId ?? ""),
+            reference,
+            nodeType: typeof node.nodeType === "string" ? node.nodeType : null,
+            label: textRangeToString(label),
+            hint: textRangeToString(currentState.hint ?? null),
+            labelMedia: textRangeMedia(label),
+            appearances: readAppearances(node),
+            selectType: typeof node.selectType === "string" ? node.selectType : null,
+            valueType: typeof node.valueType === "string" ? node.valueType : null,
+            mediaType: typeof node.nodeOptions?.media?.type === "string" ? node.nodeOptions.media.type : null,
+            mediaAccept: typeof node.nodeOptions?.media?.accept === "string" ? node.nodeOptions.media.accept : null,
+            choices: serializeChoices(currentState.valueOptions),
+            readonly: currentState.readonly ?? null,
+            required: currentState.required ?? null,
+            depth,
+            parentReference,
+            childCount: children == null ? null : children.length,
+          });
+          if (children != null) {
+            for (const child of children) {
+              visit(child, depth + 1, reference);
+            }
+          }
+        };
+        visit(rootNode, 0, null);
+        const languagesSource = rootNode.languages;
+        const languages = Array.isArray(languagesSource)
+          ? languagesSource
+              .map((language) =>
+                typeof language === "string" ? language : language?.language ?? null
+              )
+              .filter((language) => typeof language === "string")
+          : [];
+        const activeLanguageSource = rootNode.currentState?.activeLanguage ?? null;
+        const activeLanguage =
+          activeLanguageSource == null
+            ? null
+            : typeof activeLanguageSource === "string"
+              ? activeLanguageSource
+              : activeLanguageSource.language ?? null;
+        return {
+          generatedAt: new Date().toISOString(),
+          activeLanguage,
+          languages,
+          nodeCount: nodes.length,
+          nodes,
+        };
+      };
+
       const findByReference = (rootNode, reference) => {
         return flattenNodes(rootNode).find((node) => node.currentState?.reference === reference) ?? null;
       };
@@ -237,6 +358,24 @@ export const createWebViewSidecarHtml = ({
         if (node == null) {
           throw new Error("Node not found");
         }
+        if (node.nodeType === "upload") {
+          if (value == null || value === "") {
+            node.setValue(null);
+            return;
+          }
+          if (
+            typeof value !== "string" ||
+            !/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(value) ||
+            typeof File !== "function"
+          ) {
+            throw new Error("Upload values must be a safe filename");
+          }
+          // The native app owns the durable Expo File. The sidecar only needs a
+          // same-named web File to let the engine validate and serialize its XML
+          // filename; the app passes the native file body to OpenRosa separately.
+          node.setValue(new File([], value, { type: "application/octet-stream" }));
+          return;
+        }
         if (typeof node.selectValues === "function" && Array.isArray(value)) {
           node.selectValues(value.map((item) => String(item)));
           return;
@@ -313,6 +452,40 @@ export const createWebViewSidecarHtml = ({
         return { fetchFormAttachment };
       };
 
+      // The engine's INSTANCE_FILE_NAME constant. A serialized instance is
+      // restored by handing the engine an InstanceData (a FormData) whose
+      // xml_submission_file entry is the previously serialized primary-instance
+      // XML — the same shape serialize() reads out of prepareInstancePayload().
+      const INSTANCE_FILE_NAME = "xml_submission_file";
+      const INSTANCE_FILE_TYPE = "text/xml";
+
+      const buildInstanceData = (instanceXml) => {
+        if (typeof instanceXml !== "string" || instanceXml.trim().length === 0) {
+          throw new Error("loadInstance requires a non-empty instanceXml string payload");
+        }
+        if (typeof FormData !== "function" || typeof File !== "function") {
+          throw new Error("Environment lacks FormData/File required to restore an instance");
+        }
+        const formData = new FormData();
+        const file = new File([instanceXml], INSTANCE_FILE_NAME, { type: INSTANCE_FILE_TYPE });
+        formData.set(INSTANCE_FILE_NAME, file);
+        return formData;
+      };
+
+      const assertInstantiable = (loadResult) => {
+        if (loadResult.status === "failure") {
+          const failure = loadResult.error;
+          if (failure instanceof Error) {
+            throw failure;
+          }
+          throw new Error(
+            typeof failure?.message === "string" && failure.message.length > 0
+              ? failure.message
+              : "loadForm returned failure"
+          );
+        }
+      };
+
       const handlers = {
         async initialize() {
           return ensureInitialized();
@@ -325,17 +498,7 @@ export const createWebViewSidecarHtml = ({
           }
           const options = buildLoadFormOptions(payload?.attachments);
           const loadResult = await state.loadForm(xml, options);
-          if (loadResult.status === "failure") {
-            const failure = loadResult.error;
-            if (failure instanceof Error) {
-              throw failure;
-            }
-            throw new Error(
-              typeof failure?.message === "string" && failure.message.length > 0
-                ? failure.message
-                : "loadForm returned failure"
-            );
-          }
+          assertInstantiable(loadResult);
           const instance = await loadResult.createInstance();
           state.currentLoadResult = loadResult;
           state.currentInstance = instance;
@@ -347,6 +510,36 @@ export const createWebViewSidecarHtml = ({
             snapshot,
           };
         },
+        // Restore a previously serialized instance via the engine's
+        // restoreInstance entrypoint (an odk-instance-load / "subsequent load").
+        // This is the correct way to reopen saved answers — NOT replaying
+        // setValue calls, which would re-run first-load computations and cannot
+        // faithfully reproduce engine-managed state.
+        async loadInstance(payload) {
+          await ensureInitialized();
+          const xml = payload?.xml;
+          if (typeof xml !== "string" || xml.trim().length === 0) {
+            throw new Error("loadInstance requires non-empty xml string payload");
+          }
+          const instanceData = buildInstanceData(payload?.instanceXml);
+          const options = buildLoadFormOptions(payload?.attachments);
+          const loadResult = await state.loadForm(xml, options);
+          assertInstantiable(loadResult);
+          if (typeof loadResult.restoreInstance !== "function") {
+            throw new Error("Engine loadResult does not support restoreInstance");
+          }
+          const instance = await loadResult.restoreInstance({ data: [instanceData] });
+          state.currentLoadResult = loadResult;
+          state.currentInstance = instance;
+          state.root = instance.root;
+          const snapshot = buildSnapshot(state.root);
+          state.latestSnapshot = snapshot;
+          return {
+            loadStatus: loadResult.status,
+            mode: typeof instance.mode === "string" ? instance.mode : "restore",
+            snapshot,
+          };
+        },
         async getSnapshot() {
           if (state.root == null) {
             throw new Error("No form loaded");
@@ -354,6 +547,12 @@ export const createWebViewSidecarHtml = ({
           const snapshot = buildSnapshot(state.root);
           state.latestSnapshot = snapshot;
           return snapshot;
+        },
+        async getRenderModel() {
+          if (state.root == null) {
+            throw new Error("No form loaded");
+          }
+          return buildRenderModel(state.root);
         },
         async setValue(payload) {
           if (state.root == null) {

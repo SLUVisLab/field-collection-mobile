@@ -2,7 +2,7 @@ import {
   XFormsHost,
   XFormsHostError,
   XFORMS_HOST_ERROR_CODES,
-} from '../../odk-xforms-host/src/index.js';
+} from 'odk-xforms-host';
 
 export const WEBVIEW_XFORMS_HOST_ERROR_CODES = Object.freeze({
   TIMEOUT: 'XFORMS_WEBVIEW_HOST_TIMEOUT',
@@ -279,8 +279,26 @@ export class WebViewXFormsHost extends XFormsHost {
     return this.sendRequest('loadForm', { xml, attachments });
   }
 
+  /**
+   * Loads a form definition and restores a previously serialized instance via
+   * the engine's `restoreInstance` entrypoint (see {@link XFormsHost.loadInstance}).
+   *
+   * @param {string} xml the XForm definition
+   * @param {string} instanceXml the serialized primary-instance XML previously
+   *   produced by {@link serialize} (the `xml_submission_file` contents)
+   * @param {Array<{ filename: string, contentType?: string, text?: string, base64?: string }>} [attachments]
+   *   form attachments the definition references via `jr:` URLs
+   */
+  async loadInstance(xml, instanceXml, attachments = null) {
+    return this.sendRequest('loadInstance', { xml, instanceXml, attachments });
+  }
+
   async getSnapshot() {
     return this.sendRequest('getSnapshot', {});
+  }
+
+  async getRenderModel() {
+    return this.sendRequest('getRenderModel', {});
   }
 
   async setValue(nodeId, value) {

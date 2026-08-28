@@ -12,6 +12,25 @@ This package provides the runtime boundary validated in M2.4:
 
 It does not render visible form UI and does not own Central networking.
 
+## Bridge request types
+
+The sidecar bridge handles: `initialize`, `loadForm`, `loadInstance`,
+`getSnapshot`, `getRenderModel`, `setValue`, `addRepeat`, `removeRepeat`,
+`serialize`, `inspectMediaSeam`, `dispose`.
+
+- `loadInstance` restores a previously serialized instance by handing the engine
+  an `InstanceData` (`FormData` with an `xml_submission_file` `File`) to its
+  `LoadFormResult.restoreInstance(...)` entrypoint — the engine-authoritative
+  "subsequent load", **not** a replay of `setValue` calls.
+- `getRenderModel` walks the engine's live node tree in document order and
+  projects the `FormRenderModel` (labels/hints/control type/appearance/structural
+  sequence, including parsed upload media type/accept) defined by
+  `odk-xforms-host`.
+- For a binary upload, `setValue(reference, safeFilename)` creates an ephemeral
+  same-named web `File` so the engine validates and serializes the filename. The
+  native app remains responsible for durable bytes and OpenRosa's native file
+  body; this bridge does not copy media over the WebView boundary.
+
 ## Exports
 
 From [src/index.js](/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/packages/odk-xforms-webview/src/index.js):
@@ -32,7 +51,7 @@ import {
   WebViewXFormsHost,
   createWebViewSidecarHtml,
   createSidecarWebViewProps,
-} from '.../odk-xforms-webview/src/index.js';
+} from 'odk-xforms-webview';
 ```
 
 Use `createWebViewSidecarHtml()` for the hidden sidecar source and pass `onMessage` to

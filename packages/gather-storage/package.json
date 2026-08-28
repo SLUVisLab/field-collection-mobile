@@ -8,7 +8,10 @@
     ".": "./src/index.js",
     "./paths": "./src/paths.js",
     "./credentials": "./src/credentials.js",
-    "./migrations": "./src/migrations/index.js"
+    "./migrations": "./src/migrations/index.js",
+    "./repositories/projects": "./src/repositories/projects.js",
+    "./repositories/forms": "./src/repositories/forms.js",
+    "./repositories/instances": "./src/repositories/instances.js"
   },
   "scripts": {
     "test": "node --test $(find test -name '*.test.mjs' -not -path '*/live/*')"

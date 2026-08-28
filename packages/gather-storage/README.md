@@ -34,6 +34,7 @@ a native module; the native layer wires/injects them.
 | `src/credentials.js` | pure | SecureStore key namespace + project credential lifecycle over an **injected** store adapter. |
 | `src/migrations/index.js` | pure | Ordered migration definitions (data). |
 | `src/migrations/runner.js` | pure | Version detection, pending computation, transactional/idempotent apply over an **injected** db contract. |
+| `src/repositories/projects.js` | pure | Minimal project-registry queries (list / active / switch / upsert / delete) over an **injected** db adapter — the bootstrap and provisioning metadata surface. |
 | `src/filesystem.js` | native | Resolves keys to `File`/`Directory`, ensures the directory tree, durable **atomic** writes. |
 | `src/database.js` | native | Canonical DB name, connection config (foreign keys, WAL), adapts `expo-sqlite` to the runner. |
 | `src/index.js` | native | `initializeGatherStorage()`, wires the real SecureStore adapter, re-exports the public API. |
@@ -88,8 +89,29 @@ file is removed.
   from 1; the runner applies each pending migration inside its own transaction
   that also stamps `user_version`, so a failure rolls back atomically and retries
   next run. Re-running when already current is a no-op (idempotent).
-- This foundation ships **one** migration (`gather_meta`) proving the mechanism.
-  Domain tables are added by appending new migrations — never editing version 1.
+- This foundation ships migration **1** (`gather_meta`) proving the mechanism and
+  migration **2** (`projects`) — the minimal persistent project registry the M5.1
+  shell needs to bootstrap (a `project_key` PK plus a partial unique index that
+  enforces at most one active project). Further domain tables are added by
+  appending new migrations — never editing an already-shipped version.
+
+- migration **3** (`form_catalog`) adds mutable catalog rows plus immutable form
+  versions and resource metadata. XML, sanitized manifest metadata, and resources
+  are referenced only by durable relative keys; version/resource records are
+  insert-only, so a draft's referenced version cannot be overwritten by refresh.
+
+- migration **4** (`instances`) adds local instance lifecycle metadata only:
+  local/ODK instance IDs, project/form IDs, exact immutable version/hash,
+  `draft`/`ready`/`sent` state, timestamps, sanitized send result, and the
+  durable relative XML key. It has no answer columns. SQLite verifies the copied
+  form identity against the immutable cached version and prevents later rewrites.
+- migration **5** (`instance_media`) adds the narrow per-instance media mapping:
+  XForms binding reference, safe attachment filename, MIME type, and durable
+  relative media key. It stores no image bytes or answers; deleting an instance
+  cascades its mapping while the lifecycle deletes copied media files.
+- migration **6** (`project_instance_cleanup`) removes a project's instances
+  before its immutable form-version records cascade, so project removal also
+  cascades media metadata and can delete the project media tree.
 
 ## Credential lifecycle
 
@@ -101,10 +123,18 @@ file is removed.
   project removal must call `deleteProjectCredentials()` explicitly.
   `projectCredentialKeys()` enumerates every owned key so deletion stays complete
   as new secret kinds are added.
+- Project metadata deletion intentionally only removes the SQLite project row.
+  The app-level provisioning lifecycle coordinates that operation with credential
+  and project-directory cleanup, and reports failure rather than claiming a
+  partially cleaned project was removed.
 
 ## Tests
 
-- **Unit (Node, `npm test` in this package):** 22 tests across paths, credentials
+- **Unit (Node, `npm test` in this package):** tests across paths, credentials,
+  migrations, form versions, instance transitions, and per-instance media
+  metadata. They cover deterministic relative keys, draft → ready → sent
+  transitions, and prohibit reverse mutation; authoritative XML remains in the
+  filesystem.
   and migrations — deterministic path generation, project-key isolation,
   path-traversal rejection, SecureStore key generation, credential set/get/delete
   via an injected seam, migration ordering/contiguity, repeated initialization

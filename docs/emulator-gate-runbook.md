@@ -63,7 +63,8 @@ What it does (and what to replicate if doing it by hand):
    with a hard timeout; also fail-fast on `exited with non-zero code` / `BUILD FAILED`
    / `Unable to locate a Java`.
 5. On marker (or timeout): print the matched line(s) and **tear down Metro + logcat**
-   via an EXIT trap. The emulator is left running for reuse.
+   via an EXIT trap. Shut down that emulator before starting an iOS run; do not run
+   Android and iOS emulators concurrently on this machine.
 
 The script's exit code is `0` only if the terminal marker was seen, so it composes in
 CI-style checks.
@@ -122,7 +123,7 @@ build succeeded, Metro is up, and `adb reverse --list` shows the tunnel.
 sets `REACT_NATIVE_PACKAGER_HOSTNAME=10.0.2.2`, so the emulator gate is deterministic.
 
 
-## Clean teardown (avoid emulator/simulator sprawl)
+## Clean teardown (required between platform gates)
 
 Kill by **numeric PID** (a name-based `emu kill` phrase is blocked by the shell guard):
 
@@ -139,8 +140,10 @@ ps aux | grep -i 'expo run' | grep -v grep | awk '{print $2}'      # -> PID
 kill <PID>
 ```
 
-Verify clean: `adb devices` shows none, and no `qemu-system` / `Simulator` / `expo run`
-processes remain.
+Verify clean before booting the other platform: `adb devices` shows none, and no
+`qemu-system` / `Simulator` / `expo run` processes remain. Do not leave both
+platform emulators running at once; their combined resource demand makes native
+builds and gate behavior unreliable.
 
 ## TL;DR
 

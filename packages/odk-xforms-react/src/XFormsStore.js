@@ -1,4 +1,4 @@
-import { XFORMS_EVENT_TYPES, XFormsHostError } from '../../odk-xforms-host/src/index.js';
+import { XFORMS_EVENT_TYPES, XFormsHostError } from 'odk-xforms-host';
 
 export const XFORMS_REACT_PHASES = Object.freeze({
   IDLE: 'idle',
@@ -50,6 +50,7 @@ export class XFormsStore {
     this.state = {
       phase: XFORMS_REACT_PHASES.IDLE,
       snapshot: null,
+      renderModel: null,
       error: null,
       lastEvent: null,
       updatedAt: Date.now(),
@@ -140,7 +141,7 @@ export class XFormsStore {
     }
   }
 
-  async loadForm(xml) {
+  async loadForm(xml, attachments = null) {
     this.ensureNotDisposed();
     this.start();
     this.setState({
@@ -149,13 +150,14 @@ export class XFormsStore {
     });
     try {
       await this.host.initialize();
-      const loadResult = await this.host.loadForm(xml);
+      const loadResult = await this.host.loadForm(xml, attachments);
       const snapshot = loadResult?.snapshot ?? (await this.host.getSnapshot());
       this.setState({
         phase: XFORMS_REACT_PHASES.READY,
         snapshot,
         error: null,
       });
+      await this.tryRefreshRenderModel();
       return loadResult;
     } catch (error) {
       const resolved = resolveError(error, 'Failed to load form');
@@ -164,6 +166,65 @@ export class XFormsStore {
         error: resolved,
       });
       throw resolved;
+    }
+  }
+
+  /**
+   * Loads a form definition and restores a previously serialized instance.
+   * Delegates to the host's `loadInstance` (engine `restoreInstance`), so it
+   * reopens saved answers correctly rather than replaying setValue calls.
+   */
+  async loadInstance(xml, instanceXml, attachments = null) {
+    this.ensureNotDisposed();
+    this.start();
+    this.setState({
+      phase: XFORMS_REACT_PHASES.LOADING,
+      error: null,
+    });
+    try {
+      await this.host.initialize();
+      const loadResult = await this.host.loadInstance(xml, instanceXml, attachments);
+      const snapshot = loadResult?.snapshot ?? (await this.host.getSnapshot());
+      this.setState({
+        phase: XFORMS_REACT_PHASES.READY,
+        snapshot,
+        error: null,
+      });
+      await this.tryRefreshRenderModel();
+      return loadResult;
+    } catch (error) {
+      const resolved = resolveError(error, 'Failed to load instance');
+      this.setState({
+        phase: XFORMS_REACT_PHASES.ERROR,
+        error: resolved,
+      });
+      throw resolved;
+    }
+  }
+
+  /**
+   * Fetches the engine-derived {@link FormRenderModel} and stores it. Throws if
+   * the host cannot provide one; use {@link tryRefreshRenderModel} for a
+   * best-effort variant that tolerates hosts without render-model support.
+   */
+  async refreshRenderModel() {
+    this.ensureNotDisposed();
+    this.start();
+    const renderModel = await this.host.getRenderModel();
+    this.setState({ renderModel });
+    return renderModel;
+  }
+
+  async tryRefreshRenderModel() {
+    if (typeof this.host.getRenderModel !== 'function') {
+      return null;
+    }
+    try {
+      const renderModel = await this.host.getRenderModel();
+      this.setState({ renderModel });
+      return renderModel;
+    } catch (error) {
+      return null;
     }
   }
 
@@ -211,6 +272,7 @@ export class XFormsStore {
         snapshot,
         error: null,
       });
+      await this.tryRefreshRenderModel();
       return result;
     } catch (error) {
       const resolved = resolveError(error, `Failed to set value for ${reference}`);
@@ -233,6 +295,7 @@ export class XFormsStore {
         snapshot,
         error: null,
       });
+      await this.tryRefreshRenderModel();
       return result;
     } catch (error) {
       const resolved = resolveError(error, `Failed to add repeat for ${reference}`);
@@ -255,6 +318,7 @@ export class XFormsStore {
         snapshot,
         error: null,
       });
+      await this.tryRefreshRenderModel();
       return result;
     } catch (error) {
       const resolved = resolveError(error, `Failed to remove repeat for ${reference}`);
@@ -306,6 +370,7 @@ export class XFormsStore {
           error: resolved,
         });
       });
+      this.tryRefreshRenderModel().catch(() => {});
       return;
     }
     if (event?.type === XFORMS_EVENT_TYPES.LIFECYCLE) {

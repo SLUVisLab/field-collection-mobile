@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { XFormsHost } from '../../odk-xforms-host/src/index.js';
+import { XFormsHost } from 'odk-xforms-host';
 import { XFormsStore, XFORMS_REACT_PHASES, areNodeStatesEqual } from '../src/XFormsStore.js';
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -95,13 +95,45 @@ class FakeHost extends XFormsHost {
     return { initialized: true };
   }
 
-  async loadForm(xml) {
+  async loadForm(xml, attachments = null) {
     if (typeof xml !== 'string' || xml.length === 0) {
       throw new Error('xml required');
     }
+    this.loadedAttachments = attachments;
     return {
       loadStatus: 'success',
       snapshot: clone(this.snapshot),
+    };
+  }
+
+  async loadInstance(xml, instanceXml, attachments = null) {
+    if (typeof xml !== 'string' || xml.length === 0) {
+      throw new Error('xml required');
+    }
+    if (typeof instanceXml !== 'string' || instanceXml.length === 0) {
+      throw new Error('instanceXml required');
+    }
+    this.restoredInstanceXml = instanceXml;
+    this.restoredAttachments = attachments;
+    return {
+      loadStatus: 'success',
+      mode: 'restore',
+      snapshot: clone(this.snapshot),
+    };
+  }
+
+  async getRenderModel() {
+    this.renderModelCalls = (this.renderModelCalls ?? 0) + 1;
+    return {
+      generatedAt: new Date().toISOString(),
+      activeLanguage: null,
+      languages: [],
+      nodeCount: 3,
+      nodes: [
+        { nodeId: 'n0', reference: '/data', nodeType: 'root', label: null, hint: null, appearances: [], depth: 0, parentReference: null, childCount: 2 },
+        { nodeId: 'n1', reference: '/data/age', nodeType: 'input', label: 'Age', hint: 'Years', appearances: [], valueType: 'int', depth: 1, parentReference: '/data', childCount: null },
+        { nodeId: 'n2', reference: '/data/choice', nodeType: 'select', label: 'Fruit', hint: null, appearances: ['minimal'], selectType: 'select1', depth: 1, parentReference: '/data', childCount: null },
+      ],
     };
   }
 
@@ -190,6 +222,71 @@ class FakeHost extends XFormsHost {
     this.disposed = true;
   }
 }
+
+test('XFormsStore loadForm best-effort populates the engine render model', async () => {
+  const host = new FakeHost();
+  const store = new XFormsStore({ host });
+  await store.loadForm('<xml />');
+  const model = store.getState().renderModel;
+  assert.ok(model, 'render model should be populated after loadForm');
+  // The nodes array is the structural sequence (engine document order).
+  assert.deepEqual(
+    model.nodes.map((node) => node.reference),
+    ['/data', '/data/age', '/data/choice']
+  );
+  assert.equal(model.nodes[1].nodeType, 'input');
+  assert.equal(model.nodes[1].label, 'Age');
+  assert.equal(model.nodes[2].selectType, 'select1');
+  assert.deepEqual(model.nodes[2].appearances, ['minimal']);
+  await store.dispose();
+});
+
+test('XFormsStore loadInstance restores a serialized instance via the host', async () => {
+  const host = new FakeHost();
+  const store = new XFormsStore({ host });
+  const result = await store.loadInstance('<xml />', '<data><age>18</age></data>');
+  assert.equal(result.mode, 'restore');
+  assert.equal(host.restoredInstanceXml, '<data><age>18</age></data>');
+  const state = store.getState();
+  assert.equal(state.phase, XFORMS_REACT_PHASES.READY);
+  assert.equal(state.snapshot.nodesByReference['/data/age'].value, '18');
+  assert.ok(state.renderModel, 'render model populated after loadInstance');
+  await store.dispose();
+});
+
+test('XFormsStore forwards cached resource attachments through the public actions', async () => {
+  const host = new FakeHost();
+  const store = new XFormsStore({ host });
+  const attachments = [{ filename: 'plants.csv', contentType: 'text/csv', text: 'name,label\n' }];
+  await store.loadForm('<xml />', attachments);
+  assert.deepEqual(host.loadedAttachments, attachments);
+  await store.loadInstance('<xml />', '<data />', attachments);
+  assert.deepEqual(host.restoredAttachments, attachments);
+  await store.dispose();
+});
+
+test('XFormsStore refreshRenderModel re-fetches the model on demand', async () => {
+  const host = new FakeHost();
+  const store = new XFormsStore({ host });
+  await store.loadForm('<xml />');
+  const callsAfterLoad = host.renderModelCalls;
+  const model = await store.refreshRenderModel();
+  assert.equal(model.nodeCount, 3);
+  assert.equal(host.renderModelCalls, callsAfterLoad + 1);
+  await store.dispose();
+});
+
+test('XFormsStore tolerates hosts without render-model support', async () => {
+  class NoRenderModelHost extends FakeHost {}
+  const host = new NoRenderModelHost();
+  // Simulate a host that does not implement getRenderModel.
+  host.getRenderModel = undefined;
+  const store = new XFormsStore({ host });
+  await store.loadForm('<xml />');
+  assert.equal(store.getState().renderModel, null);
+  assert.equal(store.getState().phase, XFORMS_REACT_PHASES.READY);
+  await store.dispose();
+});
 
 test('XFormsStore loadForm initializes host state and snapshot', async () => {
   const host = new FakeHost();

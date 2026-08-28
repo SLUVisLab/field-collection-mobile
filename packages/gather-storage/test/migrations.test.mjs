@@ -41,7 +41,67 @@ const makeFakeDb = (startVersion = 0) => {
 test('the shipped MIGRATIONS are well-ordered', () => {
   assert.doesNotThrow(() => assertMigrationOrder(MIGRATIONS));
   assert.equal(latestVersion(MIGRATIONS), MIGRATIONS.length);
-  assert.equal(latestVersion(MIGRATIONS), 1);
+  assert.equal(latestVersion(MIGRATIONS), 6);
+});
+
+test('migration 3 provisions append-only form versions and draft references', () => {
+  const catalog = MIGRATIONS.find((m) => m.version === 3);
+  assert.ok(catalog, 'version 3 migration exists');
+  assert.equal(catalog.name, 'form_catalog');
+  const sql = catalog.statements.join('\n');
+  assert.match(sql, /CREATE TABLE forms/);
+  assert.match(sql, /CREATE TABLE form_versions/);
+  assert.match(sql, /CREATE TABLE form_resources/);
+  assert.match(sql, /CREATE TABLE drafts/);
+  assert.match(sql, /CREATE TRIGGER form_versions_immutable[\s\S]*BEFORE UPDATE/);
+  assert.match(sql, /CREATE TRIGGER form_resources_immutable[\s\S]*BEFORE UPDATE/);
+});
+
+test('migration 4 provisions XML-backed instances with immutable form identity', () => {
+  const instances = MIGRATIONS.find((m) => m.version === 4);
+  assert.ok(instances, 'version 4 migration exists');
+  assert.equal(instances.name, 'instances');
+  const sql = instances.statements.join('\n');
+  assert.match(sql, /CREATE TABLE instances/);
+  assert.match(sql, /local_instance_id\s+TEXT PRIMARY KEY/);
+  assert.match(sql, /odk_instance_id\s+TEXT NOT NULL/);
+  assert.match(sql, /state\s+TEXT NOT NULL DEFAULT 'draft'[\s\S]*'draft', 'ready', 'sent'/);
+  assert.match(sql, /xml_file_key\s+TEXT NOT NULL/);
+  assert.match(sql, /instances_require_exact_form_version/);
+  assert.match(sql, /instances_form_identity_immutable/);
+});
+
+test('migration 5 provisions relative-keyed per-instance media metadata', () => {
+  const media = MIGRATIONS.find((m) => m.version === 5);
+  assert.ok(media, 'version 5 migration exists');
+  assert.equal(media.name, 'instance_media');
+  const sql = media.statements.join('\n');
+  assert.match(sql, /CREATE TABLE instance_media/);
+  assert.match(sql, /binding_reference\s+TEXT NOT NULL/);
+  assert.match(sql, /filename\s+TEXT NOT NULL/);
+  assert.match(sql, /file_key\s+TEXT NOT NULL/);
+  assert.match(sql, /REFERENCES instances\(local_instance_id\) ON DELETE CASCADE/);
+});
+
+test('migration 6 removes instances before project cascade preserves immutable version safety', () => {
+  const cleanup = MIGRATIONS.find((m) => m.version === 6);
+  assert.ok(cleanup, 'version 6 migration exists');
+  assert.equal(cleanup.name, 'project_instance_cleanup');
+  const sql = cleanup.statements.join('\n');
+  assert.match(sql, /CREATE TRIGGER projects_delete_instances/);
+  assert.match(sql, /BEFORE DELETE ON projects/);
+  assert.match(sql, /DELETE FROM instances WHERE project_key = OLD\.project_key/);
+});
+
+test('migration 2 provisions the projects table with a single-active guard', () => {
+  const projects = MIGRATIONS.find((m) => m.version === 2);
+  assert.ok(projects, 'version 2 migration exists');
+  assert.equal(projects.name, 'projects');
+  const sql = projects.statements.join('\n');
+  assert.match(sql, /CREATE TABLE projects/);
+  assert.match(sql, /project_key\s+TEXT PRIMARY KEY/);
+  // The partial unique index is what enforces "at most one active project".
+  assert.match(sql, /CREATE UNIQUE INDEX projects_single_active[\s\S]*WHERE is_active = 1/);
 });
 
 test('assertMigrationOrder rejects non-contiguous or non-integer versions', () => {

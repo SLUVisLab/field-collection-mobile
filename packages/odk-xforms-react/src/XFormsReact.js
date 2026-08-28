@@ -15,6 +15,7 @@ const XFormsStoreContext = createContext(null);
 const isSameValue = Object.is;
 
 const selectSnapshot = (state) => state.snapshot;
+const selectRenderModel = (state) => state.renderModel;
 const selectPhase = (state) => state.phase;
 const selectError = (state) => state.error;
 const selectLastEvent = (state) => state.lastEvent;
@@ -54,14 +55,18 @@ export const useXForm = () => {
   const store = useStore();
   const phase = useXFormSelector(selectPhase);
   const snapshot = useXFormSelector(selectSnapshot);
+  const renderModel = useXFormSelector(selectRenderModel);
   const error = useXFormSelector(selectError);
   const lastEvent = useXFormSelector(selectLastEvent);
 
   const actions = useMemo(
     () => ({
       initialize: () => store.initialize(),
-      loadForm: (xml) => store.loadForm(xml),
+      loadForm: (xml, attachments = null) => store.loadForm(xml, attachments),
+      loadInstance: (xml, instanceXml, attachments = null) =>
+        store.loadInstance(xml, instanceXml, attachments),
       refreshSnapshot: (reason) => store.refreshSnapshot(reason),
+      refreshRenderModel: () => store.refreshRenderModel(),
       setValue: (reference, value) => store.setValue(reference, value),
       addRepeat: (reference) => store.addRepeat(reference),
       removeRepeat: (reference, instanceId = null) => store.removeRepeat(reference, instanceId),
@@ -74,6 +79,7 @@ export const useXForm = () => {
   return {
     phase,
     snapshot,
+    renderModel,
     error,
     lastEvent,
     ready: phase === XFORMS_REACT_PHASES.READY,
@@ -81,6 +87,13 @@ export const useXForm = () => {
     ...actions,
   };
 };
+
+/**
+ * Read-only access to the engine-derived, ordered {@link FormRenderModel} — the
+ * label/hint/control-type/appearance/structural-sequence metadata a native UI
+ * uses to lay out the form. `nodes` is already in engine document order.
+ */
+export const useXFormsRenderModel = () => useXFormSelector(selectRenderModel);
 
 export const useXFormsNode = (reference) => {
   const store = useStore();

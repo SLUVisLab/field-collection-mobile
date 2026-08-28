@@ -7,5 +7,6 @@ export {
   useXFormsChoices,
   useXFormsNode,
   useXFormsQuestion,
+  useXFormsRenderModel,
   useXFormsRepeat,
 } from './XFormsReact.js';

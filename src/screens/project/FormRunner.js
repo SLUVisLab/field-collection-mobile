@@ -1,0 +1,370 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { useNavigate, useParams } from 'react-router-native';
+import { WebView } from 'react-native-webview';
+import { File } from 'expo-file-system';
+
+import {
+  WebViewXFormsHost,
+  createSidecarWebViewProps,
+  createWebViewSidecarHtml,
+} from 'odk-xforms-webview';
+import { XFormsProvider, useXForm } from 'odk-xforms-react';
+
+import { Screen } from '../../components/Screen.js';
+import { ActionButton, NavButton } from '../../components/NavButton.js';
+import { useGather } from '../../context/GatherContext.js';
+import { useBackGuardRegistry } from '../../navigation/BackGuardContext.js';
+import { tokens } from '../../theme/tokens.js';
+import { useTheme } from '../../theme/useTheme.js';
+import { XFormsRenderer } from '../../xforms/XFormsRenderer.js';
+import { outlineFor } from '../../xforms/renderModel.js';
+
+function RunnerBody({ formId, localInstanceId = null }) {
+  const { actions, activeProject } = useGather();
+  const form = useXForm();
+  const navigate = useNavigate();
+  const backGuards = useBackGuardRegistry();
+  const {
+    loadCachedForm,
+    resumeInstance,
+    saveInstanceDraft,
+    finalizeInstance,
+    attachImageMedia,
+    discardInstance,
+  } = actions;
+  const { loadForm, loadInstance } = form;
+  const scrollRef = useRef(null);
+  const layouts = useRef(new Map());
+  const [loadingCache, setLoadingCache] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  const [version, setVersion] = useState(null);
+  const [instance, setInstance] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [showExitChoices, setShowExitChoices] = useState(false);
+  const theme = useTheme();
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      setLoadingCache(true);
+      setLoadError(null);
+      setMessage(null);
+      try {
+        if (localInstanceId) {
+          const resumed = await resumeInstance({ localInstanceId, form: { loadInstance } });
+          if (!cancelled) {
+            setInstance(resumed.instance);
+            setVersion(resumed.version);
+          }
+        } else {
+          const cached = await loadCachedForm(formId);
+          await loadForm(cached.xml, cached.attachments);
+          if (!cancelled) setVersion(cached.version);
+        }
+      } catch {
+        if (!cancelled) {
+          setLoadError(
+            localInstanceId
+              ? 'This saved draft cannot be resumed. Its exact cached form version is unavailable.'
+              : 'This form is not available offline. Refresh Forms before filling it out.'
+          );
+        }
+      } finally {
+        if (!cancelled) setLoadingCache(false);
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    activeProject?.projectKey,
+    formId,
+    localInstanceId,
+    loadCachedForm,
+    loadForm,
+    loadInstance,
+    resumeInstance,
+  ]);
+
+  const saveDraft = useCallback(async () => {
+    if (!version || busy) return false;
+    setBusy(true);
+    setMessage(null);
+    try {
+      const saved = await saveInstanceDraft({
+        localInstanceId: instance?.localInstanceId ?? null,
+        form: { serialize: form.serialize },
+        version,
+      });
+      setInstance(saved);
+      setMessage('Draft saved on this device.');
+      return true;
+    } catch (error) {
+      setMessage(error?.message ?? 'Could not save this draft.');
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }, [busy, form.serialize, instance?.localInstanceId, saveInstanceDraft, version]);
+
+  const attachCapturedImage = useCallback(
+    async (node, capture) => {
+      if (!version || busy || !node?.reference || typeof capture?.uri !== 'string') return false;
+      setBusy(true);
+      setMessage(null);
+      try {
+        const sourceFile = new File(capture.uri);
+        if (!sourceFile.exists) throw new Error('The captured image is unavailable.');
+        const bound = await attachImageMedia({
+          localInstanceId: instance?.localInstanceId ?? null,
+          form: { setValue: form.setValue, serialize: form.serialize },
+          version,
+          reference: node.reference,
+          sourceFile,
+          contentType: capture.contentType,
+        });
+        setInstance(bound.instance);
+        setMessage('Captured image attached and saved in this draft.');
+        return true;
+      } catch (error) {
+        setMessage(error?.message ?? 'Could not attach the captured image.');
+        return false;
+      } finally {
+        setBusy(false);
+      }
+    },
+    [attachImageMedia, busy, form.serialize, form.setValue, instance?.localInstanceId, version]
+  );
+
+  const finalize = async () => {
+    if (!version || busy) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      const ready = await finalizeInstance({
+        localInstanceId: instance?.localInstanceId ?? null,
+        form: { serialize: form.serialize },
+        version,
+      });
+      setInstance(ready);
+      navigate(`/project/drafts/${encodeURIComponent(ready.localInstanceId)}`, { replace: true });
+    } catch (error) {
+      setMessage(error?.message ?? 'Could not mark this form ready.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const requestExit = useCallback(() => {
+    if (!busy) setShowExitChoices(true);
+  }, [busy]);
+
+  useEffect(() => backGuards?.register(requestExit), [backGuards, requestExit]);
+
+  const exitAfterSave = async () => {
+    const saved = await saveDraft();
+    if (saved) {
+      setShowExitChoices(false);
+      navigate('/project/forms');
+    }
+  };
+
+  const discardAndExit = async () => {
+    if (busy) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      if (instance?.localInstanceId) await discardInstance(instance.localInstanceId);
+      setShowExitChoices(false);
+      navigate('/project/forms');
+    } catch (error) {
+      setMessage(error?.message ?? 'Could not discard this draft.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const outline = outlineFor(form.renderModel, form.snapshot);
+  const scrollTo = (reference) => {
+    const y = layouts.current.get(reference);
+    if (typeof y === 'number') scrollRef.current?.scrollTo({ y: Math.max(0, y - 16), animated: true });
+  };
+
+  return (
+    <Screen
+      screenId="project-form"
+      title={version?.displayName ?? 'Fill out form'}
+      subtitle={version?.sourceVersion ? `Version ${version.sourceVersion}` : formId}
+      canGoBack
+      onBack={requestExit}
+      scrollRef={scrollRef}
+    >
+      {loadingCache || form.loading ? <ActivityIndicator color={theme.colors.primary} /> : null}
+      {loadError ? (
+        <>
+          <Text style={[styles.error, { color: theme.colors.danger, lineHeight: tokens.typography.bodyLineHeight }]}>
+            {loadError}
+          </Text>
+          <NavButton to="/project/forms" label="Back to Forms" testID="back-to-forms" />
+        </>
+      ) : null}
+      {form.error ? (
+        <Text style={[styles.error, { color: theme.colors.danger, lineHeight: tokens.typography.bodyLineHeight }]}>
+          Form engine error: {form.error.message}
+        </Text>
+      ) : null}
+      {message ? (
+        <Text style={[styles.message, { color: theme.colors.success, lineHeight: tokens.typography.bodyLineHeight }]}>
+          {message}
+        </Text>
+      ) : null}
+      {instance ? (
+        <Text style={[styles.instanceStatus, { color: theme.colors.textMuted, fontSize: tokens.typography.helper }]}>
+          {instance.state === 'draft' ? 'Saving draft' : instance.state}
+        </Text>
+      ) : null}
+      {form.ready && outline.length > 0 ? (
+        <View style={[styles.outline, { backgroundColor: theme.colors.surface, borderRadius: tokens.radii.md, gap: tokens.spacing.xs, padding: tokens.spacing.md }]}>
+          <Text style={[styles.outlineTitle, { color: theme.colors.text }]}>Form outline</Text>
+          {outline.map((entry) => (
+            <Pressable
+              key={entry.reference}
+              accessibilityLabel={`Jump to ${entry.label}`}
+              accessibilityRole="button"
+              onPress={() => scrollTo(entry.reference)}
+              style={({ pressed }) => [
+                styles.outlineItem,
+                {
+                  borderRadius: tokens.radii.sm,
+                  marginLeft: Math.min(entry.depth, 3) * tokens.spacing.sm,
+                  minHeight: tokens.interaction.minimumTouchTarget,
+                },
+                pressed && styles.outlineItemPressed,
+                pressed && { backgroundColor: theme.colors.surfaceMuted },
+              ]}
+              testID={`outline-${entry.reference}`}
+            >
+              <Text style={[styles.outlineText, { color: theme.colors.primary, fontSize: tokens.typography.helper }]}>
+                {entry.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
+      {form.ready ? (
+        <XFormsRenderer
+          onAttachImage={attachCapturedImage}
+          attachBusy={busy}
+          onNodeLayout={(reference, event) => layouts.current.set(reference, event.nativeEvent.layout.y)}
+        />
+      ) : null}
+      {form.ready && version ? (
+        <View style={[styles.lifecycleActions, { gap: tokens.spacing.sm, marginTop: tokens.spacing.md }]}>
+          <ActionButton
+            onPress={() => void saveDraft()}
+            label={busy ? 'Saving…' : 'Save draft'}
+            disabled={busy}
+            testID="save-draft"
+          />
+          <ActionButton
+            onPress={finalize}
+            label={busy ? 'Checking…' : 'Mark ready to send'}
+            disabled={busy}
+            testID="finalize-instance"
+          />
+          <ActionButton
+            onPress={requestExit}
+            label="Exit form"
+            tone="danger"
+            disabled={busy}
+            testID="exit-form"
+          />
+        </View>
+      ) : null}
+      <Modal visible={showExitChoices} transparent animationType="fade" onRequestClose={() => setShowExitChoices(false)}>
+        <View style={[styles.modalBackdrop, { backgroundColor: theme.colors.overlay, padding: tokens.spacing.xxl }]}>
+          <View style={[styles.modal, { backgroundColor: theme.colors.background, borderRadius: tokens.radii.lg, gap: tokens.spacing.md, padding: tokens.spacing.xl }]}>
+            <Text style={[styles.modalTitle, { color: theme.colors.text, fontSize: tokens.typography.heading }]}>
+              Leave this form?
+            </Text>
+            <Text style={[styles.modalText, { color: theme.colors.textMuted, lineHeight: tokens.typography.bodyLineHeight }]}>
+              Choose whether to save the current XML draft or discard it.
+            </Text>
+            <ActionButton
+              onPress={() => void exitAfterSave()}
+              label={busy ? 'Saving…' : 'Save draft and exit'}
+              disabled={busy || !version}
+              testID="save-draft-and-exit"
+            />
+            <ActionButton
+              onPress={() => setShowExitChoices(false)}
+              label="Continue filling"
+              disabled={busy}
+              testID="continue-filling"
+            />
+            <ActionButton
+              onPress={() => void discardAndExit()}
+              label="Discard form"
+              tone="danger"
+              disabled={busy}
+              testID="discard-form"
+            />
+          </View>
+        </View>
+      </Modal>
+    </Screen>
+  );
+}
+
+/**
+ * Native UI is intentionally a thin projection over `FormRenderModel` plus the
+ * engine snapshot. The hidden WebView is the only engine owner; React stores no
+ * separate question schema or answer model.
+ */
+export function FormRunner() {
+  const { formId = '', instanceId = null } = useParams();
+  const webViewRef = useRef(null);
+  const host = useMemo(() => new WebViewXFormsHost({ webViewRef, requestTimeoutMs: 45_000 }), []);
+  const html = useMemo(() => createWebViewSidecarHtml(), []);
+  const webViewProps = useMemo(
+    () => createSidecarWebViewProps({ html, onMessage: (event) => host.handleWebViewMessage(event) }),
+    [html, host]
+  );
+
+  return (
+    <XFormsProvider host={host}>
+      <RunnerBody formId={formId} localInstanceId={instanceId} />
+      <WebView ref={webViewRef} {...webViewProps} />
+    </XFormsProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  outline: {},
+  outlineTitle: { fontWeight: '700' },
+  outlineItem: { justifyContent: 'center', paddingHorizontal: 4, paddingVertical: 5 },
+  outlineItemPressed: { opacity: 0.82 },
+  outlineText: {},
+  error: {},
+  message: {},
+  instanceStatus: { fontWeight: '600' },
+  lifecycleActions: {},
+  modalBackdrop: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  modal: { maxWidth: 420, width: '100%' },
+  modalTitle: { fontWeight: '700' },
+  modalText: {},
+});

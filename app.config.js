@@ -20,6 +20,7 @@ module.exports = {
     owner: "slu-vislab",
     version: "1.2.0",
     orientation: "portrait",
+    userInterfaceStyle: "automatic",
     icon: "./assets/icons/ios-light.png",
     jsEngine: "hermes",
     splash: {
@@ -71,12 +72,20 @@ module.exports = {
         projectId: "85d34a0b-4af9-4431-8099-ba589933002a",
       },
     },
-    // Plugins to re-add with their dependencies in later milestones:
-    //   "@react-native-firebase/app", "@react-native-firebase/crashlytics",
-    //   ["expo-build-properties", { ios: { useFrameworks: "static" } }],
-    //   ["expo-location", ...], ["expo-camera", ...], ["expo-av", ...],
-    //   ["react-native-permissions", ...]
-    plugins: ["expo-sqlite", "expo-secure-store"],
+    // MapLibre's config plugin configures its native SDK dependencies. Camera
+    // permissions are declared above per VisionCamera's Expo integration.
+    plugins: [
+      "expo-sqlite",
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          locationWhenInUsePermission:
+            "Allow $(PRODUCT_NAME) to access your location while using the app.",
+        },
+      ],
+      "@maplibre/maplibre-react-native",
+    ],
     runtimeVersion: {
       policy: "appVersion",
     },
