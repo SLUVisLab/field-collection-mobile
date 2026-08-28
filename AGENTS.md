@@ -18,7 +18,9 @@ ODK XForms substrate. This branch replaced the legacy Expo 51 app with a fresh
     odk-xforms-host/       runtime-neutral XForms host interface + types
     odk-xforms-webview/    concrete WebView-sidecar host implementation
     odk-xforms-react/      React bindings (provider/store/hooks)
+    gather-storage/        durable local storage (SQLite/FileSystem/SecureStore)
   scripts/                dev + emulator tooling
+  gates/                  on-device verification harnesses (not the app entry)
   docs/                   project docs (incl. emulator-gate-runbook.md)
   reference/              ODK Central API / web-client reference (read-only)
   archive/                frozen legacy app + experiments (reference only, not built)
@@ -115,6 +117,4 @@ dependency as the capability lands. The full original config is preserved in
 ## Git conventions
 
 - Commit messages follow Conventional Commits (`feat:`, `fix:`, `chore:` …).
-- Include the trailer on agent commits:
-  `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>`
 - Never force-push, amend, or skip hooks without explicit approval.

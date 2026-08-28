@@ -76,7 +76,7 @@ module.exports = {
     //   ["expo-build-properties", { ios: { useFrameworks: "static" } }],
     //   ["expo-location", ...], ["expo-camera", ...], ["expo-av", ...],
     //   ["react-native-permissions", ...]
-    plugins: [],
+    plugins: ["expo-sqlite", "expo-secure-store"],
     runtimeVersion: {
       policy: "appVersion",
     },
