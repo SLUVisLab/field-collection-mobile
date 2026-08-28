@@ -53,6 +53,38 @@ test('createWebViewSidecarHtml includes expected bridge hooks and configurable e
   assert.match(html, /test-bridge-v1/);
 });
 
+test('createWebViewSidecarHtml exposes a generic fetchFormAttachment resource seam', () => {
+  const html = createWebViewSidecarHtml();
+  // The sidecar builds a fetchFormAttachment from provided attachments and
+  // passes it to the engine's loadForm — the external-resource mechanism used
+  // for Entity List CSVs and other jr: resources.
+  assert.match(html, /fetchFormAttachment/);
+  assert.match(html, /buildLoadFormOptions/);
+  assert.match(html, /state\.loadForm\(xml, options\)/);
+});
+
+test('WebViewXFormsHost.loadForm forwards resource attachments in the request payload', async () => {
+  const mock = createMockRef();
+  const host = new WebViewXFormsHost({ webViewRef: mock.ref, requestTimeoutMs: 250 });
+  host.handleWebViewMessage(toMessageEvent({ type: 'ready', payload: {} }));
+  await flushMicrotasks();
+
+  const attachments = [{ filename: 'plants.csv', contentType: 'text/csv', text: 'name,label\n' }];
+  const loadPromise = host.loadForm('<xml/>', attachments);
+  await flushMicrotasks();
+
+  const request = extractRequest(mock.injectedScripts.at(-1));
+  assert.equal(request.type, 'loadForm');
+  assert.equal(request.payload.xml, '<xml/>');
+  assert.deepEqual(request.payload.attachments, attachments);
+
+  host.handleWebViewMessage(
+    toMessageEvent({ id: request.id, type: 'response', ok: true, payload: { loadStatus: 'success' } })
+  );
+  await loadPromise;
+  await host.dispose();
+});
+
 test('createSidecarWebViewProps returns expected hidden WebView defaults', () => {
   const onMessage = () => {};
   const props = createSidecarWebViewProps({

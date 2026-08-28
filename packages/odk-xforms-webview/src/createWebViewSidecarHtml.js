@@ -259,6 +259,60 @@ export const createWebViewSidecarHtml = ({
         }
       };
 
+      const base64ToBytes = (base64) => {
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes;
+      };
+
+      // Generic external-resource seam. The stock engine calls
+      // fetchFormAttachment(url) for each jr: URL a form references (e.g.
+      // jr://file-csv/plants.csv, jr://images/logo.png). We resolve it from an
+      // in-memory map keyed by filename (the jr: URL's trailing segment) and
+      // return a standard Response. This is deliberately generic — any CSV
+      // (including an Entity List), media, or other external form resource works;
+      // there is no Entity-specific logic here.
+      const buildLoadFormOptions = (attachments) => {
+        if (!Array.isArray(attachments) || attachments.length === 0) {
+          return undefined;
+        }
+        const byFilename = new Map();
+        for (const attachment of attachments) {
+          if (attachment && typeof attachment.filename === "string") {
+            byFilename.set(attachment.filename, attachment);
+          }
+        }
+        const fetchFormAttachment = async (resourceUrl) => {
+          const href =
+            typeof resourceUrl === "string"
+              ? resourceUrl
+              : resourceUrl?.href ?? String(resourceUrl);
+          const filename = decodeURIComponent(href.split("/").pop() ?? "");
+          const found = byFilename.get(filename);
+          if (found == null) {
+            return new Response(null, { status: 404, statusText: "Not Found" });
+          }
+          const contentType = found.contentType ?? "application/octet-stream";
+          if (typeof found.text === "string") {
+            return new Response(found.text, {
+              status: 200,
+              headers: { "content-type": contentType },
+            });
+          }
+          if (typeof found.base64 === "string") {
+            return new Response(base64ToBytes(found.base64), {
+              status: 200,
+              headers: { "content-type": contentType },
+            });
+          }
+          return new Response(null, { status: 404, statusText: "Empty attachment" });
+        };
+        return { fetchFormAttachment };
+      };
+
       const handlers = {
         async initialize() {
           return ensureInitialized();
@@ -269,7 +323,8 @@ export const createWebViewSidecarHtml = ({
           if (typeof xml !== "string" || xml.trim().length === 0) {
             throw new Error("loadForm requires non-empty xml string payload");
           }
-          const loadResult = await state.loadForm(xml);
+          const options = buildLoadFormOptions(payload?.attachments);
+          const loadResult = await state.loadForm(xml, options);
           if (loadResult.status === "failure") {
             const failure = loadResult.error;
             if (failure instanceof Error) {

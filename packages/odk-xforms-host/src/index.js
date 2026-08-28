@@ -94,6 +94,21 @@ const notImplemented = (methodName) =>
  */
 
 /**
+ * A generic external form resource, referenced by a form via a `jr:` URL and
+ * keyed here by `filename` (the URL's trailing segment). Provide `text` for
+ * UTF-8 resources (e.g. an Entity List / CSV, XML) or `base64` for binary media.
+ * This is intentionally protocol-neutral — the host makes resources available to
+ * the engine without knowing anything about Entities or Central.
+ *
+ * @typedef {{
+ *   filename: string,
+ *   contentType?: string,
+ *   text?: string,
+ *   base64?: string
+ * }} XFormsResourceAttachment
+ */
+
+/**
  * Runtime-neutral form host boundary.
  */
 export class XFormsHost {
@@ -101,7 +116,11 @@ export class XFormsHost {
     throw notImplemented('initialize');
   }
 
-  async loadForm(_xml) {
+  /**
+   * @param {string} _xml
+   * @param {XFormsResourceAttachment[]} [_attachments]
+   */
+  async loadForm(_xml, _attachments) {
     throw notImplemented('loadForm');
   }
 

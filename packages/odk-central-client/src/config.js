@@ -79,6 +79,9 @@ export const createEndpoints = (config) => {
     /** REST `GET /v1/projects/:id/forms/:xmlFormId.xml` — the XForm definition. */
     formXml: (projectId, xmlFormId) =>
       `${v1}/projects/${resolveProjectId(config, projectId)}/forms/${enc(xmlFormId)}.xml`,
+    /** OpenRosa `GET /v1/projects/:id/forms/:xmlFormId/manifest` — field-client resource discovery (App User). */
+    formManifest: (projectId, xmlFormId) =>
+      `${v1}/projects/${resolveProjectId(config, projectId)}/forms/${enc(xmlFormId)}/manifest`,
     /** REST `GET /v1/projects/:id/forms/:xmlFormId/attachments` */
     formAttachments: (projectId, xmlFormId) =>
       `${v1}/projects/${resolveProjectId(config, projectId)}/forms/${enc(xmlFormId)}/attachments`,
@@ -87,6 +90,42 @@ export const createEndpoints = (config) => {
       `${v1}/projects/${resolveProjectId(config, projectId)}/forms/${enc(xmlFormId)}/attachments/${enc(filename)}`,
     /** OpenRosa `POST /v1/projects/:id/submission` */
     submission: (projectId) => `${v1}/projects/${resolveProjectId(config, projectId)}/submission`,
+    /**
+     * REST `GET|POST /v1/projects/:id/actor-properties` — project-scoped Actor
+     * Property name registration/listing (used by Dataset property accessFilter).
+     */
+    actorProperties: (projectId) => `${v1}/projects/${resolveProjectId(config, projectId)}/actor-properties`,
+    /**
+     * REST `GET /v1/projects/:id/datasets` — Entity Lists (called *Datasets* in
+     * the Central developer API, *Entity Lists* in the Central UI). Web User /
+     * admin surface; App Users receive `403`.
+     */
+    datasets: (projectId) => `${v1}/projects/${resolveProjectId(config, projectId)}/datasets`,
+    /** REST `GET /v1/projects/:id/datasets/:name` — Dataset detail (property schema, linked/source forms). */
+    dataset: (projectId, name) =>
+      `${v1}/projects/${resolveProjectId(config, projectId)}/datasets/${enc(name)}`,
+    /**
+     * REST `GET /v1/projects/:id/datasets/:name/entities` — Entity **metadata**
+     * list (uuid + `currentVersion` label/version/conflict fields). This is *not*
+     * a bulk property-data API: the list entries omit `data`; use
+     * {@link createEndpoints.entity} for a single Entity's `data`, or
+     * {@link createEndpoints.datasetEntitiesCsv} for bulk tabular data.
+     */
+    entities: (projectId, name) =>
+      `${v1}/projects/${resolveProjectId(config, projectId)}/datasets/${enc(name)}/entities`,
+    /** REST `GET /v1/projects/:id/datasets/:name/entities/:uuid` — single Entity, including `currentVersion.data`. */
+    entity: (projectId, name, uuid) =>
+      `${v1}/projects/${resolveProjectId(config, projectId)}/datasets/${enc(name)}/entities/${enc(uuid)}`,
+    /**
+     * REST `GET /v1/projects/:id/datasets/:name/entities.csv` — bulk Entity data
+     * as an OData-flavored CSV (`__id,label,…,__createdAt,__version`). This is
+     * the **admin/REST** export and differs from the field-client Entity-List
+     * CSV delivered as a form attachment (`name,label,__version,…`), which is
+     * discovered via the OpenRosa manifest and fetched with
+     * `downloadFormAttachment`.
+     */
+    datasetEntitiesCsv: (projectId, name) =>
+      `${v1}/projects/${resolveProjectId(config, projectId)}/datasets/${enc(name)}/entities.csv`,
   };
 };
 

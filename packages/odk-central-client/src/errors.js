@@ -21,6 +21,10 @@ export const ODK_CENTRAL_ERROR_CODES = Object.freeze({
   NOT_FOUND: 'ODK_CENTRAL_NOT_FOUND',
   /** 409/412 conflict or precondition (e.g. duplicate submission instanceID). */
   CONFLICT: 'ODK_CENTRAL_CONFLICT',
+  /** Entity update rejected because provided baseVersion is stale. */
+  STALE_ENTITY_BASE_VERSION: 'ODK_CENTRAL_STALE_ENTITY_BASE_VERSION',
+  /** A submission was rejected because its instanceID already exists with different XML. */
+  DUPLICATE_INSTANCE: 'ODK_CENTRAL_DUPLICATE_INSTANCE',
   /** 400/422 the request was rejected as invalid. */
   BAD_REQUEST: 'ODK_CENTRAL_BAD_REQUEST',
   /** 5xx server-side failure. */
@@ -61,6 +65,21 @@ export class OdkCentralError extends Error {
 }
 
 /**
+ * Redacts sensitive URL segments (App User `/key/<token>/` path and `st`/`token`
+ * query params) so credentials never appear in error messages or logs.
+ * @param {string} url
+ * @returns {string}
+ */
+export const redactUrl = (url) => {
+  if (typeof url !== 'string') {
+    return url;
+  }
+  return url
+    .replace(/(\/key\/)[^/?#]+/g, '$1<redacted>')
+    .replace(/([?&](?:st|token)=)[^&#]+/g, '$1<redacted>');
+};
+
+/**
  * Maps an HTTP status code to a stable {@link ODK_CENTRAL_ERROR_CODES} value.
  * @param {number} status
  * @returns {string}
@@ -82,18 +101,18 @@ export const codeForHttpStatus = (status) => {
  * helper surfaces that as {@link OdkCentralError.details} when present.
  *
  * @param {{ status: number, url?: string }} response
- * @param {{ bodyText?: string | null, bodyJson?: any }} [parsed]
+ * @param {{ bodyText?: string | null, bodyJson?: any, openRosaMessage?: string | null }} [parsed]
  * @returns {OdkCentralError}
  */
-export const errorFromResponse = (response, { bodyText = null, bodyJson = null } = {}) => {
+export const errorFromResponse = (response, { bodyText = null, bodyJson = null, openRosaMessage = null } = {}) => {
   const status = response.status;
   const code = codeForHttpStatus(status);
   const serverMessage =
-    (bodyJson && typeof bodyJson.message === 'string' && bodyJson.message) || null;
+    (bodyJson && typeof bodyJson.message === 'string' && bodyJson.message) || openRosaMessage || null;
   const message =
     serverMessage != null
       ? `Central request failed (${status}): ${serverMessage}`
-      : `Central request failed (${status})${response.url ? ` for ${response.url}` : ''}`;
+      : `Central request failed (${status})${response.url ? ` for ${redactUrl(response.url)}` : ''}`;
   return new OdkCentralError(message, {
     code,
     httpStatus: status,

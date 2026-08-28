@@ -1,0 +1,3 @@
+# Raw live captures may embed the App User token in /key/<token>/ downloadUrls
+# and other secrets. Never commit them; only sanitized fixtures are committed.
+out/

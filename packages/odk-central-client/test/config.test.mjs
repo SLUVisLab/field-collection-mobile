@@ -34,6 +34,7 @@ test('createEndpoints builds documented Central routes', () => {
     'https://c.example.org/v1/projects/1/forms/f/attachments/a%20b.jpg'
   );
   assert.equal(endpoints.submission(), 'https://c.example.org/v1/projects/1/submission');
+  assert.equal(endpoints.actorProperties(), 'https://c.example.org/v1/projects/1/actor-properties');
 });
 
 test('endpoints allow per-call projectId override and require one', () => {

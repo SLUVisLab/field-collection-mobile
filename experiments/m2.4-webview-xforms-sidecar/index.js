@@ -1,8 +1,7 @@
 import { registerRootComponent } from 'expo';
 
-import App from './App';
+import M466UpdateSlice from './M466UpdateSlice';
 
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
-registerRootComponent(App);
+// M4.6.6 entity-update (observation) gate. Prior gates (./M465RegisterSlice,
+// ./M46EntitySlice, ./M45VerticalSlice, ./M44Smoke, ./App) are preserved.
+registerRootComponent(M466UpdateSlice);

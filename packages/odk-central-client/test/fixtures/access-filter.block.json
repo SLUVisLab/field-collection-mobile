@@ -1,0 +1,13 @@
+{
+  "name": "plants",
+  "ownerOnly": false,
+  "accessFilter": {
+    "type": "property",
+    "rules": [
+      {
+        "datasetProperty": "block",
+        "actorProperty": "block"
+      }
+    ]
+  }
+}

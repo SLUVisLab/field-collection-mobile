@@ -264,8 +264,19 @@ export class WebViewXFormsHost extends XFormsHost {
     return this.sendRequest('initialize', {});
   }
 
-  async loadForm(xml) {
-    return this.sendRequest('loadForm', { xml });
+  /**
+   * Loads a form definition, optionally providing external resources the form
+   * references via `jr:` URLs (e.g. `jr://file-csv/plants.csv`, media).
+   *
+   * @param {string} xml the XForm definition
+   * @param {Array<{ filename: string, contentType?: string, text?: string, base64?: string }>} [attachments]
+   *   generic resource descriptors keyed by `filename` (the `jr:` URL's trailing
+   *   segment). Provide `text` for UTF-8 resources (CSV/XML) or `base64` for
+   *   binary (images). This is protocol-neutral — an Entity List CSV is just one
+   *   kind of external resource.
+   */
+  async loadForm(xml, attachments = null) {
+    return this.sendRequest('loadForm', { xml, attachments });
   }
 
   async getSnapshot() {

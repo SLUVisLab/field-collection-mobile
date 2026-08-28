@@ -1,0 +1,17 @@
+{
+  "scope": "in-process cached-resource characterization",
+  "formId": "silphium_flower_survey_entities",
+  "selectedUuid": "<entity-uuid>",
+  "cachedRowCount": "N",
+  "choiceCount": "N",
+  "cacheHits": 1,
+  "checks": {
+    "choicesMaterialized": true,
+    "selectedUuidMatchesCsv": true,
+    "derivedSiteMatchesCsv": true,
+    "derivedBlockMatchesCsv": true,
+    "entityUpdateBlockPresent": true,
+    "baseVersionFromCachedCsv": true,
+    "serializeContainsObservation": true
+  }
+}

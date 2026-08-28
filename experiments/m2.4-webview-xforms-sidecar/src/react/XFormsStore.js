@@ -140,7 +140,7 @@ export class XFormsStore {
     }
   }
 
-  async loadForm(xml) {
+  async loadForm(xml, attachments = null) {
     this.ensureNotDisposed();
     this.start();
     this.setState({
@@ -149,7 +149,7 @@ export class XFormsStore {
     });
     try {
       await this.host.initialize();
-      const loadResult = await this.host.loadForm(xml);
+      const loadResult = await this.host.loadForm(xml, attachments);
       const snapshot = loadResult?.snapshot ?? (await this.host.getSnapshot());
       this.setState({
         phase: XFORMS_REACT_PHASES.READY,

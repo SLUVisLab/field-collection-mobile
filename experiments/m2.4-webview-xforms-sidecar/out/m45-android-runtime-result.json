@@ -1,0 +1,138 @@
+{
+  "summary": {
+    "platform": "android",
+    "hermes": true,
+    "durationMs": 10936,
+    "phase": "ready",
+    "form": {
+      "formId": "silphium_flower_survey",
+      "version": "20260827184437",
+      "hash": "md5:638805732850a84f0870f26241437c38"
+    },
+    "manifestEntryCount": 1,
+    "serializeStatus": "pending",
+    "serializeViolationCount": 2,
+    "plannedAssignments": [
+      {
+        "reference": "/data/field_site",
+        "value": "M4.5 android-2026-08-28T03:49:39.096Z"
+      },
+      {
+        "reference": "/data/block",
+        "value": 11
+      },
+      {
+        "reference": "/data/column",
+        "value": 12
+      },
+      {
+        "reference": "/data/row",
+        "value": 13
+      },
+      {
+        "reference": "/data/flower_head_count",
+        "value": 3
+      },
+      {
+        "reference": "/data/plant_height_cm",
+        "value": 7.25
+      }
+    ],
+    "appliedAssignments": [
+      {
+        "reference": "/data/field_site",
+        "value": "M4.5 android-2026-08-28T03:49:39.096Z"
+      },
+      {
+        "reference": "/data/block",
+        "value": 11
+      },
+      {
+        "reference": "/data/column",
+        "value": 12
+      },
+      {
+        "reference": "/data/row",
+        "value": 13
+      },
+      {
+        "reference": "/data/flower_head_count",
+        "value": 3
+      },
+      {
+        "reference": "/data/plant_height_cm",
+        "value": 7.25
+      }
+    ],
+    "submitResult": {
+      "status": 201,
+      "message": "full submission upload was successful!",
+      "instanceId": "uuid:66b9bab5-783a-4910-ac7b-1ec0e13ccd08"
+    },
+    "checks": {
+      "discoveredTargetForm": true,
+      "downloadedFormXml": true,
+      "fetchedManifestSurface": true,
+      "reactObservedSnapshot": true,
+      "appliedAtLeastOneMutation": true,
+      "serializeSucceeded": true,
+      "openRosaSubmitSucceeded": true,
+      "submitReturnedInstanceId": true
+    },
+    "stepOutcomes": [
+      {
+        "name": "listForms",
+        "ok": true
+      },
+      {
+        "name": "getFormManifest",
+        "ok": true
+      },
+      {
+        "name": "downloadForm",
+        "ok": true
+      },
+      {
+        "name": "loadFormIntoHost",
+        "ok": true
+      },
+      {
+        "name": "setValue:/data/field_site",
+        "ok": true
+      },
+      {
+        "name": "setValue:/data/block",
+        "ok": true
+      },
+      {
+        "name": "setValue:/data/column",
+        "ok": true
+      },
+      {
+        "name": "setValue:/data/row",
+        "ok": true
+      },
+      {
+        "name": "setValue:/data/flower_head_count",
+        "ok": true
+      },
+      {
+        "name": "setValue:/data/plant_height_cm",
+        "ok": true
+      },
+      {
+        "name": "refreshSnapshot",
+        "ok": true
+      },
+      {
+        "name": "serialize",
+        "ok": true
+      },
+      {
+        "name": "submitSerializedInstance",
+        "ok": true
+      }
+    ],
+    "ok": true
+  }
+}

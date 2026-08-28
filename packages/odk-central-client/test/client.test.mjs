@@ -33,6 +33,29 @@ const createMockFetch = (routes) => {
 
 const BASE = 'https://central.example.org';
 
+test('getFormManifest requests the OpenRosa manifest route and parses mediaFiles', async () => {
+  const manifestXml = await readFixture('manifest.populated.xml');
+  const { fetchImpl, calls } = createMockFetch([
+    { match: '/manifest', method: 'GET', respond: () => new Response(manifestXml, { status: 200, headers: { 'X-OpenRosa-Version': '1.0' } }) },
+  ]);
+  const client = new OdkCentralClient({ baseUrl: BASE, projectId: 1, fetch: fetchImpl });
+
+  const entries = await client.getFormManifest({ formId: 'silphium_flower_survey' });
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].filename, 'silphium-reference.jpg');
+  assert.equal(calls[0].url, `${BASE}/v1/projects/1/forms/silphium_flower_survey/manifest`);
+  assert.equal(calls[0].options.headers['X-OpenRosa-Version'], '1.0');
+});
+
+test('getFormManifest returns [] for an empty manifest', async () => {
+  const manifestXml = await readFixture('manifest.empty.xml');
+  const { fetchImpl } = createMockFetch([
+    { match: '/manifest', method: 'GET', respond: () => new Response(manifestXml, { status: 200 }) },
+  ]);
+  const client = new OdkCentralClient({ baseUrl: BASE, projectId: 1, fetch: fetchImpl });
+  assert.deepEqual(await client.getFormManifest({ formId: 'x' }), []);
+});
+
 test('listForms sends OpenRosa header and parses the form list', async () => {
   const formListXml = await readFixture('formList.xml');
   const { fetchImpl, calls } = createMockFetch([
@@ -82,20 +105,21 @@ test('downloadForm maps a 404 to a NOT_FOUND OdkCentralError', async () => {
   );
 });
 
-test('submit posts a multipart body with xml_submission_file to the submission route', async () => {
-  const responseXml = await readFixture('submission-response.xml');
+test('submit posts a multipart body with xml_submission_file and returns instanceId', async () => {
+  const responseXml = await readFixture('submission-success.xml');
   const { fetchImpl, calls } = createMockFetch([
     { match: '/submission', method: 'POST', respond: () => new Response(responseXml, { status: 201 }) },
   ]);
   const client = new OdkCentralClient({ baseUrl: BASE, projectId: 1, fetch: fetchImpl });
 
   const result = await client.submit({
-    xml: '<data id="m2_4_fixture"><age>17</age></data>',
+    xml: '<data id="m2_4_fixture"><age>17</age><meta><instanceID>uuid:abc-123</instanceID></meta></data>',
     attachments: [{ name: 'photo.jpg', contentType: 'image/jpeg', data: 'BYTES' }],
   });
 
   assert.equal(result.status, 201);
   assert.equal(result.message, 'full submission upload was successful!');
+  assert.equal(result.instanceId, 'uuid:abc-123');
 
   const call = calls[0];
   assert.equal(call.url, `${BASE}/v1/projects/1/submission`);
@@ -108,6 +132,42 @@ test('submit posts a multipart body with xml_submission_file to the submission r
   assert.ok(xmlPart != null);
   assert.match(await xmlPart.text(), /<age>17<\/age>/);
   assert.ok(body.get('photo.jpg') != null);
+});
+
+test('submit maps a 409 (same instanceId, different XML) to DUPLICATE_INSTANCE', async () => {
+  const conflictXml = await readFixture('submission-conflict.xml');
+  const { fetchImpl } = createMockFetch([
+    { match: '/submission', method: 'POST', respond: () => new Response(conflictXml, { status: 409 }) },
+  ]);
+  const client = new OdkCentralClient({ baseUrl: BASE, projectId: 1, fetch: fetchImpl });
+
+  await assert.rejects(
+    client.submit({ xml: '<data><meta><instanceID>uuid:dup</instanceID></meta></data>' }),
+    (error) => {
+      assert.equal(error.code, ODK_CENTRAL_ERROR_CODES.DUPLICATE_INSTANCE);
+      assert.equal(error.httpStatus, 409);
+      assert.equal(error.retryable, false);
+      assert.match(error.message, /already exists with this ID/);
+      return true;
+    }
+  );
+});
+
+test('submit surfaces the OpenRosa <message> from an invalid (400) submission', async () => {
+  const invalidXml = await readFixture('submission-invalid.xml');
+  const { fetchImpl } = createMockFetch([
+    { match: '/submission', method: 'POST', respond: () => new Response(invalidXml, { status: 400 }) },
+  ]);
+  const client = new OdkCentralClient({ baseUrl: BASE, projectId: 1, fetch: fetchImpl });
+
+  await assert.rejects(
+    client.submit({ xml: '<data/>' }),
+    (error) => {
+      assert.equal(error.code, ODK_CENTRAL_ERROR_CODES.BAD_REQUEST);
+      assert.match(error.message, /Required parameter form ID xml attribute missing/);
+      return true;
+    }
+  );
 });
 
 test('session auth performs a single login and reuses the bearer token', async () => {

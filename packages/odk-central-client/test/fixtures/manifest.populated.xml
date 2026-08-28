@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <manifest xmlns="http://openrosa.org/xforms/xformsManifest">
+    <mediaFile>
+      <filename>silphium-reference.jpg</filename>
+      <hash>md5:8112cfe204c4670b26d0e3756443a775</hash>
+      <downloadUrl>https://central.example.org/v1/key/<APP_TOKEN>/projects/1/forms/silphium_flower_survey/attachments/silphium-reference.jpg</downloadUrl>
+    </mediaFile>
+  </manifest>

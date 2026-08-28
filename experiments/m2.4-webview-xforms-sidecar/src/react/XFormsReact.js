@@ -60,7 +60,7 @@ export const useXForm = () => {
   const actions = useMemo(
     () => ({
       initialize: () => store.initialize(),
-      loadForm: (xml) => store.loadForm(xml),
+      loadForm: (xml, attachments = null) => store.loadForm(xml, attachments),
       refreshSnapshot: (reason) => store.refreshSnapshot(reason),
       setValue: (reference, value) => store.setValue(reference, value),
       addRepeat: (reference) => store.addRepeat(reference),

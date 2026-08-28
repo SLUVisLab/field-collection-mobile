@@ -39,3 +39,9 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# M4.4 live smoke: local-only secrets (never commit)
+src/central/liveConfig.local.js
+
+# runtime logs may contain actuated URLs/tokens
+out/*.log

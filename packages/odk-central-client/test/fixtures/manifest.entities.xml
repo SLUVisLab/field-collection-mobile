@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <manifest xmlns="http://openrosa.org/xforms/xformsManifest">
+    <mediaFile type="entityList">
+      <filename>plants.csv</filename>
+      <hash>md5:aa338362eb213bd1ffec7a546f01d1a3</hash>
+      <downloadUrl>https://central.openfieldworks.com/v1/key/<app-user-token>/projects/1/forms/silphium_flower_survey_entities/attachments/plants.csv</downloadUrl>
+      <integrityUrl>https://central.openfieldworks.com/v1/key/<app-user-token>/projects/1/datasets/plants/integrity</integrityUrl>
+    </mediaFile>
+    <mediaFile>
+      <filename>silphium-reference.jpg</filename>
+      <hash>md5:8112cfe204c4670b26d0e3756443a775</hash>
+      <downloadUrl>https://central.openfieldworks.com/v1/key/<app-user-token>/projects/1/forms/silphium_flower_survey_entities/attachments/silphium-reference.jpg</downloadUrl>
+    </mediaFile>
+  </manifest>

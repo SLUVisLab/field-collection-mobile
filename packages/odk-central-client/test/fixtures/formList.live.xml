@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <xforms xmlns="http://openrosa.org/xforms/xformsList">
+    <xform>
+      <formID>silphium_flower_survey</formID>
+      <name>Silphium Flower Survey</name>
+      <version>20260827184437</version>
+      <hash>md5:638805732850a84f0870f26241437c38</hash>
+      <downloadUrl>https://central.example.org/v1/key/<APP_TOKEN>/projects/1/forms/silphium_flower_survey.xml</downloadUrl>
+      <manifestUrl>https://central.example.org/v1/key/<APP_TOKEN>/projects/1/forms/silphium_flower_survey/manifest</manifestUrl>
+    </xform>
+  </xforms>

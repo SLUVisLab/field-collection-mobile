@@ -1,0 +1,21 @@
+{
+  "dataset": "plants",
+  "before": {
+    "version": "N",
+    "status": "active"
+  },
+  "after": {
+    "version": "N+1",
+    "baseVersion": "N",
+    "branchId": null,
+    "trunkVersion": null,
+    "branchBaseVersion": null,
+    "conflictingProperties": null,
+    "conflict": null,
+    "status": "missing"
+  },
+  "characterization": {
+    "onlinePathShape": true,
+    "interpretation": "ordinary online update shape (no branch/conflict fields active)"
+  }
+}

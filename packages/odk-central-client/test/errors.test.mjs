@@ -6,6 +6,7 @@ import {
   ODK_CENTRAL_ERROR_CODES,
   codeForHttpStatus,
   errorFromResponse,
+  redactUrl,
 } from '../src/errors.js';
 
 test('codeForHttpStatus maps statuses to stable codes', () => {
@@ -22,6 +23,7 @@ test('retryable defaults from code but can be overridden', () => {
   assert.equal(new OdkCentralError('x', { code: ODK_CENTRAL_ERROR_CODES.SERVER }).retryable, true);
   assert.equal(new OdkCentralError('x', { code: ODK_CENTRAL_ERROR_CODES.NETWORK }).retryable, true);
   assert.equal(new OdkCentralError('x', { code: ODK_CENTRAL_ERROR_CODES.AUTH }).retryable, false);
+  assert.equal(new OdkCentralError('x', { code: ODK_CENTRAL_ERROR_CODES.STALE_ENTITY_BASE_VERSION }).retryable, false);
   assert.equal(
     new OdkCentralError('x', { code: ODK_CENTRAL_ERROR_CODES.AUTH, retryable: true }).retryable,
     true
@@ -37,4 +39,16 @@ test('errorFromResponse surfaces Central JSON message and code', () => {
   assert.equal(error.httpStatus, 409);
   assert.match(error.message, /already exists/);
   assert.equal(error.retryable, false);
+});
+
+test('redactUrl hides App User /key token and st/token query params', () => {
+  assert.equal(
+    redactUrl('https://c.example.org/v1/key/SECRET123/projects/1/submission'),
+    'https://c.example.org/v1/key/<redacted>/projects/1/submission'
+  );
+  assert.equal(
+    redactUrl('https://c.example.org/v1/projects/1/formList?st=SECRET&x=1'),
+    'https://c.example.org/v1/projects/1/formList?st=<redacted>&x=1'
+  );
+  assert.equal(redactUrl('https://c.example.org/version.txt'), 'https://c.example.org/version.txt');
 });

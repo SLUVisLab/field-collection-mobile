@@ -232,8 +232,8 @@ export class WebViewXFormsHost extends XFormsHost {
     return this.sendRequest('initialize', {});
   }
 
-  async loadForm(xml) {
-    return this.sendRequest('loadForm', { xml });
+  async loadForm(xml, attachments = null) {
+    return this.sendRequest('loadForm', { xml, attachments });
   }
 
   async getSnapshot() {
