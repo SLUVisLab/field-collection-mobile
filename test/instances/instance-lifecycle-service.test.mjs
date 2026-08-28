@@ -148,10 +148,17 @@ const makeInstances = (calls) => {
   };
 };
 
-const makeService = ({ serialized, client, formCatalog = null } = {}) => {
+const makeService = ({ serialized, client, formCatalog = null, entityEffects: suppliedEntityEffects = null } = {}) => {
   const calls = [];
   const files = makeFiles(calls);
   const instances = makeInstances(calls);
+  const entityEffects = suppliedEntityEffects ?? {
+    calls: [],
+    async recordFinalizedEffects(input) {
+      this.calls.push(input);
+      return input.effects;
+    },
+  };
   const catalog =
     formCatalog ??
     {
@@ -164,12 +171,13 @@ const makeService = ({ serialized, client, formCatalog = null } = {}) => {
   const service = createInstanceLifecycleService({
     instances,
     formCatalog: catalog,
+    entityEffects,
     credentials: { getProjectToken: async () => 'app-user-secret' },
     files,
     createClient: () => client ?? { submit: async () => ({ status: 201, message: 'Accepted' }) },
     newLocalInstanceId: () => 'local-1',
   });
-  return { service, instances, files, calls, catalog, serialized };
+  return { service, instances, files, calls, catalog, entityEffects, serialized };
 };
 
 test('draft persistence writes authoritative XML before metadata and resume calls loadInstance only', async () => {
@@ -204,7 +212,7 @@ test('draft persistence writes authoritative XML before metadata and resume call
 test('finalization uses the engine validation result and never marks invalid XML ready', async () => {
   const invalid = { status: 'success', violationCount: 1, xml: validXml };
   const { service, instances, files } = makeService({ serialized: invalid });
-  const form = { serialize: async () => invalid };
+  const form = { serialize: async () => invalid, getEntityEffects: async () => [] };
 
   await assert.rejects(service.finalize({ project, form, version }), (error) => {
     assert.equal(error instanceof InstanceLifecycleError, true);
@@ -221,13 +229,58 @@ test('finalization uses the engine validation result and never marks invalid XML
   assert.equal(files.content.get(ready.xmlFileKey), changedXml);
 });
 
-test('foreground send failure remains ready, redacts secrets, and succeeds on explicit retry', async () => {
-  let shouldFail = true;
+test('finalization persists XML before recording only generic host Entity effects', async () => {
+  let files;
+  let observedXml = null;
+  const entityEffects = {
+    recorded: null,
+    async recordFinalizedEffects(input) {
+      observedXml = files.content.get('projects/project-1/instances/local-1/instance.xml');
+      this.recorded = input;
+      return input.effects;
+    },
+  };
+  const serialized = { status: 'success', violationCount: 0, xml: changedXml };
+  const setup = makeService({ serialized, entityEffects });
+  files = setup.files;
+  const engineEffects = [
+    {
+      reference: '/data/meta/entity',
+      dataset: 'people',
+      action: 'create',
+      entityId: 'C',
+      label: 'Created',
+      properties: { full_name: 'Created Person' },
+      baseVersion: null,
+      trunkVersion: null,
+      branchId: null,
+    },
+  ];
+  const ready = await setup.service.finalize({
+    project,
+    form: {
+      serialize: async () => serialized,
+      getEntityEffects: async () => engineEffects,
+    },
+    version,
+  });
+
+  assert.equal(ready.state, 'ready');
+  assert.equal(observedXml, changedXml, 'finalized XML is durable before effects are requested/applied');
+  assert.deepEqual(entityEffects.recorded.effects, engineEffects);
+  assert.equal(entityEffects.recorded.localInstanceId, ready.localInstanceId);
+});
+
+test('ambiguous accepted response remains retryable and retries the exact persisted XML', async () => {
+  let responseLost = true;
+  let acceptedXml = null;
   const client = {
     calls: [],
     async submit({ xml }) {
       this.calls.push(xml);
-      if (shouldFail) {
+      if (responseLost) {
+        responseLost = false;
+        acceptedXml = xml;
         throw new Error(
           'Central request failed for https://central.example/v1/key/app-user-secret/submission?token=query-secret Authorization: Bearer bearer-secret'
         );
@@ -237,7 +290,11 @@ test('foreground send failure remains ready, redacts secrets, and succeeds on ex
   };
   const serialized = { status: 'success', violationCount: 0, xml: validXml };
   const { service, files } = makeService({ serialized, client });
-  const ready = await service.finalize({ project, form: { serialize: async () => serialized }, version });
+  const ready = await service.finalize({
+    project,
+    form: { serialize: async () => serialized, getEntityEffects: async () => [] },
+    version,
+  });
 
   const failed = await service.send({ project, localInstanceId: ready.localInstanceId });
   assert.equal(failed.ok, false);
@@ -246,13 +303,18 @@ test('foreground send failure remains ready, redacts secrets, and succeeds on ex
   assert.doesNotMatch(failed.instance.sendError, /app-user-secret|query-secret|bearer-secret/);
   assert.equal(files.content.get(ready.xmlFileKey), validXml, 'failed sends retain authoritative XML');
 
-  shouldFail = false;
   const sent = await service.send({ project, localInstanceId: ready.localInstanceId });
   assert.equal(sent.ok, true);
   assert.equal(sent.instance.state, 'sent');
   assert.match(sent.instance.sendReceipt, /<redacted>/);
   assert.doesNotMatch(sent.instance.sendReceipt, /receipt-secret/);
   assert.equal(client.calls.length, 2, 'retry requires a second explicit send call');
+  assert.deepEqual(
+    client.calls,
+    [validXml, validXml],
+    'a retry sends exact persisted XML bytes rather than serializing a new instance'
+  );
+  assert.equal(acceptedXml, validXml, 'the simulated server accepted the first request before its response was lost');
 });
 
 test('image attachment copies bytes, keeps XML authoritative, restores metadata, and cleans discarded media', async () => {
@@ -270,6 +332,7 @@ test('image attachment copies bytes, keeps XML authoritative, restores metadata,
       attachedFilename = value;
     },
     serialize: async () => serialized(),
+    getEntityEffects: async () => [],
   };
 
   const bound = await service.attachImageMedia({
@@ -324,6 +387,7 @@ test('foreground send passes the resolved native media file through the central-
       attachedFilename = value;
     },
     serialize: async () => serialized(),
+    getEntityEffects: async () => [],
   };
   const bound = await service.attachImageMedia({
     project,

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {
   bytesToBase64,
   createFormCatalogService,
+  entityDatasetFromIntegrityUrl,
   sanitizeManifest,
 } from '../../src/forms/formCatalogService.js';
 
@@ -99,6 +100,7 @@ const makeClient = () => {
           hash: this.entityListToken,
           type: 'entityList',
           isEntityList: true,
+          integrityUrl: 'https://central.example/v1/key/secret/projects/1/datasets/plants/integrity',
           downloadUrl: 'https://central.example/v1/key/secret/plants.csv',
         },
         {
@@ -135,12 +137,26 @@ test('sanitized manifest strips App User key URLs', () => {
       hash: 'token',
       isEntityList: true,
       downloadUrl: 'https://server/v1/key/secret/plants.csv',
-      integrityUrl: 'https://server/v1/key/secret/integrity',
+      integrityUrl: 'https://server/v1/key/secret/projects/1/datasets/plants/integrity',
     },
   ]);
   assert.deepEqual(sanitized, [
-    { filename: 'plants.csv', hash: 'token', type: null, isEntityList: true },
+    {
+      filename: 'plants.csv',
+      hash: 'token',
+      type: null,
+      isEntityList: true,
+      entityDataset: 'plants',
+    },
   ]);
+});
+
+test('Entity Dataset identity is recovered from transient manifest metadata without retaining its URL', () => {
+  assert.equal(
+    entityDatasetFromIntegrityUrl('https://central.example/v1/key/secret/projects/1/datasets/people%20list/integrity'),
+    'people list'
+  );
+  assert.equal(entityDatasetFromIntegrityUrl('https://central.example/not-a-dataset'), null);
 });
 
 test('explicit refresh caches XML, sanitized manifest, and Entity CSV through durable keys', async () => {
@@ -151,6 +167,7 @@ test('explicit refresh caches XML, sanitized manifest, and Entity CSV through du
     forms,
     credentials: { getProjectToken: async () => 'secret' },
     files,
+    entities: { synthesizeAttachments: async ({ attachments }) => attachments },
     createClient: () => client,
   });
 
@@ -184,6 +201,7 @@ test('repeated refresh does not download or overwrite an existing immutable vers
     forms,
     credentials: { getProjectToken: async () => 'secret' },
     files,
+    entities: { synthesizeAttachments: async ({ attachments }) => attachments },
     createClient: () => client,
   });
   await service.refresh(project);
@@ -197,6 +215,34 @@ test('repeated refresh does not download or overwrite an existing immutable vers
   assert.equal(forms.promotions.length, 1);
 });
 
+test('loading a form synthesizes Entity CSV only in the host attachment, not the immutable cache', async () => {
+  const files = makeFiles();
+  const forms = makeForms();
+  const client = makeClient();
+  const entityCalls = [];
+  const service = createFormCatalogService({
+    forms,
+    credentials: { getProjectToken: async () => 'secret' },
+    files,
+    entities: {
+      async synthesizeAttachments(input) {
+        entityCalls.push(input);
+        return input.attachments.map((attachment) =>
+          attachment.filename === 'plants.csv' ? { ...attachment, text: `${attachment.text}local-overlay\n` } : attachment
+        );
+      },
+    },
+    createClient: () => client,
+  });
+  await service.refresh(project);
+  const storedCsv = [...files.content.entries()].find(([key]) => key.includes('/resources/') && files.content.get(key).includes('__version'))[1];
+
+  const loaded = await service.loadCurrentForm(project.projectKey, 'silphium');
+  assert.match(loaded.attachments.find((attachment) => attachment.filename === 'plants.csv').text, /local-overlay/);
+  assert.doesNotMatch(storedCsv, /local-overlay/, 'cached App User CSV stays immutable');
+  assert.equal(entityCalls[0].resources.find((resource) => resource.filename === 'plants.csv').entityDataset, 'plants');
+});
+
 test('a changed Entity List token creates a new immutable cache version', async () => {
   const files = makeFiles();
   const forms = makeForms();
@@ -205,6 +251,7 @@ test('a changed Entity List token creates a new immutable cache version', async 
     forms,
     credentials: { getProjectToken: async () => 'secret' },
     files,
+    entities: { synthesizeAttachments: async ({ attachments }) => attachments },
     createClient: () => client,
   });
   await service.refresh(project);

@@ -1,0 +1,67 @@
+import { XPathNodeKindKey } from '@getodk/xpath';
+import { Accessor } from 'solid-js';
+import { TextRange } from '../client/TextRange.ts';
+import { UploadDefinition, UploadNode, UploadNodeOptions } from '../client/UploadNode.ts';
+import { ValueType } from '../client/ValueType.ts';
+import { InstanceAttachmentFileName, InstanceState } from '../client/index.ts';
+import { AnyViolation, LeafNodeValidationState } from '../client/validation.ts';
+import { XFormsXPathElement } from '../integration/xpath/adapter/XFormsXPathNode.ts';
+import { StaticLeafElement } from '../integration/xpath/static-dom/StaticElement.ts';
+import { AttributeState } from '../lib/reactivity/createAttributeState.ts';
+import { BaseInstanceAttachmentState } from '../lib/reactivity/createInstanceAttachment.ts';
+import { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
+import { EngineState } from '../lib/reactivity/node-state/createEngineState.ts';
+import { SharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
+import { SimpleAtomicState } from '../lib/reactivity/types.ts';
+import { UploadAppearanceDefinition } from '../parse/body/appearance/uploadAppearanceParser.ts';
+import { Attribute } from './Attribute.ts';
+import { Root } from './Root.ts';
+import { DescendantNodeStateSpec, DescendantNode } from './abstract/DescendantNode.ts';
+import { InstanceAttachmentRuntimeValue } from './attachments/InstanceAttachment.ts';
+import { GeneralParentNode } from './hierarchy.ts';
+import { EvaluationContext } from './internal-api/EvaluationContext.ts';
+import { InstanceAttachmentContext } from './internal-api/InstanceAttachmentContext.ts';
+import { DecodeInstanceValue, InstanceValueContext } from './internal-api/InstanceValueContext.ts';
+import { ValidationContext } from './internal-api/ValidationContext.ts';
+import { ClientReactiveSerializableValueNode } from './internal-api/serialization/ClientReactiveSerializableValueNode.ts';
+export type AnyUploadDefinition = {
+    [V in ValueType]: UploadDefinition<V>;
+}[ValueType];
+interface UploadControlStateSpec extends DescendantNodeStateSpec<InstanceAttachmentRuntimeValue> {
+    readonly label: Accessor<TextRange<'label'> | null>;
+    readonly hint: Accessor<TextRange<'hint'> | null>;
+    readonly children: null;
+    readonly attributes: Accessor<readonly Attribute[]>;
+    readonly valueOptions: null;
+    readonly value: SimpleAtomicState<InstanceAttachmentRuntimeValue>;
+    readonly instanceValue: Accessor<InstanceAttachmentFileName>;
+    readonly attachmentState: Accessor<BaseInstanceAttachmentState>;
+}
+export declare class UploadControl extends DescendantNode<UploadDefinition<'binary'>, UploadControlStateSpec, GeneralParentNode, null> implements UploadNode, XFormsXPathElement, EvaluationContext, InstanceAttachmentContext, InstanceValueContext, ValidationContext, ClientReactiveSerializableValueNode {
+    readonly instanceNode: StaticLeafElement | null;
+    static from(parent: GeneralParentNode, instanceNode: StaticLeafElement | null, definition: UploadDefinition): UploadControl;
+    private readonly validation;
+    private readonly instanceAttachment;
+    readonly [XPathNodeKindKey] = "element";
+    readonly getXPathValue: () => InstanceAttachmentFileName;
+    protected readonly state: SharedNodeState<UploadControlStateSpec>;
+    protected readonly engineState: EngineState<UploadControlStateSpec>;
+    readonly attributeState: AttributeState;
+    readonly decodeInstanceValue: DecodeInstanceValue;
+    readonly nodeType = "upload";
+    readonly valueType = "binary";
+    readonly maxPixels: number | null;
+    readonly appearances: UploadAppearanceDefinition;
+    readonly nodeOptions: UploadNodeOptions;
+    readonly currentState: CurrentState<UploadControlStateSpec>;
+    get validationState(): LeafNodeValidationState;
+    readonly instanceState: InstanceState;
+    private constructor();
+    getViolation(): AnyViolation | null;
+    isBlank(): boolean;
+    getChildren(): readonly [];
+    getAttributes(): readonly Attribute[];
+    setValue(value: InstanceAttachmentRuntimeValue): Root;
+    retryFetch(): void;
+}
+export {};

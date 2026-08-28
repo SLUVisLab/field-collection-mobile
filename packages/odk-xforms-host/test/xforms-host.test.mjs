@@ -22,6 +22,7 @@ test('base XFormsHost methods throw consistent not-implemented errors', async ()
   await assert.rejects(host.loadInstance('<xml />', '<data />'), /loadInstance/);
   await assert.rejects(host.getSnapshot(), /getSnapshot/);
   await assert.rejects(host.getRenderModel(), /getRenderModel/);
+  await assert.rejects(host.getEntityEffects(), /getEntityEffects/);
   await assert.rejects(host.setValue('/data/a', 1), /setValue/);
   await assert.rejects(host.addRepeat('/data/r'), /addRepeat/);
   await assert.rejects(host.removeRepeat('/data/r', '0'), /removeRepeat/);
@@ -36,6 +37,7 @@ test('loadInstance and getRenderModel report NOT_IMPLEMENTED on the base host', 
   for (const [invoke, name] of [
     [() => host.loadInstance('<xml />', '<data />'), 'loadInstance'],
     [() => host.getRenderModel(), 'getRenderModel'],
+    [() => host.getEntityEffects(), 'getEntityEffects'],
   ]) {
     await assert.rejects(invoke, (error) => {
       assert.equal(error instanceof XFormsHostError, true);

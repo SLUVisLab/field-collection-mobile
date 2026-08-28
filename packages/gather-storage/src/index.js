@@ -75,6 +75,8 @@ export {
   CACHE_SUBDIRECTORIES,
 } from './paths.js';
 export { createCredentialStore, projectTokenKey } from './credentials.js';
+export { sanitizeErrorText } from './sanitize.js';
+export { CsvError, parseCsv, serializeCsv } from './csv.js';
 export { MIGRATIONS } from './migrations/index.js';
 export {
   createProjectsRepository,
@@ -95,6 +97,19 @@ export {
   InstancesRepositoryError,
   rowToMedia,
 } from './repositories/instances.js';
+export {
+  createSyncRepository,
+  assertSyncOperationId,
+  rowToSyncOperation,
+  SYNC_OPERATION_KINDS,
+  SYNC_OPERATION_STATES,
+  SyncRepositoryError,
+} from './repositories/sync.js';
+export {
+  createEntitiesRepository,
+  normalizeEntityEffect,
+  EntitiesRepositoryError,
+} from './repositories/entities.js';
 
 // Native binding re-exports.
 export {

@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   initializeGatherStorage,
   createFormsRepository,
+  createEntitiesRepository,
   createInstancesRepository,
   createProjectsRepository,
+  createSyncRepository,
   deleteFile,
   ensureProjectDirectories,
   deleteProjectDirectory,
@@ -20,7 +22,9 @@ import { GatherContext } from './GatherContext.js';
 import { createPakoSettingsQrCodec } from '../provisioning/collectSettingsQrCodec.js';
 import { createProvisioningService } from '../provisioning/provisioningService.js';
 import { createFormCatalogService } from '../forms/formCatalogService.js';
+import { createEntityService } from '../entities/entityService.js';
 import { createInstanceLifecycleService } from '../instances/instanceLifecycleService.js';
+import { createSyncService } from '../sync/syncService.js';
 
 /**
  * Runs the (pure) bootstrap orchestration against the real native storage layer
@@ -78,23 +82,46 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     const database = state.boot?.storage?.database;
     return database ? createInstancesRepository(database) : null;
   }, [state.boot?.storage?.database]);
+  const entityRepository = useMemo(() => {
+    const database = state.boot?.storage?.database;
+    return database ? createEntitiesRepository(database) : null;
+  }, [state.boot?.storage?.database]);
+  const entityService = useMemo(
+    () => (entityRepository ? createEntityService({ entities: entityRepository }) : null),
+    [entityRepository]
+  );
+  const sync = useMemo(() => {
+    const database = state.boot?.storage?.database;
+    return database ? createSyncRepository(database) : null;
+  }, [state.boot?.storage?.database]);
   const formCatalog = useMemo(() => {
-    if (!forms || !state.boot?.storage) return null;
+    if (!forms || !entityService || !state.boot?.storage) return null;
     return createFormCatalogService({
       forms,
       credentials: state.boot.storage.credentials,
       files: { readBytes, readText, writeBytesAtomic, writeTextAtomic },
+      entities: entityService,
     });
-  }, [forms, state.boot?.storage]);
+  }, [entityService, forms, state.boot?.storage]);
   const instanceLifecycle = useMemo(() => {
     if (!instances || !formCatalog || !state.boot?.storage) return null;
     return createInstanceLifecycleService({
       instances,
       formCatalog,
+      entityEffects: entityService,
       credentials: state.boot.storage.credentials,
       files: { readText, writeTextAtomic, writeBytesAtomic, fileForKey, deleteFile },
     });
-  }, [instances, formCatalog, state.boot?.storage]);
+  }, [instances, entityService, formCatalog, state.boot?.storage]);
+  const syncService = useMemo(() => {
+    if (!instances || !sync || !entityRepository || !instanceLifecycle) return null;
+    return createSyncService({
+      instances,
+      sync,
+      entities: entityRepository,
+      instanceLifecycle,
+    });
+  }, [entityRepository, instances, sync, instanceLifecycle]);
   const provisioningService = useMemo(() => {
     if (!projects || !instances || !state.boot?.storage) return null;
     return createProvisioningService({
@@ -243,10 +270,22 @@ export function GatherProvider({ children, deps, onReady, onError }) {
 
   const finalizeInstance = useCallback(
     async ({ localInstanceId, form, version }) => {
-      if (!instanceLifecycle || !activeProject) throw new Error('instance lifecycle not ready');
-      return instanceLifecycle.finalize({ localInstanceId, project: activeProject, form, version });
+      if (!instanceLifecycle || !syncService || !activeProject) {
+        throw new Error('instance lifecycle not ready');
+      }
+      const ready = await instanceLifecycle.finalize({
+        localInstanceId,
+        project: activeProject,
+        form,
+        version,
+      });
+      await syncService.enqueueReadyInstance({
+        localInstanceId: ready.localInstanceId,
+        project: activeProject,
+      });
+      return ready;
     },
-    [activeProject, instanceLifecycle]
+    [activeProject, instanceLifecycle, syncService]
   );
 
   const attachImageMedia = useCallback(
@@ -275,23 +314,28 @@ export function GatherProvider({ children, deps, onReady, onError }) {
 
   const sendInstance = useCallback(
     async (localInstanceId) => {
-      if (!instanceLifecycle || !activeProject) throw new Error('instance lifecycle not ready');
-      return instanceLifecycle.send({ localInstanceId, project: activeProject });
+      if (!syncService || !activeProject) throw new Error('submission sync not ready');
+      return syncService.sendInstance({ localInstanceId, project: activeProject });
     },
-    [activeProject, instanceLifecycle]
+    [activeProject, syncService]
   );
 
   const sendAllReadyInstances = useCallback(async () => {
-    if (!instanceLifecycle || !activeProject) throw new Error('instance lifecycle not ready');
-    return instanceLifecycle.sendAll(activeProject);
-  }, [activeProject, instanceLifecycle]);
+    if (!syncService || !activeProject) throw new Error('submission sync not ready');
+    return syncService.syncAll(activeProject);
+  }, [activeProject, syncService]);
+
+  const getSyncStatus = useCallback(async () => {
+    if (!syncService || !activeProject) throw new Error('submission sync not ready');
+    return syncService.getStatus(activeProject);
+  }, [activeProject, syncService]);
 
   const value = useMemo(
     () => ({
       status: state.status,
       error: state.error,
       storage: state.boot?.storage ?? null,
-      repositories: { projects, forms, instances },
+      repositories: { projects, forms, entities: entityRepository, instances, sync },
       projectCount,
       activeProject,
       shell: shellForActiveProject(activeProject),
@@ -316,6 +360,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
         discardInstance,
         sendInstance,
         sendAllReadyInstances,
+        getSyncStatus,
       },
     }),
     [
@@ -329,7 +374,9 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       provisionQr,
       listProjects,
       forms,
+      entityRepository,
       instances,
+      sync,
       switchProject,
       getRemovalPreview,
       removeProject,
@@ -344,6 +391,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       discardInstance,
       sendInstance,
       sendAllReadyInstances,
+      getSyncStatus,
     ]
   );
 

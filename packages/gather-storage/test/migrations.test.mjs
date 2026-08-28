@@ -41,7 +41,7 @@ const makeFakeDb = (startVersion = 0) => {
 test('the shipped MIGRATIONS are well-ordered', () => {
   assert.doesNotThrow(() => assertMigrationOrder(MIGRATIONS));
   assert.equal(latestVersion(MIGRATIONS), MIGRATIONS.length);
-  assert.equal(latestVersion(MIGRATIONS), 6);
+  assert.equal(latestVersion(MIGRATIONS), 8);
 });
 
 test('migration 3 provisions append-only form versions and draft references', () => {
@@ -91,6 +91,34 @@ test('migration 6 removes instances before project cascade preserves immutable v
   assert.match(sql, /CREATE TRIGGER projects_delete_instances/);
   assert.match(sql, /BEFORE DELETE ON projects/);
   assert.match(sql, /DELETE FROM instances WHERE project_key = OLD\.project_key/);
+});
+
+test('migration 7 provisions durable submission operations and dependencies', () => {
+  const journal = MIGRATIONS.find((migration) => migration.version === 7);
+  assert.ok(journal, 'version 7 migration exists');
+  assert.equal(journal.name, 'sync_journal');
+  const sql = journal.statements.join('\n');
+  assert.match(sql, /CREATE TABLE sync_operations/);
+  assert.match(sql, /local_instance_id\s+TEXT NOT NULL REFERENCES instances/);
+  assert.match(sql, /'pending', 'attempting', 'retryable', 'blocked', 'complete'/);
+  assert.match(sql, /UNIQUE \(project_key, kind, local_instance_id\)/);
+  assert.match(sql, /CREATE TABLE sync_dependencies/);
+  assert.match(sql, /sync_operations_require_matching_instance/);
+  assert.match(sql, /sync_dependencies_require_same_project/);
+});
+
+test('migration 8 provisions an immutable Entity effect overlay keyed by local instance', () => {
+  const overlay = MIGRATIONS.find((migration) => migration.version === 8);
+  assert.ok(overlay, 'version 8 migration exists');
+  assert.equal(overlay.name, 'entity_overlay');
+  const sql = overlay.statements.join('\n');
+  assert.match(sql, /ALTER TABLE form_resources ADD COLUMN entity_dataset_name/);
+  assert.match(sql, /CREATE TABLE entity_branches/);
+  assert.match(sql, /CREATE TABLE entity_effect_batches/);
+  assert.match(sql, /CREATE TABLE entity_effects/);
+  assert.match(sql, /local_instance_id\s+TEXT NOT NULL REFERENCES instances/);
+  assert.match(sql, /UNIQUE \(local_instance_id, effect_index\)/);
+  assert.match(sql, /entity_effects_require_matching_instance/);
 });
 
 test('migration 2 provisions the projects table with a single-active guard', () => {

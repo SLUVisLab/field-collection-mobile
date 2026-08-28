@@ -11,7 +11,11 @@
     "./migrations": "./src/migrations/index.js",
     "./repositories/projects": "./src/repositories/projects.js",
     "./repositories/forms": "./src/repositories/forms.js",
-    "./repositories/instances": "./src/repositories/instances.js"
+    "./repositories/instances": "./src/repositories/instances.js",
+    "./repositories/sync": "./src/repositories/sync.js",
+    "./repositories/entities": "./src/repositories/entities.js",
+    "./csv": "./src/csv.js",
+    "./sanitize": "./src/sanitize.js"
   },
   "scripts": {
     "test": "node --test $(find test -name '*.test.mjs' -not -path '*/live/*')"

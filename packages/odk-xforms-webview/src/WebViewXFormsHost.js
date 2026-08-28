@@ -301,6 +301,10 @@ export class WebViewXFormsHost extends XFormsHost {
     return this.sendRequest('getRenderModel', {});
   }
 
+  async getEntityEffects() {
+    return this.sendRequest('getEntityEffects', {});
+  }
+
   async setValue(nodeId, value) {
     return this.sendRequest('setValue', { nodeId, value });
   }

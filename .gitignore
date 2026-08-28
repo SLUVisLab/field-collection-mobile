@@ -4,6 +4,9 @@ node_modules/
 # Expo
 .expo/
 dist/
+!packages/odk-xforms-engine/
+!packages/odk-xforms-engine/dist/
+!packages/odk-xforms-engine/dist/**
 web-build/
 expo-env.d.ts
 

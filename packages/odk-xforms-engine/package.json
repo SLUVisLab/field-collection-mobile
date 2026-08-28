@@ -1,0 +1,29 @@
+{
+  "name": "@getodk/xforms-engine",
+  "version": "1.0.3-gather.1",
+  "description": "Gather-pinned @getodk/xforms-engine 1.0.3 derivative with resolved Entity effects",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "browser": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./webview": {
+      "types": "./dist/webview-engine-url.d.ts",
+      "import": "./dist/webview-engine-url.js",
+      "default": "./dist/webview-engine-url.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build:webview-module": "node scripts/build-webview-engine-url.mjs",
+    "test": "node --test $(find test -name '*.test.mjs')"
+  }
+}

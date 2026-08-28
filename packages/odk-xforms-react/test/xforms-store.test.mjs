@@ -214,6 +214,10 @@ class FakeHost extends XFormsHost {
     return { xml: '<data id="fixture" />' };
   }
 
+  async getEntityEffects() {
+    return [{ dataset: 'people', action: 'create', entityId: 'entity-1', label: 'Entity', properties: {} }];
+  }
+
   async inspectMediaSeam() {
     return { note: 'logical references only' };
   }
@@ -251,6 +255,14 @@ test('XFormsStore loadInstance restores a serialized instance via the host', asy
   assert.equal(state.phase, XFORMS_REACT_PHASES.READY);
   assert.equal(state.snapshot.nodesByReference['/data/age'].value, '18');
   assert.ok(state.renderModel, 'render model populated after loadInstance');
+  await store.dispose();
+});
+
+test('XFormsStore exposes authoritative generic Entity effects', async () => {
+  const store = new XFormsStore({ host: new FakeHost() });
+  assert.deepEqual(await store.getEntityEffects(), [
+    { dataset: 'people', action: 'create', entityId: 'entity-1', label: 'Entity', properties: {} },
+  ]);
   await store.dispose();
 });
 

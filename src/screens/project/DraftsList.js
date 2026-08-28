@@ -15,8 +15,9 @@ const stateLabel = (state) => ({ draft: 'Draft', ready: 'Ready to send', sent: '
  */
 export function DraftsList() {
   const { activeProject, actions } = useGather();
-  const { listInstances, sendAllReadyInstances } = actions;
+  const { listInstances, sendAllReadyInstances, getSyncStatus } = actions;
   const [instances, setInstances] = useState([]);
+  const [syncStatus, setSyncStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState(null);
@@ -27,12 +28,13 @@ export function DraftsList() {
     setLoading(true);
     try {
       setInstances(await listInstances());
+      setSyncStatus(await getSyncStatus());
     } catch {
       setMessage('Could not read saved instances.');
     } finally {
       setLoading(false);
     }
-  }, [activeProject, listInstances]);
+  }, [activeProject, getSyncStatus, listInstances]);
 
   useEffect(() => {
     void refresh();
@@ -44,8 +46,14 @@ export function DraftsList() {
     try {
       const results = await sendAllReadyInstances();
       const sent = results.filter((result) => result.ok).length;
-      const failed = results.length - sent;
-      setMessage(failed ? `${sent} sent; ${failed} still ready to retry.` : `${sent} instance(s) sent.`);
+      const retryable = results.filter((result) => !result.ok && result.outcome == null).length;
+      const waiting = results.filter((result) => result.outcome === 'waiting').length;
+      const blocked = results.filter((result) => result.outcome === 'blocked').length;
+      const parts = [`${sent} sent`];
+      if (retryable > 0) parts.push(`${retryable} still ready to retry`);
+      if (waiting > 0) parts.push(`${waiting} waiting on Entity sync`);
+      if (blocked > 0) parts.push(`${blocked} blocked`);
+      setMessage(`${parts.join('; ')}.`);
       await refresh();
     } catch {
       setMessage('Could not start sending saved instances.');
@@ -67,12 +75,20 @@ export function DraftsList() {
       </Text>
       <ActionButton
         onPress={sendAll}
-        label={sending ? 'Sending…' : `Send all ready (${readyCount})`}
+        label={sending ? 'Syncing…' : `Sync now (${readyCount} ready)`}
         disabled={sending || readyCount === 0}
         testID="send-all-ready"
       />
       {loading ? <ActivityIndicator color={theme.colors.primary} /> : null}
       {message ? <Text style={[styles.message, { color: theme.colors.text, lineHeight: tokens.typography.bodyLineHeight }]}>{message}</Text> : null}
+      {syncStatus?.blocked > 0 ? (
+        <Text
+          testID="sync-blocked-status"
+          style={[styles.error, { color: theme.colors.danger, lineHeight: tokens.typography.bodyLineHeight }]}
+        >
+          Sync status: {syncStatus.blocked} submission{syncStatus.blocked === 1 ? '' : 's'} blocked.
+        </Text>
+      ) : null}
       {!loading && instances.length === 0 ? (
         <Text style={[styles.note, { color: theme.colors.textMuted, lineHeight: tokens.typography.bodyLineHeight }]}>
           No saved instances yet.

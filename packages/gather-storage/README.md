@@ -112,6 +112,10 @@ file is removed.
 - migration **6** (`project_instance_cleanup`) removes a project's instances
   before its immutable form-version records cascade, so project removal also
   cascades media metadata and can delete the project media tree.
+- migration **7** (`sync_journal`) records one durable `submission` operation
+  for every ready instance, its attempt/retry/complete state, and explicit
+  same-project dependencies. Errors are bounded and credential-sanitized; XML,
+  media bytes, tokens, and server response bodies are never journaled.
 
 ## Credential lifecycle
 

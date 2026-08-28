@@ -27,7 +27,7 @@ import { useTheme } from '../../theme/useTheme.js';
 import { XFormsRenderer } from '../../xforms/XFormsRenderer.js';
 import { outlineFor } from '../../xforms/renderModel.js';
 
-function RunnerBody({ formId, localInstanceId = null }) {
+function RunnerBody({ formId, localInstanceId = null, host }) {
   const { actions, activeProject } = useGather();
   const form = useXForm();
   const navigate = useNavigate();
@@ -103,7 +103,7 @@ function RunnerBody({ formId, localInstanceId = null }) {
     try {
       const saved = await saveInstanceDraft({
         localInstanceId: instance?.localInstanceId ?? null,
-        form: { serialize: form.serialize },
+        form: { serialize: form.serialize, getEntityEffects: () => host.getEntityEffects() },
         version,
       });
       setInstance(saved);
@@ -153,7 +153,7 @@ function RunnerBody({ formId, localInstanceId = null }) {
     try {
       const ready = await finalizeInstance({
         localInstanceId: instance?.localInstanceId ?? null,
-        form: { serialize: form.serialize },
+        form: { serialize: form.serialize, getEntityEffects: form.getEntityEffects },
         version,
       });
       setInstance(ready);
@@ -343,7 +343,7 @@ export function FormRunner() {
 
   return (
     <XFormsProvider host={host}>
-      <RunnerBody formId={formId} localInstanceId={instanceId} />
+      <RunnerBody formId={formId} localInstanceId={instanceId} host={host} />
       <WebView ref={webViewRef} {...webViewProps} />
     </XFormsProvider>
   );

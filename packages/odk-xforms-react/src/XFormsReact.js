@@ -71,6 +71,7 @@ export const useXForm = () => {
       addRepeat: (reference) => store.addRepeat(reference),
       removeRepeat: (reference, instanceId = null) => store.removeRepeat(reference, instanceId),
       serialize: () => store.serialize(),
+      getEntityEffects: () => store.getEntityEffects(),
       inspectMediaSeam: () => store.inspectMediaSeam(),
     }),
     [store]

@@ -28,6 +28,26 @@ const nonEmpty = (value, field) => {
 const stringOrEmpty = (value) => (typeof value === 'string' ? value : '');
 
 /**
+ * The OpenRosa Entity List integrity URL identifies its Central Dataset. Read it
+ * only while sanitizing the manifest; persist the dataset name, never the URL
+ * (which can carry an App User key).
+ */
+export const entityDatasetFromIntegrityUrl = (integrityUrl) => {
+  if (typeof integrityUrl !== 'string' || integrityUrl.length === 0) return null;
+  try {
+    const segments = new URL(integrityUrl).pathname
+      .split('/')
+      .filter(Boolean)
+      .map((segment) => decodeURIComponent(segment));
+    const datasetIndex = segments.lastIndexOf('datasets');
+    const dataset = segments[datasetIndex + 1];
+    return datasetIndex >= 0 && segments[datasetIndex + 2] === 'integrity' && dataset ? dataset : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
  * Keep only non-secret manifest metadata. OpenRosa download/integrity URLs may
  * carry the App User key, and are never persisted or passed to the renderer.
  */
@@ -46,6 +66,9 @@ export const sanitizeManifest = (manifest) => {
       hash: stringOrEmpty(entry?.hash),
       type: typeof entry?.type === 'string' ? entry.type : null,
       isEntityList: Boolean(entry?.isEntityList),
+      entityDataset: Boolean(entry?.isEntityList)
+        ? entityDatasetFromIntegrityUrl(entry?.integrityUrl)
+        : null,
     };
   });
 };
@@ -181,6 +204,7 @@ export const createFormCatalogService = ({
   forms,
   credentials,
   files,
+  entities,
   createClient = defaultCreateClient,
 } = {}) => {
   assertDependencies({ forms, credentials, files, createClient });
@@ -227,7 +251,13 @@ export const createFormCatalogService = ({
     return {
       version,
       xml: await files.readText(version.xmlFileKey),
-      attachments,
+      attachments: entities
+        ? await entities.synthesizeAttachments({
+            projectKey: version.projectKey,
+            resources: version.resources,
+            attachments,
+          })
+        : attachments,
     };
   };
 

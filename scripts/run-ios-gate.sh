@@ -39,8 +39,13 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [ -n "${EXPO_IOS_DEVICE:-}" ]; then
-  nohup env EXPO_NO_TYPESCRIPT_SETUP=1 npx expo run:ios --device "$EXPO_IOS_DEVICE" > "$EXPO_LOG" 2>&1 &
+IOS_DEVICE="${EXPO_IOS_DEVICE:-}"
+if [ -z "$IOS_DEVICE" ]; then
+  IOS_DEVICE="$(xcrun simctl list devices | awk -F '[()]' '/\(Booted\)/ { print $2; exit }')"
+fi
+
+if [ -n "$IOS_DEVICE" ]; then
+  nohup env EXPO_NO_TYPESCRIPT_SETUP=1 npx expo run:ios --device "$IOS_DEVICE" > "$EXPO_LOG" 2>&1 &
 else
   nohup npm run run:ios > "$EXPO_LOG" 2>&1 &
 fi

@@ -44,7 +44,11 @@ export function InstanceDetail() {
     try {
       const result = await sendInstance(instance.localInstanceId);
       setInstance(result.instance);
-      setMessage(result.ok ? 'Sent to Central. The XML remains on this device.' : result.instance.sendError);
+      setMessage(
+        result.ok
+          ? 'Sent to Central. The XML remains on this device.'
+          : result.instance.sendError ?? result.message ?? 'This instance remains ready to retry.'
+      );
     } catch {
       setMessage('Could not send this instance. It remains ready to retry.');
     } finally {

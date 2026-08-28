@@ -178,6 +178,29 @@ const notImplemented = (methodName) =>
  */
 
 /**
+ * A resolved XForms Entity action. This is an engine projection, not an
+ * application Entity model: the engine has already evaluated XPath,
+ * calculations, relevance, and repeat-instance context before this crosses the
+ * host boundary.
+ *
+ * `properties` contains only currently relevant `entities:saveto` bindings for
+ * this Entity declaration. `reference` identifies the declaration instance and
+ * therefore distinguishes effects emitted by separate repeat instances.
+ *
+ * @typedef {{
+ *   reference: string | null,
+ *   dataset: string | null,
+ *   action: 'create' | 'update',
+ *   entityId: string | null,
+ *   label: string | null,
+ *   properties: Record<string, string | null>,
+ *   baseVersion: string | null,
+ *   trunkVersion: string | null,
+ *   branchId: string | null
+ * }} EntityEffect
+ */
+
+/**
  * Runtime-neutral form host boundary.
  */
 export class XFormsHost {
@@ -227,6 +250,17 @@ export class XFormsHost {
    */
   async getRenderModel() {
     throw notImplemented('getRenderModel');
+  }
+
+  /**
+   * Returns the active Entity create/update effects resolved by the XForms
+   * engine. Hosts must not independently parse `entities:saveto` bindings or
+   * evaluate their XPath expressions.
+   *
+   * @returns {Promise<EntityEffect[]>}
+   */
+  async getEntityEffects() {
+    throw notImplemented('getEntityEffects');
   }
 
   async setValue(_nodeId, _value) {

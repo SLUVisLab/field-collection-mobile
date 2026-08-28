@@ -53,6 +53,13 @@ test('createWebViewSidecarHtml includes expected bridge hooks and configurable e
   assert.match(html, /test-bridge-v1/);
 });
 
+test('createWebViewSidecarHtml defaults to the pinned embedded engine derivative', () => {
+  const html = createWebViewSidecarHtml();
+  assert.doesNotMatch(html, /cdn\.jsdelivr\.net/);
+  assert.match(html, /embedded:@getodk\/xforms-engine@1\.0\.3-gather\.1/);
+  assert.match(html, /resolveEntityEffects/);
+});
+
 test('createWebViewSidecarHtml exposes a generic fetchFormAttachment resource seam', () => {
   const html = createWebViewSidecarHtml();
   // The sidecar builds a fetchFormAttachment from provided attachments and
@@ -170,6 +177,35 @@ test('WebViewXFormsHost.getRenderModel issues a getRenderModel request and resol
     toMessageEvent({ id: request.id, type: 'response', ok: true, payload: renderModel })
   );
   assert.deepEqual(await modelPromise, renderModel);
+  await host.dispose();
+});
+
+test('WebViewXFormsHost.getEntityEffects transports generic resolved Entity effects', async () => {
+  const mock = createMockRef();
+  const host = new WebViewXFormsHost({ webViewRef: mock.ref, requestTimeoutMs: 250 });
+  host.handleWebViewMessage(toMessageEvent({ type: 'ready', payload: {} }));
+  await flushMicrotasks();
+
+  const effectsPromise = host.getEntityEffects();
+  await flushMicrotasks();
+
+  const request = extractRequest(mock.injectedScripts.at(-1));
+  assert.equal(request.type, 'getEntityEffects');
+  const effects = [
+    {
+      reference: '/data/trees[1]/meta/entity',
+      dataset: 'trees',
+      action: 'update',
+      entityId: 'tree-1',
+      label: 'Oak',
+      properties: { circumference_cm: '12' },
+      baseVersion: '4',
+      trunkVersion: '4',
+      branchId: 'branch-1',
+    },
+  ];
+  host.handleWebViewMessage(toMessageEvent({ id: request.id, type: 'response', ok: true, payload: effects }));
+  assert.deepEqual(await effectsPromise, effects);
   await host.dispose();
 });
 

@@ -1,5 +1,6 @@
-export const DEFAULT_SIDE_CAR_ENGINE_URL =
-  'https://cdn.jsdelivr.net/npm/@getodk/xforms-engine@1.0.3/dist/index.js';
+import { WEBVIEW_ENGINE_MODULE_URL } from '@getodk/xforms-engine/webview';
+
+export const DEFAULT_SIDE_CAR_ENGINE_URL = WEBVIEW_ENGINE_MODULE_URL;
 
 export const DEFAULT_BRIDGE_VERSION = 'odk-xforms-webview-bridge-v1';
 
@@ -23,6 +24,7 @@ export const createWebViewSidecarHtml = ({
         currentLoadResult: null,
         currentInstance: null,
         root: null,
+        resolveEntityEffects: null,
         initialized: false,
         latestSnapshot: null,
         cryptoPatched: false,
@@ -343,12 +345,16 @@ export const createWebViewSidecarHtml = ({
         if (typeof engineModule.loadForm !== "function") {
           throw new Error("Engine module loaded but loadForm export was not found");
         }
+        if (typeof engineModule.resolveEntityEffects !== "function") {
+          throw new Error("Engine module loaded but resolveEntityEffects export was not found");
+        }
         state.loadForm = engineModule.loadForm;
+        state.resolveEntityEffects = engineModule.resolveEntityEffects;
         state.initialized = true;
         return {
           webAssemblyAvailable: typeof WebAssembly !== "undefined",
           hasCryptoUUID,
-          engineUrl: ENGINE_URL,
+          engineUrl: ENGINE_URL.startsWith("data:") ? "embedded:@getodk/xforms-engine@1.0.3-gather.1" : ENGINE_URL,
           cryptoPatched: state.cryptoPatched,
           exportedKeys: Object.keys(engineModule).sort(),
         };
@@ -554,6 +560,12 @@ export const createWebViewSidecarHtml = ({
           }
           return buildRenderModel(state.root);
         },
+        async getEntityEffects() {
+          if (state.root == null || state.resolveEntityEffects == null) {
+            throw new Error("No form loaded");
+          }
+          return state.resolveEntityEffects(state.root);
+        },
         async setValue(payload) {
           if (state.root == null) {
             throw new Error("No form loaded");
@@ -663,6 +675,7 @@ export const createWebViewSidecarHtml = ({
           state.currentLoadResult = null;
           state.currentInstance = null;
           state.root = null;
+          state.resolveEntityEffects = null;
           state.latestSnapshot = null;
           return { disposed: true };
         },

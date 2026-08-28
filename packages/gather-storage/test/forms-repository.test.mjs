@@ -82,7 +82,7 @@ const makeFakeDb = () => {
         return { changes: 1 };
       }
       if (sql.includes('INSERT OR IGNORE INTO form_resources')) {
-        const [versionId, filename, hash, type, isEntityList, contentType, fileKey] = params;
+        const [versionId, filename, hash, type, isEntityList, entityDataset, contentType, fileKey] = params;
         const existing = resources.get(versionId) ?? [];
         if (!existing.some((row) => row.filename === filename)) {
           resources.set(versionId, [
@@ -93,6 +93,7 @@ const makeFakeDb = () => {
               resource_hash: hash,
               resource_type: type,
               is_entity_list: isEntityList,
+              entity_dataset_name: entityDataset,
               content_type: contentType,
               file_key: fileKey,
             },
@@ -138,6 +139,7 @@ const cacheInput = {
       hash: 'dataset-v1',
       type: 'entityList',
       isEntityList: true,
+      entityDataset: 'plants',
       contentType: 'text/csv',
       fileKey: 'projects/project-1/resources/form-a/revision-a/resource-a/payload',
     },
@@ -167,6 +169,7 @@ test('form repository records immutable versions and never rewrites a draft refe
   const first = await repo.recordCachedVersion(cacheInput);
   assert.equal(first.xmlFileKey, cacheInput.xmlFileKey);
   assert.equal(first.resources[0].fileKey, cacheInput.resources[0].fileKey);
+  assert.equal(first.resources[0].entityDataset, 'plants');
 
   db.drafts.add(first.formVersionId);
   assert.equal(await repo.versionHasDrafts(first.formVersionId), true);

@@ -43,6 +43,7 @@ export const manifestFingerprintFor = (resources = []) => {
       hash: stringOrEmpty(resource?.hash),
       type: resource?.type ?? null,
       isEntityList: Boolean(resource?.isEntityList),
+      entityDataset: resource?.entityDataset ?? null,
     }))
     .sort((left, right) => left.filename.localeCompare(right.filename));
   return JSON.stringify(normalized);
@@ -66,6 +67,7 @@ const rowToResource = (row) => ({
   hash: row.resource_hash || null,
   type: row.resource_type ?? null,
   isEntityList: Number(row.is_entity_list) === 1,
+  entityDataset: row.entity_dataset_name ?? null,
   contentType: row.content_type,
   fileKey: row.file_key,
 });
@@ -136,7 +138,7 @@ export const createFormsRepository = (db) => {
     if (!row) return null;
     const version = rowToVersion(row);
     const resources = await db.getAllAsync(
-      `SELECT filename, resource_hash, resource_type, is_entity_list, content_type, file_key
+      `SELECT filename, resource_hash, resource_type, is_entity_list, entity_dataset_name, content_type, file_key
          FROM form_resources WHERE form_version_id = ? ORDER BY filename COLLATE NOCASE ASC;`,
       [version.formVersionId]
     );
@@ -215,6 +217,7 @@ export const createFormsRepository = (db) => {
         hash: stringOrEmpty(resource?.hash),
         type: resource?.type ?? null,
         isEntityList: Boolean(resource?.isEntityList) ? 1 : 0,
+        entityDataset: resource?.entityDataset == null ? null : nonEmpty(resource.entityDataset, 'entity dataset'),
         contentType: nonEmpty(resource?.contentType, 'resource contentType'),
         fileKey: nonEmpty(resource?.fileKey, 'resource fileKey'),
       }));
@@ -250,14 +253,15 @@ export const createFormsRepository = (db) => {
           await db.runAsync(
             `INSERT OR IGNORE INTO form_resources (
                form_version_id, filename, resource_hash, resource_type,
-               is_entity_list, content_type, file_key
-             ) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+               is_entity_list, entity_dataset_name, content_type, file_key
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
             [
               versionId,
               resource.filename,
               resource.hash,
               resource.type,
               resource.isEntityList,
+              resource.entityDataset,
               resource.contentType,
               resource.fileKey,
             ]

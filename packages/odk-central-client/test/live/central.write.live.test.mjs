@@ -83,11 +83,16 @@ test('live: submit without media returns 201 and echoes instanceId', { skip }, a
   assert.match(result.message, /successful/i);
 });
 
-test('live: resubmitting the same instanceId with different XML -> DUPLICATE_INSTANCE', { skip }, async () => {
+test('live: exact duplicate XML returns 201 while changed XML for the same instanceId returns 409', { skip }, async () => {
   const c = client();
   const version = await currentFormVersion(c);
   const instanceId = `uuid:${randomUUID()}`;
-  await c.submit({ xml: instanceXml(instanceId, { version, fieldSite: 'original' }) });
+  const xml = instanceXml(instanceId, { version, fieldSite: 'original' });
+  const first = await c.submit({ xml });
+  assert.equal(first.status, 201);
+  const exactRetry = await c.submit({ xml });
+  assert.equal(exactRetry.status, 201);
+  assert.equal(exactRetry.instanceId, instanceId);
   await assert.rejects(
     c.submit({ xml: instanceXml(instanceId, { version, fieldSite: 'CHANGED' }) }),
     (error) => {

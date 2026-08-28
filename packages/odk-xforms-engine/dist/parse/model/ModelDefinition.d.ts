@@ -1,0 +1,30 @@
+import { ActiveLanguage } from '../../client/FormLanguage.ts';
+import { StaticDocument } from '../../integration/xpath/static-dom/StaticDocument.ts';
+import { XFormDefinition } from '../XFormDefinition.ts';
+import { ItextTranslationsDefinition } from './ItextTranslationsDefinition.ts';
+import { ModelActionMap } from './ModelActionMap.ts';
+import { ModelBindMap } from './ModelBindMap.ts';
+import { AnyNodeDefinition } from './NodeDefinition.ts';
+import { NodeDefinitionMap } from './nodeDefinitionMap.ts';
+import { RootDefinition } from './RootDefinition.ts';
+type XformsRevalidateListener = () => void;
+export declare class ModelDefinition {
+    readonly form: XFormDefinition;
+    readonly binds: ModelBindMap;
+    readonly actions: ModelActionMap;
+    readonly root: RootDefinition;
+    readonly nodes: NodeDefinitionMap;
+    readonly instance: StaticDocument;
+    readonly itextTranslations: ItextTranslationsDefinition;
+    readonly itextElements: Map<string, Map<string, Element>>;
+    readonly xformsRevalidateListeners: Map<object, XformsRevalidateListener>;
+    constructor(form: XFormDefinition);
+    getNodeDefinition(nodeset: string): AnyNodeDefinition;
+    getRootDefinition(instance: StaticDocument): RootDefinition;
+    registerXformsRevalidateListener(owner: object, listener: XformsRevalidateListener): void;
+    unregisterXformsRevalidateListener(owner: object): void;
+    triggerXformsRevalidateListeners(): void;
+    getItextElement(activeLanguage: ActiveLanguage, itextId: string): Element | undefined;
+    toJSON(): Omit<this, "form" | "toJSON" | "getNodeDefinition" | "getRootDefinition" | "registerXformsRevalidateListener" | "unregisterXformsRevalidateListener" | "triggerXformsRevalidateListeners" | "getItextElement">;
+}
+export {};

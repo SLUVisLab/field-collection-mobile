@@ -261,6 +261,13 @@ export class XFormsStore {
     return this.refreshInFlight;
   }
 
+  /** Return finalized generic Entity effects from the authoritative host. */
+  async getEntityEffects() {
+    this.ensureNotDisposed();
+    this.start();
+    return this.host.getEntityEffects();
+  }
+
   async setValue(reference, value) {
     this.ensureNotDisposed();
     this.start();

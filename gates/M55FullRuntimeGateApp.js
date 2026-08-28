@@ -4,9 +4,11 @@ import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import {
   closeGatherStorage,
+  createEntitiesRepository,
   createFormsRepository,
   createInstancesRepository,
   createProjectsRepository,
+  createSyncRepository,
   deleteFile,
   deleteProjectDirectory,
   ensureProjectDirectories,
@@ -30,6 +32,7 @@ import {
   createInstanceLifecycleService,
   INSTANCE_LIFECYCLE_ERROR_CODES,
 } from '../src/instances/instanceLifecycleService.js';
+import { createSyncService } from '../src/sync/syncService.js';
 import { loadBundledFlowerImageFixture } from './fixtures/bundledImageFixture.js';
 import { shellForActiveProject } from '../src/navigation/routes.js';
 import { createPakoSettingsQrCodec } from '../src/provisioning/collectSettingsQrCodec.js';
@@ -67,7 +70,9 @@ const liveConfig = () => {
 const servicesFor = (storage) => {
   const projects = createProjectsRepository(storage.database);
   const forms = createFormsRepository(storage.database);
+  const entities = createEntitiesRepository(storage.database);
   const instances = createInstancesRepository(storage.database);
+  const sync = createSyncRepository(storage.database);
   const getProjectUsage = async (projectKey) => {
     const saved = await instances.list(projectKey);
     return {
@@ -107,7 +112,24 @@ const servicesFor = (storage) => {
       deleteFile,
     },
   });
-  return { projects, forms, instances, provisioning, formCatalog, lifecycle };
+  const journal = { operationDuringSubmit: null };
+  const syncService = createSyncService({
+    instances,
+    sync,
+    entities,
+    // This observes the durable transition immediately before the real
+    // OpenRosa client dispatch without replacing that submit path.
+    instanceLifecycle: {
+      async send({ localInstanceId, project }) {
+        journal.operationDuringSubmit = await sync.getSubmissionOperation({
+          projectKey: project.projectKey,
+          localInstanceId,
+        });
+        return lifecycle.send({ localInstanceId, project });
+      },
+    },
+  });
+  return { projects, forms, entities, instances, sync, provisioning, formCatalog, lifecycle, syncService, journal };
 };
 
 const cleanLocalCentralState = async (services, config) => {
@@ -255,6 +277,9 @@ function RuntimeScenario({ onComplete }) {
       stage = 'validate-finalize';
       let validationError = null;
       let ready = null;
+      let journalBeforeRestart = null;
+      let journalOperationCountBeforeRestart = 0;
+      let journalAfterRestart = null;
       try {
         ready = await services.lifecycle.finalize({
           localInstanceId: draft.localInstanceId,
@@ -264,6 +289,22 @@ function RuntimeScenario({ onComplete }) {
         });
       } catch (error) {
         validationError = error;
+      }
+      if (ready) {
+        await services.syncService.enqueueReadyInstance({
+          localInstanceId: ready.localInstanceId,
+          project: reopenedProject,
+        });
+        journalBeforeRestart = await services.sync.getSubmissionOperation({
+          projectKey: reopenedProject.projectKey,
+          localInstanceId: ready.localInstanceId,
+        });
+        journalOperationCountBeforeRestart = (
+          await services.sync.listOperations(reopenedProject.projectKey)
+        ).filter(
+          (operation) =>
+            operation.kind === 'submission' && operation.localInstanceId === ready.localInstanceId
+        ).length;
       }
 
       const checks = {
@@ -326,6 +367,11 @@ function RuntimeScenario({ onComplete }) {
           Boolean(requiredUpload) && controlKindFor(requiredUpload) === 'image-upload',
         validationFinalizesBoundUpload:
           ready?.state === 'ready' && validationError == null && serialized.violationCount === 0,
+        journalOperationCreated:
+          journalBeforeRestart?.kind === 'submission' &&
+          journalOperationCountBeforeRestart === 1,
+        journalPendingBeforeRestart:
+          journalBeforeRestart?.state === 'pending' && journalBeforeRestart?.attemptCount === 0,
       };
 
       if (!checks.requiredImageUploadSupported) {
@@ -351,16 +397,50 @@ function RuntimeScenario({ onComplete }) {
       if (!ready) {
         throw validationError ?? new Error('finalization did not produce an instance');
       }
-      stage = 'foreground-submit';
-      const sent = await services.lifecycle.send({
+
+      stage = 'reinitialize-journal';
+      await closeGatherStorage();
+      services = servicesFor(await initializeGatherStorage());
+      const syncProject = await services.projects.getActiveProject();
+      if (!syncProject) throw new Error('active project unavailable after journal reinitialization');
+      journalAfterRestart = await services.sync.getSubmissionOperation({
+        projectKey: syncProject.projectKey,
         localInstanceId: ready.localInstanceId,
-        project: reopenedProject,
       });
+
+      stage = 'foreground-submit';
+      const sent = await services.syncService.sendInstance({
+        localInstanceId: ready.localInstanceId,
+        project: syncProject,
+      });
+      const journalAfterSubmit = await services.sync.getSubmissionOperation({
+        projectKey: syncProject.projectKey,
+        localInstanceId: ready.localInstanceId,
+      });
+      const journalOperationCountAfterSubmit = (await services.sync.listOperations(syncProject.projectKey)).filter(
+        (operation) =>
+          operation.kind === 'submission' && operation.localInstanceId === ready.localInstanceId
+      ).length;
       const terminalChecks = {
         ...checks,
         ready: ready.state === 'ready',
+        journalPendingAfterRestart:
+          journalAfterRestart?.operationId === journalBeforeRestart?.operationId &&
+          journalAfterRestart?.state === 'pending' &&
+          journalAfterRestart?.attemptCount === 0,
+        journalAttemptedBeforeCentralDispatch:
+          services.journal.operationDuringSubmit?.operationId === journalBeforeRestart?.operationId &&
+          services.journal.operationDuringSubmit?.state === 'attempting' &&
+          services.journal.operationDuringSubmit?.attemptCount === 1,
         foregroundSubmit: sent.ok,
         sent: sent.instance.state === 'sent',
+        journalCompletedAfterSubmit:
+          journalAfterSubmit?.operationId === journalBeforeRestart?.operationId &&
+          journalAfterSubmit?.state === 'complete' &&
+          journalAfterSubmit?.attemptCount === 1 &&
+          journalAfterSubmit?.lastErrorCode == null &&
+          journalAfterSubmit?.lastErrorSummary == null &&
+          journalOperationCountAfterSubmit === 1,
       };
       const terminalOk = Object.values(terminalChecks).every(Boolean);
       payload = {
@@ -375,6 +455,14 @@ function RuntimeScenario({ onComplete }) {
         selectedEntityId: String(entityChoice.value),
         instanceId: sent.instance.odkInstanceId,
         submissionStatus: sent.ok ? 201 : null,
+        journal: {
+          beforeRestart: journalBeforeRestart?.state ?? null,
+          afterRestart: journalAfterRestart?.state ?? null,
+          duringSubmit: services.journal.operationDuringSubmit?.state ?? null,
+          afterSubmit: journalAfterSubmit?.state ?? null,
+          attemptCount: journalAfterSubmit?.attemptCount ?? null,
+          operationCount: journalOperationCountAfterSubmit,
+        },
       };
     };
 

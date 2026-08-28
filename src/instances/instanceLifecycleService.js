@@ -1,5 +1,6 @@
 import { OdkCentralClient, createAppUserAuth, extractInstanceId } from 'odk-central-client';
 import { GatherPaths } from 'gather-storage/paths';
+import { sanitizeErrorText } from 'gather-storage/sanitize';
 
 export const INSTANCE_LIFECYCLE_ERROR_CODES = Object.freeze({
   UNAVAILABLE: 'GATHER_INSTANCE_UNAVAILABLE',
@@ -10,6 +11,7 @@ export const INSTANCE_LIFECYCLE_ERROR_CODES = Object.freeze({
   SERIALIZATION: 'GATHER_INSTANCE_SERIALIZATION',
   CREDENTIALS: 'GATHER_INSTANCE_CREDENTIALS',
   MEDIA: 'GATHER_INSTANCE_MEDIA',
+  ENTITY_EFFECTS: 'GATHER_INSTANCE_ENTITY_EFFECTS',
 });
 
 export class InstanceLifecycleError extends Error {
@@ -132,24 +134,8 @@ const serializeFrom = async (form) => {
  * OpenRosa App User keys, bearer credentials, and common token query/field
  * shapes cannot reach the SQLite metadata or user-visible retry message.
  */
-export const sanitizeSubmissionText = (value, fallback = 'Submission failed. Try again.') => {
-  const text =
-    typeof value === 'string' && value.trim().length > 0
-      ? value.trim()
-      : value instanceof Error && typeof value.message === 'string'
-        ? value.message.trim()
-        : fallback;
-  const sanitized = text
-    .replace(/:\/\/[^/\s:@]+:[^@\s/]+@/g, '://<redacted>@')
-    .replace(/(\/key\/)[^/?#\s]+/gi, '$1<redacted>')
-    .replace(/([?&](?:st|token|api[_-]?key|password|secret)=)[^&#\s]+/gi, '$1<redacted>')
-    .replace(/\b(Bearer)\s+[^\s,;]+/gi, '$1 <redacted>')
-    .replace(
-      /\b(authorization|token|api[_ -]?key|password|secret)\b\s*["']?\s*[:=]\s*["']?[^,\s;"'}]+/gi,
-      '$1=<redacted>'
-    );
-  return sanitized.slice(0, 500) || fallback;
-};
+export const sanitizeSubmissionText = (value, fallback = 'Submission failed. Try again.') =>
+  sanitizeErrorText(value, fallback);
 
 const receiptFor = (result, odkInstanceId) =>
   sanitizeSubmissionText(
@@ -169,7 +155,15 @@ const defaultCreateClient = ({ baseUrl, centralProjectId, token }) =>
     timeoutMs: 45_000,
   });
 
-const assertDependencies = ({ instances, formCatalog, credentials, files, createClient, newLocalInstanceId }) => {
+const assertDependencies = ({
+  instances,
+  formCatalog,
+  entityEffects,
+  credentials,
+  files,
+  createClient,
+  newLocalInstanceId,
+}) => {
   if (
     !instances ||
     typeof instances.get !== 'function' ||
@@ -203,12 +197,21 @@ const assertDependencies = ({ instances, formCatalog, credentials, files, create
 export const createInstanceLifecycleService = ({
   instances,
   formCatalog,
+  entityEffects,
   credentials,
   files,
   createClient = defaultCreateClient,
   newLocalInstanceId = defaultNewLocalInstanceId,
 } = {}) => {
-  assertDependencies({ instances, formCatalog, credentials, files, createClient, newLocalInstanceId });
+  assertDependencies({
+    instances,
+    formCatalog,
+    entityEffects,
+    credentials,
+    files,
+    createClient,
+    newLocalInstanceId,
+  });
 
   const owned = async (localInstanceId, project) => {
     const instance = await instances.get(localInstanceId);
@@ -516,6 +519,31 @@ export const createInstanceLifecycleService = ({
         instance = await instances.saveDraft({
           localInstanceId: instance.localInstanceId,
           odkInstanceId: serialized.odkInstanceId,
+        });
+      }
+      if (entityEffects) {
+        if (typeof entityEffects.recordFinalizedEffects !== 'function' || !form || typeof form.getEntityEffects !== 'function') {
+          fail(
+            'The form engine did not provide finalized Entity effects.',
+            INSTANCE_LIFECYCLE_ERROR_CODES.ENTITY_EFFECTS
+          );
+        }
+        let effects;
+        try {
+          effects = await form.getEntityEffects();
+        } catch {
+          fail(
+            'The form engine could not resolve finalized Entity effects.',
+            INSTANCE_LIFECYCLE_ERROR_CODES.ENTITY_EFFECTS
+          );
+        }
+        // Serialization above has already validated and durably written this
+        // finalized XML. The host's generic projection is the only Entity input;
+        // no app-side XForm/XML parsing is involved.
+        await entityEffects.recordFinalizedEffects({
+          projectKey: project.projectKey,
+          localInstanceId: instance.localInstanceId,
+          effects,
         });
       }
       return instances.markReady({

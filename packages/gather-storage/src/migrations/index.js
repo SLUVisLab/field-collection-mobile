@@ -12,8 +12,9 @@
  * Version 3 adds the immutable form-catalog cache used by M5.3. Version 4 adds
  * the durable instance lifecycle. Version 5 adds per-instance binary media
  * metadata. Version 6 makes project removal delete instances before immutable
- * form-version records. Later work extends this by appending migrations (never
- * by editing an already-shipped version).
+ * form-version records. Version 7 adds the M6 submission sync journal. Version
+ * 8 adds the M6 Entity overlay. Later work extends this by appending migrations
+ * (never by editing an already-shipped version).
  */
 
 export const MIGRATIONS = Object.freeze([
@@ -208,6 +209,130 @@ export const MIGRATIONS = Object.freeze([
          BEGIN
            DELETE FROM instances WHERE project_key = OLD.project_key;
          END;`,
+    ],
+  },
+  {
+    version: 7,
+    name: 'sync_journal',
+    statements: [
+         // A ready ODK Submission has one durable operation. `kind` intentionally
+         // remains extensible, while M6.1 only creates "submission" operations.
+         `CREATE TABLE sync_operations (
+            operation_id       TEXT PRIMARY KEY NOT NULL,
+            project_key        TEXT NOT NULL REFERENCES projects(project_key) ON DELETE CASCADE,
+            kind               TEXT NOT NULL,
+            local_instance_id  TEXT NOT NULL REFERENCES instances(local_instance_id) ON DELETE CASCADE,
+            state              TEXT NOT NULL DEFAULT 'pending'
+                               CHECK (state IN ('pending', 'attempting', 'retryable', 'blocked', 'complete')),
+            attempt_count      INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+            last_attempt_at    TEXT,
+            last_error_code    TEXT,
+            last_error_summary TEXT,
+            created_at         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+            updated_at         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+            UNIQUE (project_key, kind, local_instance_id)
+          );`,
+         `CREATE INDEX sync_operations_by_project_state_created
+            ON sync_operations (project_key, state, created_at, operation_id);`,
+         `CREATE TABLE sync_dependencies (
+            operation_id            TEXT NOT NULL REFERENCES sync_operations(operation_id) ON DELETE CASCADE,
+            depends_on_operation_id TEXT NOT NULL REFERENCES sync_operations(operation_id) ON DELETE CASCADE,
+            PRIMARY KEY (operation_id, depends_on_operation_id),
+            CHECK (operation_id <> depends_on_operation_id)
+          );`,
+         `CREATE INDEX sync_dependencies_by_dependency
+            ON sync_dependencies (depends_on_operation_id);`,
+         // The local instance ID is globally unique, but this guard makes the
+         // journal's project scope explicit and only permits ready/sent instances.
+         `CREATE TRIGGER sync_operations_require_matching_instance
+            BEFORE INSERT ON sync_operations
+            FOR EACH ROW
+            BEGIN
+              SELECT CASE WHEN NOT EXISTS (
+                SELECT 1 FROM instances
+                 WHERE local_instance_id = NEW.local_instance_id
+                   AND project_key = NEW.project_key
+                   AND state IN ('ready', 'sent')
+              ) THEN RAISE(ABORT, 'sync operation requires a ready or sent project instance') END;
+            END;`,
+         `CREATE TRIGGER sync_dependencies_require_same_project
+            BEFORE INSERT ON sync_dependencies
+            FOR EACH ROW
+            BEGIN
+              SELECT CASE WHEN (
+                SELECT project_key FROM sync_operations WHERE operation_id = NEW.operation_id
+              ) <> (
+                SELECT project_key FROM sync_operations WHERE operation_id = NEW.depends_on_operation_id
+              ) THEN RAISE(ABORT, 'sync dependencies must remain within a project') END;
+            END;`,
+    ],
+  },
+  {
+    version: 8,
+    name: 'entity_overlay',
+    statements: [
+    // The App User's Entity List remains the immutable cached form resource.
+    // These rows retain only local branch identity and finalized, engine-derived
+    // changes that are overlaid when that CSV is loaded again.
+    `ALTER TABLE form_resources ADD COLUMN entity_dataset_name TEXT;`,
+    `CREATE TABLE entity_branches (
+       project_key  TEXT NOT NULL REFERENCES projects(project_key) ON DELETE CASCADE,
+       dataset_name TEXT NOT NULL,
+       entity_id    TEXT NOT NULL,
+       branch_id    TEXT NOT NULL,
+       created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+       PRIMARY KEY (project_key, dataset_name, entity_id)
+     );`,
+    `CREATE TABLE entity_effect_batches (
+       local_instance_id TEXT PRIMARY KEY NOT NULL
+                         REFERENCES instances(local_instance_id) ON DELETE CASCADE,
+       project_key       TEXT NOT NULL REFERENCES projects(project_key) ON DELETE CASCADE,
+       effects_json      TEXT NOT NULL,
+       created_at        TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     );`,
+    // `local_instance_id` is deliberately the association rather than a
+    // sync-operation FK: finalization precedes M6.1's operation creation.
+    // M6.4 can join this to its one submission operation by local instance ID
+    // when it creates dependency edges.
+    `CREATE TABLE entity_effects (
+       effect_id         INTEGER PRIMARY KEY AUTOINCREMENT,
+       local_instance_id TEXT NOT NULL REFERENCES instances(local_instance_id) ON DELETE CASCADE,
+       project_key       TEXT NOT NULL REFERENCES projects(project_key) ON DELETE CASCADE,
+       effect_index      INTEGER NOT NULL CHECK (effect_index >= 0),
+       reference         TEXT,
+       dataset_name      TEXT NOT NULL,
+       action            TEXT NOT NULL CHECK (action IN ('create', 'update')),
+       entity_id         TEXT NOT NULL,
+       label             TEXT,
+       properties_json   TEXT NOT NULL,
+       base_version      TEXT,
+       trunk_version     TEXT,
+       branch_id         TEXT NOT NULL,
+       created_at        TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+       UNIQUE (local_instance_id, effect_index)
+     );`,
+    `CREATE INDEX entity_effects_by_project_dataset_order
+       ON entity_effects (project_key, dataset_name, effect_id);`,
+    `CREATE TRIGGER entity_effect_batches_require_matching_instance
+       BEFORE INSERT ON entity_effect_batches
+       FOR EACH ROW
+       BEGIN
+         SELECT CASE WHEN NOT EXISTS (
+           SELECT 1 FROM instances
+            WHERE local_instance_id = NEW.local_instance_id
+              AND project_key = NEW.project_key
+         ) THEN RAISE(ABORT, 'entity effect batch requires a matching project instance') END;
+       END;`,
+    `CREATE TRIGGER entity_effects_require_matching_instance
+       BEFORE INSERT ON entity_effects
+       FOR EACH ROW
+       BEGIN
+         SELECT CASE WHEN NOT EXISTS (
+           SELECT 1 FROM instances
+            WHERE local_instance_id = NEW.local_instance_id
+              AND project_key = NEW.project_key
+         ) THEN RAISE(ABORT, 'entity effect requires a matching project instance') END;
+       END;`,
     ],
   },
 ]);
