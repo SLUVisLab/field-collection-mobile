@@ -130,6 +130,7 @@ export {
   writeBytesAtomic,
   readText,
   readBytes,
+  readExternalBytes,
   fileExists,
   deleteFile,
 } from './filesystem.js';

@@ -105,6 +105,19 @@ export const writeBytesAtomic = async (key, bytes) => {
 
 export const readText = (key) => fileForKey(key).text();
 export const readBytes = (key) => fileForKey(key).bytes();
+
+/**
+ * Reads a local file outside the Gather durable root before it is copied into
+ * Gather-owned storage. This is intentionally limited to absolute local paths
+ * and is used for camera-library temporary captures.
+ */
+export const readExternalBytes = (path) => {
+  if (typeof path !== 'string' || !path.startsWith('/')) {
+    throw new TypeError('External file path must be an absolute local path.');
+  }
+  return new File(`file://${path}`).bytes();
+};
+
 export const fileExists = (key) => fileForKey(key).exists;
 
 export const deleteFile = (key) => {

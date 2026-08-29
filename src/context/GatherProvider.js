@@ -12,9 +12,12 @@ import {
   deleteProjectDirectory,
   fileForKey,
   readBytes,
+  readExternalBytes,
   readText,
   writeBytesAtomic,
   writeTextAtomic,
+  fileExists,
+  GatherPaths,
 } from 'gather-storage';
 
 import { bootstrapGather } from '../bootstrap.js';
@@ -27,6 +30,16 @@ import { createEntityService } from '../entities/entityService.js';
 import { createInstanceLifecycleService } from '../instances/instanceLifecycleService.js';
 import { createSyncService } from '../sync/syncService.js';
 import { createFieldworkService } from '../fieldwork/fieldworkService.js';
+import { createModelStore } from '../scientific/models/modelStore.js';
+import { ensureBundledModel, installBundledModel } from '../scientific/models/bundledModelInstaller.js';
+import { BUNDLED_MODEL_PACKAGES } from '../scientific/models/bundledModelPackages.js';
+import { createReactNativeOnnxRuntime } from '../scientific/runtime/onnxReactNativeAdapter.js';
+import { createOpenCvImageAdapter } from '../scientific/runtime/openCvImageAdapter.js';
+import { createOpenCvMeasurementAdapter } from '../scientific/runtime/openCvMeasurementAdapter.js';
+import { createModelExecutor } from '../scientific/runtime/modelExecutor.js';
+import { createImageAssetService } from '../scientific/assets/imageAssetService.js';
+import { segment, classify } from '../capabilities/vision/index.js';
+import { measureImage, measureMask } from '../capabilities/measure/index.js';
 
 /**
  * Runs the (pure) bootstrap orchestration against the real native storage layer
@@ -148,6 +161,41 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       },
     });
   }, [projects, instances, state.boot]);
+  const modelStore = useMemo(() => {
+    if (!state.boot?.storage) return null;
+    return createModelStore({
+      readBytes,
+      readText,
+      writeBytesAtomic,
+      writeTextAtomic,
+      fileExists,
+      fileForKey,
+    });
+  }, [state.boot?.storage]);
+  const scientificRuntime = useMemo(() => {
+    if (!modelStore || !state.boot?.storage) return null;
+    const files = { readBytes, readText, fileForKey };
+    const imageAdapter = createOpenCvImageAdapter();
+    return {
+      executor: createModelExecutor({
+        modelStore,
+        onnxRuntime: createReactNativeOnnxRuntime(),
+        imageAdapter,
+        files,
+        newAssetId: () => `mask-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`,
+      }),
+      measurementAdapter: createOpenCvMeasurementAdapter(),
+    };
+  }, [modelStore, state.boot?.storage]);
+  const imageAssetService = useMemo(() => {
+    if (!state.boot?.storage) return null;
+    return createImageAssetService({
+      readCaptureBytes: readExternalBytes,
+      writeBytesAtomic,
+      fileUriForKey: (key) => fileForKey(key).uri,
+      newAssetId: () => `image-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`,
+    });
+  }, [state.boot?.storage]);
 
   const setActiveProject = useCallback(
     async (projectKey) => {
@@ -373,13 +421,73 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     },
     [activeProject, fieldworkService]
   );
+  const installScientificModel = useCallback(
+    async (name) => {
+      if (!modelStore || !activeProject) throw new Error('model store is not ready');
+      return installBundledModel({ modelStore, projectKey: activeProject.projectKey, name });
+    },
+    [activeProject, modelStore]
+  );
+  const resolveScientificModel = useCallback(
+    async (modelRef) => {
+      if (!modelStore || !activeProject) throw new Error('model store is not ready');
+      return modelStore.resolve({ projectKey: activeProject.projectKey, modelRef });
+    },
+    [activeProject, modelStore]
+  );
+  const segmentScientificImage = useCallback(
+    async ({ image, modelName = 'u2netp' }) => {
+      if (!scientificRuntime || !activeProject) throw new Error('scientific runtime is not ready');
+      const model = BUNDLED_MODEL_PACKAGES[modelName];
+      await ensureBundledModel({ modelStore, projectKey: activeProject.projectKey, name: modelName });
+      return segment({
+        image,
+        model,
+        execute: (input) => scientificRuntime.executor.segment({ ...input, projectKey: activeProject.projectKey }),
+      });
+    },
+    [activeProject, modelStore, scientificRuntime]
+  );
+  const classifyScientificImage = useCallback(
+    async ({ image, modelName = 'mobilenetV3Large' }) => {
+      if (!scientificRuntime || !activeProject) throw new Error('scientific runtime is not ready');
+      const model = BUNDLED_MODEL_PACKAGES[modelName];
+      await ensureBundledModel({ modelStore, projectKey: activeProject.projectKey, name: modelName });
+      return classify({
+        image,
+        model,
+        execute: (input) => scientificRuntime.executor.classify({ ...input, projectKey: activeProject.projectKey }),
+      });
+    },
+    [activeProject, modelStore, scientificRuntime]
+  );
+  const measureScientificMask = useCallback(
+    async ({ mask }) => measureMask({ mask, adapter: scientificRuntime?.measurementAdapter }),
+    [scientificRuntime]
+  );
+  const measureScientificImage = useCallback(
+    async ({ image, mask }) => measureImage({ image, mask, adapter: scientificRuntime?.measurementAdapter }),
+    [scientificRuntime]
+  );
+  const persistScientificCapture = useCallback(
+    async (capture) => {
+      if (!imageAssetService || !activeProject) throw new Error('scientific image storage is not ready');
+      const assetId = `image-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
+      return imageAssetService.persistCapture({
+        capture,
+        fileKey: GatherPaths.media(activeProject.projectKey, `${assetId}.jpg`),
+        capturedAt: new Date().toISOString(),
+      });
+    },
+    [activeProject, imageAssetService]
+  );
 
   const value = useMemo(
     () => ({
       status: state.status,
       error: state.error,
       storage: state.boot?.storage ?? null,
-      repositories: { projects, forms, entities: entityRepository, instances, sync, fieldwork },
+      repositories: { projects, forms, entities: entityRepository, instances, sync, fieldwork, modelStore },
       projectCount,
       activeProject,
       shell: shellForActiveProject(activeProject),
@@ -410,6 +518,13 @@ export function GatherProvider({ children, deps, onReady, onError }) {
         getFieldworkSession,
         updateFieldworkSession,
         associateFieldworkInstance,
+        installScientificModel,
+        resolveScientificModel,
+        segmentScientificImage,
+        classifyScientificImage,
+        measureScientificMask,
+        measureScientificImage,
+        persistScientificCapture,
       },
     }),
     [
@@ -427,6 +542,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       instances,
       sync,
       fieldwork,
+      modelStore,
       switchProject,
       getRemovalPreview,
       removeProject,
@@ -447,6 +563,13 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       getFieldworkSession,
       updateFieldworkSession,
       associateFieldworkInstance,
+      installScientificModel,
+      resolveScientificModel,
+      segmentScientificImage,
+      classifyScientificImage,
+      measureScientificMask,
+      measureScientificImage,
+      persistScientificCapture,
     ]
   );
 

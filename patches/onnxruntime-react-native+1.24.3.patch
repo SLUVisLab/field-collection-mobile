@@ -1,0 +1,108 @@
+diff --git a/node_modules/onnxruntime-react-native/android/build.gradle b/node_modules/onnxruntime-react-native/android/build.gradle
+index 41b4359..c8d62e8 100644
+--- a/node_modules/onnxruntime-react-native/android/build.gradle
++++ b/node_modules/onnxruntime-react-native/android/build.gradle
+@@ -66,7 +66,12 @@ boolean ortExtensionsEnabled = readPackageJsonField('onnxruntimeExtensionsEnable
+ boolean useQnn = readPackageJsonField('onnxruntimeUseQnn') == "true"
+ 
+ def REACT_NATIVE_VERSION = ['node', '--print', "JSON.parse(require('fs').readFileSync(require.resolve('react-native/package.json'), 'utf-8')).version"].execute(null, rootDir).text.trim()
+-def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
++def versionParts = REACT_NATIVE_VERSION.split("\\.")
++if (versionParts.length < 2) {
++  throw new GradleException("Invalid React Native version format: ${REACT_NATIVE_VERSION}. Expected format: major.minor[.patch]")
++}
++def REACT_NATIVE_MAJOR_VERSION = versionParts[0].toInteger()
++def REACT_NATIVE_MINOR_VERSION = versionParts[1].toInteger()
+ 
+ android {
+ // This is needed by the new AndroidManifestNew.xml
+@@ -247,7 +252,7 @@ dependencies {
+     extractLibs "com.microsoft.onnxruntime:onnxruntime-android:latest.integration@aar"
+   }
+ 
+-  if (VersionNumber.parse(REACT_NATIVE_VERSION) < VersionNumber.parse("0.71")) {
++  if (REACT_NATIVE_MAJOR_VERSION == 0 && REACT_NATIVE_MINOR_VERSION < 71) {
+     extractLibs "com.facebook.fbjni:fbjni:+:headers"
+     extractLibs "com.facebook.fbjni:fbjni:+"
+   }
+diff --git a/node_modules/onnxruntime-react-native/app.plugin.js b/node_modules/onnxruntime-react-native/app.plugin.js
+index 2fa117b..1939b6b 100644
+--- a/node_modules/onnxruntime-react-native/app.plugin.js
++++ b/node_modules/onnxruntime-react-native/app.plugin.js
+@@ -23,6 +23,59 @@ const withOrt = (config) => {
+     return config;
+   });
+ 
++  // Register OnnxruntimePackage in MainApplication for New Architecture / Expo prebuild.
++  config = configPlugin.withMainApplication(config, (config) => {
++    const lang = config.modResults.language;
++    if (lang === 'kt') {
++      config.modResults.contents = generateCode.mergeContents({
++        src: config.modResults.contents,
++        newSrc: 'import ai.onnxruntime.reactnative.OnnxruntimePackage',
++        tag: 'onnxruntime-react-native-import',
++        anchor: /^import /m,
++        offset: 0,
++        comment: '//',
++      }).contents;
++      const packageListApply = /PackageList\(this\)\.packages\.apply\s*\{/;
++      config.modResults.contents = generateCode.mergeContents({
++        src: config.modResults.contents,
++        newSrc: '          add(OnnxruntimePackage())',
++        tag: 'onnxruntime-react-native-package',
++        anchor: packageListApply.test(config.modResults.contents)
++          ? packageListApply
++          : /override fun getPackages\(\)/,
++        offset: packageListApply.test(config.modResults.contents) ? 1 : 2,
++        comment: '//',
++      }).contents;
++    } else if (lang === 'java') {
++      config.modResults.contents = generateCode.mergeContents({
++        src: config.modResults.contents,
++        newSrc: 'import ai.onnxruntime.reactnative.OnnxruntimePackage;',
++        tag: 'onnxruntime-react-native-import',
++        anchor: /^import /m,
++        offset: 0,
++        comment: '//',
++      }).contents;
++      if (!config.modResults.contents.includes('packages.add(new OnnxruntimePackage())')) {
++        if (/return\s+new PackageList\(this\)\.getPackages\(\);/.test(config.modResults.contents)) {
++          config.modResults.contents = config.modResults.contents.replace(
++            /(\s*)return\s+new PackageList\(this\)\.getPackages\(\);/,
++            '$1List<ReactPackage> packages = new PackageList(this).getPackages();\n$1packages.add(new OnnxruntimePackage());\n$1return packages;',
++          );
++        } else {
++          config.modResults.contents = generateCode.mergeContents({
++            src: config.modResults.contents,
++            newSrc: '      packages.add(new OnnxruntimePackage());',
++            tag: 'onnxruntime-react-native-package',
++            anchor: /^\s*List<ReactPackage>\s+packages\s*=\s*new PackageList\(this\)\.getPackages\(\);\s*$/m,
++            offset: 1,
++            comment: '//',
++          }).contents;
++        }
++      }
++    }
++    return config;
++  });
++
+   // Add build dependency to pod file
+   config = configPlugin.withDangerousMod(config, [
+     'ios',
+diff --git a/node_modules/onnxruntime-react-native/react-native.config.js b/node_modules/onnxruntime-react-native/react-native.config.js
+new file mode 100644
+index 0000000..87759a6
+--- /dev/null
++++ b/node_modules/onnxruntime-react-native/react-native.config.js
+@@ -0,0 +1,11 @@
++module.exports = {
++  dependency: {
++    platforms: {
++      android: {
++        packageImportPath: 'import ai.onnxruntime.reactnative.OnnxruntimePackage;',
++        packageInstance: 'new OnnxruntimePackage()',
++      },
++      ios: {},
++    },
++  },
++};

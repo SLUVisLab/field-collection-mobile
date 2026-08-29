@@ -8,17 +8,33 @@ import {
 } from '../../src/capabilities/camera/capturePhoto.js';
 import { scannedCodeValue } from '../../src/capabilities/camera/scanResult.js';
 
-test('camera capture returns only a stable local-file result and disposes the native photo', async () => {
+test('camera capture returns only a stable local-file result and disposes the native photo and image', async () => {
   let captureSettings = null;
-  let disposed = false;
-  const nativePhoto = {
-    width: 3024,
-    height: 4032,
-    async saveToTemporaryFileAsync() {
+  let photoDisposed = false;
+  let imageDisposed = false;
+  let savedFormat = null;
+  const nativeImage = {
+    width: 4032,
+    height: 3024,
+    async saveToTemporaryFileAsync(format, quality) {
+      savedFormat = { format, quality };
       return '/private/var/mobile/Containers/Data/photo.jpeg';
     },
     dispose() {
-      disposed = true;
+      imageDisposed = true;
+    },
+  };
+  const nativePhoto = {
+    width: 3024,
+    height: 4032,
+    async toImageAsync() {
+      return nativeImage;
+    },
+    async saveToTemporaryFileAsync() {
+      throw new Error('should use the oriented Image path');
+    },
+    dispose() {
+      photoDisposed = true;
     },
   };
   const photoOutput = {
@@ -35,21 +51,26 @@ test('camera capture returns only a stable local-file result and disposes the na
     file: '/private/var/mobile/Containers/Data/photo.jpeg',
     path: '/private/var/mobile/Containers/Data/photo.jpeg',
     contentType: 'image/jpeg',
-    width: 3024,
-    height: 4032,
+    width: 4032,
+    height: 3024,
   });
+  assert.deepEqual(savedFormat, { format: 'jpg', quality: 90 });
   assert.deepEqual(captureSettings, { settings: { flashMode: 'off' }, callbacks: {} });
-  assert.equal(disposed, true);
+  assert.equal(photoDisposed, true);
+  assert.equal(imageDisposed, true);
   assert.notEqual(result, nativePhoto);
 });
 
-test('camera capture releases a native photo when writing its local file fails', async () => {
+test('camera capture releases a native photo when converting its oriented image fails', async () => {
   let disposed = false;
   const photoOutput = {
     async capturePhoto() {
       return {
-        async saveToTemporaryFileAsync() {
+        async toImageAsync() {
           throw new Error('disk full');
+        },
+        async saveToTemporaryFileAsync() {
+          return '/cache/photo.jpeg';
         },
         dispose() {
           disposed = true;

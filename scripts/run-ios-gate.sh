@@ -50,6 +50,31 @@ if [ -z "$IOS_DEVICE" ]; then
   fi
 fi
 
+marker_file_line() {
+  if [ -z "${IOS_GATE_BUNDLE_ID:-}" ] || [ -z "${IOS_GATE_MARKER_FILE:-}" ] || [ -z "$IOS_DEVICE" ]; then
+    return 1
+  fi
+  local container
+  container="$(xcrun simctl get_app_container "$IOS_DEVICE" "$IOS_GATE_BUNDLE_ID" data 2>/dev/null || true)"
+  if [ -z "$container" ] || [ ! -f "$container/Documents/$IOS_GATE_MARKER_FILE" ]; then
+    return 1
+  fi
+  cat "$container/Documents/$IOS_GATE_MARKER_FILE"
+}
+
+clear_marker_file() {
+  if [ -z "${IOS_GATE_BUNDLE_ID:-}" ] || [ -z "${IOS_GATE_MARKER_FILE:-}" ] || [ -z "$IOS_DEVICE" ]; then
+    return 0
+  fi
+  local container
+  container="$(xcrun simctl get_app_container "$IOS_DEVICE" "$IOS_GATE_BUNDLE_ID" data 2>/dev/null || true)"
+  if [ -n "$container" ]; then
+    rm -f "$container/Documents/$IOS_GATE_MARKER_FILE"
+  fi
+}
+
+clear_marker_file
+
 if [ -n "$IOS_DEVICE" ]; then
   nohup env EXPO_NO_TYPESCRIPT_SETUP=1 npx expo run:ios --device "$IOS_DEVICE" > "$EXPO_LOG" 2>&1 &
 else
@@ -62,6 +87,11 @@ DEADLINE=$(( $(date +%s) + TIMEOUT ))
 STATUS="timeout"
 while [ "$(date +%s)" -lt "$DEADLINE" ]; do
   if grep -Eq "$MARKER" "$EXPO_LOG" 2>/dev/null; then
+    STATUS="done"
+    break
+  fi
+  if MARKER_LINE="$(marker_file_line)" && printf '%s\n' "$MARKER_LINE" | grep -Eq "$MARKER"; then
+    printf '%s\n' "$MARKER_LINE" >> "$EXPO_LOG"
     STATUS="done"
     break
   fi

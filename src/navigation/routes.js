@@ -28,6 +28,7 @@ export const ROUTES = Object.freeze({
     switch: '/project/switch',
     fieldwork: '/project/fieldwork',
     fieldworkSession: '/project/fieldwork/:sessionId',
+    segmentMeasure: '/project/segment-measure',
   },
 });
 

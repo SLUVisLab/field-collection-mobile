@@ -49,8 +49,16 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# 1) Ensure an emulator is booted.
-if ! "$ADB" devices | grep -q 'emulator-.*device$'; then
+# 1) Ensure the requested device is available. A caller that supplies
+# ANDROID_SERIAL is explicitly targeting a physical device and must not cause an
+# unrelated emulator to boot.
+if [ -n "${ANDROID_SERIAL:-}" ]; then
+  if [ "$("$ADB" get-state 2>/dev/null)" != "device" ]; then
+    log "requested Android device is unavailable: $ANDROID_SERIAL"
+    exit 1
+  fi
+  log "using requested device: $ANDROID_SERIAL"
+elif ! "$ADB" devices | grep -q 'emulator-.*device$'; then
   AVD="$("$EMULATOR" -list-avds | grep 'Pixel_3a' | head -1)"
   AVD="${AVD:-$("$EMULATOR" -list-avds | head -1)}"
   log "booting emulator: $AVD"
@@ -70,14 +78,16 @@ log "device booted: $("$ADB" devices | grep 'device$' | head -1)"
 
 # 1b) Establish the Metro host the app will load the JS bundle from.
 #
-# `adb reverse` (device localhost:8081 -> host:8081) is the default expo/dev-client
-# path, but on some emulator images (e.g. API 34 virtio-wifi) the reverse tunnel
-# silently fails to forward. The emulator can always reach the host loopback via
-# 10.0.2.2, so we verify the reverse tunnel actually works and, if not, force the
-# app to use 10.0.2.2 via REACT_NATIVE_PACKAGER_HOSTNAME.
+# `adb reverse` (device localhost:8081 -> host:8081) is required for a physical
+# USB device. The 10.0.2.2 fallback exists only for Android emulators.
 "$ADB" reverse tcp:8081 tcp:8081 >/dev/null 2>&1 || true
-export REACT_NATIVE_PACKAGER_HOSTNAME=10.0.2.2
-log "using packager host 10.0.2.2 (emulator host-loopback; robust to broken adb reverse)"
+if [ -n "${ANDROID_SERIAL:-}" ]; then
+  export REACT_NATIVE_PACKAGER_HOSTNAME=localhost
+  log "using packager host localhost through adb reverse"
+else
+  export REACT_NATIVE_PACKAGER_HOSTNAME=10.0.2.2
+  log "using packager host 10.0.2.2 (emulator host-loopback; robust to broken adb reverse)"
+fi
 
 # 2) Start logcat capture of JS output (clear old buffer first).
 "$ADB" logcat -c 2>/dev/null || true

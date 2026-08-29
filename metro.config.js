@@ -12,6 +12,8 @@ config.watchFolders = [path.resolve(projectRoot, 'packages')];
 
 // Resolve modules from the root node_modules (where workspace packages are linked).
 config.resolver.nodeModulesPaths = [path.resolve(projectRoot, 'node_modules')];
+config.resolver.assetExts.push('onnx');
+config.resolver.assetExts.push('txt');
 
 // Keep the frozen legacy app + experiments (archive/) out of the module graph.
 // It contains large vendored trees (incl. ~1k TypeScript files) that are not part

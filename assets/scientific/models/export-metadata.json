@@ -1,0 +1,18 @@
+{
+  "torch": "2.13.0",
+  "torchvision": "0.28.0",
+  "onnx": "1.22.0",
+  "opset": 17,
+  "u2netpInput": [
+    1,
+    3,
+    320,
+    320
+  ],
+  "mobilenetInput": [
+    1,
+    3,
+    224,
+    224
+  ]
+}

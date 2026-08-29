@@ -60,16 +60,26 @@ export const capturePhoto = async ({
 
   const photo = await photoOutput.capturePhoto({ flashMode }, {});
   try {
-    if (!photo || typeof photo.saveToTemporaryFileAsync !== 'function') {
+    // Convert the Photo to an Image so the camera orientation (and mirroring)
+    // is baked into the pixel buffer instead of being left as a lazy EXIF flag.
+    // Downstream consumers (RN <Image> display and Nitro's raw-pixel decode for
+    // segmentation) then agree on a single upright orientation, keeping the
+    // proposed mask aligned with the reviewed image.
+    if (typeof photo.toImageAsync !== 'function' || typeof photo.saveToTemporaryFileAsync !== 'function') {
       throw new CameraCaptureError('Camera capture did not produce a photo.');
     }
-    const filePath = await photo.saveToTemporaryFileAsync();
-    return localImageCaptureResult({
-      filePath,
-      contentType,
-      width: photo.width,
-      height: photo.height,
-    });
+    const image = await photo.toImageAsync();
+    try {
+      const filePath = await image.saveToTemporaryFileAsync('jpg', 90);
+      return localImageCaptureResult({
+        filePath,
+        contentType,
+        width: image.width,
+        height: image.height,
+      });
+    } finally {
+      image?.dispose?.();
+    }
   } finally {
     photo?.dispose?.();
   }

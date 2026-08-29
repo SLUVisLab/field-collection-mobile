@@ -39,6 +39,7 @@ liveConfig.local.js
 *.local.js
 
 # Logs & debug
+.gate-logs/
 npm-debug.*
 yarn-debug.*
 yarn-error.*
@@ -49,3 +50,9 @@ yarn-error.*
 
 # macOS
 .DS_Store
+
+# Reproducible M8 export inputs are locally fetched/generated; retain only the script.
+experiments/m8-model-export/.venv/
+experiments/m8-model-export/artifacts/
+experiments/m8-model-export/u2net-source/
+experiments/m8-model-export/torchvision-source/
