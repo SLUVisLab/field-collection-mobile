@@ -335,4 +335,47 @@ export const MIGRATIONS = Object.freeze([
        END;`,
     ],
   },
+  {
+    version: 9,
+    name: 'fieldwork_sessions',
+    statements: [
+      `CREATE TABLE fieldwork_sessions (
+         session_id              TEXT PRIMARY KEY NOT NULL,
+         project_key             TEXT NOT NULL REFERENCES projects(project_key) ON DELETE CASCADE,
+         form_id                 TEXT NOT NULL,
+         form_version_id         TEXT NOT NULL REFERENCES form_versions(form_version_id) ON DELETE RESTRICT,
+         entity_dataset          TEXT NOT NULL,
+         target_entity_ids_json  TEXT NOT NULL,
+         current_entity_id       TEXT,
+         filters_json            TEXT NOT NULL DEFAULT '{}',
+         grouping_json           TEXT NOT NULL DEFAULT '{}',
+         sorting_json            TEXT NOT NULL DEFAULT '[]',
+         view_mode               TEXT NOT NULL DEFAULT 'list' CHECK (view_mode IN ('list', 'groups', 'map')),
+         started_at              TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+         completed_at            TEXT
+       );`,
+      `CREATE TABLE fieldwork_session_instances (
+         session_id        TEXT NOT NULL REFERENCES fieldwork_sessions(session_id) ON DELETE CASCADE,
+         entity_id         TEXT NOT NULL,
+         local_instance_id TEXT NOT NULL REFERENCES instances(local_instance_id) ON DELETE CASCADE,
+         PRIMARY KEY (session_id, entity_id),
+         UNIQUE (session_id, local_instance_id)
+       );`,
+      `CREATE INDEX fieldwork_sessions_by_project_started
+         ON fieldwork_sessions (project_key, started_at DESC);`,
+      `CREATE INDEX fieldwork_session_instances_by_instance
+         ON fieldwork_session_instances (local_instance_id);`,
+      `CREATE TRIGGER fieldwork_sessions_require_matching_form_version
+         BEFORE INSERT ON fieldwork_sessions
+         FOR EACH ROW
+         BEGIN
+           SELECT CASE WHEN NOT EXISTS (
+             SELECT 1 FROM form_versions fv JOIN forms f ON f.form_key = fv.form_key
+              WHERE fv.form_version_id = NEW.form_version_id
+                AND f.project_key = NEW.project_key
+                AND f.form_id = NEW.form_id
+           ) THEN RAISE(ABORT, 'fieldwork session requires a matching project form version') END;
+         END;`,
+    ],
+  },
 ]);

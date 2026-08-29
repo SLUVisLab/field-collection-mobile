@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useNavigate, useParams } from 'react-router-native';
+import { useNavigate, useParams, useSearchParams } from 'react-router-native';
 import { WebView } from 'react-native-webview';
 import { File } from 'expo-file-system';
 
@@ -27,7 +27,9 @@ import { useTheme } from '../../theme/useTheme.js';
 import { XFormsRenderer } from '../../xforms/XFormsRenderer.js';
 import { outlineFor } from '../../xforms/renderModel.js';
 
-function RunnerBody({ formId, localInstanceId = null, host }) {
+const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId = null, fieldworkEntityId = null }) {
   const { actions, activeProject } = useGather();
   const form = useXForm();
   const navigate = useNavigate();
@@ -39,6 +41,7 @@ function RunnerBody({ formId, localInstanceId = null, host }) {
     finalizeInstance,
     attachImageMedia,
     discardInstance,
+    associateFieldworkInstance,
   } = actions;
   const { loadForm, loadInstance } = form;
   const scrollRef = useRef(null);
@@ -68,6 +71,14 @@ function RunnerBody({ formId, localInstanceId = null, host }) {
         } else {
           const cached = await loadCachedForm(formId);
           await loadForm(cached.xml, cached.attachments);
+          if (fieldworkEntityId) {
+            const snapshot = await form.refreshSnapshot('fieldwork-preselect');
+            const matchingReference = Object.entries(snapshot?.nodesByReference ?? {}).find(
+              ([, node]) => (node.choices ?? []).some((choice) => String(choice.value) === fieldworkEntityId)
+            )?.[0];
+            if (!matchingReference) throw new Error('This form has no selectable fieldwork Entity binding.');
+            await form.setValue(matchingReference, fieldworkEntityId);
+          }
           if (!cancelled) setVersion(cached.version);
         }
       } catch {
@@ -90,6 +101,7 @@ function RunnerBody({ formId, localInstanceId = null, host }) {
     activeProject?.projectKey,
     formId,
     localInstanceId,
+    fieldworkEntityId,
     loadCachedForm,
     loadForm,
     loadInstance,
@@ -107,6 +119,13 @@ function RunnerBody({ formId, localInstanceId = null, host }) {
         version,
       });
       setInstance(saved);
+      if (fieldworkSessionId && fieldworkEntityId) {
+        await associateFieldworkInstance({
+          sessionId: fieldworkSessionId,
+          entityId: fieldworkEntityId,
+          localInstanceId: saved.localInstanceId,
+        });
+      }
       setMessage('Draft saved on this device.');
       return true;
     } catch (error) {
@@ -115,7 +134,7 @@ function RunnerBody({ formId, localInstanceId = null, host }) {
     } finally {
       setBusy(false);
     }
-  }, [busy, form.serialize, instance?.localInstanceId, saveInstanceDraft, version]);
+  }, [associateFieldworkInstance, busy, fieldworkEntityId, fieldworkSessionId, form.serialize, instance?.localInstanceId, saveInstanceDraft, version]);
 
   const attachCapturedImage = useCallback(
     async (node, capture) => {
@@ -146,7 +165,7 @@ function RunnerBody({ formId, localInstanceId = null, host }) {
     [attachImageMedia, busy, form.serialize, form.setValue, instance?.localInstanceId, version]
   );
 
-  const finalize = async () => {
+  const finalize = async (advance = false) => {
     if (!version || busy) return;
     setBusy(true);
     setMessage(null);
@@ -157,12 +176,25 @@ function RunnerBody({ formId, localInstanceId = null, host }) {
         version,
       });
       setInstance(ready);
-      navigate(`/project/drafts/${encodeURIComponent(ready.localInstanceId)}`, { replace: true });
+      if (fieldworkSessionId && fieldworkEntityId) {
+        await associateFieldworkInstance({
+          sessionId: fieldworkSessionId,
+          entityId: fieldworkEntityId,
+          localInstanceId: ready.localInstanceId,
+        });
+        navigate(`/project/fieldwork/${encodeURIComponent(fieldworkSessionId)}${advance ? '?next=1' : ''}`, { replace: true });
+      } else {
+        navigate(`/project/drafts/${encodeURIComponent(ready.localInstanceId)}`, { replace: true });
+      }
     } catch (error) {
       setMessage(error?.message ?? 'Could not mark this form ready.');
     } finally {
       setBusy(false);
     }
+  };
+
+  const finalizeAndNext = async () => {
+    await finalize(true);
   };
 
   const requestExit = useCallback(() => {
@@ -276,6 +308,14 @@ function RunnerBody({ formId, localInstanceId = null, host }) {
             disabled={busy}
             testID="save-draft"
           />
+          {fieldworkSessionId ? (
+            <ActionButton
+              onPress={finalizeAndNext}
+              label={busy ? 'Checking…' : 'Finalize & Next'}
+              disabled={busy}
+              testID="finalize-next-instance"
+            />
+          ) : null}
           <ActionButton
             onPress={finalize}
             label={busy ? 'Checking…' : 'Mark ready to send'}
@@ -333,6 +373,7 @@ function RunnerBody({ formId, localInstanceId = null, host }) {
  */
 export function FormRunner() {
   const { formId = '', instanceId = null } = useParams();
+  const [search] = useSearchParams();
   const webViewRef = useRef(null);
   const host = useMemo(() => new WebViewXFormsHost({ webViewRef, requestTimeoutMs: 45_000 }), []);
   const html = useMemo(() => createWebViewSidecarHtml(), []);
@@ -343,7 +384,13 @@ export function FormRunner() {
 
   return (
     <XFormsProvider host={host}>
-      <RunnerBody formId={formId} localInstanceId={instanceId} host={host} />
+      <RunnerBody
+        formId={formId}
+        localInstanceId={instanceId}
+        host={host}
+        fieldworkSessionId={search.get('fieldworkSession')}
+        fieldworkEntityId={search.get('entityId')}
+      />
       <WebView ref={webViewRef} {...webViewProps} />
     </XFormsProvider>
   );

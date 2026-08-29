@@ -16,6 +16,7 @@ export function GatherMap({
   points = [],
   styleURL = OPEN_FREE_MAP_LIBERTY_STYLE,
   onDidFinishLoadingMap,
+  onSelectPoint,
   testID,
 }) {
   const theme = useTheme();
@@ -32,8 +33,9 @@ export function GatherMap({
             key={point.id}
             id={point.id}
             lngLat={point.coordinate}
+            onPress={() => onSelectPoint?.(point.id)}
           >
-            <View style={[styles.marker, { backgroundColor: theme.colors.danger, borderColor: theme.colors.onDanger }]} />
+            <View style={[styles.marker, { backgroundColor: point.color ?? theme.colors.danger, borderColor: theme.colors.onDanger }]} />
           </Marker>
         ))}
       </Map>

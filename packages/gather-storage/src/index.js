@@ -110,6 +110,7 @@ export {
   normalizeEntityEffect,
   EntitiesRepositoryError,
 } from './repositories/entities.js';
+export { createFieldworkRepository, FieldworkRepositoryError } from './repositories/fieldwork.js';
 
 // Native binding re-exports.
 export {

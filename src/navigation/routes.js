@@ -26,6 +26,8 @@ export const ROUTES = Object.freeze({
     instance: '/project/drafts/:instanceId',
     resume: '/project/drafts/:instanceId/fill',
     switch: '/project/switch',
+    fieldwork: '/project/fieldwork',
+    fieldworkSession: '/project/fieldwork/:sessionId',
   },
 });
 

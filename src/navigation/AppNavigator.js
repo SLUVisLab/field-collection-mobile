@@ -12,6 +12,8 @@ import { FormRunner } from '../screens/project/FormRunner.js';
 import { DraftsList } from '../screens/project/DraftsList.js';
 import { InstanceDetail } from '../screens/project/InstanceDetail.js';
 import { ProjectSwitch } from '../screens/project/ProjectSwitch.js';
+import { FieldworkHome } from '../screens/project/FieldworkHome.js';
+import { FieldworkSession } from '../screens/project/FieldworkSession.js';
 
 /**
  * Renders exactly one route tree for the given shell. The two trees are
@@ -34,6 +36,8 @@ export function AppNavigator({ shell }) {
           <Route path={ROUTES.project.resume} element={<FormRunner />} />
           <Route path={ROUTES.project.instance} element={<InstanceDetail />} />
           <Route path={ROUTES.project.switch} element={<ProjectSwitch />} />
+          <Route path={ROUTES.project.fieldwork} element={<FieldworkHome />} />
+          <Route path={ROUTES.project.fieldworkSession} element={<FieldworkSession />} />
           <Route path="*" element={<Navigate to={ROUTES.project.home} replace />} />
         </Routes>
       ) : (

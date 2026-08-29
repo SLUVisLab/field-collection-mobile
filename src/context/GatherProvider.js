@@ -6,6 +6,7 @@ import {
   createInstancesRepository,
   createProjectsRepository,
   createSyncRepository,
+  createFieldworkRepository,
   deleteFile,
   ensureProjectDirectories,
   deleteProjectDirectory,
@@ -25,6 +26,7 @@ import { createFormCatalogService } from '../forms/formCatalogService.js';
 import { createEntityService } from '../entities/entityService.js';
 import { createInstanceLifecycleService } from '../instances/instanceLifecycleService.js';
 import { createSyncService } from '../sync/syncService.js';
+import { createFieldworkService } from '../fieldwork/fieldworkService.js';
 
 /**
  * Runs the (pure) bootstrap orchestration against the real native storage layer
@@ -94,6 +96,10 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     const database = state.boot?.storage?.database;
     return database ? createSyncRepository(database) : null;
   }, [state.boot?.storage?.database]);
+  const fieldwork = useMemo(() => {
+    const database = state.boot?.storage?.database;
+    return database ? createFieldworkRepository(database) : null;
+  }, [state.boot?.storage?.database]);
   const formCatalog = useMemo(() => {
     if (!forms || !entityService || !state.boot?.storage) return null;
     return createFormCatalogService({
@@ -122,6 +128,10 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       instanceLifecycle,
     });
   }, [entityRepository, instances, sync, instanceLifecycle]);
+  const fieldworkService = useMemo(() => {
+    if (!fieldwork || !formCatalog || !instances) return null;
+    return createFieldworkService({ sessions: fieldwork, formCatalog, instances });
+  }, [fieldwork, formCatalog, instances]);
   const provisioningService = useMemo(() => {
     if (!projects || !instances || !state.boot?.storage) return null;
     return createProvisioningService({
@@ -329,13 +339,47 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     if (!syncService || !activeProject) throw new Error('submission sync not ready');
     return syncService.getStatus(activeProject);
   }, [activeProject, syncService]);
+  const listFieldworkSessions = useCallback(async () => {
+    if (!fieldwork || !activeProject) throw new Error('fieldwork is not ready');
+    return fieldwork.list(activeProject.projectKey);
+  }, [activeProject, fieldwork]);
+  const startFieldworkSession = useCallback(
+    async (input) => {
+      if (!fieldworkService || !activeProject) throw new Error('fieldwork is not ready');
+      return fieldworkService.start({ project: activeProject, ...input });
+    },
+    [activeProject, fieldworkService]
+  );
+  const getFieldworkSession = useCallback(
+    async (sessionId) => {
+      if (!fieldworkService || !activeProject) throw new Error('fieldwork is not ready');
+      return fieldworkService.get(activeProject, sessionId);
+    },
+    [activeProject, fieldworkService]
+  );
+  const updateFieldworkSession = useCallback(
+    async (sessionId, patch) => {
+      if (!fieldworkService || !activeProject) throw new Error('fieldwork is not ready');
+      const session = await fieldworkService.get(activeProject, sessionId);
+      return fieldworkService.update(session.session.sessionId, patch);
+    },
+    [activeProject, fieldworkService]
+  );
+  const associateFieldworkInstance = useCallback(
+    async (input) => {
+      if (!fieldworkService || !activeProject) throw new Error('fieldwork is not ready');
+      const session = await fieldworkService.get(activeProject, input.sessionId);
+      return fieldworkService.associateInstance({ ...input, sessionId: session.session.sessionId });
+    },
+    [activeProject, fieldworkService]
+  );
 
   const value = useMemo(
     () => ({
       status: state.status,
       error: state.error,
       storage: state.boot?.storage ?? null,
-      repositories: { projects, forms, entities: entityRepository, instances, sync },
+      repositories: { projects, forms, entities: entityRepository, instances, sync, fieldwork },
       projectCount,
       activeProject,
       shell: shellForActiveProject(activeProject),
@@ -361,6 +405,11 @@ export function GatherProvider({ children, deps, onReady, onError }) {
         sendInstance,
         sendAllReadyInstances,
         getSyncStatus,
+        listFieldworkSessions,
+        startFieldworkSession,
+        getFieldworkSession,
+        updateFieldworkSession,
+        associateFieldworkInstance,
       },
     }),
     [
@@ -377,6 +426,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       entityRepository,
       instances,
       sync,
+      fieldwork,
       switchProject,
       getRemovalPreview,
       removeProject,
@@ -392,6 +442,11 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       sendInstance,
       sendAllReadyInstances,
       getSyncStatus,
+      listFieldworkSessions,
+      startFieldworkSession,
+      getFieldworkSession,
+      updateFieldworkSession,
+      associateFieldworkInstance,
     ]
   );
 

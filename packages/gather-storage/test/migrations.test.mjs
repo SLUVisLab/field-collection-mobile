@@ -41,7 +41,7 @@ const makeFakeDb = (startVersion = 0) => {
 test('the shipped MIGRATIONS are well-ordered', () => {
   assert.doesNotThrow(() => assertMigrationOrder(MIGRATIONS));
   assert.equal(latestVersion(MIGRATIONS), MIGRATIONS.length);
-  assert.equal(latestVersion(MIGRATIONS), 8);
+  assert.equal(latestVersion(MIGRATIONS), 9);
 });
 
 test('migration 3 provisions append-only form versions and draft references', () => {
@@ -119,6 +119,16 @@ test('migration 8 provisions an immutable Entity effect overlay keyed by local i
   assert.match(sql, /local_instance_id\s+TEXT NOT NULL REFERENCES instances/);
   assert.match(sql, /UNIQUE \(local_instance_id, effect_index\)/);
   assert.match(sql, /entity_effects_require_matching_instance/);
+});
+
+test('migration 9 provisions project-scoped fieldwork session intent', () => {
+  const fieldwork = MIGRATIONS.find((migration) => migration.version === 9);
+  assert.ok(fieldwork);
+  const sql = fieldwork.statements.join('\n');
+  assert.match(sql, /CREATE TABLE fieldwork_sessions/);
+  assert.match(sql, /target_entity_ids_json\s+TEXT NOT NULL/);
+  assert.match(sql, /CREATE TABLE fieldwork_session_instances/);
+  assert.match(sql, /fieldwork_sessions_require_matching_form_version/);
 });
 
 test('migration 2 provisions the projects table with a single-active guard', () => {

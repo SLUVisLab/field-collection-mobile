@@ -21,6 +21,7 @@ export function ProjectHome() {
         {activeProject?.baseUrl ? `Connected to ${activeProject.baseUrl}` : 'Connected'}
       </Text>
       <NavButton to={ROUTES.project.forms} label="Forms" testID="go-forms" />
+      <NavButton to={ROUTES.project.fieldwork} label="Fieldwork" testID="go-fieldwork" />
       <NavButton to={ROUTES.project.drafts} label="Drafts & submissions" testID="go-drafts" />
       <NavButton to={ROUTES.project.switch} label="Switch project" testID="go-switch" />
     </Screen>

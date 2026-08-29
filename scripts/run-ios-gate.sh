@@ -41,7 +41,13 @@ trap cleanup EXIT
 
 IOS_DEVICE="${EXPO_IOS_DEVICE:-}"
 if [ -z "$IOS_DEVICE" ]; then
-  IOS_DEVICE="$(xcrun simctl list devices | awk -F '[()]' '/\(Booted\)/ { print $2; exit }')"
+  # The installed Xcode supports the iOS 18 simulator runtime, while a booted
+  # iOS 26 runtime can be present but unavailable as an xcodebuild destination.
+  IOS_DEVICE="$(xcrun simctl list devices available | awk -F '[()]' '/iPhone 16/ { print $2; exit }')"
+  if [ -n "$IOS_DEVICE" ]; then
+    xcrun simctl boot "$IOS_DEVICE" 2>/dev/null || true
+    xcrun simctl bootstatus "$IOS_DEVICE" -b
+  fi
 fi
 
 if [ -n "$IOS_DEVICE" ]; then

@@ -51,7 +51,8 @@ trap cleanup EXIT
 
 # 1) Ensure an emulator is booted.
 if ! "$ADB" devices | grep -q 'emulator-.*device$'; then
-  AVD="$("$EMULATOR" -list-avds | head -1)"
+  AVD="$("$EMULATOR" -list-avds | grep 'Pixel_3a' | head -1)"
+  AVD="${AVD:-$("$EMULATOR" -list-avds | head -1)}"
   log "booting emulator: $AVD"
   # Cold boot (-no-snapshot) ignores any saved quickboot snapshot. A snapshot can
   # persist a broken network state (no route to the 10.0.2.2 host gateway), which
