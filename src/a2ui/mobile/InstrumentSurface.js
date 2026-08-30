@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ComponentContext, GenericBinder } from '@a2ui/web_core/v0_9/bindings';
 import { ColumnApi, TextApi } from '@a2ui/web_core/v0_9/basic_catalog';
+
+import { useTheme } from '../../theme/useTheme.js';
 
 const useBoundProps = (context, schema) => {
   const binderRef = useRef(null);
@@ -59,11 +61,18 @@ export function A2uiInstrumentSurface({ surface, implementations }) {
 export const mobileBasicImplementations = {
   Column: {
     component: bindInstrumentComponent(ColumnApi.schema,
-      ({ children, buildChild }) => <View style={styles.column}>{(children ?? []).map((child) => buildChild(child))}</View>
+      ({ children, buildChild }) => (
+        <View style={styles.column}>
+          {(children ?? []).map((child) => <Fragment key={child}>{buildChild(child)}</Fragment>)}
+        </View>
+      )
     ),
   },
   Text: {
-    component: bindInstrumentComponent(TextApi.schema, ({ text }) => <Text style={styles.text}>{text}</Text>),
+    component: bindInstrumentComponent(TextApi.schema, ({ text }) => {
+      const theme = useTheme();
+      return <Text style={[styles.text, { color: theme.colors.text }]}>{text}</Text>;
+    }),
   },
 };
 

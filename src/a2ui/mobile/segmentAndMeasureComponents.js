@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { ActionButton } from '../../components/NavButton.js';
 import { MaskReview, MeasurementReview, ClassificationReview, SegmentAndMeasureCapture } from '../../components/scientific/SegmentAndMeasureViews.js';
 import { GATHER_ACTION_IDS, GATHER_COMPONENT_IDS } from 'gather-catalog';
+import { useTheme } from '../../theme/useTheme.js';
 
 import { bindInstrumentComponent } from './InstrumentSurface.js';
 
@@ -29,11 +30,12 @@ export const maskReviewApi = {
 const action = (name, statePath) => ({ event: { name, context: { statePath } } });
 
 function ProcessingReview({ image, phase }) {
+  const theme = useTheme();
   if (!image || !['persisting-capture', 'segmenting', 'measuring', 'classifying'].includes(phase)) return null;
   return (
     <View>
       <Image source={{ uri: image.uri }} style={{ width: '100%', minHeight: 240, aspectRatio: image.width / image.height }} resizeMode="contain" />
-      <Text>{phase === 'measuring' ? 'Calculating measurements…' : 'Processing image…'}</Text>
+      <Text style={{ color: theme.colors.text }}>{phase === 'measuring' ? 'Calculating measurements…' : 'Processing image…'}</Text>
     </View>
   );
 }
@@ -47,7 +49,8 @@ export const segmentAndMeasureImplementations = {
   },
   [GATHER_COMPONENT_IDS.maskReview]: {
     component: bindInstrumentComponent(maskReviewApi.schema, ({ phase, image, segmentation, classification, result, error, statePath, context }) => {
-      if (phase === 'error') return <Text accessibilityRole="alert">{error}</Text>;
+      const theme = useTheme();
+      if (phase === 'error') return <Text accessibilityRole="alert" style={{ color: theme.colors.danger }}>{error}</Text>;
       if (image && ['persisting-capture', 'segmenting', 'measuring', 'classifying'].includes(phase)) {
         return <ProcessingReview image={image} phase={phase} />;
       }
@@ -57,7 +60,7 @@ export const segmentAndMeasureImplementations = {
       if (phase === 'accepted' && result) {
         return (
           <View>
-            <Text>Mask accepted. Measurements are in pixel units.</Text>
+            <Text style={{ color: theme.colors.text }}>Mask accepted. Measurements are in pixel units.</Text>
             <MeasurementReview measurements={result.measurements} />
             <ClassificationReview classification={classification} />
             <ActionButton label="Retake" variant="secondary" onPress={() => context.dispatchAction(action(GATHER_ACTION_IDS.retake, statePath))} />

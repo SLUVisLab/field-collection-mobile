@@ -83,6 +83,20 @@ The React Native registry maps these component IDs to the existing M8
 `GenericBinder` through the version-pinned schema-free exports; it does not
 implement A2UI state, bindings, or action semantics itself.
 
+### Physical-device parity (verified)
+
+On 2026-08-29, the normal Gather app route ran on a Pixel 10 (Android 17) using
+the A2UI instrument binding and a real camera capture. The existing M8
+scientific capability flow completed as expected through capture, durable image
+persistence, segmentation, mask review, acceptance, measurements,
+classification, accepted result, and retake. The captured still remained
+visible while processing.
+
+This pass found and corrected two binding-layer regressions: A2UI `Column`
+children now use stable component-ID keys, and all A2UI-owned React Native text
+uses Gather theme colors so it remains readable in dark mode. The device
+confirmed both fixes.
+
 ## Web deployment
 
 [`apps/instrument-renderer/Dockerfile`](../apps/instrument-renderer/Dockerfile)
