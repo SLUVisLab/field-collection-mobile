@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { applyRenderBatch } from './renderBatch.js';
+
 const rendererReady = 'RENDERER_READY';
 const renderA2ui = 'RENDER_A2UI';
 const getCatalog = 'GET_CATALOG';
@@ -49,7 +51,14 @@ export function useComposerBridge(processor, gatherCatalog) {
       }
 
       if (message.type === renderA2ui && Array.isArray(message.payload)) {
-        processor.processMessages(message.payload);
+        // Composer re-sends full render batches that re-declare createSurface.
+        // applyRenderBatch clears existing surfaces first so upstream does not
+        // throw "Surface already exists" and abort rendering.
+        try {
+          applyRenderBatch(processor, message.payload);
+        } catch (error) {
+          console.error('Failed to process A2UI render batch.', error);
+        }
         syncSurfaces();
       } else if (message.type === dataModelChange && message.payload?.updateDataModel) {
         processor.processMessages([{ version: 'v0.9', updateDataModel: message.payload.updateDataModel }]);
