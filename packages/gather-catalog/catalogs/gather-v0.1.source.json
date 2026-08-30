@@ -56,6 +56,9 @@
             "result": {
               "$ref": "common_types.json#/$defs/DynamicValue"
             },
+            "outputReview": {
+              "$ref": "common_types.json#/$defs/DynamicValue"
+            },
             "error": {
               "$ref": "common_types.json#/$defs/DynamicString"
             },

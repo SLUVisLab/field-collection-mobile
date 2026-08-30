@@ -4,7 +4,7 @@ import test from 'node:test';
 import { Catalog } from '@a2ui/web_core/v0_9/catalog';
 import { MessageProcessor } from '@a2ui/web_core/v0_9/processor';
 
-import { applyRenderBatch } from '../../apps/instrument-renderer/src/renderBatch.js';
+import { applyRenderBatch } from '../../apps/renderer/src/renderBatch.js';
 
 const makeProcessor = () => {
   const catalog = new Catalog('cat1', [], []);

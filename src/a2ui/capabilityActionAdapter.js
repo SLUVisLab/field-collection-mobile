@@ -51,11 +51,12 @@ export const createCapabilityActionHandler = ({
     try {
       switch (name) {
         case GATHER_ACTION_IDS.capture: {
+          const state = currentState(surface, statePath);
           const capture = requireValue(
             context.capture ?? await capabilities.capture?.(),
             'Camera capture did not produce a local image.'
           );
-          setState(surface, statePath, { phase: 'persisting-capture', image: null, segmentation: null, classification: null, result: null, error: null });
+          setState(surface, statePath, { ...state, phase: 'persisting-capture', image: null, segmentation: null, classification: null, result: null, error: null });
           const image = await capabilities.persistScientificCapture(capture);
           setState(surface, statePath, { ...currentState(surface, statePath), phase: 'segmenting', image });
           const segmentation = await capabilities.segmentScientificImage({ image });
@@ -78,6 +79,7 @@ export const createCapabilityActionHandler = ({
 
         case GATHER_ACTION_IDS.accept: {
           const state = currentState(surface, statePath);
+          if (state.phase === 'accepted' && state.result) return state.result;
           const image = requireValue(state.image, 'Capture an image before accepting a mask.');
           const segmentation = requireValue(state.segmentation, 'Segment an image before accepting a mask.');
           setState(surface, statePath, { ...state, phase: 'measuring', error: null });
@@ -102,7 +104,7 @@ export const createCapabilityActionHandler = ({
         }
 
         case GATHER_ACTION_IDS.retake:
-          return setState(surface, statePath, { phase: 'capture', image: null, segmentation: null, classification: null, result: null, error: null });
+          return setState(surface, statePath, { ...currentState(surface, statePath), phase: 'capture', image: null, segmentation: null, classification: null, result: null, error: null });
 
         default:
           return undefined;

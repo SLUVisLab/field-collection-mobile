@@ -1,4 +1,4 @@
-# Turnkey deployment for the Gather instrument renderer plus a shared Caddy
+# Turnkey deployment for the Gather renderer plus a shared Caddy
 # reverse proxy that terminates TLS for both the renderer and an existing ODK
 # Central instance running on the same host.
 #
@@ -8,8 +8,8 @@ services:
   renderer:
     build:
       context: ..
-      dockerfile: apps/instrument-renderer/Dockerfile
-    image: gather-instrument-renderer:latest
+      dockerfile: apps/renderer/Dockerfile
+    image: gather-renderer:latest
     restart: unless-stopped
     # Exposed only on host loopback; Caddy (host network) proxies to it.
     ports:

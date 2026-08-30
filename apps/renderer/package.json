@@ -1,5 +1,5 @@
 {
-  "name": "gather-instrument-renderer",
+  "name": "gather-renderer",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,9 +10,14 @@
   "dependencies": {
     "@a2ui/react": "0.9.1",
     "@a2ui/web_core": "0.9.1",
+    "dompurify": "^3.3.1",
     "gather-catalog": "*",
+    "gather-components": "*",
+    "markdown-it": "^14.1.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-mockframe": "^1.1.0",
+    "react-native-web": "^0.21.2",
     "zod": "3.25.76"
   },
   "devDependencies": {

@@ -1,11 +1,15 @@
-import { Image, Text, View } from 'react-native';
 import { CommonSchemas } from '@a2ui/web_core/v0_9/common-schemas';
 import { z } from 'zod';
+import {
+  InstrumentError,
+  MaskReview,
+  OutputReview,
+  ProcessingView,
+  isProcessingPhase,
+} from 'gather-components';
 
-import { ActionButton } from '../../components/NavButton.js';
-import { MaskReview, MeasurementReview, ClassificationReview, SegmentAndMeasureCapture } from '../../components/scientific/SegmentAndMeasureViews.js';
+import { SegmentAndMeasureCapture } from '../../components/scientific/SegmentAndMeasureViews.js';
 import { GATHER_ACTION_IDS, GATHER_COMPONENT_IDS } from 'gather-catalog';
-import { useTheme } from '../../theme/useTheme.js';
 
 import { bindInstrumentComponent } from './InstrumentSurface.js';
 
@@ -22,49 +26,56 @@ export const maskReviewApi = {
     segmentation: CommonSchemas.DynamicValue.optional(),
     classification: CommonSchemas.DynamicValue.optional(),
     result: CommonSchemas.DynamicValue.optional(),
+    outputReview: CommonSchemas.DynamicValue.optional(),
     error: CommonSchemas.DynamicString.optional(),
     statePath: z.string(),
   }).strict(),
 };
 
-const action = (name, statePath) => ({ event: { name, context: { statePath } } });
-
-function ProcessingReview({ image, phase }) {
-  const theme = useTheme();
-  if (!image || !['persisting-capture', 'segmenting', 'measuring', 'classifying'].includes(phase)) return null;
-  return (
-    <View>
-      <Image source={{ uri: image.uri }} style={{ width: '100%', minHeight: 240, aspectRatio: image.width / image.height }} resizeMode="contain" />
-      <Text style={{ color: theme.colors.text }}>{phase === 'measuring' ? 'Calculating measurements…' : 'Processing image…'}</Text>
-    </View>
-  );
-}
+const action = (name, statePath, context) => ({ event: { name, context: { statePath, ...context } } });
 
 export const segmentAndMeasureImplementations = {
   [GATHER_COMPONENT_IDS.capture]: {
     component: bindInstrumentComponent(gatherCaptureApi.schema, ({ phase, statePath, context }) => {
       if (phase !== 'capture') return null;
-      return <SegmentAndMeasureCapture onCapture={(capture) => context.dispatchAction({ event: { name: GATHER_ACTION_IDS.capture, context: { statePath, capture } } })} />;
+      return (
+        <SegmentAndMeasureCapture
+          onCapture={(capture) =>
+            context.dispatchAction({ event: { name: GATHER_ACTION_IDS.capture, context: { statePath, capture } } })
+          }
+        />
+      );
     }),
   },
   [GATHER_COMPONENT_IDS.maskReview]: {
-    component: bindInstrumentComponent(maskReviewApi.schema, ({ phase, image, segmentation, classification, result, error, statePath, context }) => {
-      const theme = useTheme();
-      if (phase === 'error') return <Text accessibilityRole="alert" style={{ color: theme.colors.danger }}>{error}</Text>;
-      if (image && ['persisting-capture', 'segmenting', 'measuring', 'classifying'].includes(phase)) {
-        return <ProcessingReview image={image} phase={phase} />;
-      }
+    component: bindInstrumentComponent(maskReviewApi.schema, ({ phase, image, segmentation, result, outputReview, error, statePath, context }) => {
+      const retake = () => context.dispatchAction(action(GATHER_ACTION_IDS.retake, statePath));
+      if (phase === 'error') return <InstrumentError message={error} onRetake={retake} />;
+      if (image && isProcessingPhase(phase)) return <ProcessingView image={image} phase={phase} />;
       if (phase === 'review-mask' && image && segmentation) {
-        return <MaskReview image={image} segmentation={segmentation} onAccept={() => context.dispatchAction(action(GATHER_ACTION_IDS.accept, statePath))} onRetake={() => context.dispatchAction(action(GATHER_ACTION_IDS.retake, statePath))} />;
+        return (
+          <MaskReview
+            image={image}
+            segmentation={segmentation}
+            onAccept={() => context.dispatchAction(action(GATHER_ACTION_IDS.accept, statePath))}
+            onRetake={retake}
+          />
+        );
       }
       if (phase === 'accepted' && result) {
+        const primaryLabel = outputReview?.primaryActionLabel ?? 'Accept';
+        const secondaryLabel = outputReview?.secondaryActionLabel ?? 'Retake';
         return (
-          <View>
-            <Text style={{ color: theme.colors.text }}>Mask accepted. Measurements are in pixel units.</Text>
-            <MeasurementReview measurements={result.measurements} />
-            <ClassificationReview classification={classification} />
-            <ActionButton label="Retake" variant="secondary" onPress={() => context.dispatchAction(action(GATHER_ACTION_IDS.retake, statePath))} />
-          </View>
+          <OutputReview
+            data={result}
+            display={outputReview}
+            primaryAction={{
+              label: primaryLabel,
+              onPress: () => context.dispatchAction(action(GATHER_ACTION_IDS.accept, statePath)),
+              testID: 'segment-measure-accept-result',
+            }}
+            secondaryAction={secondaryLabel ? { label: secondaryLabel, onPress: retake, testID: 'segment-measure-retake' } : null}
+          />
         );
       }
       return null;

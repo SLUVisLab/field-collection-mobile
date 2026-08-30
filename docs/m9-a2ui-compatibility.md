@@ -30,7 +30,7 @@ Gather's compatibility imports with the upstream export and rerun the M90 gate.
 
 ## Composer web preview
 
-The isolated [instrument renderer](../apps/instrument-renderer/) uses the
+The isolated [renderer](../apps/renderer/) uses the
 official `@a2ui/react/v0_9` renderer and `@a2ui/web_core/v0_9` state engine.
 It successfully proved custom `MaskReview` rendering, Data Model binding,
 upstream action dispatch, and the Composer iframe handshake:
@@ -99,12 +99,81 @@ confirmed both fixes.
 
 ## Web deployment
 
-[`apps/instrument-renderer/Dockerfile`](../apps/instrument-renderer/Dockerfile)
+[`apps/renderer/Dockerfile`](../apps/renderer/Dockerfile)
 builds the isolated workspace with the repository lockfile and serves its static
 output through nginx. It has no database, backend, or model registry.
 The nginx policy permits framing only by the hosted Composer and limits scripts,
 network access, and fixture image sources. Deploy it over HTTPS at a stable
 public renderer URL before configuring that URL in Composer.
+
+### Composer preview polish
+
+The renderer presents each surface in a Pixel 10 `react-mockframe` and supplies
+a small Gather visual layer without changing A2UI messages, bindings, or
+actions. It uses the documented `MarkdownContext` extension point with a
+sanitizing markdown-it renderer so Basic Catalog heading variants render as
+headings rather than literal Markdown markers.
+
+Capture, empty/processing segmentation, mask-review, and accepted-result states
+retain stable media/result areas. The fixture flow was browser-verified through
+capture, review, and accepted-result states on 2026-08-29.
+
+### Cross-platform Components architecture
+
+Gather **Components** are authored once as React Native components in
+[`gather-components`](../packages/gather-components/) and rendered on the web
+through [`react-native-web`](https://necolas.github.io/react-native-web/).
+This keeps reusable presentation single-sourced across mobile and renderer.
+
+Repository ownership:
+
+- [`gather-components`](../packages/gather-components/) owns reusable
+  presentation, including shared theme primitives (`palette`, `tokens`),
+  semantic light/dark roles, and reusable component building blocks.
+- [`gather-catalog`](../packages/gather-catalog/) is contract-only A2UI
+  vocabulary and instrument definitions (no React components, palette, or theme
+  implementation).
+- [`src/components/`](../src/components/) remains mobile-app-specific
+  presentation, and may consume shared Components.
+- [`src/a2ui/mobile/`](../src/a2ui/mobile/) and
+  [`apps/renderer/src/`](../apps/renderer/src/) remain thin A2UI bindings that
+  resolve A2UI data and dispatch actions into Components/Capabilities.
+
+#### Platform-extension pattern
+
+Only irreducible device/DOM behavior differs by platform, behind `.native` /
+`.web` seams. Shared Components stay free of broad platform branching.
+
+The camera is the reference pattern:
+
+- Shared presentation:
+  [`CaptureView.jsx`](../packages/gather-components/src/components/capture/CaptureView.jsx)
+- Native behavior:
+  [`CameraCapture.js`](../src/components/camera/CameraCapture.js) +
+  [`CameraViewport.js`](../src/components/camera/CameraViewport.js)
+  (VisionCamera + `capturePhoto`)
+- Web behavior:
+  [`CameraSurface.web.jsx`](../apps/renderer/src/CameraSurface.web.jsx)
+  (`getUserMedia` + canvas frame grab + fixture fallback)
+
+Both paths render the same shared `CaptureView`, so structure and styling do
+not drift.
+
+Accepted outputs use the shared
+[`OutputReview.jsx`](../packages/gather-components/src/components/results/OutputReview.jsx)
+surface, with display rows generated from schema metadata supplied by the
+instrument definition itself (for Segment & Measure:
+[`segmentAndMeasure.js`](../packages/gather-catalog/src/segmentAndMeasure.js),
+bound via `/gather/outputReview`).
+
+#### Authoring convention
+
+1. Build reusable presentation in `gather-components` with RN primitives and
+   the shared theme.
+2. Split by reusable purpose (`actions`, `capture`, `image`, `results`,
+   `status`), not by one instrument namespace.
+3. Keep A2UI binding files thin adapters that pass props/events into Components.
+4. Keep Capabilities (camera/ONNX/OpenCV/etc.) separate from Components.
 
 ### Catalog artifact
 

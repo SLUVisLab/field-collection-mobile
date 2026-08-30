@@ -14,7 +14,7 @@
     "web": "EXPO_NO_TYPESCRIPT_SETUP=1 expo start --web",
     "run:android": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:android",
     "run:ios": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:ios",
-    "test:packages": "for p in odk-xforms-host odk-xforms-react odk-xforms-webview odk-central-client gather-storage gather-catalog; do (cd packages/$p && node --test $(find test -name '*.test.mjs' -not -path '*/live/*')) || exit 1; done",
+    "test:packages": "for p in odk-xforms-host odk-xforms-react odk-xforms-webview odk-central-client gather-storage gather-catalog gather-components; do (cd packages/$p && node --test $(find test -name '*.test.mjs' -not -path '*/live/*')) || exit 1; done",
     "test:app": "node --test $(find test -name '*.test.mjs' -not -path '*/live/*')",
     "test:unit": "npm run test:packages && npm run test:app",
     "postinstall": "patch-package"
@@ -30,6 +30,7 @@
     "expo-secure-store": "~57.0.2",
     "expo-sqlite": "~57.0.2",
     "expo-status-bar": "~57.0.1",
+    "gather-components": "*",
     "gather-storage": "*",
     "js-sha256": "0.11.1",
     "odk-central-client": "*",

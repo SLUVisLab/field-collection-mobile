@@ -978,6 +978,9 @@
             "result": {
               "$ref": "#/$defs/common_types_DynamicValue"
             },
+            "outputReview": {
+              "$ref": "#/$defs/common_types_DynamicValue"
+            },
             "error": {
               "$ref": "#/$defs/common_types_DynamicString"
             },

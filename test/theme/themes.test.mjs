@@ -8,6 +8,9 @@ import {
   resolveTheme,
 } from '../../src/theme/themes.js';
 import { tokens } from '../../src/theme/tokens.js';
+import { palette } from '../../src/theme/palette.js';
+import { GATHER_LAYOUT_TOKENS } from 'gather-components/tokens';
+import { GATHER_PALETTE } from 'gather-components/palette';
 import {
   buttonAppearance,
   buttonHeightForVariant,
@@ -55,6 +58,11 @@ test('field interaction tokens meet Gather target minimums', () => {
   assert.ok(tokens.interaction.minimumTouchTarget >= 48);
   assert.ok(tokens.interaction.preferredTouchTarget >= 52);
   assert.ok(tokens.interaction.primaryActionHeight >= 56);
+});
+
+test('mobile theme primitives consume the shared components theme contract', () => {
+  assert.equal(tokens, GATHER_LAYOUT_TOKENS);
+  assert.equal(palette, GATHER_PALETTE);
 });
 
 test('key theme contrast pairs meet WCAG AA normal-text contrast', () => {

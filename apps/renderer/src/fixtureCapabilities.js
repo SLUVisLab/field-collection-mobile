@@ -34,7 +34,12 @@ export const fixtureCapabilities = {
       height: 640,
     };
   },
-  async persistScientificCapture() {
+  async persistScientificCapture(capture) {
+    // Echo a live web-camera frame when one was captured so the reviewed image
+    // is the real photo; otherwise fall back to the deterministic fixture.
+    if (capture?.uri && capture.uri.startsWith('data:')) {
+      return { ...image, uri: capture.uri, width: capture.width ?? image.width, height: capture.height ?? image.height, path: capture.path ?? image.path };
+    }
     return image;
   },
   async segmentScientificImage({ image: input }) {

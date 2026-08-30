@@ -1,0 +1,21 @@
+{
+  "name": "gather-components",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./palette": "./src/theme/palette.js",
+    "./tokens": "./src/theme/tokens.js",
+    "./theme": "./src/theme/themes.js",
+    "./useTheme": "./src/theme/useTheme.js",
+    "./buttonPresentation": "./src/theme/buttonPresentation.js"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "scripts": {
+    "test": "node --test $(find test -name '*.test.mjs' 2>/dev/null)"
+  }
+}

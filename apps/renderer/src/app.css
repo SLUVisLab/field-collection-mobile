@@ -1,0 +1,73 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #1f2328;
+  background: #f6f8fa;
+}
+
+.renderer-shell {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 28px 16px;
+}
+
+.gather-screen {
+  box-sizing: border-box;
+  height: 100%;
+  overflow: hidden;
+  background: var(--gather-background);
+  color: var(--gather-text);
+}
+
+.gather-app-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: end;
+  min-height: 88px;
+  box-sizing: border-box;
+  gap: var(--gather-space-xs);
+  padding: var(--gather-space-xl);
+  padding-top: 48px;
+  border-bottom: 1px solid var(--gather-border);
+  background: var(--gather-background);
+}
+
+.gather-app-name {
+  color: var(--gather-text);
+  font-size: var(--gather-font-title);
+  font-weight: 700;
+}
+
+.gather-app-mode {
+  color: var(--gather-muted);
+  font-size: var(--gather-font-helper);
+}
+
+.gather-instrument-content {
+  height: calc(100% - 88px);
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: var(--gather-space-xl);
+}
+
+/* The instrument title is a Basic Catalog Text; keep it at the Gather heading
+   size rather than the Basic Catalog default. The Gather capture/review/result
+   components are self-styled through react-native-web. */
+.gather-instrument-content .a2ui-text h1,
+.gather-instrument-content .a2ui-text h2 {
+  font-size: var(--gather-font-heading) !important;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.gather-action-status {
+  display: none;
+}
+
+@media (max-width: 500px) {
+  .renderer-shell {
+    padding: 8px;
+    place-items: start center;
+  }
+}

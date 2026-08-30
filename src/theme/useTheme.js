@@ -1,9 +1,1 @@
-import { useColorScheme } from 'react-native';
-
-import { resolveTheme } from './themes.js';
-
-export { resolveTheme };
-
-export function useTheme() {
-  return resolveTheme(useColorScheme());
-}
+export { resolveTheme, useTheme } from 'gather-components/useTheme';

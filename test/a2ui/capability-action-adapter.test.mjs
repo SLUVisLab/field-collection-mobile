@@ -88,6 +88,44 @@ test('A2UI accept action writes an accepted Segment and Measure result', async (
   assert.equal(processor.getClientDataModel().surfaces.instrument.gather.phase, 'accepted');
 });
 
+test('A2UI accept action is idempotent once an output is already accepted', async () => {
+  let processor;
+  let handleAction;
+  const capabilities = {
+    measureScientificMask: async () => {
+      throw new Error('should not re-measure');
+    },
+    measureScientificImage: async () => {
+      throw new Error('should not re-measure');
+    },
+    classifyScientificImage: async () => {
+      throw new Error('should not re-classify');
+    },
+  };
+  processor = createProcessor((action) => handleAction(action));
+  handleAction = createCapabilityActionHandler({ processor, capabilities });
+  const accepted = {
+    image,
+    segmentation: { image, model, mask, threshold: 0.5, receipt: { id: 'segment' }, performance: null },
+    measurements: { area: { value: 3, unit: 'px2' } },
+    classification: { model, ranked: [{ label: 'example', score: 1 }] },
+    provenance: { acceptedAt: '2026-08-30T00:00:00.000Z' },
+  };
+  processor.model.getSurface('instrument').dataModel.set('/gather', {
+    phase: 'accepted',
+    image,
+    segmentation: accepted.segmentation,
+    classification: accepted.classification,
+    result: accepted,
+    error: null,
+  });
+
+  await processor.model.getSurface('instrument').dispatchAction({ event: { name: GATHER_ACTION_IDS.accept } }, 'accept');
+
+  assert.equal(processor.getClientDataModel().surfaces.instrument.gather.phase, 'accepted');
+  assert.deepEqual(processor.getClientDataModel().surfaces.instrument.gather.result, accepted);
+});
+
 test('A2UI capability action writes an observable error state', async () => {
   let processor;
   let handleAction;
@@ -109,4 +147,27 @@ test('A2UI capability action writes an observable error state', async () => {
     result: null,
     error: 'camera unavailable',
   });
+});
+
+test('A2UI retake preserves declarative output review metadata on state reset', async () => {
+  let processor;
+  let handleAction;
+  processor = createProcessor((action) => handleAction(action));
+  handleAction = createCapabilityActionHandler({ processor, capabilities: {} });
+  const outputReview = { title: 'Review output', primaryActionLabel: 'Accept' };
+  processor.model.getSurface('instrument').dataModel.set('/gather', {
+    phase: 'accepted',
+    image,
+    segmentation: { image, model, mask, threshold: 0.5 },
+    classification: { model, ranked: [{ label: 'example', score: 1 }] },
+    result: { image },
+    outputReview,
+    error: null,
+  });
+
+  await processor.model.getSurface('instrument').dispatchAction({ event: { name: GATHER_ACTION_IDS.retake } }, 'retake');
+
+  assert.equal(processor.getClientDataModel().surfaces.instrument.gather.phase, 'capture');
+  assert.deepEqual(processor.getClientDataModel().surfaces.instrument.gather.outputReview, outputReview);
+  assert.equal(processor.getClientDataModel().surfaces.instrument.gather.result, null);
 });
