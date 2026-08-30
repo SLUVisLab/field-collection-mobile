@@ -1,0 +1,70 @@
+{
+  "_provenance": {
+    "authoredBy": "A2UI hosted Composer agent (Gemini)",
+    "composerUrl": "https://a2ui-project.github.io/composer/",
+    "rendererUrl": "https://renderer.openfieldworks.com/",
+    "capturedAt": "2026-08-30",
+    "note": "Segment & Measure instrument authored by the hosted Composer against the advertised Gather catalog. Structurally identical to packages/gather-catalog/src/segmentAndMeasure.js (SEGMENT_AND_MEASURE_INSTRUMENT); differs only by surfaceId ('sample-surface') and the title variant ('h1'). Validated against the upstream MessageProcessor: catalog id matches, all components build, phase binding resolves, and the /gather data model initializes. Capture/accept/retake host actions fired correctly through Composer with context { statePath: '/gather' }."
+  },
+  "messages": [
+    {
+      "version": "v0.9",
+      "createSurface": {
+        "surfaceId": "sample-surface",
+        "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json",
+        "sendDataModel": true
+      }
+    },
+    {
+      "version": "v0.9",
+      "updateComponents": {
+        "surfaceId": "sample-surface",
+        "components": [
+          {
+            "id": "root",
+            "component": "Column",
+            "children": ["title", "capture", "review"]
+          },
+          {
+            "id": "title",
+            "component": "Text",
+            "text": "Segment & Measure",
+            "variant": "h1"
+          },
+          {
+            "id": "capture",
+            "component": "GatherCapture",
+            "phase": { "path": "/gather/phase" },
+            "statePath": "/gather"
+          },
+          {
+            "id": "review",
+            "component": "MaskReview",
+            "phase": { "path": "/gather/phase" },
+            "image": { "path": "/gather/image" },
+            "segmentation": { "path": "/gather/segmentation" },
+            "classification": { "path": "/gather/classification" },
+            "result": { "path": "/gather/result" },
+            "error": { "path": "/gather/error" },
+            "statePath": "/gather"
+          }
+        ]
+      }
+    },
+    {
+      "version": "v0.9",
+      "updateDataModel": {
+        "surfaceId": "sample-surface",
+        "path": "/gather",
+        "value": {
+          "phase": "capture",
+          "image": null,
+          "segmentation": null,
+          "classification": null,
+          "result": null,
+          "error": null
+        }
+      }
+    }
+  ]
+}

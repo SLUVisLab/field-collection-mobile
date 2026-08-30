@@ -46,6 +46,29 @@ contains only this documented `postMessage` transport. It delegates all A2UI
 protocol processing, state, binding, validation, and React rendering to the
 official packages.
 
+### Hosted Composer authoring (verified live)
+
+The deployed renderer (`https://renderer.openfieldworks.com/`) was loaded by the
+hosted Composer (`https://a2ui-project.github.io/composer/`) and passed every
+Phase-1 criterion end to end: catalog handshake, both Gather custom components
+advertised and rendered, Basic Catalog components rendered, Data Model binding
+(`phase` drove component state), and action flow (`gather.capture`,
+`gather.accept`, `gather.retake`) with `context: { statePath: "/gather" }`.
+
+Composer's agent authored a Segment & Measure instrument against the advertised
+catalog that is structurally identical to the hand-authored
+`SEGMENT_AND_MEASURE_INSTRUMENT` (differing only by `surfaceId` and a title
+`variant`). That authored bundle is captured at
+[`instruments/segment-and-measure.composer.json`](../packages/gather-catalog/instruments/segment-and-measure.composer.json)
+and a test asserts its equivalence to the shared definition.
+
+Two renderer fixes were required for hosted Composer:
+
+- Render batches are made idempotent (`applyRenderBatch`) because Composer
+  re-sends `createSurface` for existing surfaces, which upstream rejects.
+- Gather components render a visible affordance/placeholder when `phase` is
+  unbound (authoring) instead of returning `null`.
+
 ## Shared Segment & Measure definition
 
 `gather-catalog` now supplies one immutable plain v0.9 message bundle,
