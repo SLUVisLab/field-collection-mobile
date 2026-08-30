@@ -3,6 +3,48 @@
 On-device verification harnesses. They are **not** part of the shipped app entry;
 run one by temporarily pointing `index.js` at it, then revert.
 
+## `M90WebCoreHermesGateApp.js` — A2UI `web_core` Hermes gate
+
+Runs the upstream `@a2ui/web_core/v0_9` engine under React Native Hermes through
+the package's schema-free compatibility exports. It constructs a Catalog and
+MessageProcessor, creates a surface, updates a Data Model, resolves a bound
+`Text` property, and dispatches an action. It emits
+`M90_WEB_CORE_HERMES_RESULT::{...}`.
+
+Temporarily point `index.js` at `./gates/M90WebCoreHermesGateApp`, then run:
+
+```bash
+scripts/run-android-gate.sh 'M90_WEB_CORE_HERMES_RESULT::' .gate-logs/m90-web-core-hermes.log 1200
+```
+
+Restore `index.js` to `App` and remove `.gate-logs/` when finished. Android
+only; the output's `ok` property must be true.
+
+`@a2ui/web_core@0.9.1`'s root v0.9 entry imports a JSON schema using import
+attributes, which Metro accepts but Hermes fails to initialize. The
+version-pinned `patches/@a2ui+web_core+0.9.1.patch` adds schema-free exports
+that re-export the unchanged runtime modules. Remove that patch when upstream
+ships Hermes-compatible v0.9 entry points (or an equivalent official
+schema-free runtime export), then rerun this gate through that upstream entry.
+
+## `M91MobileInstrumentGateApp.js` — mobile A2UI registry gate
+
+Mounts the React Native A2UI component registry with the shared
+`SEGMENT_AND_MEASURE_INSTRUMENT` messages. Deterministic capabilities then
+drive the same upstream action/Data Model path through capture, segmentation,
+mask acceptance, measurements, classification, and a typed accepted result.
+It emits `M91_MOBILE_INSTRUMENT_RESULT::{...}`.
+
+Temporarily point `index.js` at `./gates/M91MobileInstrumentGateApp`, then run:
+
+```bash
+scripts/run-android-gate.sh 'M91_MOBILE_INSTRUMENT_RESULT::' .gate-logs/m91-mobile-instrument.log 1200
+```
+
+Restore `index.js` to `App` afterward. The marker must include `"ok":true`;
+this gate intentionally uses deterministic assets and does not replace the
+subsequent real-camera Segment & Measure validation.
+
 ## `StorageGateApp.js` — gather-storage runtime gate
 
 Proves the `gather-storage` primitives work on iOS + Android (Hermes) and persist

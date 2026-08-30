@@ -4,7 +4,8 @@
   "private": true,
   "main": "index.js",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
     "start": "EXPO_NO_TYPESCRIPT_SETUP=1 expo start",
@@ -13,13 +14,14 @@
     "web": "EXPO_NO_TYPESCRIPT_SETUP=1 expo start --web",
     "run:android": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:android",
     "run:ios": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:ios",
-    "test:packages": "for p in odk-xforms-host odk-xforms-react odk-xforms-webview odk-central-client gather-storage; do (cd packages/$p && node --test $(find test -name '*.test.mjs' -not -path '*/live/*')) || exit 1; done",
+    "test:packages": "for p in odk-xforms-host odk-xforms-react odk-xforms-webview odk-central-client gather-storage gather-catalog; do (cd packages/$p && node --test $(find test -name '*.test.mjs' -not -path '*/live/*')) || exit 1; done",
     "test:app": "node --test $(find test -name '*.test.mjs' -not -path '*/live/*')",
     "test:unit": "npm run test:packages && npm run test:app",
     "postinstall": "patch-package"
   },
   "dependencies": {
     "@getodk/xforms-engine": "file:packages/odk-xforms-engine",
+    "@a2ui/web_core": "0.9.1",
     "@maplibre/maplibre-react-native": "^11.3.7",
     "expo": "~57.0.16",
     "expo-asset": "~57.0.15",
@@ -44,7 +46,8 @@
     "react-native-vision-camera": "^5.2.3",
     "react-native-vision-camera-barcode-scanner": "^5.2.3",
     "react-native-webview": "^14.0.1",
-    "react-router-native": "^6.30.6"
+    "react-router-native": "^6.30.6",
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@babel/core": "^7.25.0",

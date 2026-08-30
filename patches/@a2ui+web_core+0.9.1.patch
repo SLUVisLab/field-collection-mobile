@@ -1,0 +1,36 @@
+diff --git a/node_modules/@a2ui/web_core/src/v0_9/bindings.js b/node_modules/@a2ui/web_core/src/v0_9/bindings.js
+new file mode 100644
+index 0000000..163e877
+--- /dev/null
++++ b/node_modules/@a2ui/web_core/src/v0_9/bindings.js
+@@ -0,0 +1,2 @@
++export { ComponentContext } from './rendering/component-context.js';
++export { GenericBinder } from './rendering/generic-binder.js';
+diff --git a/node_modules/@a2ui/web_core/src/v0_9/catalog.js b/node_modules/@a2ui/web_core/src/v0_9/catalog.js
+new file mode 100644
+index 0000000..71caf7f
+--- /dev/null
++++ b/node_modules/@a2ui/web_core/src/v0_9/catalog.js
+@@ -0,0 +1 @@
++export * from './catalog/types.js';
+diff --git a/node_modules/@a2ui/web_core/src/v0_9/common-schemas.js b/node_modules/@a2ui/web_core/src/v0_9/common-schemas.js
+new file mode 100644
+index 0000000..7cb893f
+--- /dev/null
++++ b/node_modules/@a2ui/web_core/src/v0_9/common-schemas.js
+@@ -0,0 +1 @@
++export { CommonSchemas } from './schema/common-types.js';
+diff --git a/node_modules/@a2ui/web_core/src/v0_9/data-context.js b/node_modules/@a2ui/web_core/src/v0_9/data-context.js
+new file mode 100644
+index 0000000..3f6aefc
+--- /dev/null
++++ b/node_modules/@a2ui/web_core/src/v0_9/data-context.js
+@@ -0,0 +1 @@
++export { DataContext } from './rendering/data-context.js';
+diff --git a/node_modules/@a2ui/web_core/src/v0_9/processor.js b/node_modules/@a2ui/web_core/src/v0_9/processor.js
+new file mode 100644
+index 0000000..f23faf2
+--- /dev/null
++++ b/node_modules/@a2ui/web_core/src/v0_9/processor.js
+@@ -0,0 +1 @@
++export { MessageProcessor } from './processing/message-processor.js';

@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gather.slu.edu/a2ui/catalogs/v0.1.source.json",
+  "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json",
+  "title": "Gather Instrument Catalog",
+  "description": "Gather-specific components for field measurement instruments.",
+  "components": {
+    "GatherCapture": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "GatherCapture"
+            },
+            "phase": {
+              "$ref": "common_types.json#/$defs/DynamicString"
+            },
+            "statePath": {
+              "type": "string"
+            }
+          },
+          "required": ["component", "phase", "statePath"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "MaskReview": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "MaskReview"
+            },
+            "phase": {
+              "$ref": "common_types.json#/$defs/DynamicString"
+            },
+            "image": {
+              "$ref": "common_types.json#/$defs/DynamicValue"
+            },
+            "segmentation": {
+              "$ref": "common_types.json#/$defs/DynamicValue"
+            },
+            "classification": {
+              "$ref": "common_types.json#/$defs/DynamicValue"
+            },
+            "result": {
+              "$ref": "common_types.json#/$defs/DynamicValue"
+            },
+            "error": {
+              "$ref": "common_types.json#/$defs/DynamicString"
+            },
+            "statePath": {
+              "type": "string"
+            }
+          },
+          "required": ["component", "phase", "statePath"]
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  },
+  "$defs": {
+    "anyComponent": {
+      "oneOf": [
+        {
+          "$ref": "#/components/GatherCapture"
+        },
+        {
+          "$ref": "#/components/MaskReview"
+        }
+      ]
+    }
+  }
+}
