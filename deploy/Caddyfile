@@ -1,0 +1,18 @@
+# Caddy configuration for the Gather renderer + ODK Central on one host.
+#
+# Values in {$...} are read from the Caddy container environment, which
+# docker-compose.yml populates from deploy/.env. Auto-HTTPS provisions a
+# separate Let's Encrypt certificate for each hostname.
+{
+	email {$ACME_EMAIL}
+}
+
+# Gather instrument renderer (this repo's container).
+{$RENDERER_DOMAIN} {
+	reverse_proxy 127.0.0.1:{$RENDERER_UPSTREAM_PORT:8080}
+}
+
+# Existing ODK Central, running with SSL_TYPE=upstream (plain HTTP on loopback).
+{$CENTRAL_DOMAIN} {
+	reverse_proxy 127.0.0.1:{$CENTRAL_UPSTREAM_PORT:8081}
+}

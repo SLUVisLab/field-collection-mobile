@@ -1,0 +1,39 @@
+# Turnkey deployment for the Gather instrument renderer plus a shared Caddy
+# reverse proxy that terminates TLS for both the renderer and an existing ODK
+# Central instance running on the same host.
+#
+# See deploy/README.md for the full runbook.
+
+services:
+  renderer:
+    build:
+      context: ..
+      dockerfile: apps/instrument-renderer/Dockerfile
+    image: gather-instrument-renderer:latest
+    restart: unless-stopped
+    # Exposed only on host loopback; Caddy (host network) proxies to it.
+    ports:
+      - "127.0.0.1:${RENDERER_UPSTREAM_PORT:-8080}:8080"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - renderer
+    # Host networking lets Caddy own 80/443 and reach both loopback-bound
+    # upstreams (this renderer and the ODK Central nginx) without exposing them.
+    network_mode: host
+    environment:
+      - RENDERER_DOMAIN=${RENDERER_DOMAIN}
+      - CENTRAL_DOMAIN=${CENTRAL_DOMAIN}
+      - RENDERER_UPSTREAM_PORT=${RENDERER_UPSTREAM_PORT:-8080}
+      - CENTRAL_UPSTREAM_PORT=${CENTRAL_UPSTREAM_PORT:-8081}
+      - ACME_EMAIL=${ACME_EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

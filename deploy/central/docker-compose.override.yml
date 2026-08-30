@@ -1,0 +1,17 @@
+# Drop-in override for an existing ODK Central install so its bundled nginx
+# stops terminating TLS and instead serves plain HTTP on host loopback, letting
+# the shared Caddy reverse proxy own ports 80/443.
+#
+# Usage: copy this file into your ODK Central directory (next to Central's own
+# docker-compose.yml) as `docker-compose.override.yml`, set SSL_TYPE=upstream in
+# Central's .env, then `docker compose up -d`. See deploy/README.md.
+#
+# `!override` replaces Central's default published ports instead of appending to
+# them (requires Docker Compose v2.24.4+; `docker compose version` on this host
+# reported a newer release). If your Compose is older, edit the `ports:` block in
+# Central's docker-compose.yml directly instead of using this override.
+
+services:
+  nginx:
+    ports: !override
+      - "127.0.0.1:8081:80"
