@@ -1,8 +1,7 @@
 import { ImageOverlay } from '../image/ImageOverlay.jsx';
 import { Helper, Panel } from '../primitives.jsx';
 
-export function ProcessingView({ image, phase }) {
-  const label = phase === 'measuring' ? 'Calculating measurements…' : 'Processing image…';
+export function ProcessingView({ image, label = 'Working…' }) {
   return (
     <Panel>
       <ImageOverlay image={image} />

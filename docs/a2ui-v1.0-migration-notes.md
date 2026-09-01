@@ -114,8 +114,12 @@ mechanism without the architecture.
 
 ## Design decision: one stable tree, values vary
 
-Segment & Measure renders **one component tree**; phases vary bound values, never
-structure. `PhaseView` is removed.
+> **Superseded 2026-09-01.** This section is retained as history. Segment & Measure
+> now uses **Direction A (host reshapes `root.children` per phase)** — see the
+> [Reassessment](#reassessment-2026-09-01-segment--measure-already-trips-the-tripwire)
+> below and the [Implementation note](#implementation-2026-09-01-direction-a-shipped)
+> at the end. The text below describes the earlier "one stable tree" design that
+> was replaced.
 
 This is what "structure from the agent, values from the data model" looks like
 when the agent runs at authoring time instead of runtime — not a workaround for
@@ -148,6 +152,327 @@ phase means structure genuinely varies at collection time. Revisit then, with
 per-phase `updateComponents` batches re-pointing `root.children` (merge-only
 semantics: there is no delete, so orphaned ids linger) — do not reach for a
 conditional component.
+
+## Reassessment (2026-09-01): Segment & Measure already trips the tripwire
+
+A later review concluded the "one stable tree, values vary" decision above is
+sound as a *principle* but **mis-applied to Segment & Measure specifically**, and
+that misapplication is the direct cause of the visible symptoms (two greyed
+buttons under the live camera; generic `advance`/`back` resolved by a host
+`switch`; a `SEGMENT_AND_MEASURE_PRESENTATION` machine mirroring the phase
+machine). The reasoning:
+
+1. **This screen meets the tripwire as written.** Its phases are not one layout
+   with different values — they are three materially different layouts: a live
+   camera, an image + mask overlay with review actions, and a results summary
+   with submit. That is exactly the "materially different *layout* per phase"
+   condition the tripwire reserves for `root.children` reshaping.
+
+2. **The current design already does conditional rendering — just hidden.** Every
+   Gather leaf component in
+   [segmentAndMeasureComponents.js](../src/a2ui/mobile/segmentAndMeasureComponents.js)
+   is `if (phase !== X) return null`. "Components are total; they render an empty
+   slot" is a euphemism for the renderer conditionally rendering nothing. The
+   conditional wasn't removed with `PhaseView`; it was smeared across five custom
+   components plus a host-side action `switch`, which is harder to see, not more
+   declarative.
+
+3. **The "offline ⇒ no runtime `updateComponents`" inference is the weak link.**
+   The host is *already* the offline driver: `surface.dataModel.set(...)` in
+   [capabilityActionAdapter.js](../src/a2ui/capabilityActionAdapter.js) is the
+   host locally emitting `updateDataModel` with no network. Re-pointing
+   `root.children` from that same host is the same local, offline, deterministic
+   actor emitting a different message type. The M6 gate forbids **network**, not
+   structural writes. So "structure at runtime = simulating an agent" draws an
+   arbitrary line the offline architecture does not actually require.
+
+4. **Verified the mechanism works** (protocol-level spike against upstream
+   `MessageProcessor`): re-sending `root` with new `children` re-parents live and
+   fires `ComponentModel.onUpdated`; `GenericBinder` rebuilds structural children
+   on `onUpdated` and the mobile `InstrumentNode` reacts to
+   `onCreated`/`onDeleted`, so both renderers follow. The swapped-in `Button`
+   stays an upstream Basic Catalog `Button` with its real `gather.accept` action.
+
+**Recommendation — Direction A (host reshapes `root.children` per phase).** Author
+`captureGroup` / `reviewGroup` / `summaryGroup` / `errorGroup` once in the bundle
+(Composer still authors every component and binding); have the adapter's
+`setState` also emit a local `updateComponents` re-pointing `root.children` to the
+phase's group. Restore distinct `gather.accept` / `gather.retake` (handlers still
+exist), delete generic `advance`/`back` and the `SEGMENT_AND_MEASURE_PRESENTATION`
+mirror, and drop the `return null` self-hiding from leaf components. Result: a pure
+camera in `capture`, upstream `Button`s with distinct authored actions (restores
+the M9 goal), and *less* host logic — not more. The only thing given up versus the
+frozen-tree ideal is that the phase→group mapping lives in host code, but the phase
+machine already lives there today.
+
+**Fallback — Direction B (keep the frozen tree).** Only if a literally frozen
+single `updateComponents` with zero runtime structure messages is a hard rule.
+Then add the "total actions component" to hide the buttons during `capture`,
+restore distinct accept/retake if feasible, and narrow the M9 doc's "Basic Catalog
+`Button` composition" claim to match reality (`Column`, `Text`).
+
+This reassessment records the analysis; the implementation note below records the
+decision taken. Independent of that choice, two flagged items still need action:
+the skipped Composer-equivalence test needs a real hosted-Composer re-authoring
+session, and the pinned assembler actually fetches the basic catalog from
+`refs/heads/main` rather than the revision `tooling.json` pins (diff the artifact,
+don't assume).
+
+## Implementation (2026-09-01): Direction A shipped
+
+> **Superseded 2026-09-01 by the `Flow` component (P1).** Direction A (host
+> re-points `root.children` per phase) was shipped, reviewed as heavy/coupled,
+> then replaced by the general `Flow` view-selector — see
+> [Implemented: Flow](#implemented-2026-09-01-flow-view-selector-p1) below. This
+> section is retained as history; the phase-group / `structureForPhase` machinery
+> it describes has been removed.
+
+Direction A was chosen and implemented. Segment & Measure now authors every
+component once and the **host re-points `root.children` at the phase's group** on
+each transition, so structure follows the phase and the camera phase is pure.
+
+What changed:
+
+- **Per-phase groups** in
+  [segmentAndMeasure.js](../packages/gather-catalog/src/segmentAndMeasure.js):
+  `captureGroup` / `processingGroup` / `reviewGroup` / `summaryGroup` /
+  `errorGroup`. `root.children` starts on `captureGroup`.
+  `SEGMENT_AND_MEASURE_PHASE_GROUPS` + `segmentAndMeasureStructureForPhase` are the
+  phase→structure contract.
+- **The mirrored presentation state is gone** (`SEGMENT_AND_MEASURE_PRESENTATION`,
+  `statusText`/`primaryLabel`/`secondaryLabel`/`canAdvance`/`canGoBack`), and so
+  are the generic `gather.advance`/`gather.back` actions and their host `switch`.
+- **Real upstream `Button`s** carry distinct authored actions: review →
+  `gather.accept` / `gather.retake`; summary → `gather.submit` / `gather.retake`.
+- **`gather.submit`** is the accepted-phase commit and the explicit
+  result-delivery seam: `onAcceptedResult` fires on submit (the user gesture), not
+  on entering `accepted`. It has no consumer in the field app or renderer yet, so
+  it is a safe confirm today and the hook for future instance/XForms persistence.
+- **The host adapter** ([capabilityActionAdapter.js](../src/a2ui/capabilityActionAdapter.js))
+  gained an instrument-agnostic `structureForPhase` option; `setState` emits the
+  reshape `updateComponents` only when the phase's structure actually changes.
+  `acceptMask` is now `await`ed so a failure routes to the error phase.
+
+Verified: gather-catalog + gather-components + full `test:packages` green; renderer
+Vite build green; Android Hermes export green; and an end-to-end flow spike through
+the real adapter + real bundle confirms `root.children` reshapes
+camera→review→summary→(submit delivers)→retake→error. **Still needs a physical
+device pass** (camera UX + the new submit gesture), consistent with the standing
+device-gate requirement.
+
+## Open design review (2026-09-01): naming + reduce the machinery
+
+A review of the shipped Direction A flagged that it reads as heavy and coupled to
+one instrument. Code is **unchanged** pending a decision; the concept and the
+concrete cleanup are recorded here.
+
+- **Rename `phase`.** It is non-standard jargon. The concept is a small
+  **statechart** — states + transitions, each state showing a view (like a wizard
+  `mode`/`step` or a route). Prefer `status` / `step` / `mode`. This applies
+  whichever option below is chosen.
+- **Collapse the duplicated state machine into one table (Direction A cleanup).**
+  Today the capability adapter encodes the flow *and*
+  `SEGMENT_AND_MEASURE_PHASE_GROUPS` separately encodes state→view — two
+  representations that must agree (the same duplication smell the old presentation
+  mirror had). Unify into a single `{ states: { <state>: { view, … } } }`
+  declaration, and drive both the data-model write and the `updateComponents`
+  reshape from **one generic, reusable host statechart driver**. Then each
+  instrument is *data* (a table), not bespoke `structureForPhase`/adapter logic.
+  This removes the "coupled to one tool / wrapper logic" smell without changing
+  behavior. Note: nothing new is exposed to A2UI — it still only ever receives
+  `updateComponents{ root.children }`; the statechart lives host-side and offline,
+  where the flow already lived.
+- **Alternative shape — Option X (data-only, no `updateComponents`).** Keep one
+  tree; each element self-hides on `status`. Simpler single-source-of-truth model
+  that matches the "the data model *is* the state" intuition. **Cost:** every
+  visible element must be a self-hiding Gather component, so stock Basic Catalog
+  `Button`s cannot be used in the flow (they would be wrapped) — abandoning the M9
+  "use Basic Catalog `Button`" goal and reintroducing hand-rolled conditional
+  rendering. This is the honest simpler-but-different fork; choose A-cleanup vs X
+  by taste, not by protocol necessity.
+
+## Multi-view workflow pattern — proposal (2026-09-01)
+
+Design review reframed the whole question: what is the *general* pattern for
+instruments with ordered/conditional multi-view micro-flows (camera → review →
+summary), authorable in the hosted Composer and legible to its agent? This
+supersedes the ad-hoc Direction-A machinery as the recommended end state.
+
+**First, split "multi-step" across two layers:**
+
+- **Form-level steps** — distinct questions with durable answers / branching
+  relevance. This is XForms/ODK's native job (`relevant`, `calculate`, next-field
+  nav, inter-field data flow). Model these as **separate fields**; A2UI needs
+  nothing. Best for coarse, durable, branching stages.
+- **In-instrument micro-flow** — ephemeral UI states producing **one** field's
+  value (accept/retake a mask, live camera → immediate review). Not questions;
+  transient UI. This is the part A2UI can't express and the part worth a primitive.
+
+Decision rule for authors/agent: **durable answer or branches the form → XForms
+field; transient UI producing one value → in-instrument view.**
+
+**The missing primitive.** A2UI ships `Tabs` (one of N children by user click) and
+`Modal` (content on a trigger) — client-side conditional containers. It lacks their
+**data-driven sibling**: a container that shows one of N named child views selected
+by a value in the data model. That single gap is what the phase-group / host-reshape
+machinery works around.
+
+**Proposals (full write-up in session history):**
+
+- **P1 (recommended) — a data-driven view-selector component.** One new general
+  Gather component, e.g. `Flow { current: DynamicString, steps: [{ when, view:
+  ComponentId }], fallback? }`, rendering only the child whose `when` matches
+  `current`. Transitions are ordinary actions (a button dispatches `gather.accept`;
+  the host sets `/status`; the selector reflects it). The **host stays value-only**
+  and the Direction-A apparatus (`SEGMENT_AND_MEASURE_PHASE_GROUPS`,
+  `structureForPhase`, host reshaping) is **deleted** — net less code, stock
+  `Button`s throughout, no mobile/web drift (Gather owns the one renderer),
+  inactive views not mounted. It is a normal catalog component with a JSON Schema,
+  a sibling of `Tabs`, so the Composer agent authors it directly. Distinct from the
+  rejected `PhaseView`: one component owning a discriminated select (a `switch`),
+  not scattered per-instance boolean gates (`if`s), and a new component rather than
+  a redefinition of a stock one.
+- **P2 — host statechart runtime that pushes views via `updateComponents`.** The
+  cleaned-up Direction A (one generic driver + a per-instrument state table).
+  Reserve for cases needing genuine structure injection; more machinery and less
+  Composer-legible than P1 (flow lives outside the component tree).
+- **P3 — decompose into XForms fields.** Native, no new concept; the right answer
+  for the *form-level* kind, poor for tight ephemeral loops.
+- **P4 — capability/function.** Rejected: conflates UI sequencing with the
+  native/scientific capability boundary.
+
+**Recommendation:** P1 for in-instrument micro-flows + P3 for form-level steps,
+with the decision rule above advertised to the agent. Retire the Direction-A
+machinery when P1 lands. **Open for the human:** pick P1 vs P2 vs P3 as primary,
+and choose names — component (`Flow` / `Steps` / `Switch`) and the data field
+(`status` / `step` / `mode`, replacing `phase`). No code written pending that pick.
+
+## Implemented (2026-09-01): `Flow` view selector (P1)
+
+Decision: **P1**, named **`Flow`** with **`views`** (renamed from `steps` —
+see the ADR below), and the data field renamed `phase` → **`status`**.
+Segment & Measure is now a `Flow` composition and the Direction-A machinery is
+removed.
+
+- **New general component `Flow`** (Gather catalog): `Flow { current:
+  DynamicString, views: [{ when, view: ComponentId }], fallback? }` renders the one
+  child View whose `when` matches `current`. Authored once in the catalog
+  ([gather-v0.1.source.json](../packages/gather-catalog/catalogs/gather-v0.1.source.json)
+  + assembled [gather-v0.1.json](../packages/gather-catalog/catalogs/gather-v0.1.json)),
+  implemented on mobile in
+  [segmentAndMeasureComponents.js](../src/a2ui/mobile/segmentAndMeasureComponents.js)
+  and on web in
+  [gatherComponents.jsx](../apps/renderer/src/gatherComponents.jsx) — Gather owns
+  the single renderer, so no mobile/web drift; inactive views are not mounted.
+- **The instrument** ([segmentAndMeasure.js](../packages/gather-catalog/src/segmentAndMeasure.js))
+  authors `captureView` / `processingView` / `reviewView` / `summaryView` /
+  `errorView` once; `root` mounts only `flow`, whose `current` binds
+  `/gather/status`. Buttons stay stock Basic Catalog `Button`s with distinct
+  `gather.accept` / `gather.retake` / `gather.submit` actions.
+- **The host is value-only.** The capability adapter
+  ([capabilityActionAdapter.js](../src/a2ui/capabilityActionAdapter.js)) writes
+  `/gather/status` and never sends `updateComponents`. Removed:
+  `SEGMENT_AND_MEASURE_PHASE_GROUPS`, `segmentAndMeasureRootChildren`,
+  `segmentAndMeasureStructureForPhase`, the adapter's `structureForPhase` option,
+  and the `isProcessingPhase` helper. `phase` is renamed to `status` throughout;
+  `gather.submit` remains the result-delivery seam.
+- **Layering rule to advertise to authors/the Composer agent:** durable answer or
+  branches the form → XForms field (P3); transient UI producing one value →
+  in-instrument `Flow` view (P1).
+
+Verified: full `test:packages` green (one intentional skip — the Composer fixture,
+regenerated as an honest mirror pending a real hosted-Composer session); renderer
+Vite build green; Android Hermes export green; and an end-to-end spike through the
+real adapter + real bundle confirms `status` drives `Flow` view selection
+(capture→review→summary→submit-delivers→retake→error) while `root.children` never
+changes. **Still needs a physical device pass** (camera UX + submit gesture).
+**Follow-on:** advertise the action contract + `/gather` state schema so the
+Composer agent can author `Flow` instruments end to end (unchanged from before).
+
+## ADR (2026-09-01): Tool orchestration — establish the seam now, build the engine later
+
+Two changes land together: `Flow`'s children are **Views**, not Steps, and a
+minimal host-side **`ToolFlowController`** owns which View is active.
+
+### Why `View` replaces `Step`
+
+"Step" implies an ordered sequence with a position — step 1, then 2, then 3 —
+and implies that the component knows the order. `Flow` knows neither. It matches
+one externally supplied token against `views[].when` and renders that child.
+Segment & Measure already breaks the sequence reading in two ways: several
+working tokens (`persisting-capture`, `segmenting`, `classifying`, `measuring`)
+resolve to the *same* `processingView`, and `error` is reachable from anywhere
+and is not a position in any sequence.
+
+"View" says what the child actually is — one alternative presentation — and
+leaves ordering to whoever decides the active token. It also keeps the
+vocabulary honest for a Composer agent reading the catalog: authoring a `Flow`
+is "here are the Views; something else picks one", not "here is a wizard".
+
+### Ownership boundary
+
+```text
+Components          render UI
+Capabilities        perform operations
+Flow                renders one of several Views
+ToolFlowController  decides which View is active
+```
+
+- **`Flow`** ([flow.js](../packages/gather-catalog/src/flow.js)) is presentation
+  only. Given an active view token it renders that View — no transitions, no
+  state, no capability calls. `resolveFlowView` is shared by the mobile and web
+  renderers so the two implementations cannot drift.
+- **Capabilities** perform operations and return results. They do not decide
+  what is shown next.
+- **`ToolFlowController`** ([toolFlowController.js](../src/a2ui/toolFlowController.js))
+  owns the active view token and routes Tool events to handlers. It is the only
+  place a transition is decided. Its whole surface is `activeView`, `dispatch`,
+  `setView`, `reset`.
+- **Components** never transition the flow. A component reports an event; the
+  controller decides the consequence.
+
+The active view token lives in the surface data model at `<statePath>/status`,
+because a `Flow`-bound value has to be data. The data model is therefore the
+*store* and the controller is the *decider*: the controller is seeded from the
+durable token (`startView`) and writes each change back, so there is no cached
+copy to drift out of sync.
+
+The token vocabulary is shared —
+`SEGMENT_AND_MEASURE_VIEWS` in
+[segmentAndMeasure.js](../packages/gather-catalog/src/segmentAndMeasure.js) is
+used by both the authored `Flow` table and the controller, and a test asserts
+every token the controller can write has a `Flow` entry.
+
+### Deliberately not a workflow engine
+
+The controller is a **seam, not an engine**. It has no guards, nested states,
+entry/exit actions, timers, parallel states, or declarative transition schema.
+Segment & Measure's transitions are bespoke handler bodies.
+
+The reason is that one Tool is not enough evidence to design a general
+orchestration language. Building a statechart now would mean inventing a
+transition schema, an authoring story for it, and Composer support for it, all
+against a single example — and every one of those decisions would be a guess.
+Establishing the seam costs almost nothing and means orchestration already has
+one obvious home when the second and third Tools arrive with real requirements.
+
+### Tripwire for revisiting
+
+Revisit when **two or more Tools require nontrivial branching, retry, or
+conditional transitions** driven by user actions or Capability results — for
+example a Tool that retries a failed inference with different parameters, or one
+that routes to different Views depending on a classification score.
+
+At that point, replace the bespoke handler bodies with a generic declarative Tool
+Flow/statechart driver. **That driver should drive the existing `Flow` component,
+not replace it.** The `Flow`/`View` presentation abstraction is independent of
+how the active view is chosen — that is the entire point of keeping `Flow` dumb —
+so a future engine changes who calls `setView`, and nothing about how Views are
+authored or rendered.
+
+Until then: if a transition rule is getting complicated, that is a signal to
+check whether it belongs in the controller at all, or whether the Tool wants a
+durable form-level branch (P3 / XForms) instead of an in-instrument View.
 
 ## Gather's v0.9 → v1.0 work, by area
 

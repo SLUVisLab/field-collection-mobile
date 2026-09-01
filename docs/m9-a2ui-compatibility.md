@@ -78,12 +78,29 @@ Two renderer fixes were required for hosted Composer:
 
 ## Shared Segment & Measure definition
 
-`gather-catalog` now supplies one immutable plain v0.9 message bundle,
-`SEGMENT_AND_MEASURE_INSTRUMENT`. It uses upstream Basic Catalog composition
-(`Column`, `Text`, `Button`) with a small Gather-specific surface (`GatherCapture`,
-`ImageOverlay`, `OutputReview`, plus phase/status helpers). The same
-bundle drives deterministic fixtures in the web preview and the mobile
-`SegmentAndMeasureInstrument` binding.
+`gather-catalog` supplies one plain v0.9 message bundle,
+`SEGMENT_AND_MEASURE_INSTRUMENT`, authored once. Its `root` mounts a single
+**`Flow`** component — a general, data-driven View selector (the missing sibling of
+Basic Catalog `Tabs`) that renders the one child View whose `when` matches
+`/gather/status`. `Flow`'s children are **Views**, not Steps: several tokens may
+resolve to one View and `error` is reachable from anywhere, so there is no
+implied sequence. It uses upstream Basic Catalog composition (`Column`, `Text`, and
+real upstream `Button`s carrying distinct `gather.accept` / `gather.retake` /
+`gather.submit` actions) with a small Gather-specific surface (`Flow`,
+`GatherCapture`, `ImageOverlay`, `OutputReview`, `ProcessingView`,
+`InstrumentError`). The same bundle drives deterministic fixtures in the web
+preview and the mobile `SegmentAndMeasureInstrument` binding.
+
+Segment & Measure is an in-instrument micro-flow (capture → working → review →
+summary, plus error). `Flow` expresses the ordered/conditional views declaratively,
+so the **host is value-only** — advancing the flow is just writing `/gather/status`;
+it never sends `updateComponents`. Transitions are ordinary button actions routed
+through the capability adapter to a minimal `ToolFlowController`, which is the one
+place a transition is decided (see
+[a2ui-v1.0-migration-notes.md](./a2ui-v1.0-migration-notes.md#adr-2026-09-01-tool-orchestration--establish-the-seam-now-build-the-engine-later)). No conditional-gate component, no generic
+advance/back, no host-reshaped structure, no mirrored presentation state. See
+[a2ui-v1.0-migration-notes.md](./a2ui-v1.0-migration-notes.md) for the decision
+record and the form-level-vs-in-instrument layering rule.
 
 The React Native registry maps these component IDs to the existing M8
 `SegmentAndMeasureCapture`, `ImageOverlay`, `OutputReview`, and status

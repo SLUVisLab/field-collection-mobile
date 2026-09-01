@@ -5,17 +5,28 @@ import {
   InstrumentError,
   OutputReview,
   ProcessingView,
-  isProcessingPhase,
 } from 'gather-components';
 
 import { SegmentAndMeasureCapture } from '../../components/scientific/SegmentAndMeasureViews.js';
-import { GATHER_ACTION_IDS, GATHER_COMPONENT_IDS } from 'gather-catalog';
+import { GATHER_ACTION_IDS, GATHER_COMPONENT_IDS, resolveFlowView } from 'gather-catalog';
 
 import { bindInstrumentComponent } from './InstrumentSurface.js';
 
+// Flow: the data-driven View selector (the missing sibling of Basic Catalog
+// `Tabs`). It renders the one child View whose `when` matches `current`.
+// Presentation only — a host-side ToolFlowController decides which View is active.
+export const flowApi = {
+  name: GATHER_COMPONENT_IDS.flow,
+  schema: z.object({
+    current: CommonSchemas.DynamicString,
+    views: z.array(z.object({ when: z.string(), view: z.string() }).strict()).min(1),
+    fallback: z.string().optional(),
+  }).strict(),
+};
+
 export const gatherCaptureApi = {
   name: GATHER_COMPONENT_IDS.capture,
-  schema: z.object({ phase: CommonSchemas.DynamicString, statePath: z.string() }).strict(),
+  schema: z.object({ statePath: z.string() }).strict(),
 };
 
 export const imageOverlayApi = {
@@ -37,7 +48,6 @@ export const outputReviewApi = {
 export const processingViewApi = {
   name: GATHER_COMPONENT_IDS.processingView,
   schema: z.object({
-    phase: CommonSchemas.DynamicString.optional(),
     image: CommonSchemas.DynamicValue.optional(),
   }).strict(),
 };
@@ -45,26 +55,40 @@ export const processingViewApi = {
 export const instrumentErrorApi = {
   name: GATHER_COMPONENT_IDS.instrumentError,
   schema: z.object({
-    phase: CommonSchemas.DynamicString.optional(),
     error: CommonSchemas.DynamicString.optional(),
     statePath: z.string(),
   }).strict(),
 };
 
+// Every Gather component API, for catalog registration.
+export const gatherComponentApis = [
+  flowApi,
+  gatherCaptureApi,
+  imageOverlayApi,
+  outputReviewApi,
+  processingViewApi,
+  instrumentErrorApi,
+];
+
 const action = (name, statePath, context) => ({ event: { name, context: { statePath, ...context } } });
 
+// Views are mounted only when `Flow` selects them, so the leaf components no
+// longer self-hide by status — they render their content directly.
 export const segmentAndMeasureImplementations = {
-  [GATHER_COMPONENT_IDS.capture]: {
-    component: bindInstrumentComponent(gatherCaptureApi.schema, ({ phase, statePath, context }) => {
-      if (phase !== 'capture') return null;
-      return (
-        <SegmentAndMeasureCapture
-          onCapture={(capture) =>
-            context.dispatchAction({ event: { name: GATHER_ACTION_IDS.capture, context: { statePath, capture } } })
-          }
-        />
-      );
+  [GATHER_COMPONENT_IDS.flow]: {
+    component: bindInstrumentComponent(flowApi.schema, ({ current, views, fallback, buildChild }) => {
+      const view = resolveFlowView({ current, views, fallback });
+      return view ? buildChild(view) : null;
     }),
+  },
+  [GATHER_COMPONENT_IDS.capture]: {
+    component: bindInstrumentComponent(gatherCaptureApi.schema, ({ statePath, context }) => (
+      <SegmentAndMeasureCapture
+        onCapture={(capture) =>
+          context.dispatchAction({ event: { name: GATHER_ACTION_IDS.capture, context: { statePath, capture } } })
+        }
+      />
+    )),
   },
   [GATHER_COMPONENT_IDS.imageOverlay]: {
     component: bindInstrumentComponent(imageOverlayApi.schema, ({ image, segmentation }) => {
@@ -79,14 +103,12 @@ export const segmentAndMeasureImplementations = {
     }),
   },
   [GATHER_COMPONENT_IDS.processingView]: {
-    component: bindInstrumentComponent(processingViewApi.schema, ({ phase, image }) => {
-      if (!image || !isProcessingPhase(phase)) return null;
-      return <ProcessingView image={image} phase={phase} />;
-    }),
+    component: bindInstrumentComponent(processingViewApi.schema, ({ image }) => (
+      <ProcessingView image={image} />
+    )),
   },
   [GATHER_COMPONENT_IDS.instrumentError]: {
-    component: bindInstrumentComponent(instrumentErrorApi.schema, ({ phase, error, statePath, context }) => {
-      if (phase !== 'error') return null;
+    component: bindInstrumentComponent(instrumentErrorApi.schema, ({ error, statePath, context }) => {
       const retake = () => context.dispatchAction(action(GATHER_ACTION_IDS.retake, statePath));
       return <InstrumentError message={error} onRetake={retake} />;
     }),

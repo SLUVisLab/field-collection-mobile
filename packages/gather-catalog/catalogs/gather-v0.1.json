@@ -935,17 +935,60 @@
             "component": {
               "const": "GatherCapture"
             },
-            "phase": {
-              "$ref": "#/$defs/common_types_DynamicString"
-            },
             "statePath": {
               "type": "string"
             }
           },
           "required": [
             "component",
-            "phase",
             "statePath"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "Flow": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "Flow"
+            },
+            "current": {
+              "$ref": "#/$defs/common_types_DynamicString"
+            },
+            "views": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "when": {
+                    "type": "string"
+                  },
+                  "view": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "when",
+                  "view"
+                ]
+              }
+            },
+            "fallback": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "component",
+            "current",
+            "views"
           ]
         }
       ],
@@ -1015,16 +1058,12 @@
             "component": {
               "const": "ProcessingView"
             },
-            "phase": {
-              "$ref": "#/$defs/common_types_DynamicString"
-            },
             "image": {
               "$ref": "#/$defs/common_types_DynamicValue"
             }
           },
           "required": [
-            "component",
-            "phase"
+            "component"
           ]
         }
       ],
@@ -1042,9 +1081,6 @@
             "component": {
               "const": "InstrumentError"
             },
-            "phase": {
-              "$ref": "#/$defs/common_types_DynamicString"
-            },
             "error": {
               "$ref": "#/$defs/common_types_DynamicString"
             },
@@ -1054,7 +1090,6 @@
           },
           "required": [
             "component",
-            "phase",
             "statePath"
           ]
         }
@@ -3373,17 +3408,60 @@
             "component": {
               "const": "GatherCapture"
             },
-            "phase": {
-              "$ref": "#/$defs/common_types_DynamicString"
-            },
             "statePath": {
               "type": "string"
             }
           },
           "required": [
             "component",
-            "phase",
             "statePath"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "gather-v0.1.source_Flow": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "Flow"
+            },
+            "current": {
+              "$ref": "#/$defs/common_types_DynamicString"
+            },
+            "views": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "when": {
+                    "type": "string"
+                  },
+                  "view": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "when",
+                  "view"
+                ]
+              }
+            },
+            "fallback": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "component",
+            "current",
+            "views"
           ]
         }
       ],
@@ -3453,16 +3531,12 @@
             "component": {
               "const": "ProcessingView"
             },
-            "phase": {
-              "$ref": "#/$defs/common_types_DynamicString"
-            },
             "image": {
               "$ref": "#/$defs/common_types_DynamicValue"
             }
           },
           "required": [
-            "component",
-            "phase"
+            "component"
           ]
         }
       ],
@@ -3480,9 +3554,6 @@
             "component": {
               "const": "InstrumentError"
             },
-            "phase": {
-              "$ref": "#/$defs/common_types_DynamicString"
-            },
             "error": {
               "$ref": "#/$defs/common_types_DynamicString"
             },
@@ -3492,7 +3563,6 @@
           },
           "required": [
             "component",
-            "phase",
             "statePath"
           ]
         }
@@ -3544,6 +3614,9 @@
         },
         {
           "$ref": "#/components/Divider"
+        },
+        {
+          "$ref": "#/components/Flow"
         },
         {
           "$ref": "#/components/GatherCapture"

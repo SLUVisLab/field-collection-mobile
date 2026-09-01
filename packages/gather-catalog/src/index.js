@@ -1,6 +1,3 @@
 export * from './identifiers.js';
-export {
-  SEGMENT_AND_MEASURE_INSTRUMENT,
-  SEGMENT_AND_MEASURE_PRESENTATION,
-  segmentAndMeasurePresentation,
-} from './segmentAndMeasure.js';
+export { resolveFlowView } from './flow.js';
+export { SEGMENT_AND_MEASURE_INSTRUMENT, SEGMENT_AND_MEASURE_VIEWS } from './segmentAndMeasure.js';

@@ -34,4 +34,3 @@ export { SegmentationResult } from './components/results/SegmentationResult.jsx'
 export { OutputReview } from './components/results/OutputReview.jsx';
 export { InstrumentError } from './components/status/InstrumentError.jsx';
 export { ProcessingView } from './components/status/ProcessingView.jsx';
-export { isProcessingPhase } from './components/status/processingPhases.js';

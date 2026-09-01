@@ -6,20 +6,10 @@ import { ButtonApi, ColumnApi, TextApi } from '@a2ui/web_core/v0_9/basic_catalog
 import { useGather } from '../../context/GatherContext.js';
 import { createCapabilityActionHandler } from '../capabilityActionAdapter.js';
 import { A2uiInstrumentSurface, mobileBasicImplementations } from './InstrumentSurface.js';
-import {
-  gatherCaptureApi,
-  imageOverlayApi,
-  instrumentErrorApi,
-  outputReviewApi,
-  processingViewApi,
-  segmentAndMeasureImplementations,
-} from './segmentAndMeasureComponents.js';
+import { gatherComponentApis, segmentAndMeasureImplementations } from './segmentAndMeasureComponents.js';
 import { GATHER_CATALOG_ID, SEGMENT_AND_MEASURE_INSTRUMENT } from 'gather-catalog';
 
-const catalog = new Catalog(
-  GATHER_CATALOG_ID,
-  [ColumnApi, TextApi, ButtonApi, gatherCaptureApi, imageOverlayApi, outputReviewApi, processingViewApi, instrumentErrorApi]
-);
+const catalog = new Catalog(GATHER_CATALOG_ID, [ColumnApi, TextApi, ButtonApi, ...gatherComponentApis]);
 const implementations = { ...mobileBasicImplementations, ...segmentAndMeasureImplementations };
 
 export function SegmentAndMeasureInstrument() {

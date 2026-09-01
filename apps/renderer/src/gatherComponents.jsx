@@ -6,16 +6,23 @@ import {
   InstrumentError,
   OutputReview,
   ProcessingView,
-  isProcessingPhase,
 } from 'gather-components';
 
-import { GATHER_ACTION_IDS, GATHER_COMPONENT_IDS } from 'gather-catalog';
+import { GATHER_ACTION_IDS, GATHER_COMPONENT_IDS, resolveFlowView } from 'gather-catalog';
 import { CameraSurfaceWeb } from './CameraSurface.web.jsx';
+
+const FlowApi = {
+  name: GATHER_COMPONENT_IDS.flow,
+  schema: z.object({
+    current: CommonSchemas.DynamicString.optional(),
+    views: z.array(z.object({ when: z.string(), view: z.string() }).strict()).min(1),
+    fallback: z.string().optional(),
+  }).strict(),
+};
 
 const GatherCaptureApi = {
   name: GATHER_COMPONENT_IDS.capture,
   schema: z.object({
-    phase: CommonSchemas.DynamicString.optional(),
     statePath: z.string().optional(),
   }).strict(),
 };
@@ -39,7 +46,6 @@ const OutputReviewApi = {
 const ProcessingViewApi = {
   name: GATHER_COMPONENT_IDS.processingView,
   schema: z.object({
-    phase: CommonSchemas.DynamicString.optional(),
     image: CommonSchemas.DynamicValue.optional(),
   }).strict(),
 };
@@ -47,7 +53,6 @@ const ProcessingViewApi = {
 const InstrumentErrorApi = {
   name: GATHER_COMPONENT_IDS.instrumentError,
   schema: z.object({
-    phase: CommonSchemas.DynamicString.optional(),
     error: CommonSchemas.DynamicString.optional(),
     statePath: z.string().optional(),
   }).strict(),
@@ -57,14 +62,18 @@ const action = (name, statePath, extra) => ({ event: { name, context: { statePat
 
 const DEFAULT_STATE_PATH = '/gather';
 
+// Flow: renders the one child View whose `when` matches `current`. The data-driven
+// sibling of Basic Catalog `Tabs`. Presentation only — the active View is chosen
+// by a host-side ToolFlowController.
+export const Flow = createComponentImplementation(FlowApi, ({ props, buildChild }) => {
+  const view = resolveFlowView(props);
+  return view ? buildChild(view) : null;
+});
+
 // The A2UI binding wrapper is the only web-specific part: it resolves bound data
 // and dispatches actions, then delegates all rendering to the shared components.
 export const GatherCapture = createComponentImplementation(GatherCaptureApi, ({ props, context }) => {
   const statePath = props.statePath || DEFAULT_STATE_PATH;
-  // Treat an unbound/empty phase (Composer authoring) as capture-ready so the
-  // component is always visible; hide once a later phase is active.
-  const phase = props.phase || 'capture';
-  if (phase !== 'capture') return null;
   return (
     <CameraSurfaceWeb
       onCapture={(capture) => context.dispatchAction(action(GATHER_ACTION_IDS.capture, statePath, capture ? { capture } : undefined))}
@@ -82,17 +91,12 @@ export const GatherOutputReview = createComponentImplementation(OutputReviewApi,
   return <OutputReview data={props.data} display={props.display} />;
 });
 
-export const GatherProcessingView = createComponentImplementation(ProcessingViewApi, ({ props }) => {
-  const phase = props.phase || '';
-  if (!props.image || !isProcessingPhase(phase)) return null;
-  return <ProcessingView image={props.image} phase={phase} />;
-});
+export const GatherProcessingView = createComponentImplementation(ProcessingViewApi, ({ props }) => (
+  <ProcessingView image={props.image} />
+));
 
 export const GatherInstrumentError = createComponentImplementation(InstrumentErrorApi, ({ props, context }) => {
   const statePath = props.statePath || DEFAULT_STATE_PATH;
-  const phase = props.phase || '';
   const retake = () => context.dispatchAction(action(GATHER_ACTION_IDS.retake, statePath));
-
-  if (phase === 'error') return <InstrumentError message={props.error} onRetake={retake} />;
-  return null;
+  return <InstrumentError message={props.error} onRetake={retake} />;
 });

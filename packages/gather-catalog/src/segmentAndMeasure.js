@@ -95,81 +95,29 @@ const SEGMENT_AND_MEASURE_OUTPUT_REVIEW = Object.freeze({
 });
 
 /**
- * Phase presentation contract.
- *
- * The instrument renders ONE stable component tree; phases vary values, never
- * structure (see docs/a2ui-v1.0-migration-notes.md). A2UI has no conditional
- * rendering primitive in v0.9 or v1.0, so every phase must be expressible as
- * bound data: status copy, action labels, and action availability.
- *
- * `Button.action.event.name` is a static string in the A2UI schema, so the tree
- * declares one `advance` and one `back` action and the host resolves what they
- * mean from the current phase. Availability is expressed with `checks`, which
- * upstream `GenericBinder` turns into the `isValid` flag the Button binding maps
- * to its disabled state.
+ * Segment & Measure is an in-instrument micro-flow: capture → working → review →
+ * summary (plus error). It composes one general `Flow` component — a data-driven
+ * view selector, the missing sibling of Basic Catalog `Tabs` — that renders the
+ * view whose `when` matches `/gather/status`. Transitions are ordinary actions: a
+ * button dispatches a capability action, the host writes the next `status`, and
+ * `Flow` reflects it. The host is value-only; it never sends `updateComponents`.
  */
-export const SEGMENT_AND_MEASURE_PRESENTATION = Object.freeze({
-  capture: {
-    statusText: 'Frame the specimen, then tap the shutter.',
-    primaryLabel: 'Accept Mask',
-    secondaryLabel: 'Retake',
-    canAdvance: false,
-    canGoBack: false,
-  },
-  'persisting-capture': {
-    statusText: 'Saving capture…',
-    primaryLabel: 'Accept Mask',
-    secondaryLabel: 'Retake',
-    canAdvance: false,
-    canGoBack: false,
-  },
-  segmenting: {
-    statusText: 'Finding the specimen…',
-    primaryLabel: 'Accept Mask',
-    secondaryLabel: 'Retake',
-    canAdvance: false,
-    canGoBack: false,
-  },
-  classifying: {
-    statusText: 'Classifying the specimen…',
-    primaryLabel: 'Accept Mask',
-    secondaryLabel: 'Retake',
-    canAdvance: false,
-    canGoBack: false,
-  },
-  measuring: {
-    statusText: 'Measuring the accepted mask…',
-    primaryLabel: 'Accept Mask',
-    secondaryLabel: 'Retake',
-    canAdvance: false,
-    canGoBack: false,
-  },
-  'review-mask': {
-    statusText: 'Confirm the overlay follows the specimen edge.',
-    primaryLabel: 'Accept Mask',
-    secondaryLabel: 'Retake',
-    canAdvance: true,
-    canGoBack: true,
-  },
-  accepted: {
-    statusText: 'Analysis is ready to include in this observation.',
-    primaryLabel: 'Done',
-    secondaryLabel: 'Retake',
-    canAdvance: true,
-    canGoBack: true,
-  },
-  error: {
-    statusText: 'The capability could not complete.',
-    primaryLabel: 'Accept Mask',
-    secondaryLabel: 'Retake',
-    canAdvance: false,
-    canGoBack: true,
-  },
+/**
+ * The view tokens Segment & Measure moves through. The `Flow` table below maps
+ * them onto Views (several working tokens share `processingView`), and the
+ * host-side ToolFlowController writes exactly these values — sharing the
+ * constant keeps the authored table and the controller from drifting apart.
+ */
+export const SEGMENT_AND_MEASURE_VIEWS = Object.freeze({
+  capture: 'capture',
+  persisting: 'persisting-capture',
+  segmenting: 'segmenting',
+  classifying: 'classifying',
+  measuring: 'measuring',
+  review: 'review-mask',
+  accepted: 'accepted',
+  error: 'error',
 });
-
-/** Resolves the bound presentation values for a phase, defaulting to `capture`. */
-export const segmentAndMeasurePresentation = (phase) =>
-  SEGMENT_AND_MEASURE_PRESENTATION[phase] ?? SEGMENT_AND_MEASURE_PRESENTATION.capture;
 
 export const SEGMENT_AND_MEASURE_INSTRUMENT = Object.freeze({
   id: 'gather.segment-and-measure',
@@ -190,35 +138,47 @@ export const SEGMENT_AND_MEASURE_INSTRUMENT = Object.freeze({
       updateComponents: {
         surfaceId: 'segment-and-measure',
         components: [
+          { id: 'root', component: 'Column', children: ['flow'] },
+
+          // The whole flow: one data-driven selector renders the view whose
+          // `when` matches /gather/status. Several working statuses share one View.
           {
-            id: 'root',
-            component: 'Column',
-            children: [
-              'title',
-              'subtitle',
-              'capture',
-              'processing',
-              'imageOverlay',
-              'status',
-              'error',
-              'outputReview',
-              'primaryAction',
-              'secondaryAction',
+            id: 'flow',
+            component: GATHER_COMPONENT_IDS.flow,
+            current: { path: '/gather/status' },
+            fallback: 'captureView',
+            views: [
+              { when: SEGMENT_AND_MEASURE_VIEWS.capture, view: 'captureView' },
+              { when: SEGMENT_AND_MEASURE_VIEWS.persisting, view: 'processingView' },
+              { when: SEGMENT_AND_MEASURE_VIEWS.segmenting, view: 'processingView' },
+              { when: SEGMENT_AND_MEASURE_VIEWS.classifying, view: 'processingView' },
+              { when: SEGMENT_AND_MEASURE_VIEWS.measuring, view: 'processingView' },
+              { when: SEGMENT_AND_MEASURE_VIEWS.review, view: 'reviewView' },
+              { when: SEGMENT_AND_MEASURE_VIEWS.accepted, view: 'summaryView' },
+              { when: SEGMENT_AND_MEASURE_VIEWS.error, view: 'errorView' },
             ],
           },
-          { id: 'title', component: 'Text', text: 'Segment & Measure', variant: 'h2' },
-          { id: 'subtitle', component: 'Text', text: 'Generic image measurements', variant: 'caption' },
+
+          // View: capture — pure camera.
+          { id: 'captureView', component: 'Column', children: ['capture'] },
+          { id: 'capture', component: GATHER_COMPONENT_IDS.capture, statePath: '/gather' },
+
+          // View: working — captured still + progress copy.
+          { id: 'processingView', component: 'Column', children: ['processing'] },
+          { id: 'processing', component: GATHER_COMPONENT_IDS.processingView, image: { path: '/gather/image' } },
+
+          // View: review — image + proposed mask, then Accept Mask / Retake.
           {
-            id: 'capture',
-            component: GATHER_COMPONENT_IDS.capture,
-            phase: { path: '/gather/phase' },
-            statePath: '/gather',
+            id: 'reviewView',
+            component: 'Column',
+            children: ['reviewTitle', 'reviewBody', 'imageOverlay', 'acceptMaskButton', 'reviewRetakeButton'],
           },
+          { id: 'reviewTitle', component: 'Text', text: 'Review segmentation', variant: 'h3' },
           {
-            id: 'processing',
-            component: GATHER_COMPONENT_IDS.processingView,
-            phase: { path: '/gather/phase' },
-            image: { path: '/gather/image' },
+            id: 'reviewBody',
+            component: 'Text',
+            text: 'Confirm the overlay follows the specimen edge.',
+            variant: 'caption',
           },
           {
             id: 'imageOverlay',
@@ -226,13 +186,27 @@ export const SEGMENT_AND_MEASURE_INSTRUMENT = Object.freeze({
             image: { path: '/gather/image' },
             segmentation: { path: '/gather/segmentation' },
           },
-          { id: 'status', component: 'Text', text: { path: '/gather/statusText' }, variant: 'caption' },
           {
-            id: 'error',
-            component: GATHER_COMPONENT_IDS.instrumentError,
-            phase: { path: '/gather/phase' },
-            error: { path: '/gather/error' },
-            statePath: '/gather',
+            id: 'acceptMaskButton',
+            component: 'Button',
+            variant: 'primary',
+            child: 'acceptMaskLabel',
+            action: { event: { name: GATHER_ACTION_IDS.accept, context: { statePath: '/gather' } } },
+          },
+          { id: 'acceptMaskLabel', component: 'Text', text: 'Accept Mask', variant: 'body' },
+          {
+            id: 'reviewRetakeButton',
+            component: 'Button',
+            child: 'reviewRetakeLabel',
+            action: { event: { name: GATHER_ACTION_IDS.retake, context: { statePath: '/gather' } } },
+          },
+          { id: 'reviewRetakeLabel', component: 'Text', text: 'Retake', variant: 'body' },
+
+          // View: summary — typed result, then Done (commit) / Retake.
+          {
+            id: 'summaryView',
+            component: 'Column',
+            children: ['outputReview', 'submitButton', 'summaryRetakeButton'],
           },
           {
             id: 'outputReview',
@@ -241,22 +215,29 @@ export const SEGMENT_AND_MEASURE_INSTRUMENT = Object.freeze({
             display: { path: '/gather/outputReview' },
           },
           {
-            id: 'primaryAction',
+            id: 'submitButton',
             component: 'Button',
             variant: 'primary',
-            child: 'primaryActionLabel',
-            action: { event: { name: GATHER_ACTION_IDS.advance, context: { statePath: '/gather' } } },
-            checks: [{ condition: { path: '/gather/canAdvance' }, message: 'Not available in this phase.' }],
+            child: 'submitLabel',
+            action: { event: { name: GATHER_ACTION_IDS.submit, context: { statePath: '/gather' } } },
           },
-          { id: 'primaryActionLabel', component: 'Text', text: { path: '/gather/primaryLabel' }, variant: 'body' },
+          { id: 'submitLabel', component: 'Text', text: 'Done', variant: 'body' },
           {
-            id: 'secondaryAction',
+            id: 'summaryRetakeButton',
             component: 'Button',
-            child: 'secondaryActionLabel',
-            action: { event: { name: GATHER_ACTION_IDS.back, context: { statePath: '/gather' } } },
-            checks: [{ condition: { path: '/gather/canGoBack' }, message: 'Not available in this phase.' }],
+            child: 'summaryRetakeLabel',
+            action: { event: { name: GATHER_ACTION_IDS.retake, context: { statePath: '/gather' } } },
           },
-          { id: 'secondaryActionLabel', component: 'Text', text: { path: '/gather/secondaryLabel' }, variant: 'body' },
+          { id: 'summaryRetakeLabel', component: 'Text', text: 'Retake', variant: 'body' },
+
+          // View: error — InstrumentError renders its own message + Retake.
+          { id: 'errorView', component: 'Column', children: ['error'] },
+          {
+            id: 'error',
+            component: GATHER_COMPONENT_IDS.instrumentError,
+            error: { path: '/gather/error' },
+            statePath: '/gather',
+          },
         ],
       },
     },
@@ -266,14 +247,13 @@ export const SEGMENT_AND_MEASURE_INSTRUMENT = Object.freeze({
         surfaceId: 'segment-and-measure',
         path: '/gather',
         value: {
-          phase: 'capture',
+          status: 'capture',
           image: null,
           segmentation: null,
           classification: null,
           result: null,
           outputReview: SEGMENT_AND_MEASURE_OUTPUT_REVIEW,
           error: null,
-          ...SEGMENT_AND_MEASURE_PRESENTATION.capture,
         },
       },
     },
@@ -284,7 +264,6 @@ export const SEGMENT_AND_MEASURE_INSTRUMENT = Object.freeze({
     GATHER_ACTION_IDS.classify,
     GATHER_ACTION_IDS.accept,
     GATHER_ACTION_IDS.retake,
-    GATHER_ACTION_IDS.advance,
-    GATHER_ACTION_IDS.back,
+    GATHER_ACTION_IDS.submit,
   ]),
 });

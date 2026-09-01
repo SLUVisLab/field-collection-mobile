@@ -14,6 +14,7 @@ import { sendComposerAction, useComposerBridge } from './composerBridge.js';
 import { createCapabilityActionHandler } from '../../../src/a2ui/capabilityActionAdapter.js';
 import { fixtureCapabilities } from './fixtureCapabilities.js';
 import {
+  Flow,
   GatherCapture,
   GatherImageOverlay,
   GatherInstrumentError,
@@ -25,7 +26,7 @@ import './app.css';
 
 const gatherCatalog = new Catalog(
   GATHER_CATALOG_ID,
-  [...basicCatalog.components.values(), GatherCapture, GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError],
+  [...basicCatalog.components.values(), Flow, GatherCapture, GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError],
   [...basicCatalog.functions.values()]
 );
 
@@ -87,7 +88,10 @@ export function App() {
     }
     return next;
   });
-  handleAction = createCapabilityActionHandler({ processor, capabilities: fixtureCapabilities });
+  handleAction = createCapabilityActionHandler({
+    processor,
+    capabilities: fixtureCapabilities,
+  });
   const surfaces = useComposerBridge(processor, gatherCatalog);
 
   return (

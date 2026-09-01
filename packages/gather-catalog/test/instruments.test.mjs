@@ -5,9 +5,8 @@ import test from 'node:test';
 import {
   GATHER_ACTION_IDS,
   GATHER_CATALOG_ID,
+  GATHER_COMPONENT_IDS,
   SEGMENT_AND_MEASURE_INSTRUMENT,
-  SEGMENT_AND_MEASURE_PRESENTATION,
-  segmentAndMeasurePresentation,
 } from '../src/index.js';
 
 const findMessage = (messages, key) => messages.find((m) => key in m)[key];
@@ -15,7 +14,7 @@ const components = () => findMessage(SEGMENT_AND_MEASURE_INSTRUMENT.messages, 'u
 const initialState = () => findMessage(SEGMENT_AND_MEASURE_INSTRUMENT.messages, 'updateDataModel').value;
 
 // Component props that matter for cross-authoring equivalence: the component
-// type and its bindings/statePath, not presentational fields like `variant`.
+// type and its bindings/children, not presentational fields like `variant`/`text`.
 const normalizeComponents = (updateComponents) => {
   const map = {};
   for (const { id, component, variant, text, children, ...bindings } of updateComponents.components) {
@@ -24,16 +23,14 @@ const normalizeComponents = (updateComponents) => {
   return map;
 };
 
-// The checked-in Composer bundle was authored against the previous
-// PhaseView-gated tree, so it can no longer be equivalent to the definition and
-// no longer validates against the catalog (PhaseView was removed). The fixture
-// is retained as the historical record of that verified authoring session. This
-// assertion stays skipped until the current tree is re-authored in the hosted
-// Composer and the fixture is replaced from that session -- it must not be
-// hand-edited, or it stops being evidence.
+// The checked-in Composer bundle was authored against an earlier tree, so it can
+// no longer be equivalent to the definition. It is retained as the historical
+// record of that verified session and must be re-authored in the hosted Composer
+// against the current Flow-based tree rather than hand-edited, or it stops being
+// evidence.
 test(
   'Composer-authored instrument matches the hand-authored definition',
-  { skip: 'Requires re-authoring in hosted Composer against the stable-skeleton tree.' },
+  { skip: 'Requires re-authoring in hosted Composer against the current Flow-based tree.' },
   async () => {
     const composer = JSON.parse(
       await readFile(new URL('../instruments/segment-and-measure.composer.json', import.meta.url)),
@@ -49,79 +46,74 @@ test(
   },
 );
 
-test('Segment & Measure renders one stable tree with no structural phase gating', () => {
+test('every authored component id is unique and every child/View reference resolves', () => {
   const tree = components();
+  const ids = tree.map((component) => component.id);
+  assert.equal(ids.length, new Set(ids).size, 'component ids must be unique');
   const byId = new Map(tree.map((component) => [component.id, component]));
 
-  // A2UI has no conditional-rendering primitive in v0.9 or v1.0. The tree must
-  // therefore never gate structure: no component selects a subtree by phase.
-  for (const component of tree) {
-    assert.ok(!('when' in component), `${component.id} gates structure with 'when'`);
-    assert.notEqual(component.component, 'PhaseView');
-    assert.notEqual(component.component, 'MaskReview');
-  }
-
-  // Exactly one container, and every referenced child id resolves.
-  const containers = tree.filter((component) => Array.isArray(component.children));
-  assert.equal(containers.length, 1);
-  assert.equal(containers[0].id, 'root');
   for (const component of tree) {
     for (const childId of component.children ?? []) {
-      assert.ok(byId.has(childId), `root references missing child '${childId}'`);
+      assert.ok(byId.has(childId), `${component.id} references missing child '${childId}'`);
     }
     if (typeof component.child === 'string') {
       assert.ok(byId.has(component.child), `${component.id} references missing child '${component.child}'`);
     }
+    for (const entry of component.views ?? []) {
+      assert.ok(byId.has(entry.view), `${component.id} references missing View '${entry.view}'`);
+    }
+    if (typeof component.fallback === 'string') {
+      assert.ok(byId.has(component.fallback), `${component.id} references missing fallback '${component.fallback}'`);
+    }
   }
 });
 
-test('one primary/secondary action pair carries every phase transition', () => {
+test('exactly one Flow selects the View by /gather/status, and no legacy gating remains', () => {
+  const tree = components();
+  const flows = tree.filter((component) => component.component === GATHER_COMPONENT_IDS.flow);
+  assert.equal(flows.length, 1, 'the instrument composes exactly one Flow');
+
+  const [flow] = flows;
+  assert.equal(flow.current.path, '/gather/status');
+  assert.ok(Array.isArray(flow.views) && flow.views.length >= 1);
+  assert.ok(!('steps' in flow), 'Flow children are Views, not Steps');
+  assert.equal(flow.fallback, 'captureView');
+
+  // No component gates a subtree with a top-level `when`, and the retired
+  // conditional/composite components are gone.
+  for (const component of tree) {
+    assert.ok(!('when' in component), `${component.id} gates structure with a top-level 'when'`);
+    assert.notEqual(component.component, 'PhaseView');
+    assert.notEqual(component.component, 'MaskReview');
+  }
+
+  // Root mounts only the Flow; every status the adapter can write selects a view.
+  const root = tree.find((component) => component.id === 'root');
+  assert.deepEqual(root.children, ['flow']);
+  for (const status of ['capture', 'persisting-capture', 'segmenting', 'classifying', 'measuring', 'review-mask', 'accepted', 'error']) {
+    assert.ok(flow.views.some((entry) => entry.when === status), `no Flow View for status '${status}'`);
+  }
+});
+
+test('actions are real upstream Buttons carrying distinct, specific action names', () => {
   const byId = new Map(components().map((component) => [component.id, component]));
   const buttons = components().filter((component) => component.component === 'Button');
-  assert.equal(buttons.length, 2);
+  const allowed = [GATHER_ACTION_IDS.accept, GATHER_ACTION_IDS.retake, GATHER_ACTION_IDS.submit];
 
-  const primary = byId.get('primaryAction');
-  const secondary = byId.get('secondaryAction');
-  assert.equal(primary.action.event.name, GATHER_ACTION_IDS.advance);
-  assert.equal(secondary.action.event.name, GATHER_ACTION_IDS.back);
-
-  // Availability is expressed with `checks`, which upstream GenericBinder turns
-  // into the `isValid` flag the Button binding maps to a disabled state. That is
-  // how a phase disables an action without removing it from the tree.
-  assert.deepEqual(primary.checks.map((check) => check.condition.path), ['/gather/canAdvance']);
-  assert.deepEqual(secondary.checks.map((check) => check.condition.path), ['/gather/canGoBack']);
-
-  // Labels are bound, not baked in, so one button serves every phase.
-  assert.equal(byId.get(primary.child).text.path, '/gather/primaryLabel');
-  assert.equal(byId.get(secondary.child).text.path, '/gather/secondaryLabel');
-});
-
-test('every phase supplies each bound presentation value the tree reads', () => {
-  const boundKeys = ['statusText', 'primaryLabel', 'secondaryLabel', 'canAdvance', 'canGoBack'];
-
-  for (const [phase, presentation] of Object.entries(SEGMENT_AND_MEASURE_PRESENTATION)) {
-    for (const key of boundKeys) {
-      assert.ok(key in presentation, `phase '${phase}' is missing '${key}'`);
-    }
-    assert.equal(typeof presentation.statusText, 'string');
-    assert.equal(typeof presentation.canAdvance, 'boolean');
-    assert.equal(typeof presentation.canGoBack, 'boolean');
+  // Availability comes from being mounted in the active view, not from a disabled
+  // `checks` flag, and there is no generic advance/back indirection.
+  for (const button of buttons) {
+    assert.ok(!('checks' in button), `${button.id} should not gate availability with checks`);
+    assert.ok(allowed.includes(button.action.event.name), `${button.id} has unexpected action`);
   }
 
-  // Only the review and accepted phases may advance; processing phases must not.
-  assert.equal(SEGMENT_AND_MEASURE_PRESENTATION['review-mask'].canAdvance, true);
-  assert.equal(SEGMENT_AND_MEASURE_PRESENTATION.accepted.canAdvance, true);
-  for (const phase of ['capture', 'persisting-capture', 'segmenting', 'classifying', 'measuring', 'error']) {
-    assert.equal(SEGMENT_AND_MEASURE_PRESENTATION[phase].canAdvance, false, `${phase} must not advance`);
-  }
-
-  // An unknown phase degrades to the capture presentation rather than leaving
-  // the bound values undefined, which would render blank labels.
-  assert.deepEqual(segmentAndMeasurePresentation('nonsense'), SEGMENT_AND_MEASURE_PRESENTATION.capture);
-  assert.deepEqual(segmentAndMeasurePresentation(undefined), SEGMENT_AND_MEASURE_PRESENTATION.capture);
+  assert.equal(byId.get('acceptMaskButton').action.event.name, GATHER_ACTION_IDS.accept);
+  assert.equal(byId.get('submitButton').action.event.name, GATHER_ACTION_IDS.submit);
+  assert.equal(byId.get('reviewRetakeButton').action.event.name, GATHER_ACTION_IDS.retake);
+  assert.equal(byId.get('summaryRetakeButton').action.event.name, GATHER_ACTION_IDS.retake);
 });
 
-test('initial data model seeds every path the tree binds', () => {
+test('initial data model seeds every bound path and starts at status capture', () => {
   const state = initialState();
   const bound = new Set();
   const collect = (value) => {
@@ -135,6 +127,6 @@ test('initial data model seeds every path the tree binds', () => {
     const key = path.replace('/gather/', '');
     assert.ok(key in state, `bound path '${path}' is not seeded in the initial data model`);
   }
-  assert.equal(state.phase, 'capture');
-  assert.equal(state.canAdvance, false);
+  assert.equal(state.status, 'capture');
+  assert.ok(!('phase' in state), 'the data model uses status, not phase');
 });

@@ -17,14 +17,47 @@
             "component": {
               "const": "GatherCapture"
             },
-            "phase": {
-              "$ref": "common_types.json#/$defs/DynamicString"
-            },
             "statePath": {
               "type": "string"
             }
           },
-          "required": ["component", "phase", "statePath"]
+          "required": ["component", "statePath"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "Flow": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "Flow"
+            },
+            "current": {
+              "$ref": "common_types.json#/$defs/DynamicString"
+            },
+            "views": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "when": { "type": "string" },
+                  "view": { "type": "string" }
+                },
+                "required": ["when", "view"]
+              }
+            },
+            "fallback": {
+              "type": "string"
+            }
+          },
+          "required": ["component", "current", "views"]
         }
       ],
       "unevaluatedProperties": false
@@ -89,14 +122,11 @@
             "component": {
               "const": "ProcessingView"
             },
-            "phase": {
-              "$ref": "common_types.json#/$defs/DynamicString"
-            },
             "image": {
               "$ref": "common_types.json#/$defs/DynamicValue"
             }
           },
-          "required": ["component", "phase"]
+          "required": ["component"]
         }
       ],
       "unevaluatedProperties": false
@@ -113,9 +143,6 @@
             "component": {
               "const": "InstrumentError"
             },
-            "phase": {
-              "$ref": "common_types.json#/$defs/DynamicString"
-            },
             "error": {
               "$ref": "common_types.json#/$defs/DynamicString"
             },
@@ -123,7 +150,7 @@
               "type": "string"
             }
           },
-          "required": ["component", "phase", "statePath"]
+          "required": ["component", "statePath"]
         }
       ],
       "unevaluatedProperties": false
@@ -134,6 +161,9 @@
       "oneOf": [
         {
           "$ref": "#/components/GatherCapture"
+        },
+        {
+          "$ref": "#/components/Flow"
         },
         {
           "$ref": "#/components/ImageOverlay"

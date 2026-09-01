@@ -90,8 +90,10 @@ export const mobileBasicImplementations = {
   Button: {
     component: bindInstrumentComponent(ButtonApi.schema, ({ action, child, variant, isValid, context, buildChild }) => {
       const mappedVariant = variant === 'primary' ? 'primary' : variant === 'borderless' ? 'borderless' : 'secondary';
-      const childModel = child ? context?.surface?.componentsModel?.get(child) : null;
-      const label = typeof childModel?.properties?.text === 'string' ? childModel.properties.text : undefined;
+      // Best-effort accessibility name from the child Text; the visible label is
+      // always the rendered child, so mobile and web stay identical.
+      const childText = child ? context?.surfaceComponents?.get(child)?.properties?.text : undefined;
+      const label = typeof childText === 'string' ? childText : undefined;
       return (
         <SharedButton
           onPress={action}
@@ -100,7 +102,7 @@ export const mobileBasicImplementations = {
           disabled={isValid === false}
           style={styles.button}
         >
-          {label ? null : <View style={styles.buttonLabel}>{child ? buildChild(child) : null}</View>}
+          <View style={styles.buttonLabel}>{child ? buildChild(child) : null}</View>
         </SharedButton>
       );
     }),
