@@ -18,15 +18,6 @@ export const gatherCaptureApi = {
   schema: z.object({ phase: CommonSchemas.DynamicString, statePath: z.string() }).strict(),
 };
 
-export const phaseViewApi = {
-  name: GATHER_COMPONENT_IDS.phaseView,
-  schema: z.object({
-    phase: CommonSchemas.DynamicString.optional(),
-    when: z.array(z.string()).min(1),
-    child: CommonSchemas.ComponentId,
-  }).strict(),
-};
-
 export const imageOverlayApi = {
   name: GATHER_COMPONENT_IDS.imageOverlay,
   schema: z.object({
@@ -73,12 +64,6 @@ export const segmentAndMeasureImplementations = {
           }
         />
       );
-    }),
-  },
-  [GATHER_COMPONENT_IDS.phaseView]: {
-    component: bindInstrumentComponent(phaseViewApi.schema, ({ phase = '', when, child, buildChild }) => {
-      if (!when.includes(phase)) return null;
-      return buildChild(child);
     }),
   },
   [GATHER_COMPONENT_IDS.imageOverlay]: {

@@ -3,7 +3,6 @@ export const GATHER_CATALOG_REVISION = '0.1.0';
 
 export const GATHER_COMPONENT_IDS = Object.freeze({
   capture: 'GatherCapture',
-  phaseView: 'PhaseView',
   imageOverlay: 'ImageOverlay',
   outputReview: 'OutputReview',
   processingView: 'ProcessingView',
@@ -16,4 +15,6 @@ export const GATHER_ACTION_IDS = Object.freeze({
   classify: 'gather.classify',
   accept: 'gather.accept',
   retake: 'gather.retake',
+  advance: 'gather.advance',
+  back: 'gather.back',
 });

@@ -39,10 +39,10 @@ occupying layout is an accessibility defect, and any renderer that happened to
 map it to `display: none` would be doing something the spec does not sanction.
 Our own [AGENTS.md](../AGENTS.md) accessibility rules forbid this shape.
 
-Conclusion: a custom catalog component remains the correct way to express
-data-driven visibility, in v0.9 *and* in v1.0. `PhaseView` is not a workaround
-for a v0.9 gap that v1.0 closes — it is filling a permanent hole in the Basic
-Catalog. That materially lowers the risk of the extension becoming a fork.
+Conclusion: if an instrument needs data-driven *visibility*, a custom catalog
+component is the only way to express it, in v0.9 *and* in v1.0 — the hole is
+permanent, not a v0.9 wart that v1.0 closes. Gather's answer is to avoid needing
+it at all; see [Design decision](#design-decision-one-stable-tree-values-vary).
 
 ## Correction to an earlier recommendation
 
@@ -67,15 +67,87 @@ and the v1.0 Basic Catalog implementation guide.
 
 So under v1.0 there is no built-in way to express "phase equals review-mask" as a
 `DynamicBoolean`. A `condition`-shaped component would have forced us to ship our
-own comparison function to stay useful. `when: [...]` needs no comparison
-function at all — the membership test lives in the component. **The current
-`phase` + `when` shape is the more portable design; keep it.**
+own comparison function just to stay useful, while `when: [...]` needs none — the
+membership test lives in the component.
 
-The separate naming criticism still stands and is unaffected: the mechanism is a
-general-purpose conditional, but `PhaseView` / `phase` is Segment & Measure
-vocabulary. A generic name with generic prop names (`match` + `when` + `child`)
-would keep the portable semantics while dropping the domain leak. That is a
-rename, not a redesign, and is cheapest while exactly one instrument uses it.
+**Both shapes are now moot for Gather:** the design decision below removes the
+conditional component entirely rather than reshaping or renaming it. The finding
+is retained because it applies to any future Gather catalog component that is
+tempted to take a `DynamicBoolean` condition — under v1.0 there is no standard
+function to produce one from a comparison.
+
+## Where the agent actually is
+
+A2UI's division of labor explains the missing conditional, and it only makes
+sense once you locate the agent:
+
+> **Structure comes from the agent** (`updateComponents`). **Values come from the
+> data model** (`Dynamic*` bindings).
+
+`updateComponents` is a first-class repeatable message, so evolving the tree over
+time *is* the designed mechanism — you do not need `if` in a document the agent
+simply re-sends. v1.0 sharpening the roles to **renderer** and **agent**
+reinforces it: the renderer is meant to be dumb.
+
+Gather has exactly one agent, and it is not in the field app:
+
+| | Authoring time | Collection time |
+| --- | --- | --- |
+| Agent present | Yes — hosted Composer | No, by design |
+| Network | Yes | No |
+| What gets decided | **Structure** — the component tree | **Values** — the data model |
+
+Composer is a real agent↔renderer loop over `postMessage`
+([composerBridge.js](../apps/renderer/src/composerBridge.js)): it sends
+`RENDER_A2UI`, `DATA_MODEL_CHANGE`, and `GET_CATALOG`; the renderer answers
+`RENDERER_READY`, `A2UI_CATALOG`, and `SEND_TO_SERVER`. The field app has no
+agent at all — `SegmentAndMeasureInstrument` replays the immutable bundle once
+(`processMessages` inside a `useMemo` with `[]` deps) and thereafter only the
+data model mutates, through `surface.dataModel.set`. **No `updateComponents` is
+ever sent at runtime.**
+
+This is not a gap to close. The M6 gate fails if any network request escapes its
+offline section, so a live agent streaming structure is *architecturally
+unavailable* at collection time and always will be. A local driver emitting
+batches offline is possible, but that is Gather code simulating an agent — the
+mechanism without the architecture.
+
+## Design decision: one stable tree, values vary
+
+Segment & Measure renders **one component tree**; phases vary bound values, never
+structure. `PhaseView` is removed.
+
+This is what "structure from the agent, values from the data model" looks like
+when the agent runs at authoring time instead of runtime — not a workaround for
+the missing conditional. It also keeps the instrument a single surface, which is
+the shape Composer can author in one pass.
+
+How each phase is expressed without gating structure:
+
+| Concern | Mechanism |
+| --- | --- |
+| Status copy | `Text.text` bound to `/gather/statusText` |
+| Action labels | Button `child` `Text` bound to `/gather/primaryLabel` and `/gather/secondaryLabel` |
+| Action availability | `checks` with a `DynamicBoolean` condition on `/gather/canAdvance` / `/gather/canGoBack`; upstream `GenericBinder` turns these into the `isValid` flag the Button binding maps to its disabled state |
+| Action intent | `Button.action.event.name` is a **static** string in the A2UI schema, so the tree declares one `gather.advance` and one `gather.back`, and the host resolves meaning from the current phase |
+| Empty regions | Components are total — they render an empty slot rather than being absent |
+
+`SEGMENT_AND_MEASURE_PRESENTATION` in
+[segmentAndMeasure.js](../packages/gather-catalog/src/segmentAndMeasure.js) is
+the single phase→presentation contract, shared by the instrument's seed data
+model and the host adapter, so a new phase cannot ship without its bound values.
+
+**Accepted costs.** Presentation strings move into the data model (the adapter
+computes UI copy); components carry more internal states; and during `capture`
+and processing the two actions are visible but disabled. Keeping the round
+centered shutter inside the camera — the M8 physically-validated UX — is why the
+primary action is not the shutter.
+
+**Tripwire.** The first instrument needing a materially different *layout* per
+phase means structure genuinely varies at collection time. Revisit then, with
+per-phase `updateComponents` batches re-pointing `root.children` (merge-only
+semantics: there is no delete, so orphaned ids linger) — do not reach for a
+conditional component.
 
 ## Gather's v0.9 → v1.0 work, by area
 
@@ -163,6 +235,15 @@ Do not start until all of these hold:
    patch can simply be dropped.
 4. A v1.0 `assemble_catalog.py` is available to regenerate the catalog artifact —
    we do not hand-maintain it, and must not add a Gather schema assembler.
+
+**Assembler reproducibility hazard.** The pinned assembler fetches the basic
+catalog from `refs/heads/main`, **not** the revision pinned in
+[tooling.json](../packages/gather-catalog/catalogs/tooling.json), so the
+assembled artifact is not actually pinned. Regenerating on 2026-09-01 reproduced
+the committed artifact except for `$defs/anyComponent/oneOf` ordering — content
+identical, so upstream's v0.9 basic catalog had not changed. Diff the
+regenerated artifact rather than assuming reproducibility, and treat an
+unexpected content change as an upstream drift signal.
 
 ## Open questions
 

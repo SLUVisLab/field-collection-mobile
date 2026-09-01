@@ -951,42 +951,6 @@
       ],
       "unevaluatedProperties": false
     },
-    "PhaseView": {
-      "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/$defs/common_types_ComponentCommon"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "component": {
-              "const": "PhaseView"
-            },
-            "phase": {
-              "$ref": "#/$defs/common_types_DynamicString"
-            },
-            "when": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "minItems": 1
-            },
-            "child": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "component",
-            "phase",
-            "when",
-            "child"
-          ]
-        }
-      ],
-      "unevaluatedProperties": false
-    },
     "ImageOverlay": {
       "type": "object",
       "allOf": [
@@ -3425,42 +3389,6 @@
       ],
       "unevaluatedProperties": false
     },
-    "gather-v0.1.source_PhaseView": {
-      "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/$defs/common_types_ComponentCommon"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "component": {
-              "const": "PhaseView"
-            },
-            "phase": {
-              "$ref": "#/$defs/common_types_DynamicString"
-            },
-            "when": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "minItems": 1
-            },
-            "child": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "component",
-            "phase",
-            "when",
-            "child"
-          ]
-        }
-      ],
-      "unevaluatedProperties": false
-    },
     "gather-v0.1.source_ImageOverlay": {
       "type": "object",
       "allOf": [
@@ -3621,28 +3549,25 @@
           "$ref": "#/components/GatherCapture"
         },
         {
-          "$ref": "#/components/ImageOverlay"
-        },
-        {
-          "$ref": "#/components/InstrumentError"
-        },
-        {
           "$ref": "#/components/Icon"
         },
         {
           "$ref": "#/components/Image"
         },
         {
+          "$ref": "#/components/ImageOverlay"
+        },
+        {
+          "$ref": "#/components/InstrumentError"
+        },
+        {
           "$ref": "#/components/List"
         },
         {
-          "$ref": "#/components/OutputReview"
-        },
-        {
-          "$ref": "#/components/PhaseView"
-        },
-        {
           "$ref": "#/components/Modal"
+        },
+        {
+          "$ref": "#/components/OutputReview"
         },
         {
           "$ref": "#/components/ProcessingView"

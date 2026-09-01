@@ -59,8 +59,15 @@ Composer's agent authored a Segment & Measure instrument against the advertised
 catalog that is structurally identical to the hand-authored
 `SEGMENT_AND_MEASURE_INSTRUMENT` (differing only by `surfaceId` and a title
 `variant`). That authored bundle is captured at
-[`instruments/segment-and-measure.composer.json`](../packages/gather-catalog/instruments/segment-and-measure.composer.json)
-and a test asserts its equivalence to the shared definition.
+[`instruments/segment-and-measure.composer.json`](../packages/gather-catalog/instruments/segment-and-measure.composer.json).
+
+**The equivalence test is currently skipped.** That fixture was authored against
+the earlier `PhaseView`-gated tree, which has since been replaced by a single
+stable tree (see
+[a2ui-v1.0-migration-notes.md](./a2ui-v1.0-migration-notes.md#design-decision-one-stable-tree-values-vary)).
+The fixture is kept as the record of the verified authoring session and must not
+be hand-edited — re-author the current instrument in the hosted Composer and
+replace it from that session to restore the assertion.
 
 Two renderer fixes were required for hosted Composer:
 
@@ -180,8 +187,8 @@ bound via `/gather/outputReview`).
 
 [`gather-v0.1.source.json`](../packages/gather-catalog/catalogs/gather-v0.1.source.json)
 defines the Gather-specific component APIs consumed by Segment & Measure
-(`GatherCapture`, `PhaseView`, `ImageOverlay`, `OutputReview`, `ProcessingView`,
-and `InstrumentError`). The checked-in
+(`GatherCapture`, `ImageOverlay`, `OutputReview`, `ProcessingView`, and
+`InstrumentError`). The checked-in
 [`gather-v0.1.json`](../packages/gather-catalog/catalogs/gather-v0.1.json) is
 assembled with upstream `assemble_catalog.py --version 0.9 --extend-basic-catalog`.
 [`tooling.json`](../packages/gather-catalog/catalogs/tooling.json) pins the

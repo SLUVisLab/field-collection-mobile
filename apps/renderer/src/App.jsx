@@ -19,14 +19,13 @@ import {
   GatherInstrumentError,
   GatherOutputReview,
   GatherProcessingView,
-  PhaseView,
 } from './gatherComponents.jsx';
 import { renderMarkdown } from './markdownRenderer.js';
 import './app.css';
 
 const gatherCatalog = new Catalog(
   GATHER_CATALOG_ID,
-  [...basicCatalog.components.values(), GatherCapture, PhaseView, GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError],
+  [...basicCatalog.components.values(), GatherCapture, GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError],
   [...basicCatalog.functions.values()]
 );
 

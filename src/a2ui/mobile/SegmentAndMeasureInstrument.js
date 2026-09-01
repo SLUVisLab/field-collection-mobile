@@ -11,7 +11,6 @@ import {
   imageOverlayApi,
   instrumentErrorApi,
   outputReviewApi,
-  phaseViewApi,
   processingViewApi,
   segmentAndMeasureImplementations,
 } from './segmentAndMeasureComponents.js';
@@ -19,7 +18,7 @@ import { GATHER_CATALOG_ID, SEGMENT_AND_MEASURE_INSTRUMENT } from 'gather-catalo
 
 const catalog = new Catalog(
   GATHER_CATALOG_ID,
-  [ColumnApi, TextApi, ButtonApi, gatherCaptureApi, phaseViewApi, imageOverlayApi, outputReviewApi, processingViewApi, instrumentErrorApi]
+  [ColumnApi, TextApi, ButtonApi, gatherCaptureApi, imageOverlayApi, outputReviewApi, processingViewApi, instrumentErrorApi]
 );
 const implementations = { ...mobileBasicImplementations, ...segmentAndMeasureImplementations };
 

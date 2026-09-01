@@ -20,15 +20,6 @@ const GatherCaptureApi = {
   }).strict(),
 };
 
-const PhaseViewApi = {
-  name: GATHER_COMPONENT_IDS.phaseView,
-  schema: z.object({
-    phase: CommonSchemas.DynamicString.optional(),
-    when: z.array(z.string()).min(1),
-    child: CommonSchemas.ComponentId,
-  }).strict(),
-};
-
 const ImageOverlayApi = {
   name: GATHER_COMPONENT_IDS.imageOverlay,
   schema: z.object({
@@ -79,11 +70,6 @@ export const GatherCapture = createComponentImplementation(GatherCaptureApi, ({ 
       onCapture={(capture) => context.dispatchAction(action(GATHER_ACTION_IDS.capture, statePath, capture ? { capture } : undefined))}
     />
   );
-});
-
-export const PhaseView = createComponentImplementation(PhaseViewApi, ({ props, buildChild }) => {
-  const phase = props.phase || '';
-  return props.when.includes(phase) ? buildChild(props.child) : null;
 });
 
 export const GatherImageOverlay = createComponentImplementation(ImageOverlayApi, ({ props }) => {

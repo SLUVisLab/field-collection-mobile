@@ -5,7 +5,7 @@ import { Catalog } from '@a2ui/web_core/v0_9/catalog';
 import { MessageProcessor } from '@a2ui/web_core/v0_9/processor';
 
 import { createCapabilityActionHandler } from '../../src/a2ui/capabilityActionAdapter.js';
-import { GATHER_ACTION_IDS } from '../../packages/gather-catalog/src/index.js';
+import { GATHER_ACTION_IDS, SEGMENT_AND_MEASURE_PRESENTATION } from '../../packages/gather-catalog/src/index.js';
 
 const image = { assetId: 'image-1', uri: 'file:///image.jpg', path: 'projects/p/media/image.jpg', width: 3, height: 2, mimeType: 'image/jpeg', sha256: `sha256:${'a'.repeat(64)}`, orientation: null, capturedAt: null };
 const mask = { assetId: 'mask-1', uri: 'file:///mask.png', path: 'projects/p/media/mask.png', width: 3, height: 2, mimeType: 'image/png', sha256: `sha256:${'b'.repeat(64)}` };
@@ -146,7 +146,81 @@ test('A2UI capability action writes an observable error state', async () => {
     classification: null,
     result: null,
     error: 'camera unavailable',
+    // The instrument renders one stable tree, so every state write carries the
+    // bound presentation values for its phase.
+    ...SEGMENT_AND_MEASURE_PRESENTATION.error,
   });
+});
+
+test('advance resolves the phase-appropriate transition from one static action', async () => {
+  let processor;
+  let handleAction;
+  let accepted;
+  const capabilities = {
+    measureScientificMask: async () => ({ area: { value: 3, unit: 'px2' }, perimeter: { value: 8, unit: 'px' }, boundingBox: { width: 2, height: 2, unit: 'px' }, centroid: { x: 1, y: 1, unit: 'px' } }),
+    measureScientificImage: async () => ({ color: { colorSpace: 'sRGB', channels: { red: 1, green: 2, blue: 3 } }, sharpness: { metric: 'variance-of-laplacian', score: 2 } }),
+    classifyScientificImage: async () => ({ image, model, ranked: [{ label: 'example', score: 1 }] }),
+  };
+  processor = createProcessor((action) => handleAction(action));
+  handleAction = createCapabilityActionHandler({ processor, capabilities, onAcceptedResult: async (r) => { accepted = r; } });
+  const surface = processor.model.getSurface('instrument');
+  surface.dataModel.set('/gather', {
+    phase: 'review-mask',
+    image,
+    segmentation: { image, model, mask, threshold: 0.5 },
+  });
+
+  await surface.dispatchAction({ event: { name: GATHER_ACTION_IDS.advance } }, 'advance');
+
+  const state = () => processor.getClientDataModel().surfaces.instrument.gather;
+  assert.equal(state().phase, 'accepted');
+  assert.equal(accepted.image.assetId, 'image-1');
+  assert.equal(state().primaryLabel, SEGMENT_AND_MEASURE_PRESENTATION.accepted.primaryLabel);
+  assert.equal(state().canAdvance, true);
+});
+
+test('advance is inert during capture and processing phases', async () => {
+  let processor;
+  let handleAction;
+  processor = createProcessor((action) => handleAction(action));
+  handleAction = createCapabilityActionHandler({
+    processor,
+    capabilities: {
+      measureScientificMask: async () => { throw new Error('must not measure'); },
+      measureScientificImage: async () => { throw new Error('must not measure'); },
+      classifyScientificImage: async () => { throw new Error('must not classify'); },
+    },
+  });
+  const surface = processor.model.getSurface('instrument');
+
+  for (const phase of ['capture', 'segmenting', 'measuring']) {
+    surface.dataModel.set('/gather', { phase, image: null, segmentation: null, error: null });
+    await surface.dispatchAction({ event: { name: GATHER_ACTION_IDS.advance } }, 'advance');
+    assert.equal(processor.getClientDataModel().surfaces.instrument.gather.phase, phase);
+  }
+});
+
+test('back returns to capture from any phase', async () => {
+  let processor;
+  let handleAction;
+  processor = createProcessor((action) => handleAction(action));
+  handleAction = createCapabilityActionHandler({ processor, capabilities: {} });
+  const surface = processor.model.getSurface('instrument');
+  surface.dataModel.set('/gather', {
+    phase: 'accepted',
+    image,
+    segmentation: { image, model, mask, threshold: 0.5 },
+    result: { image },
+    error: null,
+  });
+
+  await surface.dispatchAction({ event: { name: GATHER_ACTION_IDS.back } }, 'back');
+
+  const state = processor.getClientDataModel().surfaces.instrument.gather;
+  assert.equal(state.phase, 'capture');
+  assert.equal(state.result, null);
+  assert.equal(state.canAdvance, false);
+  assert.equal(state.statusText, SEGMENT_AND_MEASURE_PRESENTATION.capture.statusText);
 });
 
 test('A2UI retake preserves declarative output review metadata on state reset', async () => {
