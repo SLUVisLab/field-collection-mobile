@@ -13,13 +13,20 @@ import { GATHER_LAYOUT_TOKENS, GATHER_PALETTE } from 'gather-components';
 import { sendComposerAction, useComposerBridge } from './composerBridge.js';
 import { createCapabilityActionHandler } from '../../../src/a2ui/capabilityActionAdapter.js';
 import { fixtureCapabilities } from './fixtureCapabilities.js';
-import { GatherCapture, MaskReview } from './gatherComponents.jsx';
+import {
+  GatherCapture,
+  GatherImageOverlay,
+  GatherInstrumentError,
+  GatherOutputReview,
+  GatherProcessingView,
+  PhaseView,
+} from './gatherComponents.jsx';
 import { renderMarkdown } from './markdownRenderer.js';
 import './app.css';
 
 const gatherCatalog = new Catalog(
   GATHER_CATALOG_ID,
-  [...basicCatalog.components.values(), GatherCapture, MaskReview],
+  [...basicCatalog.components.values(), GatherCapture, PhaseView, GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError],
   [...basicCatalog.functions.values()]
 );
 
@@ -89,10 +96,6 @@ export function App() {
       <MockFrame device="Pixel 10" color="mint" width={360} height={760} zoom={0.72}>
         <MarkdownContext.Provider value={renderMarkdown}>
           <div className="gather-screen" style={presentationVariables}>
-            <header className="gather-app-bar">
-              <span className="gather-app-name">Segment &amp; Measure</span>
-              <span className="gather-app-mode">Generic image measurements</span>
-            </header>
             <section className="gather-instrument-content">
               {surfaces.map((surface) => <A2uiSurface key={surface.id} surface={surface} />)}
             </section>

@@ -4,7 +4,7 @@
     "composerUrl": "https://a2ui-project.github.io/composer/",
     "rendererUrl": "https://renderer.openfieldworks.com/",
     "capturedAt": "2026-08-30",
-    "note": "Segment & Measure instrument authored by the hosted Composer against the advertised Gather catalog. Structurally identical to packages/gather-catalog/src/segmentAndMeasure.js (SEGMENT_AND_MEASURE_INSTRUMENT); differs only by surfaceId ('sample-surface') and the title variant ('h1'). Validated against the upstream MessageProcessor: catalog id matches, all components build, phase binding resolves, and the /gather data model initializes. Capture/accept/retake host actions fired correctly through Composer with context { statePath: '/gather' }."
+    "note": "Segment & Measure instrument authored by the hosted Composer against the advertised Gather catalog. Structurally identical to packages/gather-catalog/src/segmentAndMeasure.js (SEGMENT_AND_MEASURE_INSTRUMENT); differs only by surfaceId ('sample-surface') and the title variant ('h1'). Validated against the upstream MessageProcessor: catalog id matches, components build, phase binding resolves, and the /gather data model initializes. Capture/accept/retake host actions fired correctly through Composer with context { statePath: '/gather' }."
   },
   "messages": [
     {
@@ -23,7 +23,7 @@
           {
             "id": "root",
             "component": "Column",
-            "children": ["title", "capture", "review"]
+            "children": ["title", "subtitle", "capture", "processing", "error", "reviewMaskPhase", "acceptedPhase"]
           },
           {
             "id": "title",
@@ -32,22 +32,127 @@
             "variant": "h1"
           },
           {
+            "id": "subtitle",
+            "component": "Text",
+            "text": "Generic image measurements",
+            "variant": "caption"
+          },
+          {
             "id": "capture",
             "component": "GatherCapture",
             "phase": { "path": "/gather/phase" },
             "statePath": "/gather"
           },
           {
-            "id": "review",
-            "component": "MaskReview",
+            "id": "processing",
+            "component": "ProcessingView",
             "phase": { "path": "/gather/phase" },
-            "image": { "path": "/gather/image" },
-            "segmentation": { "path": "/gather/segmentation" },
-            "classification": { "path": "/gather/classification" },
-            "result": { "path": "/gather/result" },
-            "outputReview": { "path": "/gather/outputReview" },
+            "image": { "path": "/gather/image" }
+          },
+          {
+            "id": "error",
+            "component": "InstrumentError",
+            "phase": { "path": "/gather/phase" },
             "error": { "path": "/gather/error" },
             "statePath": "/gather"
+          },
+          {
+            "id": "reviewMaskPhase",
+            "component": "PhaseView",
+            "phase": { "path": "/gather/phase" },
+            "when": ["review-mask"],
+            "child": "reviewMaskContent"
+          },
+          {
+            "id": "reviewMaskContent",
+            "component": "Column",
+            "children": ["reviewMaskTitle", "reviewMaskBody", "imageOverlay", "acceptMaskButton", "retakeMaskButton"]
+          },
+          {
+            "id": "reviewMaskTitle",
+            "component": "Text",
+            "text": "Review segmentation",
+            "variant": "h3"
+          },
+          {
+            "id": "reviewMaskBody",
+            "component": "Text",
+            "text": "The overlay is the proposed specimen mask. Confirm that it follows the specimen edge.",
+            "variant": "caption"
+          },
+          {
+            "id": "imageOverlay",
+            "component": "ImageOverlay",
+            "image": { "path": "/gather/image" },
+            "segmentation": { "path": "/gather/segmentation" }
+          },
+          {
+            "id": "acceptMaskButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "acceptMaskButtonText",
+            "action": { "event": { "name": "gather.accept", "context": { "statePath": "/gather" } } }
+          },
+          {
+            "id": "acceptMaskButtonText",
+            "component": "Text",
+            "text": "Accept Mask",
+            "variant": "body"
+          },
+          {
+            "id": "retakeMaskButton",
+            "component": "Button",
+            "child": "retakeMaskButtonText",
+            "action": { "event": { "name": "gather.retake", "context": { "statePath": "/gather" } } }
+          },
+          {
+            "id": "retakeMaskButtonText",
+            "component": "Text",
+            "text": "Retake",
+            "variant": "body"
+          },
+          {
+            "id": "acceptedPhase",
+            "component": "PhaseView",
+            "phase": { "path": "/gather/phase" },
+            "when": ["accepted"],
+            "child": "acceptedContent"
+          },
+          {
+            "id": "acceptedContent",
+            "component": "Column",
+            "children": ["outputReview", "acceptResultButton", "retakeResultButton"]
+          },
+          {
+            "id": "outputReview",
+            "component": "OutputReview",
+            "data": { "path": "/gather/result" },
+            "display": { "path": "/gather/outputReview" }
+          },
+          {
+            "id": "acceptResultButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "acceptResultButtonText",
+            "action": { "event": { "name": "gather.accept", "context": { "statePath": "/gather" } } }
+          },
+          {
+            "id": "acceptResultButtonText",
+            "component": "Text",
+            "text": "Accept",
+            "variant": "body"
+          },
+          {
+            "id": "retakeResultButton",
+            "component": "Button",
+            "child": "retakeResultButtonText",
+            "action": { "event": { "name": "gather.retake", "context": { "statePath": "/gather" } } }
+          },
+          {
+            "id": "retakeResultButtonText",
+            "component": "Text",
+            "text": "Retake",
+            "variant": "body"
           }
         ]
       }
@@ -66,8 +171,6 @@
           "outputReview": {
             "title": "Result accepted",
             "description": "Analysis is ready to include in this observation.",
-            "primaryActionLabel": "Accept",
-            "secondaryActionLabel": "Retake",
             "sections": [
               { "id": "measurements", "label": "Measurements", "order": 1 },
               { "id": "classification", "label": "Classification", "order": 2 },

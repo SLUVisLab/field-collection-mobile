@@ -6,18 +6,15 @@ native objects to an instrument definition.
 
 ## Component candidates
 
-`SegmentAndMeasureCapture`, `MaskReview`, `MeasurementReview`, and
-`ClassificationReview` are candidates for A2UI Catalog Components. They accept
-and return plain Gather scientific contracts (`ImageAsset`, `MaskAsset`,
-measurement values, ranked classes, and provenance), never native frames,
-`Mat`s, tensors, or sessions.
+`CaptureView`, `ImageOverlay`, and `OutputReview` are the primary Gather-side
+component candidates for Segment & Measure. They accept and return plain Gather
+scientific contracts (`ImageAsset`, `MaskAsset`, measurement values, ranked
+classes, and provenance), never native frames, `Mat`s, tensors, or sessions.
 
-`SegmentAndMeasureCapture` emits a durable `ImageAsset`; `MaskReview` takes an
-`ImageAsset` plus proposed segmentation and emits accept/retake intent;
-`MeasurementReview` renders serializable measurement values; and
-`ClassificationReview` renders optional ranked generic classifications. The
-Segment & Measure screen only orchestrates these components and the semantic
-capabilities below.
+`CaptureView` emits a durable `ImageAsset`; `ImageOverlay` renders a proposed
+mask over the captured image; and `OutputReview` renders serializable accepted
+output values using declarative metadata. Segment & Measure orchestration and
+semantic capability execution stay in the action layer below.
 
 ## Renderer-local functions
 

@@ -2,7 +2,6 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
-import { ActionButton } from '../actions/ActionButton.jsx';
 import { Heading, Helper, Panel } from '../primitives.jsx';
 import { ResultRow, ResultSection } from './ResultSection.jsx';
 import { buildOutputReviewSections } from './outputSchema.js';
@@ -13,18 +12,12 @@ export function OutputReview({
   schema,
   title,
   description,
-  primaryAction,
-  secondaryAction = null,
-  busy = false,
-  testIDPrefix = 'output-review',
 }) {
   const theme = useTheme();
   const displayMetadata = display ?? schema ?? null;
   const sections = buildOutputReviewSections({ data, display: displayMetadata });
   const resolvedTitle = title ?? displayMetadata?.title ?? 'Review output';
   const resolvedDescription = description ?? displayMetadata?.description ?? 'Confirm this output before continuing.';
-  const primaryLabel = primaryAction?.label ?? displayMetadata?.primaryActionLabel ?? null;
-  const secondaryLabel = secondaryAction?.label ?? displayMetadata?.secondaryActionLabel ?? null;
 
   return (
     <Panel>
@@ -49,28 +42,6 @@ export function OutputReview({
       ) : (
         <Helper>No output values are available.</Helper>
       )}
-
-      <View style={styles.actionRow}>
-        {primaryLabel ? (
-          <ActionButton
-            label={primaryLabel}
-            onPress={() => primaryAction?.onPress?.(data)}
-            disabled={busy || primaryAction?.disabled}
-            style={[styles.flexAction, secondaryLabel ? null : styles.singlePrimary]}
-            testID={primaryAction?.testID ?? `${testIDPrefix}-primary`}
-          />
-        ) : null}
-        {secondaryLabel ? (
-          <ActionButton
-            label={secondaryLabel}
-            variant="secondary"
-            onPress={() => secondaryAction?.onPress?.(data)}
-            disabled={busy || secondaryAction?.disabled}
-            style={styles.flexAction}
-            testID={secondaryAction?.testID ?? `${testIDPrefix}-secondary`}
-          />
-        ) : null}
-      </View>
     </Panel>
   );
 }
@@ -95,16 +66,5 @@ const styles = StyleSheet.create({
   successMarkText: {
     fontSize: tokens.typography.helper,
     fontWeight: '800',
-  },
-  actionRow: {
-    flexDirection: 'row',
-    gap: tokens.spacing.sm,
-  },
-  flexAction: {
-    flex: 1,
-  },
-  singlePrimary: {
-    flex: 0,
-    alignSelf: 'flex-start',
   },
 });

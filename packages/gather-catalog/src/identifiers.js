@@ -3,7 +3,11 @@ export const GATHER_CATALOG_REVISION = '0.1.0';
 
 export const GATHER_COMPONENT_IDS = Object.freeze({
   capture: 'GatherCapture',
-  maskReview: 'MaskReview',
+  phaseView: 'PhaseView',
+  imageOverlay: 'ImageOverlay',
+  outputReview: 'OutputReview',
+  processingView: 'ProcessingView',
+  instrumentError: 'InstrumentError',
 });
 
 export const GATHER_ACTION_IDS = Object.freeze({

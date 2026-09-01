@@ -29,7 +29,7 @@
       ],
       "unevaluatedProperties": false
     },
-    "MaskReview": {
+    "PhaseView": {
       "type": "object",
       "allOf": [
         {
@@ -39,25 +39,111 @@
           "type": "object",
           "properties": {
             "component": {
-              "const": "MaskReview"
+              "const": "PhaseView"
             },
             "phase": {
               "$ref": "common_types.json#/$defs/DynamicString"
+            },
+            "when": {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1
+            },
+            "child": {
+              "type": "string"
+            }
+          },
+          "required": ["component", "phase", "when", "child"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "ImageOverlay": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "ImageOverlay"
             },
             "image": {
               "$ref": "common_types.json#/$defs/DynamicValue"
             },
             "segmentation": {
               "$ref": "common_types.json#/$defs/DynamicValue"
+            }
+          },
+          "required": ["component"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "OutputReview": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "OutputReview"
             },
-            "classification": {
+            "data": {
               "$ref": "common_types.json#/$defs/DynamicValue"
             },
-            "result": {
+            "display": {
               "$ref": "common_types.json#/$defs/DynamicValue"
+            }
+          },
+          "required": ["component"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "ProcessingView": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "ProcessingView"
             },
-            "outputReview": {
+            "phase": {
+              "$ref": "common_types.json#/$defs/DynamicString"
+            },
+            "image": {
               "$ref": "common_types.json#/$defs/DynamicValue"
+            }
+          },
+          "required": ["component", "phase"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "InstrumentError": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "InstrumentError"
+            },
+            "phase": {
+              "$ref": "common_types.json#/$defs/DynamicString"
             },
             "error": {
               "$ref": "common_types.json#/$defs/DynamicString"
@@ -79,7 +165,19 @@
           "$ref": "#/components/GatherCapture"
         },
         {
-          "$ref": "#/components/MaskReview"
+          "$ref": "#/components/PhaseView"
+        },
+        {
+          "$ref": "#/components/ImageOverlay"
+        },
+        {
+          "$ref": "#/components/OutputReview"
+        },
+        {
+          "$ref": "#/components/ProcessingView"
+        },
+        {
+          "$ref": "#/components/InstrumentError"
         }
       ]
     }

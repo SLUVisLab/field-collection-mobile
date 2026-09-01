@@ -3,7 +3,7 @@ import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-nat
 
 import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
-import { ActionButton } from '../actions/ActionButton.jsx';
+import { Button } from '../actions/Button.jsx';
 
 /**
  * Shared, presentational capture surface: a full-width viewport frame, a
@@ -41,7 +41,7 @@ export function CaptureView({
       >
         <Text style={[styles.permissionText, { color: theme.colors.text }]}>{permission.message}</Text>
         {permission.canRequest ? (
-          <ActionButton
+          <Button
             label="Allow camera"
             onPress={permission.onRequest}
             style={styles.inlineAction}
@@ -49,7 +49,7 @@ export function CaptureView({
           />
         ) : null}
         {onCancel ? (
-          <ActionButton
+          <Button
             label="Cancel"
             onPress={onCancel}
             variant="secondary"
@@ -90,7 +90,7 @@ export function CaptureView({
         </Pressable>
       </View>
       {onCancel ? (
-        <ActionButton label="Cancel" onPress={onCancel} variant="secondary" style={styles.inlineAction} testID={`${testIDPrefix}-cancel`} />
+        <Button label="Cancel" onPress={onCancel} variant="secondary" style={styles.inlineAction} testID={`${testIDPrefix}-cancel`} />
       ) : null}
     </View>
   );

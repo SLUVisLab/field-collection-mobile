@@ -1,15 +1,26 @@
 import { useMemo, useRef } from 'react';
 import { Catalog } from '@a2ui/web_core/v0_9/catalog';
 import { MessageProcessor } from '@a2ui/web_core/v0_9/processor';
-import { ColumnApi, TextApi } from '@a2ui/web_core/v0_9/basic_catalog';
+import { ButtonApi, ColumnApi, TextApi } from '@a2ui/web_core/v0_9/basic_catalog';
 
 import { useGather } from '../../context/GatherContext.js';
 import { createCapabilityActionHandler } from '../capabilityActionAdapter.js';
 import { A2uiInstrumentSurface, mobileBasicImplementations } from './InstrumentSurface.js';
-import { gatherCaptureApi, maskReviewApi, segmentAndMeasureImplementations } from './segmentAndMeasureComponents.js';
+import {
+  gatherCaptureApi,
+  imageOverlayApi,
+  instrumentErrorApi,
+  outputReviewApi,
+  phaseViewApi,
+  processingViewApi,
+  segmentAndMeasureImplementations,
+} from './segmentAndMeasureComponents.js';
 import { GATHER_CATALOG_ID, SEGMENT_AND_MEASURE_INSTRUMENT } from 'gather-catalog';
 
-const catalog = new Catalog(GATHER_CATALOG_ID, [ColumnApi, TextApi, gatherCaptureApi, maskReviewApi]);
+const catalog = new Catalog(
+  GATHER_CATALOG_ID,
+  [ColumnApi, TextApi, ButtonApi, gatherCaptureApi, phaseViewApi, imageOverlayApi, outputReviewApi, processingViewApi, instrumentErrorApi]
+);
 const implementations = { ...mobileBasicImplementations, ...segmentAndMeasureImplementations };
 
 export function SegmentAndMeasureInstrument() {

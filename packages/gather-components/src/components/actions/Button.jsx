@@ -2,27 +2,27 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
-import {
-  buttonAppearance,
-  buttonHeightForVariant,
-  resolveButtonVariant,
-} from '../../theme/buttonPresentation.js';
+import { buttonAppearance, buttonHeightForVariant } from '../../theme/buttonPresentation.js';
 
-/**
- * Field-sized action button shared by mobile and web renderer Components.
- * Router-free by design so it carries no native-only navigation dependency.
- */
-export function ActionButton({
+const normalizeVariant = (variant) => {
+  if (variant === 'primary' || variant === 'secondary' || variant === 'danger' || variant === 'borderless') {
+    return variant;
+  }
+  return 'primary';
+};
+
+export function Button({
   onPress,
   label,
-  tone = 'default',
-  variant,
+  children = null,
+  variant = 'primary',
   testID,
   disabled = false,
   style,
 }) {
   const theme = useTheme();
-  const resolvedVariant = resolveButtonVariant({ variant, tone });
+  const resolvedVariant = normalizeVariant(variant);
+  const isBorderless = resolvedVariant === 'borderless';
 
   return (
     <Pressable
@@ -36,17 +36,20 @@ export function ActionButton({
         return [
           styles.button,
           style,
-          {
-            backgroundColor: appearance.backgroundColor,
-            borderRadius: tokens.radii.md,
-            minHeight: buttonHeightForVariant(resolvedVariant),
-          },
+          isBorderless
+            ? styles.borderlessButton
+            : {
+                backgroundColor: appearance.backgroundColor,
+                borderRadius: tokens.radii.md,
+                minHeight: buttonHeightForVariant(resolvedVariant),
+              },
           disabled && styles.disabled,
         ];
       }}
       testID={testID}
     >
       {({ pressed }) => {
+        if (children) return children;
         const appearance = buttonAppearance(theme, resolvedVariant, pressed && !disabled);
         return (
           <Text style={[styles.label, { color: appearance.color, fontSize: tokens.typography.body }]}>
@@ -64,6 +67,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 16,
     paddingVertical: 10,
+  },
+  borderlessButton: {
+    minHeight: tokens.interaction.minimumTouchTarget,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
   },
   label: {
     fontWeight: '700',

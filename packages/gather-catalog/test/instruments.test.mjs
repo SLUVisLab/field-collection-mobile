@@ -37,3 +37,19 @@ test('Composer-authored instrument matches the hand-authored definition', async 
   assert.deepEqual(composerData.value, ourData.value);
   assert.equal(composerData.path, ourData.path);
 });
+
+test('Segment & Measure composes review and result actions with Basic Catalog buttons', () => {
+  const updateComponents = findMessage(SEGMENT_AND_MEASURE_INSTRUMENT.messages, 'updateComponents');
+  const byId = new Map(updateComponents.components.map((component) => [component.id, component]));
+
+  assert.equal(byId.get('imageOverlay')?.component, 'ImageOverlay');
+  assert.equal(byId.get('outputReview')?.component, 'OutputReview');
+  assert.equal(byId.get('acceptMaskButton')?.component, 'Button');
+  assert.equal(byId.get('retakeMaskButton')?.component, 'Button');
+  assert.equal(byId.get('acceptResultButton')?.component, 'Button');
+  assert.equal(byId.get('retakeResultButton')?.component, 'Button');
+
+  for (const component of updateComponents.components) {
+    assert.notEqual(component.component, 'MaskReview');
+  }
+});

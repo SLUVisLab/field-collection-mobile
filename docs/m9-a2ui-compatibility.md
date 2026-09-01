@@ -32,7 +32,7 @@ Gather's compatibility imports with the upstream export and rerun the M90 gate.
 
 The isolated [renderer](../apps/renderer/) uses the
 official `@a2ui/react/v0_9` renderer and `@a2ui/web_core/v0_9` state engine.
-It successfully proved custom `MaskReview` rendering, Data Model binding,
+It successfully proved custom Gather component rendering, Data Model binding,
 upstream action dispatch, and the Composer iframe handshake:
 
 - `RENDERER_READY`
@@ -50,7 +50,7 @@ official packages.
 
 The deployed renderer (`https://renderer.openfieldworks.com/`) was loaded by the
 hosted Composer (`https://a2ui-project.github.io/composer/`) and passed every
-Phase-1 criterion end to end: catalog handshake, both Gather custom components
+Phase-1 criterion end to end: catalog handshake, Gather custom components
 advertised and rendered, Basic Catalog components rendered, Data Model binding
 (`phase` drove component state), and action flow (`gather.capture`,
 `gather.accept`, `gather.retake`) with `context: { statePath: "/gather" }`.
@@ -72,14 +72,15 @@ Two renderer fixes were required for hosted Composer:
 ## Shared Segment & Measure definition
 
 `gather-catalog` now supplies one immutable plain v0.9 message bundle,
-`SEGMENT_AND_MEASURE_INSTRUMENT`. It uses upstream `Column` and `Text`, plus
-only `GatherCapture` and `MaskReview` as Gather-specific components. The same
+`SEGMENT_AND_MEASURE_INSTRUMENT`. It uses upstream Basic Catalog composition
+(`Column`, `Text`, `Button`) with a small Gather-specific surface (`GatherCapture`,
+`ImageOverlay`, `OutputReview`, plus phase/status helpers). The same
 bundle drives deterministic fixtures in the web preview and the mobile
 `SegmentAndMeasureInstrument` binding.
 
 The React Native registry maps these component IDs to the existing M8
-`SegmentAndMeasureCapture`, `MaskReview`, `MeasurementReview`, and
-`ClassificationReview` components. It uses upstream `ComponentContext` and
+`SegmentAndMeasureCapture`, `ImageOverlay`, `OutputReview`, and status
+components. It uses upstream `ComponentContext` and
 `GenericBinder` through the version-pinned schema-free exports; it does not
 implement A2UI state, bindings, or action semantics itself.
 
@@ -178,7 +179,9 @@ bound via `/gather/outputReview`).
 ### Catalog artifact
 
 [`gather-v0.1.source.json`](../packages/gather-catalog/catalogs/gather-v0.1.source.json)
-defines only `GatherCapture` and `MaskReview`. The checked-in
+defines the Gather-specific component APIs consumed by Segment & Measure
+(`GatherCapture`, `PhaseView`, `ImageOverlay`, `OutputReview`, `ProcessingView`,
+and `InstrumentError`). The checked-in
 [`gather-v0.1.json`](../packages/gather-catalog/catalogs/gather-v0.1.json) is
 assembled with upstream `assemble_catalog.py --version 0.9 --extend-basic-catalog`.
 [`tooling.json`](../packages/gather-catalog/catalogs/tooling.json) pins the

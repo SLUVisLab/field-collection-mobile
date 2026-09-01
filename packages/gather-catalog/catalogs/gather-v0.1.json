@@ -951,7 +951,7 @@
       ],
       "unevaluatedProperties": false
     },
-    "MaskReview": {
+    "PhaseView": {
       "type": "object",
       "allOf": [
         {
@@ -961,25 +961,125 @@
           "type": "object",
           "properties": {
             "component": {
-              "const": "MaskReview"
+              "const": "PhaseView"
             },
             "phase": {
               "$ref": "#/$defs/common_types_DynamicString"
+            },
+            "when": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "child": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "component",
+            "phase",
+            "when",
+            "child"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "ImageOverlay": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "ImageOverlay"
             },
             "image": {
               "$ref": "#/$defs/common_types_DynamicValue"
             },
             "segmentation": {
               "$ref": "#/$defs/common_types_DynamicValue"
+            }
+          },
+          "required": [
+            "component"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "OutputReview": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "OutputReview"
             },
-            "classification": {
+            "data": {
               "$ref": "#/$defs/common_types_DynamicValue"
             },
-            "result": {
+            "display": {
               "$ref": "#/$defs/common_types_DynamicValue"
+            }
+          },
+          "required": [
+            "component"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "ProcessingView": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "ProcessingView"
             },
-            "outputReview": {
+            "phase": {
+              "$ref": "#/$defs/common_types_DynamicString"
+            },
+            "image": {
               "$ref": "#/$defs/common_types_DynamicValue"
+            }
+          },
+          "required": [
+            "component",
+            "phase"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "InstrumentError": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "InstrumentError"
+            },
+            "phase": {
+              "$ref": "#/$defs/common_types_DynamicString"
             },
             "error": {
               "$ref": "#/$defs/common_types_DynamicString"
@@ -3325,7 +3425,7 @@
       ],
       "unevaluatedProperties": false
     },
-    "gather-v0.1.source_MaskReview": {
+    "gather-v0.1.source_PhaseView": {
       "type": "object",
       "allOf": [
         {
@@ -3335,22 +3435,125 @@
           "type": "object",
           "properties": {
             "component": {
-              "const": "MaskReview"
+              "const": "PhaseView"
             },
             "phase": {
               "$ref": "#/$defs/common_types_DynamicString"
+            },
+            "when": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "child": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "component",
+            "phase",
+            "when",
+            "child"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "gather-v0.1.source_ImageOverlay": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "ImageOverlay"
             },
             "image": {
               "$ref": "#/$defs/common_types_DynamicValue"
             },
             "segmentation": {
               "$ref": "#/$defs/common_types_DynamicValue"
+            }
+          },
+          "required": [
+            "component"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "gather-v0.1.source_OutputReview": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "OutputReview"
             },
-            "classification": {
+            "data": {
               "$ref": "#/$defs/common_types_DynamicValue"
             },
-            "result": {
+            "display": {
               "$ref": "#/$defs/common_types_DynamicValue"
+            }
+          },
+          "required": [
+            "component"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "gather-v0.1.source_ProcessingView": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "ProcessingView"
+            },
+            "phase": {
+              "$ref": "#/$defs/common_types_DynamicString"
+            },
+            "image": {
+              "$ref": "#/$defs/common_types_DynamicValue"
+            }
+          },
+          "required": [
+            "component",
+            "phase"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "gather-v0.1.source_InstrumentError": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "InstrumentError"
+            },
+            "phase": {
+              "$ref": "#/$defs/common_types_DynamicString"
             },
             "error": {
               "$ref": "#/$defs/common_types_DynamicString"
@@ -3418,6 +3621,12 @@
           "$ref": "#/components/GatherCapture"
         },
         {
+          "$ref": "#/components/ImageOverlay"
+        },
+        {
+          "$ref": "#/components/InstrumentError"
+        },
+        {
           "$ref": "#/components/Icon"
         },
         {
@@ -3427,10 +3636,16 @@
           "$ref": "#/components/List"
         },
         {
-          "$ref": "#/components/MaskReview"
+          "$ref": "#/components/OutputReview"
+        },
+        {
+          "$ref": "#/components/PhaseView"
         },
         {
           "$ref": "#/components/Modal"
+        },
+        {
+          "$ref": "#/components/ProcessingView"
         },
         {
           "$ref": "#/components/Row"

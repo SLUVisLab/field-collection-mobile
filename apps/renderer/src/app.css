@@ -19,33 +19,8 @@
   color: var(--gather-text);
 }
 
-.gather-app-bar {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: end;
-  min-height: 88px;
-  box-sizing: border-box;
-  gap: var(--gather-space-xs);
-  padding: var(--gather-space-xl);
-  padding-top: 48px;
-  border-bottom: 1px solid var(--gather-border);
-  background: var(--gather-background);
-}
-
-.gather-app-name {
-  color: var(--gather-text);
-  font-size: var(--gather-font-title);
-  font-weight: 700;
-}
-
-.gather-app-mode {
-  color: var(--gather-muted);
-  font-size: var(--gather-font-helper);
-}
-
 .gather-instrument-content {
-  height: calc(100% - 88px);
+  height: 100%;
   box-sizing: border-box;
   overflow-y: auto;
   padding: var(--gather-space-xl);

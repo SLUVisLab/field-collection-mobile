@@ -1,8 +1,8 @@
 import { CommonSchemas } from '@a2ui/web_core/v0_9/common-schemas';
 import { z } from 'zod';
 import {
+  ImageOverlay,
   InstrumentError,
-  MaskReview,
   OutputReview,
   ProcessingView,
   isProcessingPhase,
@@ -18,15 +18,43 @@ export const gatherCaptureApi = {
   schema: z.object({ phase: CommonSchemas.DynamicString, statePath: z.string() }).strict(),
 };
 
-export const maskReviewApi = {
-  name: GATHER_COMPONENT_IDS.maskReview,
+export const phaseViewApi = {
+  name: GATHER_COMPONENT_IDS.phaseView,
   schema: z.object({
-    phase: CommonSchemas.DynamicString,
+    phase: CommonSchemas.DynamicString.optional(),
+    when: z.array(z.string()).min(1),
+    child: CommonSchemas.ComponentId,
+  }).strict(),
+};
+
+export const imageOverlayApi = {
+  name: GATHER_COMPONENT_IDS.imageOverlay,
+  schema: z.object({
     image: CommonSchemas.DynamicValue.optional(),
     segmentation: CommonSchemas.DynamicValue.optional(),
-    classification: CommonSchemas.DynamicValue.optional(),
-    result: CommonSchemas.DynamicValue.optional(),
-    outputReview: CommonSchemas.DynamicValue.optional(),
+  }).strict(),
+};
+
+export const outputReviewApi = {
+  name: GATHER_COMPONENT_IDS.outputReview,
+  schema: z.object({
+    data: CommonSchemas.DynamicValue.optional(),
+    display: CommonSchemas.DynamicValue.optional(),
+  }).strict(),
+};
+
+export const processingViewApi = {
+  name: GATHER_COMPONENT_IDS.processingView,
+  schema: z.object({
+    phase: CommonSchemas.DynamicString.optional(),
+    image: CommonSchemas.DynamicValue.optional(),
+  }).strict(),
+};
+
+export const instrumentErrorApi = {
+  name: GATHER_COMPONENT_IDS.instrumentError,
+  schema: z.object({
+    phase: CommonSchemas.DynamicString.optional(),
     error: CommonSchemas.DynamicString.optional(),
     statePath: z.string(),
   }).strict(),
@@ -47,38 +75,35 @@ export const segmentAndMeasureImplementations = {
       );
     }),
   },
-  [GATHER_COMPONENT_IDS.maskReview]: {
-    component: bindInstrumentComponent(maskReviewApi.schema, ({ phase, image, segmentation, result, outputReview, error, statePath, context }) => {
+  [GATHER_COMPONENT_IDS.phaseView]: {
+    component: bindInstrumentComponent(phaseViewApi.schema, ({ phase = '', when, child, buildChild }) => {
+      if (!when.includes(phase)) return null;
+      return buildChild(child);
+    }),
+  },
+  [GATHER_COMPONENT_IDS.imageOverlay]: {
+    component: bindInstrumentComponent(imageOverlayApi.schema, ({ image, segmentation }) => {
+      if (!image?.uri) return null;
+      return <ImageOverlay image={image} overlay={segmentation?.mask ?? null} />;
+    }),
+  },
+  [GATHER_COMPONENT_IDS.outputReview]: {
+    component: bindInstrumentComponent(outputReviewApi.schema, ({ data, display }) => {
+      if (!data) return null;
+      return <OutputReview data={data} display={display} />;
+    }),
+  },
+  [GATHER_COMPONENT_IDS.processingView]: {
+    component: bindInstrumentComponent(processingViewApi.schema, ({ phase, image }) => {
+      if (!image || !isProcessingPhase(phase)) return null;
+      return <ProcessingView image={image} phase={phase} />;
+    }),
+  },
+  [GATHER_COMPONENT_IDS.instrumentError]: {
+    component: bindInstrumentComponent(instrumentErrorApi.schema, ({ phase, error, statePath, context }) => {
+      if (phase !== 'error') return null;
       const retake = () => context.dispatchAction(action(GATHER_ACTION_IDS.retake, statePath));
-      if (phase === 'error') return <InstrumentError message={error} onRetake={retake} />;
-      if (image && isProcessingPhase(phase)) return <ProcessingView image={image} phase={phase} />;
-      if (phase === 'review-mask' && image && segmentation) {
-        return (
-          <MaskReview
-            image={image}
-            segmentation={segmentation}
-            onAccept={() => context.dispatchAction(action(GATHER_ACTION_IDS.accept, statePath))}
-            onRetake={retake}
-          />
-        );
-      }
-      if (phase === 'accepted' && result) {
-        const primaryLabel = outputReview?.primaryActionLabel ?? 'Accept';
-        const secondaryLabel = outputReview?.secondaryActionLabel ?? 'Retake';
-        return (
-          <OutputReview
-            data={result}
-            display={outputReview}
-            primaryAction={{
-              label: primaryLabel,
-              onPress: () => context.dispatchAction(action(GATHER_ACTION_IDS.accept, statePath)),
-              testID: 'segment-measure-accept-result',
-            }}
-            secondaryAction={secondaryLabel ? { label: secondaryLabel, onPress: retake, testID: 'segment-measure-retake' } : null}
-          />
-        );
-      }
-      return null;
+      return <InstrumentError message={error} onRetake={retake} />;
     }),
   },
 };

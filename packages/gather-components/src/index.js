@@ -22,11 +22,11 @@ export {
   buttonHeightForVariant,
 } from './theme/buttonPresentation.js';
 
-export { ActionButton } from './components/actions/ActionButton.jsx';
+export { Button } from './components/actions/Button.jsx';
 export { CaptureView } from './components/capture/CaptureView.jsx';
 
 export { Panel, Heading, Helper, SectionCopy } from './components/primitives.jsx';
-export { MaskReview } from './components/image/MaskReview.jsx';
+export { ImageOverlay } from './components/image/ImageOverlay.jsx';
 export { ResultSection, ResultRow } from './components/results/ResultSection.jsx';
 export { MeasurementResults } from './components/results/MeasurementResults.jsx';
 export { ClassificationResults } from './components/results/ClassificationResults.jsx';

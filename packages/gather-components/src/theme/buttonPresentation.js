@@ -1,12 +1,18 @@
 import { tokens } from './tokens.js';
 
 export const resolveButtonVariant = ({ variant, tone } = {}) => {
-  if (variant === 'secondary' || variant === 'danger' || variant === 'primary') return variant;
+  if (variant === 'secondary' || variant === 'danger' || variant === 'primary' || variant === 'borderless') return variant;
   return tone === 'danger' ? 'danger' : 'primary';
 };
 
 export const buttonAppearance = (theme, variant, pressed = false) => {
   const colors = theme.colors;
+  if (variant === 'borderless') {
+    return {
+      backgroundColor: 'transparent',
+      color: pressed ? colors.primaryPressed : colors.primary,
+    };
+  }
   if (variant === 'danger') {
     return {
       backgroundColor: pressed ? colors.dangerPressed : colors.danger,

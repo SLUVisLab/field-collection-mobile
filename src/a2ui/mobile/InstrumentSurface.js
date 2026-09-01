@@ -1,9 +1,10 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ComponentContext, GenericBinder } from '@a2ui/web_core/v0_9/bindings';
-import { ColumnApi, TextApi } from '@a2ui/web_core/v0_9/basic_catalog';
+import { ButtonApi, ColumnApi, TextApi } from '@a2ui/web_core/v0_9/basic_catalog';
 
 import { useTheme } from '../../theme/useTheme.js';
+import { Button as SharedButton, tokens } from 'gather-components';
 
 const useBoundProps = (context, schema) => {
   const binderRef = useRef(null);
@@ -69,14 +70,51 @@ export const mobileBasicImplementations = {
     ),
   },
   Text: {
-    component: bindInstrumentComponent(TextApi.schema, ({ text }) => {
+    component: bindInstrumentComponent(TextApi.schema, ({ text, variant = 'body' }) => {
       const theme = useTheme();
-      return <Text style={[styles.text, { color: theme.colors.text }]}>{text}</Text>;
+      const variantStyle =
+        variant === 'h1'
+          ? styles.h1
+          : variant === 'h2'
+            ? styles.h2
+            : variant === 'h3'
+              ? styles.h3
+              : variant === 'h4' || variant === 'h5'
+                ? styles.h4
+                : variant === 'caption'
+                  ? styles.caption
+                  : styles.body;
+      return <Text style={[variantStyle, { color: theme.colors.text }]}>{text}</Text>;
+    }),
+  },
+  Button: {
+    component: bindInstrumentComponent(ButtonApi.schema, ({ action, child, variant, isValid, context, buildChild }) => {
+      const mappedVariant = variant === 'primary' ? 'primary' : variant === 'borderless' ? 'borderless' : 'secondary';
+      const childModel = child ? context?.surface?.componentsModel?.get(child) : null;
+      const label = typeof childModel?.properties?.text === 'string' ? childModel.properties.text : undefined;
+      return (
+        <SharedButton
+          onPress={action}
+          label={label}
+          variant={mappedVariant}
+          disabled={isValid === false}
+          style={styles.button}
+        >
+          {label ? null : <View style={styles.buttonLabel}>{child ? buildChild(child) : null}</View>}
+        </SharedButton>
+      );
     }),
   },
 };
 
 const styles = StyleSheet.create({
   column: { gap: 12 },
-  text: { fontSize: 20, fontWeight: '700' },
+  h1: { fontSize: tokens.typography.title, fontWeight: '700', lineHeight: tokens.typography.title * 1.2 },
+  h2: { fontSize: tokens.typography.heading, fontWeight: '700', lineHeight: tokens.typography.heading * 1.2 },
+  h3: { fontSize: tokens.typography.body, fontWeight: '700', lineHeight: tokens.typography.bodyLineHeight },
+  h4: { fontSize: tokens.typography.body, fontWeight: '600', lineHeight: tokens.typography.bodyLineHeight },
+  body: { fontSize: tokens.typography.body, fontWeight: '400', lineHeight: tokens.typography.bodyLineHeight },
+  caption: { fontSize: tokens.typography.helper, fontWeight: '400', lineHeight: tokens.typography.helperLineHeight },
+  button: { alignSelf: 'stretch' },
+  buttonLabel: { alignItems: 'center' },
 });
