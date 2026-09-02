@@ -1612,6 +1612,55 @@ also closer to what a shutter looks like than a fade.
 (`HybridFrameRendererView.kt`) with no `setZOrderOnTop` and no prop to request a
 `TextureView`, so switching the preview's backing view is not available.
 
+### Potential directions for a fix, ranked
+
+**First, control the variables.** Between the overlay that demonstrably worked
+and the flash that did not, *three* things differed at once — that was the
+methodological mistake, and it is why the cause is still open:
+
+| | proven-visible red bar | non-working flash |
+| --- | --- | --- |
+| element | plain `View` | `Animated.View` |
+| opacity | static `0.6` | `Animated.Value` |
+| elevation / zIndex | **99** | **8** |
+
+So the disciplined next step is to reproduce the *working* configuration
+verbatim on the real flash, then relax one variable at a time until it breaks.
+The elevation gap is the single most suspicious difference and the cheapest to
+test — the SurfaceView may sit at an elevation above 8, in which case nothing
+about `Animated` matters.
+
+1. **Match the proven config, then bisect.** `elevation`/`zIndex` 99, sibling of
+   `viewportWrap`, plain `View`, static opacity. Then re-introduce `Animated`,
+   then lower the elevation. Cheapest path to the actual cause.
+2. **`collapsable={false}` and/or `renderToHardwareTextureAndroid`** on the
+   overlay. Android view flattening can drop a view that carries no native
+   props, and hardware-texture promotion is a standard workaround for animated
+   views over native surfaces. One line each.
+3. **Fixed-duration mounted View instead of a fade** (`useState` +
+   `setTimeout`). Sidesteps `Animated` entirely; static opacity is the one thing
+   verified to render in that position. A hard on/off is also closer to a real
+   shutter than a fade. This was written and reverted unverified — see the
+   commit history for `ac2dc629`'s parent if reinstating.
+4. **Drive the flash from the camera's own shutter signal** rather than the tap,
+   if `react-native-vision-camera@5` exposes `onShutter`. Does not address
+   visibility, but fixes *timing*: the flash currently fires on press, not on
+   exposure. Worth folding in whichever fix wins.
+5. **Flash the chrome instead of the preview** — animate a border/ring on the
+   parent, outside the surface's rect. Immune to any compositing question, at
+   the cost of looking less like a shutter.
+6. **Pulse the shutter button** (scale/opacity on the `Pressable`, an ordinary
+   view that definitely animates). Not a substitute for preview feedback, but
+   cheap, reliable, and a reasonable complement — or the fallback if 1-3 all
+   fail.
+7. **Last resort: briefly unmount the preview** and render a white View in its
+   place. Guaranteed visible because no native surface is present, but it tears
+   down and restarts the camera session — likely stutter, and a real risk of
+   dropping frames or the session. Only if everything above fails.
+
+Directions 5-7 change the design rather than fix the bug, so they need a UI
+decision, not just an implementation.
+
 ### The workflow finding that cost the most
 
 **Fast Refresh does not apply changes to these workspace-package files on
@@ -1624,3 +1673,15 @@ force-stop and relaunch between edits, and must not trust a Metro
 Corollary for gates: a screenshot is weak evidence of a short animation —
 `adb exec-out screencap` takes long enough to miss a 220 ms fade. Hold the state
 (a multi-second duration) before concluding anything from a still.
+
+### Test protocol for whoever picks this up
+
+1. **Force-stop and relaunch between every edit.** Fast Refresh does not reach
+   these files on device (below). A Metro "Bundled … (1 module)" line is not
+   evidence the device received anything.
+2. **Hold the visual state for seconds** before screenshotting. A 220 ms fade is
+   invisible to `adb exec-out screencap`.
+3. **Change one variable per run**, against the table above.
+4. Confirm the tap actually landed (the capture count must increment) before
+   reading anything into a frame — one run here proved nothing because the tap
+   missed and the count stayed at 0.
