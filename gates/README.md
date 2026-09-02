@@ -270,6 +270,27 @@ pipeline rather than the control's presentation — the interactive camera
 (shutter, thumbnail accessory, capture -> remove -> replace) still needs a
 physical device.
 
+## `DevSeedCollectionFormApp.js` — a collection form in the REAL app
+
+Not a gate: a **dev seed**. It writes a project, an active selection, and one
+cached form version carrying `gather-multi-image`, then mounts `App`
+**unmodified**. Everything after boot is the shipped shell, the shipped
+`FormRunner`, and the shipped collection adapter.
+
+It exists because the other two gates supply their *own* collection adapter, so
+neither exercises `FormRunner`'s wiring -- which is exactly how the §22 defect
+survived (`instance.media` is always `undefined`, so the shipped app would have
+rendered an empty collection for every form).
+
+`recordCachedVersion` is the same call the Central download path ends in, so the
+cached state is identical without a server; confirming Central's *download* is
+still the deferred round trip's job. Emits `DEV_SEED_READY::{…}` once seeded.
+
+Point `index.js` at `./gates/DevSeedCollectionFormApp`, start Metro, then
+navigate: **Forms -> Photo collection (dev seed)**. Capture two photos and
+confirm tiles appear and the counter tracks `min=2 max=4`. Re-seeds on every
+launch; drafts from prior runs remain in Drafts. Revert `index.js` afterwards.
+
 ## `InteractiveCameraGateApp.js` — interactive camera + collection field
 
 The only **human-driven** gate. Mounts the real stack (`XFormsProvider` ->
