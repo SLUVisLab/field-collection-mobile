@@ -1781,3 +1781,44 @@ have shown it. A harness that does not share the code path it is testing cannot
 test it — that is now three defects from this one cause.
 
 Also found through the seed, and fixed in §24: the red error flash on form open.
+
+## 26. State of this arc (2026-09-02)
+
+Where the Components / Capabilities / compositions work actually stands, so the
+next session does not have to reconstruct it.
+
+### Landed and device-verified
+
+| Piece | Evidence |
+| --- | --- |
+| Collection field (`gather-multi-image`) | §20 headless gate 24/24, §21 interactive gate, §25 dev seed through the real `FormRunner` |
+| Composition field (`gather-composition:`) | b-custom §"Verified — device": commit, provenance, and the clear path, checked in SQLite and the authoritative XML |
+| Receipt store (migration 11) | unit tests + executed against real SQLite |
+| Asset ledger + sweep (migration 12) | unit tests + executed against real SQLite; host trigger at the save boundary |
+| Binding manifest + recognition | unit tests; appearance syntax spiked against the engine |
+| Subtree ownership for both owning kinds | unit tests, and visible on device |
+
+### Open, in rough priority order
+
+1. **UI pass.** The shutter flash (§23 has ranked directions *and* a test
+   protocol — start there, not from scratch), the duplicated save-draft
+   affordances, and `/data/meta` / `instanceID` rendering as visible readonly
+   rows.
+2. **Sweep trigger points.** Wired at draft save and post-commit. Discard and
+   successful-send are identified but unchosen, because purging submitted
+   attachments is irreversible local data loss and belongs to a policy decision.
+3. **§22's resume branch on device** — deliberately skipped; it fails loudly
+   (empty collection on reopening a draft) if wrong.
+4. **Video Capture** — `VideoAsset` producer + mobile Basic `Video`, mirroring
+   the now-proven image path.
+5. **Composer fixture re-authoring** — the one skipped test.
+6. **§16 export tiering**, and the retention policy specifics behind b-custom §4.
+
+### The one strategic unknown
+
+The behaviour audit ([composition-behaviour-audit.md](./composition-behaviour-audit.md))
+found that `@a2ui/web_core@0.9.1` implements **no function-call mechanism**.
+That is the gate on authored capability invocation, and therefore on any
+"declarative widget architecture" direction. It is a *runtime* question —
+whether to move to a function-capable A2UI runtime — and it is independent of
+how many compositions exist, so it can be answered before the §6 tripwire fires.
