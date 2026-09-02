@@ -3,9 +3,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useXFormsQuestion } from 'odk-xforms-react';
 
 import { CameraView } from 'gather-components';
-import { CameraControls } from '../../components/camera/CameraControls.js';
+import { CaptureActions } from '../../components/forms/CaptureActions.js';
 import { ActionButton } from '../../components/NavButton.js';
-import { ImagePreview } from '../../components/camera/ImagePreview.js';
+import { CapturedImage } from '../../components/forms/CapturedImage.js';
 import { FormField } from '../../components/forms/FormField.js';
 import { ReadonlyValue } from '../../components/forms/ReadonlyValue.js';
 import { tokens } from '../../theme/tokens.js';
@@ -60,11 +60,11 @@ export function XFormsImageControl({ node, indent, onLayout, onAttachImage, atta
         />
       ) : capture ? (
         <View style={[styles.capturePreview, { gap: tokens.spacing.sm }]}>
-          <ImagePreview uri={capture.uri} />
-          <CameraControls
-            captureLabel={attachBusy ? 'Attaching…' : 'Use this photo'}
-            captureDisabled={attachBusy}
-            onCapture={attachCapture}
+          <CapturedImage uri={capture.uri} width={capture.width} height={capture.height} />
+          <CaptureActions
+            confirmLabel={attachBusy ? 'Attaching…' : 'Use this photo'}
+            disabled={attachBusy}
+            onConfirm={attachCapture}
             onCancel={() => {
               setCapture(null);
               setShowCamera(true);

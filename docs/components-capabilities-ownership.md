@@ -849,3 +849,137 @@ Photo Capture existing.
 possible future requirement, not existing architecture, and no format name is
 canonized. "Tool" costs nothing precisely because nothing implements it; keep it
 that way until packaging is a real requirement.
+
+## 12. Multi-image capture + camera slots — decision (2026-09-01)
+
+Multi-image capture is a **known downstream collection requirement**, not a
+speculative addition. This pins *how* it is constructed. Implementation deferred
+until after the ODK gate.
+
+### `MultiImageCapture` is a compound Component
+
+In `gather-components`, alongside its constituents. Internal view switching uses
+ordinary React state — **not `Flow`**, which is the A2UI authoring primitive and
+would mean embedding an A2UI surface inside a Component to toggle two children.
+
+### Contract: controlled collection + injected persistence
+
+```text
+value: ImageAsset[]                    onChange(next)
+persistCapture(descriptor) → Promise<ImageAsset>
+minItems, maxItems, allowRemove, allowReorder
+```
+
+The Component owns **view state only**; the host owns the array.
+
+**Why controlled.** `instanceLifecycleService.resume()` reloads drafts
+mid-instance. If the collection lived in component state, a researcher who
+captured three of four photos and left the form would lose them. The value has
+to be owned outside the Component — a field requirement, not a preference. It
+also matches `MediaGallery`, which is already fully controlled (`items` +
+`onRemove`/`onReorder`/`onDone`, owning no collection state).
+
+**Why `persistCapture` injection is not "storage in a presentation Component".**
+`CameraView`'s job is acquisition, so minting an `ImageAsset` would give it a
+durability concern it does not need. `MultiImageCapture`'s job *is* managing a
+collection of durable assets, so durability is intrinsic to its contract. It
+receives a **function** — no file keys, no `gather-storage`, no knowledge of
+where bytes go — and awaiting it is what lets it show per-photo progress.
+`persistCapture` is environment/service injection and stays out of serialized
+Component props.
+
+Rejected: *uncontrolled, emits on done* (loses drafts); *descriptor-only* (every
+host reimplements append, with no boundary gain).
+
+### Camera slot architecture
+
+`CameraFrame`'s existing `control` prop **replaces** the shutter — it is what
+`VideoView` uses to swap in `RecordButton`. Multi-image needs the capture count
+and latest thumbnail **alongside** the shutter, so:
+
+- add an **additive** slot to `CameraFrame` (accessory position, not a replacement);
+- have `CameraView` forward it.
+
+`CameraView` gains a presentation slot, not knowledge of galleries. It still
+must never learn `minItems`/`maxItems`, gallery contents, or completion.
+
+### Why this route needs nothing from the deferred orchestration work
+
+**The handler gap is a composition problem, not a Component problem.** A
+composition needs bespoke host code because its behavior is authored per
+instance; a Component's action semantics are fixed and ship *with* it. So
+`MultiImageCapture`'s A2UI action handler is written once, by us, alongside the
+Component — the orchestration tripwire stays untouched.
+
+### Build order (after the ODK gate)
+
+1. Catalog-register `MediaGallery` — required by the escape-hatch principle
+   regardless, and the primitive `MultiImageCapture` sits on.
+2. Additive slot in `CameraFrame`; forward from `CameraView`.
+3. `MultiImageCapture` in `gather-components/src/image-collection/`, with
+   render-free logic split for testing (`mediaModel.js` precedent).
+4. Catalog-register it with its shipped action handler.
+
+## 13. ODK image-capture gate — landed (2026-09-01); device run outstanding
+
+Proves the Phase 3 boundary directly, without routing an ODK field through an
+A2UI composition:
+
+```text
+XFormsImageControl → package-owned CameraView → serializable capture
+  → attachImageMedia → existing ODK attachment/value path → submission
+```
+
+### Scope decision: no `ImageAsset` in the XForms path
+
+The gate description said "serializable capture / `ImageAsset` → existing ODK
+attachment path", which was ambiguous. Resolved from the code: **the XForms path
+does not use `ImageAsset` and should not start.**
+
+`attachImageMedia({ sourceFile, contentType, reference, … })` consumes the raw
+capture descriptor and produces M5 instance media (durable file + safe filename
+bound in XML). `ImageAsset` is the *scientific/capability* contract with its own
+digest-addressed model, and [contract-ownership-audit.md](./contract-ownership-audit.md)
+found `gather-storage` is deliberately asset-agnostic. Introducing `ImageAsset`
+here would add coupling for no current need.
+
+**Deferred:** an `ImageAsset` → attachment bridge belongs with its first real
+consumer — a collection field writing `ImageAsset[]` into an XForms field
+(see §12).
+
+### What changed
+
+The boundary already held (`XFormsImageControl` imports package-owned
+`CameraView`), so this locks it and clears the residue:
+
+- `src/components/camera/` now contains **only** `QrScanner.js`. Barcode
+  scanning is the one camera concern deliberately left app-side in Phase 3;
+  photo acquisition is entirely package-owned.
+- `CameraControls` → `CaptureActions` in `src/components/forms/`. It was never
+  camera control — the camera owns its shutter inside `CameraView`; these are
+  the workflow actions that *follow* a capture, which belong outside it.
+- `ImagePreview` → `CapturedImage` in `src/components/forms/`. Also **fixes a
+  defect**: it hardcoded `aspectRatio: 3/4`, so a landscape capture rendered
+  cropped to a portrait frame. It now uses the capture's own dimensions, which
+  the descriptor already carried.
+
+### Regression guard
+
+`test/xforms/image-capture-boundary.test.mjs` asserts the descriptor carries
+exactly what the attachment path needs (local `file://` URI + `contentType`),
+that a non-local capture is rejected before reaching it, that nothing
+camera-native crosses the seam, and — structurally — that **no file in `src/`
+imports VisionCamera except `QrScanner.js`**. That last one turns the Phase 3
+decision into something that fails a build rather than eroding quietly.
+
+### Verified / not verified
+
+`test:unit` 321 tests / 320 pass / 0 fail (1 known skip); Expo config; renderer
+Vite build; Android Hermes export; `git diff --check`. **The submission path is
+provably untouched** — zero diff across `src/instances`, `src/sync`,
+`odk-central-client`, and `gather-storage`.
+
+**Not verified:** the device run. Changes are presentation-only and the M5 path
+is byte-identical, but the gate is not complete until an on-device capture →
+attach → submit regression passes per
+[emulator-gate-runbook.md](./emulator-gate-runbook.md).
