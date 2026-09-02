@@ -48,6 +48,71 @@ This is the same split §17 already implements: `createResultFieldWriter({ form,
 bindings })` takes `{ reference, path }` pairs, so the binding table is data the
 host supplies rather than anything the composition knows.
 
+### Landed 2026-09-02
+
+[`src/xforms/compositionField.js`](../src/xforms/compositionField.js) —
+render-free, mirroring `collectionField.js`.
+
+```json
+{
+  "version": 1,
+  "fields": [
+    {
+      "reference": "/data/flower_analysis",
+      "composition": "flower_v1",
+      "bindings": [
+        { "path": "petalCount", "reference": "/data/flower_analysis/petal_count", "required": true },
+        { "path": "color.name", "reference": "/data/flower_analysis/color" }
+      ]
+    }
+  ]
+}
+```
+
+Shipped as the form attachment `gather-bindings.json`. `path` is a dot path
+**into the typed result**; `reference` is the XForms node. Those are exactly the
+`{ reference, path }` pairs `createResultFieldWriter` (§17) already consumes, so
+there is no translation layer — `writerBindingsFor(field)` hands them straight
+over.
+
+Keyed by the **group's reference**, not by composition id, so one form may host
+the same composition twice.
+
+| Function | Role |
+| --- | --- |
+| `compositionConfigFrom(appearances)` | recognition → `{ enabled, compositionId }` |
+| `parseBindingManifest(source)` | parse + validate; **throws** on anything mis-authored |
+| `bindingManifestFrom(attachments)` | finds it among a form version's attachments |
+| `resolveCompositionFields({ renderModel, manifest })` | matches form against manifest → `{ fields, problems }` |
+
+**Validation refuses rather than guesses**, because three earlier defects in
+this area all took the shape of a silent empty result:
+
+- a binding must name both a `path` and a `reference`
+- **a composition may only write inside its own group.** Writing outside would
+  land in fields Gather does not hide (§5), so values would appear with nothing
+  explaining where they came from. Checked on a path boundary, so
+  `/data/flower_notes` is not inside `/data/flower`.
+- two outputs may not bind one field (the last would silently win); one output
+  feeding two fields is fine
+- a group may not be configured twice
+- an unsupported `version` is refused outright
+- a present-but-empty manifest is an error, not an absent one
+
+`resolveCompositionFields` returns **`problems`** alongside fields so every
+mismatch is loud: a group declaring a composition with no manifest entry, an id
+that disagrees with the manifest, an appearance on a non-group, and a manifest
+entry no group declares (dead configuration, usually a renamed group).
+
+Two couplings are asserted by test rather than assumed: the engine keeps the
+colon token verbatim (the spike below), and `application/json` classifies as a
+*text* resource in `formCatalogService` — if it did not, the manifest would
+arrive base64-encoded and discovery would silently never find it.
+
+**No production consumer yet**, as with §17 and the receipt store. The consumer
+is the renderer dispatch, which needs the group subtree-ownership predicate
+below.
+
 ### Verified (experiments/composition-appearance/)
 
 | Question | Answer |
