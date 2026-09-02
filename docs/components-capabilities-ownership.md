@@ -983,3 +983,40 @@ provably untouched** — zero diff across `src/instances`, `src/sync`,
 is byte-identical, but the gate is not complete until an on-device capture →
 attach → submit regression passes per
 [emulator-gate-runbook.md](./emulator-gate-runbook.md).
+
+## 14. `gather-components` layout — flattened (2026-09-02)
+
+`src/camera/` sat as a sibling of `src/components/`, which was drift rather than
+a decision. Two conventions arrived separately and were never reconciled: the
+M9 shared-components work grouped by purpose *under* `components/`, and Phase 3
+created `src/camera/` by following the design doc §17 path sketch literally —
+even though §17 allowed "an equivalent purpose-oriented layout consistent with
+the current package".
+
+The inconsistency was real: `camera/` and `media/` are the same kind of thing —
+a domain with components, `.native`/`.web` seams, internal-only parts, and one
+render-free logic module — sitting at different depths. The giveaway was
+`CameraFrame.jsx` importing `'../components/actions/Button.jsx'`: the camera
+domain had to reach *down into* `components/` to use a sibling concept.
+
+Inside a package named `gather-components`, everything is a component, so the
+`components/` layer carried no information — and it is what made `camera/` look
+like it needed to escape. Removed:
+
+```text
+src/
+├── actions/  camera/  image/  media/  results/  status/
+├── primitives.jsx
+├── index.js
+└── theme/
+```
+
+**Pure move.** 17 files relocated, `../../theme` → `../theme` in 7 of them,
+`primitives.jsx`'s `../theme` → `./theme`, 11 `index.js` paths, 2 package-test
+paths, and the `CameraFrame` straggler. **The public API is byte-identical** —
+every consumer imports through the package index, verified by diffing the export
+list against the previous commit.
+
+Gates: `test:unit` 321/320 pass/0 fail (1 known skip), Expo config, renderer Vite
+build (react-native-web seams), Android Hermes export (`.native` seams),
+`git diff --check`.

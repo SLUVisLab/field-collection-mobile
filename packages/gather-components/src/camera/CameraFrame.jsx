@@ -3,7 +3,7 @@ import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-nat
 
 import { tokens } from '../theme/tokens.js';
 import { useTheme } from '../theme/useTheme.js';
-import { Button } from '../components/actions/Button.jsx';
+import { Button } from '../actions/Button.jsx';
 
 /**
  * Shared, presentational camera surface: a full-width viewport frame, a control

@@ -22,16 +22,16 @@ export {
   buttonHeightForVariant,
 } from './theme/buttonPresentation.js';
 
-export { Button } from './components/actions/Button.jsx';
+export { Button } from './actions/Button.jsx';
 export { CameraView, VideoView, CameraFrame } from './camera/index.js';
 
-export { Panel, Heading, Helper, SectionCopy } from './components/primitives.jsx';
-export { ImageOverlay } from './components/image/ImageOverlay.jsx';
-export { MediaGallery } from './components/media/MediaGallery.jsx';
-export { ResultSection, ResultRow } from './components/results/ResultSection.jsx';
-export { MeasurementResults } from './components/results/MeasurementResults.jsx';
-export { ClassificationResults } from './components/results/ClassificationResults.jsx';
-export { SegmentationResult } from './components/results/SegmentationResult.jsx';
-export { OutputReview } from './components/results/OutputReview.jsx';
-export { InstrumentError } from './components/status/InstrumentError.jsx';
-export { ProcessingView } from './components/status/ProcessingView.jsx';
+export { Panel, Heading, Helper, SectionCopy } from './primitives.jsx';
+export { ImageOverlay } from './image/ImageOverlay.jsx';
+export { MediaGallery } from './media/MediaGallery.jsx';
+export { ResultSection, ResultRow } from './results/ResultSection.jsx';
+export { MeasurementResults } from './results/MeasurementResults.jsx';
+export { ClassificationResults } from './results/ClassificationResults.jsx';
+export { SegmentationResult } from './results/SegmentationResult.jsx';
+export { OutputReview } from './results/OutputReview.jsx';
+export { InstrumentError } from './status/InstrumentError.jsx';
+export { ProcessingView } from './status/ProcessingView.jsx';

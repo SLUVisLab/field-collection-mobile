@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { tokens } from '../theme/tokens.js';
-import { useTheme } from '../theme/useTheme.js';
+import { tokens } from './theme/tokens.js';
+import { useTheme } from './theme/useTheme.js';
 
 /** A bordered content panel (mask review / result grouping). */
 export function Panel({ children, tone = 'default', style }) {

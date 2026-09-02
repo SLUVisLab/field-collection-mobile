@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { tokens } from '../../theme/tokens.js';
-import { useTheme } from '../../theme/useTheme.js';
+import { tokens } from '../theme/tokens.js';
+import { useTheme } from '../theme/useTheme.js';
 import { Button } from '../actions/Button.jsx';
 import { Helper } from '../primitives.jsx';
 import { MediaThumbnail } from './MediaThumbnail.jsx';

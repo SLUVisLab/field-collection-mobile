@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { tokens } from '../../theme/tokens.js';
-import { useTheme } from '../../theme/useTheme.js';
+import { tokens } from '../theme/tokens.js';
+import { useTheme } from '../theme/useTheme.js';
 import { Heading, Helper, Panel } from '../primitives.jsx';
 import { ResultRow, ResultSection } from './ResultSection.jsx';
 import { buildOutputReviewSections } from './outputSchema.js';

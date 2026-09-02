@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildOutputReviewSections } from '../src/components/results/outputSchema.js';
+import { buildOutputReviewSections } from '../src/results/outputSchema.js';
 
 test('output schema renders core scalar and summary formats', () => {
   const data = {

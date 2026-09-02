@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { tokens } from '../../theme/tokens.js';
-import { useTheme } from '../../theme/useTheme.js';
-import { buttonAppearance, buttonHeightForVariant } from '../../theme/buttonPresentation.js';
+import { tokens } from '../theme/tokens.js';
+import { useTheme } from '../theme/useTheme.js';
+import { buttonAppearance, buttonHeightForVariant } from '../theme/buttonPresentation.js';
 
 const normalizeVariant = (variant) => {
   if (variant === 'primary' || variant === 'secondary' || variant === 'danger' || variant === 'borderless') {

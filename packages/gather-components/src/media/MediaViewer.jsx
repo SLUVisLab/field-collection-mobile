@@ -1,7 +1,7 @@
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { tokens } from '../../theme/tokens.js';
-import { useTheme } from '../../theme/useTheme.js';
+import { tokens } from '../theme/tokens.js';
+import { useTheme } from '../theme/useTheme.js';
 import { mediaKind } from './mediaModel.js';
 import { MediaSurface } from './MediaSurface';
 

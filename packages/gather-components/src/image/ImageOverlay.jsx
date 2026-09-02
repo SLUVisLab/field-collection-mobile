@@ -1,6 +1,6 @@
 import { Image, StyleSheet, View } from 'react-native';
 
-import { tokens } from '../../theme/tokens.js';
+import { tokens } from '../theme/tokens.js';
 
 export function ImageOverlay({ image, overlay = null, overlayOpacity = 0.45 }) {
   if (!image?.uri) return null;

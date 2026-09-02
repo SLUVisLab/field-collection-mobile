@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { tokens } from '../../theme/tokens.js';
-import { useTheme } from '../../theme/useTheme.js';
+import { tokens } from '../theme/tokens.js';
+import { useTheme } from '../theme/useTheme.js';
 
 export function ResultSection({ title, children }) {
   const theme = useTheme();
