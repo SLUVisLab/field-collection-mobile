@@ -229,10 +229,63 @@ alone only checks the SQL text.
 **No production consumer yet, by design** — the consumer is the composition→ODK
 gate, the same way §17 landed the `setValue` seam ahead of its caller.
 
-### Project-level asset cleanup
+### Project-level asset cleanup — landed 2026-09-02
 
-Per §4 above and §15: required before any `retention: keep`, `projection: none`
-workflow ships at volume.
+Migration 12 adds `project_assets`, the **ledger** that makes cleanup possible
+at all. The hazard it removes is concrete: `persistScientificCapture` writes
+into the project media directory with **no `instance_media` row**, so the
+obvious sweep — "delete every file no attachment references" — would have
+deleted every scientific capture, i.e. exactly the `projection: none,
+retention: keep` assets §4 says to keep.
+
+```text
+file_key PRIMARY KEY            → recording an asset is idempotent
+CHECK (retention IN keep|discard)  → a closed set; no unrecognised value
+                                     can reach the planner
+released_at                     → what keeps "discard" from meaning
+                                  "delete immediately after compute"
+REFERENCES projects ON DELETE CASCADE
+```
+
+[`src/instances/assetCleanup.js`](../src/instances/assetCleanup.js) keeps the
+dangerous half pure. `planAssetCleanup` is a function of three inputs — what is
+on disk, what submission still needs, and what the ledger says — returning a
+plan that explains every decision:
+
+| Situation | Outcome |
+| --- | --- |
+| referenced by `instance_media` | **keep** — outranks the ledger, so a submitted `discard` output survives the handoff |
+| `retention: keep` | keep |
+| `retention: discard`, released | **delete** |
+| `retention: discard`, not released | keep — still in use |
+| on disk, in neither | **unledgered** — kept unless `reclaimOrphans` |
+| in ledger, not on disk | prune the row; never a file delete |
+
+Three properties are deliberate:
+
+- **`reclaimOrphans` defaults to false.** Installs predate the ledger, and
+  captures were written unrecorded for a long time, so treating unknown files
+  as garbage would be data loss.
+- **An unrecognised `retention` value is not permission to delete.** Only an
+  explicit `discard` deletes.
+- **Bytes go before the row.** A failure part-way leaves a row for a file that
+  is gone, which the next sweep prunes as `missing`. The reverse strands bytes
+  that nothing records — the unreclaimable case.
+
+`sweepProjectAssets` composes enumeration, planning and execution with
+everything injected. `persistScientificCapture` now records each capture with
+`retention: 'keep'` by default, and takes an override so an authored discard
+policy can set it per output. Ledger failures never fail a capture: the bytes
+are already durable, and an unrecorded asset is merely un-reclaimable, which
+the conservative default already treats as "keep".
+
+Migration 12 was executed against real SQLite 3.39.2 — apply, `created_at`
+default, the retention CHECK rejecting a bad value, and the project cascade.
+
+**Still not wired:** nothing calls `sweepProjectAssets` yet. The lifecycle
+points that should are discard, successful send, and an explicit user action;
+choosing them is a policy decision rather than a mechanism gap. Deliberately
+lifecycle-based, with no TTLs.
 
 ## Roadmap position
 

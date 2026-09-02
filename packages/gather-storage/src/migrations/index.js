@@ -442,4 +442,40 @@ export const MIGRATIONS = Object.freeze([
          ON instance_receipts (local_instance_id);`,
     ],
   },
+  {
+    version: 12,
+    name: 'project_assets',
+    statements: [
+      // The ledger for assets that are NOT form attachments.
+      //
+      // `persistScientificCapture` writes into the project media directory
+      // without an `instance_media` row, so those bytes are referenced by
+      // nothing in the database. That made cleanup impossible to do safely:
+      // "delete every file no `instance_media` row references" would delete
+      // every scientific capture — precisely the `projection: none,
+      // retention: keep` assets that B-custom §4 says to keep.
+      //
+      // So retention becomes explicit, per asset, and recorded. A sweep can
+      // then tell a deliberately-kept local asset from an orphaned byte.
+      // See docs/b-custom-composition-conventions.md §4.
+      //
+      // `released_at` is what makes "discard" safe: bytes stay until the
+      // producer says they are no longer needed. `discard` must never mean
+      // "delete immediately after compute" — a submitted attachment has to
+      // survive the submission handoff.
+      `CREATE TABLE project_assets (
+         file_key          TEXT PRIMARY KEY NOT NULL,
+         project_key       TEXT NOT NULL REFERENCES projects(project_key) ON DELETE CASCADE,
+         asset_id          TEXT NOT NULL,
+         content_type      TEXT NOT NULL,
+         retention         TEXT NOT NULL,
+         local_instance_id TEXT,
+         created_at        TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+         released_at       TEXT,
+         CHECK (retention IN ('keep', 'discard'))
+       );`,
+      `CREATE INDEX project_assets_by_project
+         ON project_assets (project_key);`,
+    ],
+  },
 ]);

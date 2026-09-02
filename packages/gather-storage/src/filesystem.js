@@ -127,6 +127,23 @@ export const deleteFile = (key) => {
   }
 };
 
+/**
+ * The Gather-relative keys of the files directly inside a durable directory.
+ *
+ * Non-recursive and directory-skipping: asset cleanup enumerates one project's
+ * media directory, and a missing directory is an empty listing rather than an
+ * error, so a sweep can run on a project that has never stored anything.
+ */
+export const listDirectory = (key) => {
+  const dir = directoryForKey(key);
+  if (!dir.exists) return [];
+  const prefix = keyToSegments(key).join('/');
+  return dir
+    .list()
+    .filter((entry) => entry instanceof File)
+    .map((entry) => `${prefix}/${entry.name}`);
+};
+
 /** Remove a project's entire durable tree (used when a project is deleted). */
 export const deleteProjectDirectory = (projectKey) => {
   const pk = assertProjectKey(projectKey);

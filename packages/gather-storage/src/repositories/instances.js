@@ -276,6 +276,26 @@ export const createInstancesRepository = (db) => {
       return (rows ?? []).map(rowToMedia);
     },
 
+    /**
+     * Every media file key still referenced by any instance in a project.
+     *
+     * Asset cleanup needs the whole project's referenced set to know what it
+     * must not delete; asking per instance would be N+1 and easy to get wrong
+     * by forgetting a state.
+     */
+    async listProjectMediaFileKeys(projectKey) {
+      const key = assertProjectKey(projectKey);
+      const rows = await db.getAllAsync(
+        `SELECT m.file_key AS file_key
+           FROM instance_media m
+           JOIN instances i ON i.local_instance_id = m.local_instance_id
+          WHERE i.project_key = ?
+          ORDER BY m.file_key ASC;`,
+        [key]
+      );
+      return (rows ?? []).map((row) => row.file_key);
+    },
+
     async deleteMedia({ localInstanceId, filename } = {}) {
       const id = assertLocalInstanceId(localInstanceId);
       const name = assertMediaFilename(filename);

@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   initializeGatherStorage,
   createFormsRepository,
+  ASSET_RETENTION,
+  createAssetsRepository,
   createEntitiesRepository,
   createInstancesRepository,
   createProjectsRepository,
@@ -105,6 +107,10 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     () => (entityRepository ? createEntityService({ entities: entityRepository }) : null),
     [entityRepository]
   );
+  const assets = useMemo(() => {
+    const database = state.boot?.storage?.database ?? null;
+    return database ? createAssetsRepository(database) : null;
+  }, [state.boot?.storage]);
   const sync = useMemo(() => {
     const database = state.boot?.storage?.database;
     return database ? createSyncRepository(database) : null;
@@ -486,16 +492,39 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     [scientificRuntime]
   );
   const persistScientificCapture = useCallback(
-    async (capture) => {
+    async (capture, { retention = null } = {}) => {
       if (!imageAssetService || !activeProject) throw new Error('scientific image storage is not ready');
       const assetId = `image-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
-      return imageAssetService.persistCapture({
+      const fileKey = GatherPaths.media(activeProject.projectKey, `${assetId}.jpg`);
+      const asset = await imageAssetService.persistCapture({
         capture,
-        fileKey: GatherPaths.media(activeProject.projectKey, `${assetId}.jpg`),
+        fileKey,
         capturedAt: new Date().toISOString(),
       });
+      // Record it in the asset ledger. Without a row these bytes are
+      // referenced by nothing in the database, which is what made project
+      // cleanup unsafe: a sweep could not tell a deliberately-kept capture
+      // from an orphan. `keep` is the conservative default; an authored
+      // discard policy overrides it per output (B-custom §4).
+      if (assets) {
+        try {
+          await assets.recordAsset({
+            fileKey,
+            projectKey: activeProject.projectKey,
+            assetId,
+            contentType: asset?.mimeType ?? capture?.contentType ?? 'image/jpeg',
+            retention: retention ?? ASSET_RETENTION.KEEP,
+          });
+        } catch {
+          // The bytes are already durable and usable. A missing ledger row
+          // only makes this asset un-reclaimable, which the sweep's
+          // conservative default already treats as "keep" — so never fail a
+          // capture over bookkeeping.
+        }
+      }
+      return asset;
     },
-    [activeProject, imageAssetService]
+    [activeProject, assets, imageAssetService]
   );
 
   const value = useMemo(
@@ -503,7 +532,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       status: state.status,
       error: state.error,
       storage: state.boot?.storage ?? null,
-      repositories: { projects, forms, entities: entityRepository, instances, sync, fieldwork, modelStore },
+      repositories: { projects, forms, entities: entityRepository, instances, assets, sync, fieldwork, modelStore },
       projectCount,
       activeProject,
       shell: shellForActiveProject(activeProject),
@@ -557,6 +586,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       forms,
       entityRepository,
       instances,
+      assets,
       sync,
       fieldwork,
       modelStore,

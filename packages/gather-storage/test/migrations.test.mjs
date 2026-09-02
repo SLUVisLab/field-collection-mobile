@@ -41,7 +41,7 @@ const makeFakeDb = (startVersion = 0) => {
 test('the shipped MIGRATIONS are well-ordered', () => {
   assert.doesNotThrow(() => assertMigrationOrder(MIGRATIONS));
   assert.equal(latestVersion(MIGRATIONS), MIGRATIONS.length);
-  assert.equal(latestVersion(MIGRATIONS), 11);
+  assert.equal(latestVersion(MIGRATIONS), 12);
 });
 
 test('migration 3 provisions append-only form versions and draft references', () => {
@@ -247,4 +247,20 @@ test('migration 11 provisions instance-scoped provenance that cascades', () => {
     assert.match(sql, new RegExp(`${column}\\s+TEXT NOT NULL`), `${column} is recorded`);
   }
   assert.match(sql, /CREATE INDEX instance_receipts_by_instance/);
+});
+
+test('migration 12 provisions the asset ledger that makes cleanup safe', () => {
+  const ledger = MIGRATIONS.find((m) => m.version === 12);
+  assert.ok(ledger, 'version 12 migration exists');
+  assert.equal(ledger.name, 'project_assets');
+  const sql = ledger.statements.join('\n');
+
+  // One row per file, so recording is idempotent on the thing that identifies it.
+  assert.match(sql, /file_key\s+TEXT PRIMARY KEY NOT NULL/);
+  // Retention is a closed set: an unrecognised value must not reach the planner.
+  assert.match(sql, /CHECK \(retention IN \('keep', 'discard'\)\)/);
+  // `released_at` is what keeps "discard" from meaning "delete after compute".
+  assert.match(sql, /released_at\s+TEXT/);
+  assert.match(sql, /REFERENCES projects\(project_key\) ON DELETE CASCADE/);
+  assert.match(sql, /CREATE INDEX project_assets_by_project/);
 });
