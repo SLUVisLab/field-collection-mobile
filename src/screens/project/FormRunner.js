@@ -281,7 +281,9 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     const saved = await saveDraft();
     if (saved) {
       setShowExitChoices(false);
-      navigate('/project/forms');
+      // `replace`, not push: otherwise the form stays on the stack and Back
+      // from Forms drops straight back into it instead of going up.
+      navigate('/project/forms', { replace: true });
     }
   };
 
@@ -292,7 +294,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     try {
       if (instance?.localInstanceId) await discardInstance(instance.localInstanceId);
       setShowExitChoices(false);
-      navigate('/project/forms');
+      navigate('/project/forms', { replace: true });
     } catch (error) {
       setMessage(error?.message ?? 'Could not discard this draft.');
     } finally {
@@ -466,12 +468,22 @@ export function FormRunner() {
         fieldworkSessionId={search.get('fieldworkSession')}
         fieldworkEntityId={search.get('entityId')}
       />
-      <WebView ref={webViewRef} {...webViewProps} />
+      {/*
+        The engine sidecar. `react-native-webview`'s own container style is
+        `flex: 1`, so rendered bare it becomes a sibling competing with the
+        flex:1 `Screen` and the form gets only a fraction of the height. It has
+        to run (it hosts the XForms engine) but must never take part in layout:
+        absolutely positioned, 1x1, transparent and untouchable.
+      */}
+      <View style={styles.engineHost} pointerEvents="none">
+        <WebView ref={webViewRef} {...webViewProps} />
+      </View>
     </XFormsProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  engineHost: { height: 1, opacity: 0, position: 'absolute', top: 0, left: 0, width: 1 },
   outline: {},
   outlineTitle: { fontWeight: '700' },
   outlineItem: { justifyContent: 'center', paddingHorizontal: 4, paddingVertical: 5 },
