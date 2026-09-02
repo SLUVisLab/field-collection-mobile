@@ -415,6 +415,57 @@ points that should are discard, successful send, and an explicit user action;
 choosing them is a policy decision rather than a mechanism gap. Deliberately
 lifecycle-based, with no TTLs.
 
+## The gate's composition — Quadrat Tally (2026-09-02)
+
+The composition→ODK path needed something minimal to drive. Photo Capture could
+not: its result is a single `ImageAsset`, so it never exercises scalar
+coercion or a binding manifest. Segment & Measure is deprecated and drags ONNX
+into a gate. So the fixture is authored:
+[`test/fixtures/quadrat-tally/`](../test/fixtures/quadrat-tally/).
+
+```text
+View: tally   Text + / − + flag + Accept   →  { count, note? }
+```
+
+Deliberately the smallest thing that exercises the whole path — no camera, no
+model, no capability. `count` is required; `note` appears only when the tally is
+flagged uncertain, which is what covers the **absent-optional** path: clear the
+field *and* delete its provenance.
+
+Four things it establishes:
+
+- **The composition names outputs, never XPaths.** Asserted by a test that
+  serializes the definition and fails if `/data/` appears anywhere in it, so
+  reusability across forms cannot rot quietly.
+- **Composition-local actions are legitimate.** `+1` / `−1` / flag are this
+  composition's own event names. Catalog action ids are fixed vocabulary
+  because they ship with a *Component*; a composition's own buttons are its
+  own business, and the runtime routes whatever name arrives to its handler.
+  `hostActions` is metadata, not enforcement.
+- **"Computed" means *produced by the composition*, not produced by a model.**
+  A hand-driven tally still earns an execution receipt, because the receipt is
+  what distinguishes this value from the same number typed straight into the
+  backing field by another ODK client (principle 5). Nothing about principle 5
+  requires a model to have run.
+- **No `Flow`.** One View needs no view selector. `Flow` is for choosing among
+  authored Views.
+
+### A runtime characteristic worth knowing
+
+**The A2UI surface absorbs whatever the action handler throws.** `dispatchAction`
+resolves and the caller learns nothing. That is why Photo Capture writes its
+failures into the data model and renders an error View rather than relying on
+the throw propagating — a convention that reads as ceremony until you know the
+throw goes nowhere. Any composition that can fail needs an error path in its
+own state; it cannot report upward.
+
+### Verified
+
+The end-to-end test drives the **real** runtime: authored composition → typed
+result + receipt → binding manifest resolution → `commitCompositionResult` →
+XForms values and provenance, including the flagged and unflagged variants and
+the required-missing refusal. No device, no model, no camera.
+
 ## Roadmap position
 
 ```text
