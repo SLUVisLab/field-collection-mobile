@@ -1503,3 +1503,71 @@ a silent empty result rather than a failure.** The `childName` default, the
 every layer above and below them. The lesson is not "add more tests" but that a
 default which fabricates a plausible empty answer will hide a broken seam
 indefinitely — `collectionItemsFrom` now throws instead.
+
+## 22. Defect 3 of the same shape — `instance.media` (fixed 2026-09-02)
+
+Auditing for more of §21's pattern found one, and it was the worst placed: in
+`FormRunner`, the **real app's** screen.
+
+```js
+media: instance?.media ?? [],   // always []
+```
+
+An instance **row** carries no media. The repository mapper emits
+`localInstanceId … sendError` and nothing else, and the lifecycle service
+returns media as a *sibling* of the instance, never nested:
+
+| call | returns |
+| --- | --- |
+| `attachImageMedia` | `{ instance, media }` — `media` is the **single** upserted row |
+| `resume` | `{ instance, version, media }` — `media` is the **full list** |
+| `releaseInstanceMedia` | `{ instance, released }` — `released` is filenames |
+
+Every `setInstance(...)` in `FormRunner` stores a bare row, so
+`instance.media` was always `undefined` and `?? []` turned that into an empty
+collection. The collection field in the shipped app would have rendered nothing,
+for every form, no matter how many photos were captured.
+
+The interactive gate did not catch this one either: it supplies its **own**
+collection adapter, so it exercised the control, not `FormRunner`'s wiring.
+
+### Fix
+
+`FormRunner` now holds the list and maintains it from what the lifecycle already
+hands back — no new provider method, no extra read:
+
+- **resume** → `setMedia(resumed.media ?? [])` (the full list)
+- **capture** → `mergeMedia(prev, bound.media)` appends the returned row
+- **replace** (single-image control) → `mergeMedia(prev, bound.media, previousFilename)`
+- **release** → drop exactly `saved.released`
+
+[`src/instances/mediaState.js`](../src/instances/mediaState.js) holds the merge,
+render-free and unit-tested. It keeps the list in `filename ASC` order because
+that is `instances.listMedia`'s order — so the in-memory list matches what a
+reload would produce, and re-upserting the same filename replaces in place
+rather than duplicating.
+
+### Verified
+
+`test:unit` — 6 new `mediaState` tests. **Not device-verified:** exercising
+`FormRunner`'s collection path on a device needs a provisioned form carrying the
+appearance in the real app, which is the deferred XLSX → Central → device round
+trip. The contract itself is now checked in both directions (§21's audit script
+found no remaining hook mismatches across 13 call sites).
+
+### Scoreboard for this field
+
+| # | Defect | Silent symptom | Caught by |
+| --- | --- | --- | --- |
+| 1 | `childName` defaulted to `'photo'` | empty collection for other child names | device gate with a renamed child |
+| 2 | `repeat.instanceReferences` vs `instances` | empty collection, always | interactive gate |
+| 3 | duplicate repeat subtree | photos rendered twice | interactive gate |
+| 4 | `instance.media` | empty collection in the real app | contract audit |
+
+Four defects, one shape: **a seam no test crossed, returning a plausible empty
+value instead of failing.** Three of the four were a `?? []` or a default
+standing in for something the other side never supplied. That is the actual
+lesson — not "write more tests", but that a fallback which manufactures a valid-
+looking empty answer converts a wiring break into invisible data loss.
+`collectionItemsFrom` now throws instead of guessing, which is the pattern to
+follow at the remaining seams.

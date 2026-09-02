@@ -27,6 +27,7 @@ import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
 import { XFormsRenderer } from '../../xforms/XFormsRenderer.js';
 import { outlineFor } from '../../xforms/renderModel.js';
+import { mergeMedia } from '../../instances/mediaState.js';
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -52,6 +53,10 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
   const [loadError, setLoadError] = useState(null);
   const [version, setVersion] = useState(null);
   const [instance, setInstance] = useState(null);
+  // The instance ROW carries no media — the lifecycle returns media alongside
+  // it (`{ instance, media }`), never nested. Reading `instance.media` silently
+  // yielded [] and emptied every collection field; see §22.
+  const [media, setMedia] = useState([]);
   const [message, setMessage] = useState(null);
   const [busy, setBusy] = useState(false);
   const [showExitChoices, setShowExitChoices] = useState(false);
@@ -68,6 +73,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
           const resumed = await resumeInstance({ localInstanceId, form: { loadInstance } });
           if (!cancelled) {
             setInstance(resumed.instance);
+            setMedia(resumed.media ?? []);
             setVersion(resumed.version);
           }
         } else {
@@ -158,6 +164,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
           contentType: capture.contentType,
         });
         setInstance(bound.instance);
+        setMedia((prev) => mergeMedia(prev, bound.media));
         return true;
       } finally {
         setBusy(false);
@@ -179,6 +186,8 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
           filenames,
         });
         setInstance(saved.instance);
+        const released = new Set(saved.released ?? filenames);
+        setMedia((prev) => prev.filter((row) => !released.has(row.filename)));
         return true;
       } finally {
         setBusy(false);
@@ -189,12 +198,12 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
 
   const collectionAdapter = useMemo(
     () => ({
-      media: instance?.media ?? [],
+      media,
       uriFor: (fileKey) => fileForKey(fileKey)?.uri ?? null,
       onCapture: captureIntoCollection,
       onRemove: removeFromCollection,
     }),
-    [captureIntoCollection, instance?.media, removeFromCollection]
+    [captureIntoCollection, media, removeFromCollection]
   );
 
   const attachCapturedImage = useCallback(
@@ -217,6 +226,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
           previousFilename,
         });
         setInstance(bound.instance);
+        setMedia((prev) => mergeMedia(prev, bound.media, previousFilename));
         setMessage('Captured image attached and saved in this draft.');
         return true;
       } catch (error) {
