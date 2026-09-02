@@ -134,8 +134,13 @@ const styles = StyleSheet.create({
   inlineAction: { alignSelf: 'center' },
   error: { lineHeight: tokens.typography.bodyLineHeight },
   viewportWrap: { position: 'relative', width: '100%', aspectRatio: 3 / 4, overflow: 'hidden' },
-  // The native camera preview is a platform surface, so a plain sibling is
-  // composited underneath it on Android and the flash is never seen.
+  // KNOWN NOT WORKING on Android — parked for a UI pass, see §23 of
+  // docs/components-capabilities-ownership.md. The elevation/zIndex here was a
+  // hypothesis the device disproved: an overlay *outside* this wrap renders
+  // above the preview fine, so the remaining suspect is that this overlay is a
+  // sibling of the native surface inside the same parent, plus an `Animated`
+  // opacity that never rendered under either driver. Do not re-derive that;
+  // read the section first.
   flash: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#ffffff',

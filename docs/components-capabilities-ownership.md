@@ -1571,3 +1571,56 @@ lesson — not "write more tests", but that a fallback which manufactures a vali
 looking empty answer converts a wiring break into invisible data loss.
 `collectionItemsFrom` now throws instead of guessing, which is the pattern to
 follow at the remaining seams.
+
+## 23. Shutter flash on Android — parked, with the findings (2026-09-02)
+
+The shutter flash does not appear on a physical device. **Parked for a UI pass**
+at the user's direction. Recording what was established so it is not
+re-derived — most of the cost here was diagnostic, not fixing.
+
+### What was ruled out
+
+| Hypothesis | Verdict |
+| --- | --- |
+| The animation never fires | **Ruled out.** `handleCapture` sets the flash *before* calling `onCapture`, and photos are captured, so the line runs. |
+| `elevation`/`zIndex` missing | **Ruled out as the fix.** Adding them changed nothing. |
+| Overlays cannot cover a `SurfaceView` preview | **Ruled out.** A static-opacity View placed one level *out* (a sibling of `viewportWrap`, inside `styles.capture`) renders solidly over the preview. Verified with a pinned red bar. |
+| Native driver only | **Ruled out as the whole story.** `useNativeDriver: false` did not make it visible either. |
+
+### What remains suspect
+
+Two things, both still unproven:
+
+1. **Position.** The flash is a *child* of `viewportWrap`, alongside the native
+   surface. The overlay that demonstrably worked was one level out. So a child
+   of the surface's own parent may be composited under it while a sibling of
+   that parent is not.
+2. **`Animated` opacity on this node.** A *static* opacity in that position is
+   visible; an `Animated.Value`-driven one never was, under either driver. The
+   original code also had a real latent bug — `setValue(0.9)` immediately
+   followed by `timing(toValue: 0)` races with the native driver and can
+   animate `0 → 0` — but fixing that to an up-then-down sequence did not make
+   it appear, so it was not the only cause.
+
+The most promising fix, untried on device: move the overlay out of
+`viewportWrap` into a wrapping stack **and** drop `Animated` for a plain View
+mounted for a fixed duration (`useState` + `setTimeout`), since static opacity
+in that position is the one thing verified to render. A fixed-duration flash is
+also closer to what a shutter looks like than a fade.
+
+`react-native-vision-camera@5.2.3` renders the preview as a raw `SurfaceView`
+(`HybridFrameRendererView.kt`) with no `setZOrderOnTop` and no prop to request a
+`TextureView`, so switching the preview's backing view is not available.
+
+### The workflow finding that cost the most
+
+**Fast Refresh does not apply changes to these workspace-package files on
+device.** Edits to `packages/gather-components/**` only take effect after a cold
+`am force-stop` + relaunch, even though Metro reports a rebundle. Two rounds of
+"still not showing" were the *previous* bundle. Any future device debugging must
+force-stop and relaunch between edits, and must not trust a Metro
+"Bundled … (1 module)" line as evidence the device received anything.
+
+Corollary for gates: a screenshot is weak evidence of a short animation —
+`adb exec-out screencap` takes long enough to miss a 220 ms fade. Hold the state
+(a multi-second duration) before concluding anything from a still.
