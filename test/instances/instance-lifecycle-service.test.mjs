@@ -205,8 +205,12 @@ test('draft persistence writes authoritative XML before metadata and resume call
   resumed.setValue = () => {
     resumed.setValueCalls += 1;
   };
-  await service.resume({ project, localInstanceId: draft.localInstanceId, form: resumed });
+  const restored = await service.resume({ project, localInstanceId: draft.localInstanceId, form: resumed });
   assert.deepEqual(catalog.calls, [version.formVersionId]);
+  // Resume hands the caller the same version-pinned resources a fresh fill
+  // gets. Without them the form-owned binding manifest is missing on resume
+  // only, and every composition field renders unbound. Found on device.
+  assert.deepEqual(restored.attachments, [{ filename: 'plants.csv', text: 'a,b' }]);
   assert.equal(resumed.loadInstanceCalls.length, 1);
   assert.deepEqual(resumed.loadInstanceCalls[0], [
     '<form immutable-version="1" />',

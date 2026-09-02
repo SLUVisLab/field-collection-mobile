@@ -138,3 +138,94 @@ remain are host-lifecycle seams rather than a behaviour language. The tripwire i
 [b-custom §6](./b-custom-composition-conventions.md) stands: a second and third
 real composition first, then extract the smallest model their *shared* behaviour
 reveals.
+
+## Step 5 device proof: handler-free authored composition (2026-09-02)
+
+Run on a physical Pixel (`gates/DevSeedAuthoredCompositionApp.js`), seeding
+project `dev-seed-authored` with form `dev_seed_authored_photo`, its
+`gather-bindings.json`, and `authored_photo_v1.a2ui.json` — all three as *form
+resources*. The seed registers **no** composition handler
+(`registeredHandlers: "none"`), which is the point: the form supplies the
+composition.
+
+### What the proof establishes
+
+- The composition rendered from the form resource alone — its own title,
+  `CameraView`, `Save photo`, `Accept and submit` — with the backing fields
+  (`/data/photo/note`, `/data/photo/image`) hidden because the manifest declares
+  the group owned.
+- `gather_persistAsset` pushed its result to `resultPath: /working/image`; a
+  bound `Text` showed the returned `assetId`. Push semantics for an
+  action-position call, as designed.
+- `gather_completeComposition` committed both outputs, promoted the `media`
+  projection into instance media, and minted one receipt per written binding:
+
+  ```xml
+  <data id="dev_seed_authored_photo"><site_name/><photo><note>authored</note>
+  <image>image-mtkqqk2r09y6mj.jpg</image></photo>…</data>
+  ```
+
+  `instance_media` = `/data/photo/image | image-mtkqqk2r09y6mj.jpg | image/jpeg`;
+  `instance_receipts` = 2 rows under `authored_photo_v1`, revision
+  `sha256:759aa6d2…`.
+- Exactly **one** instance row: no stale-closure duplicate draft.
+- Save → exit → reopen from Drafts → Resume → save again preserves the XML, the
+  media row and both receipts unchanged.
+
+### Defects the proof found
+
+**1. Resume never handed the runner the form's resources.** `resume()` had
+`cached.attachments` in hand (it passes them to `loadInstance`) but did not
+return them, and `RunnerBody`'s resume branch left `manifest`/`formAttachments`
+null. On resume — and only on resume — every composition field rendered as
+*"Composition … has no entry in this form's binding manifest, so its results
+have nowhere to go."* Fixed: `resume()` returns `attachments`, the runner sets
+both from it. Regression assertion in
+`test/instances/instance-lifecycle-service.test.mjs`.
+
+This is the third defect in this area reachable only by driving `FormRunner`
+itself, and it has the same shape as the earlier two: a value the fresh-fill
+path computes and the resume path silently omits.
+
+**2. Hermes cannot transform a conditional whose branches are destructuring
+arrows in a property position.** The original
+`completeComposition: field ? async ({ outputs }) => {…} : undefined` inside an
+object literal failed the bundle with `Property id of VariableDeclarator …
+got "ObjectExpression"` — a Metro 500, not a runtime error. Fixed by hoisting
+both host implementations into named `useCallback`s.
+
+**3. A promoted working asset is never reclaimed.** After
+`completeComposition` copied the capture into
+`media/<instance>/image-mtkqqk2r09y6mj.jpg`, the ledger still holds the source:
+
+```
+projects/dev-seed-authored/media/image-1788392407633-….jpg | keep | (no instance)
+```
+
+257 KB duplicated per capture, permanently, because `retention: 'keep'` and no
+`local_instance_id` put it outside every sweep. The fixture asked for `keep`, so
+the ledger is behaving as declared — the open question is whether
+`completeComposition`, which already owns media promotion, should also release
+the working assets it promoted. Not changed here; it is a semantics decision.
+
+**4. `assetId` is minted twice.** The ledger row's `asset_id` and filename
+(`image-…633`) differ from the `assetId` on the returned `ImageAsset`
+(`image-…694`), because `imageAssetService.persistCapture` mints its own id
+rather than reusing the ledger's. The `path` (fileKey) is the only shared
+truth, and it is what promotion actually keys on — so nothing is broken today,
+but two ids for one asset is a trap for anything that later tries to correlate
+a receipt's `assetId` with a ledger row.
+
+### Not a defect
+
+Taps below the composition surface appeared dead until the LogBox
+"Open debugger to view warnings" toast was dismissed — a dev-build overlay, not
+app behaviour. Worth remembering: it silently swallows touches over the lower
+third of the screen and produces no error of any kind, which reads exactly like
+a broken button.
+
+### Cosmetic
+
+The runner labels any draft instance `Saving draft` (`FormRunner.js`), a
+progress phrase used as a state noun. It reads as a stuck spinner. Left alone
+here; it belongs to the UI pass with the shutter flash.

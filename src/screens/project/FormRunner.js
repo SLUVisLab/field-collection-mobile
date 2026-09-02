@@ -84,6 +84,10 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
             setInstance(resumed.instance);
             setMedia(resumed.media ?? []);
             setVersion(resumed.version);
+            // Same form-owned resources a fresh fill reads. Resuming without
+            // them left every composition field unbound on resume only.
+            setManifest(bindingManifestFrom(resumed.attachments));
+            setFormAttachments(resumed.attachments ?? []);
           }
         } else {
           const cached = await loadCachedForm(formId);

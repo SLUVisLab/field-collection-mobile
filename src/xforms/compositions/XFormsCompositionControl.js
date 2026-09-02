@@ -101,34 +101,47 @@ export function XFormsCompositionControl({ node, indent, onLayout, composition }
    * Host implementations are built here rather than imported, because they need
    * live context the module scope does not have — the resolved field's binding
    * manifest, the draft, and the Accept lifecycle.
+   *
+   * They are named `useCallback`s rather than inline arrows inside the object
+   * literal: a conditional whose branches are destructuring arrows in a
+   * property position crashes the Hermes transform with `Property id of
+   * VariableDeclarator ... got "ObjectExpression"`, and the failure is a Metro
+   * 500 at bundle time, not a runtime error.
    */
+  const persistAssetFn = useCallback(
+    (args) => composition.persistAsset(args.capture, { retention: args.retention }),
+    [composition]
+  );
+
+  const completeCompositionFn = useCallback(
+    async (args) => {
+      const outputs = args.outputs;
+      // An authored composition has no handler to mint provenance, so the host
+      // does it from the composition's identity. "Computed" means produced by
+      // the composition, not by a model.
+      const receipt = createExecutionReceipt({
+        capability: field.compositionId,
+        capabilityRevision: String(definition?.revision ?? '0'),
+        inputs: {},
+        outputs,
+        runtime: { kind: 'composition', surfaceId: definition?.surfaceId ?? null },
+        timestamp: new Date().toISOString(),
+      });
+      return handleAccepted(outputs, { receipt });
+    },
+    [definition, field, handleAccepted]
+  );
+
   const functions = useMemo(
     () =>
       mergeFunctions(
         composition?.capabilityFunctions ?? [],
         createHostFunctions({
-          persistAsset: composition?.persistAsset
-            ? ({ capture, retention }) => composition.persistAsset(capture, { retention })
-            : undefined,
-          completeComposition: field
-            ? async ({ outputs }) => {
-                // An authored composition has no handler to mint provenance, so
-                // the host does it from the composition's identity. "Computed"
-                // means produced by the composition, not by a model.
-                const receipt = createExecutionReceipt({
-                  capability: field.compositionId,
-                  capabilityRevision: String(definition?.revision ?? '0'),
-                  inputs: {},
-                  outputs,
-                  runtime: { kind: 'composition', surfaceId: definition?.surfaceId ?? null },
-                  timestamp: new Date().toISOString(),
-                });
-                return handleAccepted(outputs, { receipt });
-              }
-            : undefined,
+          persistAsset: composition?.persistAsset ? persistAssetFn : undefined,
+          completeComposition: field ? completeCompositionFn : undefined,
         })
       ),
-    [composition, definition, field, handleAccepted]
+    [completeCompositionFn, composition, field, persistAssetFn]
   );
 
   /**

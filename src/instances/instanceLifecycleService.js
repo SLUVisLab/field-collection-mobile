@@ -378,6 +378,11 @@ export const createInstanceLifecycleService = ({
       return {
         instance,
         version: cached.version,
+        // Resume must hand back the same version-pinned resources a fresh fill
+        // gets. Without them the binding manifest and composition definitions
+        // are absent on resume only, and every composition field renders as
+        // unbound. See docs/composition-behaviour-audit.md.
+        attachments: cached.attachments ?? [],
         media: await listInstanceMedia(instance.localInstanceId),
       };
     },
