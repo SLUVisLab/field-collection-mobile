@@ -7,6 +7,7 @@ import { XFormsReadonlyControl } from './controls/XFormsReadonlyControl.js';
 import { XFormsRepeatControl } from './controls/XFormsRepeatControl.js';
 import { XFormsMultiImageControl } from './controls/XFormsMultiImageControl.js';
 import { XFormsSelectControl } from './controls/XFormsSelectControl.js';
+import { compositionConfigFrom } from './compositionField.js';
 import { controlKindFor, visibleRenderNodes } from './renderModel.js';
 import { tokens } from '../theme/tokens.js';
 import { useTheme } from '../theme/useTheme.js';
@@ -37,6 +38,29 @@ function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy, collectio
 
   if (kind === 'multi-image') {
     return <XFormsMultiImageControl node={node} indent={indent} onLayout={onLayout} collection={collection} />;
+  }
+
+  if (kind === 'composition') {
+    // Interim: the composition runtime is not wired yet. This says so plainly
+    // rather than falling through to "Unsupported XForms control: group",
+    // which would be both wrong and quiet about the consequence — the group's
+    // backing fields are suppressed because the composition owns its subtree
+    // (docs/b-custom-composition-conventions.md §5), so there is nothing else
+    // on screen to explain the gap.
+    return (
+      <View
+        onLayout={onLayout}
+        style={[styles.unsupported, { backgroundColor: theme.colors.surfaceWarning, borderRadius: tokens.radii.sm, gap: tokens.spacing.xs, marginLeft: indent, padding: tokens.spacing.md }]}
+        testID={`composition-placeholder-${node.reference}`}
+      >
+        <Text style={[styles.label, { color: theme.colors.text, fontSize: tokens.typography.label }]}>
+          {node.label ?? node.reference}
+        </Text>
+        <Text style={[styles.unsupportedText, { color: theme.colors.textMuted, lineHeight: tokens.typography.helperLineHeight }]}>
+          {`Collected by composition "${compositionConfigFrom(node.appearances).compositionId}", which this build cannot run yet. Its fields are hidden here; another ODK client can fill them directly.`}
+        </Text>
+      </View>
+    );
   }
 
   if (kind === 'repeat' || kind === 'repeat-instance') {

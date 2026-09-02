@@ -197,13 +197,32 @@ So no `readonly` is emitted. Instead:
 A stricter authoring mode for workflows that genuinely require immutable
 computed outputs can come later. It is not the default.
 
-### Implementation note from the spike
+### Hiding the backing fields — landed 2026-09-02
 
-Hiding the backing fields reuses the subtree-ownership mechanism added for the
-collection field (§25, `visibleRenderNodes`), but **not its predicate**. A
-collection field suppresses descendants by the prefix `` `${reference}[` `` —
-the `[` of a repeat instance. A composition group's children have no index
-(`/data/flower_analysis/petal_count`), so they need `` `${reference}/` ``.
+`controlKindFor` returns `'composition'` for a group carrying the appearance,
+and subtree ownership is generalized: `ownedPrefixFor` gives a collection field
+`` `${reference}[` `` (the `[` of a repeat instance) and a composition group
+`` `${reference}/` ``, because a composition group's children have no index.
+Both end at a path boundary, so `/data/photos_notes` and `/data/flower_notes`
+are untouched by a `/data/photos` or `/data/flower` owner.
+
+Generalizing removed a special case rather than adding one. The old code kept
+an owning node by testing its kind; in fact **an owning node never matches its
+own prefix** — `/data/photos` does not start with `/data/photos[`, nor
+`/data/flower` with `/data/flower/` — so the test was unnecessary, and dropping
+it makes a *nested* owning control correctly suppressed by the outer one. A
+collection field inside a composition group no longer renders loose.
+
+Recognition is additive, as in B-standard: a group with no token, or with only
+`field-list`, is still an ordinary group, and a bare `gather-composition:`
+naming nothing leaves it ordinary too.
+
+**Interim rendering.** The composition runtime is not wired, so the renderer
+shows an explicit placeholder naming the composition and saying its fields are
+hidden here and that another ODK client can fill them. Falling through to the
+default would have printed "Unsupported XForms control: group" — wrong, and
+quiet about the consequence, since the suppressed subtree leaves nothing else on
+screen to explain the gap.
 
 ## 6. Publishing and version pinning
 
