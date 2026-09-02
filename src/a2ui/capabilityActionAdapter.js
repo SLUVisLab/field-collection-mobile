@@ -2,7 +2,7 @@ import { createSegmentAndMeasureResult } from '../scientific/workflows/segmentAn
 
 import { GATHER_ACTION_IDS, SEGMENT_AND_MEASURE_VIEWS } from 'gather-catalog';
 
-import { createToolFlowController } from './toolFlowController.js';
+import { createFlowController } from './flowController.js';
 
 const DEFAULT_STATE_PATH = '/gather';
 
@@ -48,7 +48,7 @@ const createSegmentAndMeasureFlow = ({ surface, statePath, surfaceId, capabiliti
     return next;
   };
 
-  const controller = createToolFlowController({
+  const controller = createFlowController({
     initialView: SEGMENT_AND_MEASURE_VIEWS.capture,
     startView: state().status,
     onViewChange: (view) => {

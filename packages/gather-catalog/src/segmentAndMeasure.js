@@ -105,7 +105,7 @@ const SEGMENT_AND_MEASURE_OUTPUT_REVIEW = Object.freeze({
 /**
  * The view tokens Segment & Measure moves through. The `Flow` table below maps
  * them onto Views (several working tokens share `processingView`), and the
- * host-side ToolFlowController writes exactly these values — sharing the
+ * host-side FlowController writes exactly these values — sharing the
  * constant keeps the authored table and the controller from drifting apart.
  */
 export const SEGMENT_AND_MEASURE_VIEWS = Object.freeze({

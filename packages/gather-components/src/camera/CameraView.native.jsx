@@ -1,16 +1,19 @@
 import { useCallback, useState } from 'react';
 import { useCameraPermission, usePhotoOutput } from 'react-native-vision-camera';
-import { CaptureView } from 'gather-components';
 
-import { capturePhoto } from '../../capabilities/camera/capturePhoto.js';
-import { CameraViewport } from './CameraViewport.js';
+import { CameraFrame } from './CameraFrame.jsx';
+import { CameraDevicePreview } from './CameraDevicePreview.native.jsx';
+import { capturePhoto } from './capturePhoto.js';
 
 /**
- * Native capture surface: owns VisionCamera permission/photo output and the
- * verified capturePhoto capability, and renders the shared CaptureView so the
- * viewport frame and shutter match every other renderer.
+ * Native photo camera surface (`CameraView`): owns VisionCamera permission and
+ * the photo output, renders the shared `CameraFrame`, and emits a plain,
+ * serializable local-file capture via `onCapture`. No camera-native object
+ * crosses this seam (`capturePhoto` releases the VisionCamera Photo before
+ * returning). The durable `ImageAsset` is materialized by the storage layer, not
+ * by this component.
  */
-export function CameraCapture({ onCaptured, onCancel, testIDPrefix = 'camera' }) {
+export function CameraView({ onCapture, onCancel, testIDPrefix = 'camera' }) {
   const { hasPermission, canRequestPermission, requestPermission } = useCameraPermission();
   const photoOutput = usePhotoOutput({ containerFormat: 'jpeg', quality: 0.9 });
   const [capturing, setCapturing] = useState(false);
@@ -31,17 +34,17 @@ export function CameraCapture({ onCaptured, onCancel, testIDPrefix = 'camera' })
     setError(null);
     try {
       const capture = await capturePhoto({ photoOutput });
-      await onCaptured?.(capture);
+      await onCapture?.(capture);
     } catch {
       setError('Could not capture a photo. Try again.');
     } finally {
       setCapturing(false);
     }
-  }, [capturing, onCaptured, photoOutput]);
+  }, [capturing, onCapture, photoOutput]);
 
   if (!hasPermission) {
     return (
-      <CaptureView
+      <CameraFrame
         testIDPrefix={testIDPrefix}
         error={error}
         onCancel={onCancel}
@@ -55,15 +58,15 @@ export function CameraCapture({ onCaptured, onCancel, testIDPrefix = 'camera' })
   }
 
   return (
-    <CaptureView
+    <CameraFrame
       testIDPrefix={testIDPrefix}
       capturing={capturing}
       error={error}
       onCancel={onCancel}
       onCapture={() => void takePhoto()}
       viewport={
-        <CameraViewport
-          photoOutput={photoOutput}
+        <CameraDevicePreview
+          outputs={[photoOutput]}
           isActive
           onError={() => setError('Camera preview is unavailable.')}
           onUnavailable={() => setError('No camera is available on this device.')}

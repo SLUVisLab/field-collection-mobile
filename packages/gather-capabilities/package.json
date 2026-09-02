@@ -1,0 +1,17 @@
+{
+  "name": "gather-capabilities",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./definitions": "./src/definitions.js",
+    "./runtime": "./src/runtime.js"
+  },
+  "scripts": {
+    "test": "node --test $(find test -name '*.test.mjs' -not -path '*/live/*')"
+  },
+  "peerDependencies": {
+    "zod": "*"
+  }
+}

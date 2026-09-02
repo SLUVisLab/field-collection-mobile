@@ -119,7 +119,7 @@ export const createModelExecutor = ({ modelStore, onnxRuntime, imageAdapter, fil
         mask,
         threshold,
         receipt: await trace.measure('receiptHash', () => createExecutionReceipt({
-          capability: 'vision.segment',
+          capability: 'image.segment',
           capabilityRevision: '1',
           model: createScientificModelRef(model),
           inputs: { imageAssetId: image.assetId, imageSha256: image.sha256 },
@@ -165,7 +165,7 @@ export const createModelExecutor = ({ modelStore, onnxRuntime, imageAdapter, fil
       return {
         ranked,
         receipt: await trace.measure('receiptHash', () => createExecutionReceipt({
-          capability: 'vision.classify',
+          capability: 'image.classify',
           capabilityRevision: '1',
           model: createScientificModelRef(model),
           inputs: { imageAssetId: image.assetId, imageSha256: image.sha256 },

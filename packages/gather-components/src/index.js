@@ -23,10 +23,11 @@ export {
 } from './theme/buttonPresentation.js';
 
 export { Button } from './components/actions/Button.jsx';
-export { CaptureView } from './components/capture/CaptureView.jsx';
+export { CameraView, VideoView, CameraFrame } from './camera/index.js';
 
 export { Panel, Heading, Helper, SectionCopy } from './components/primitives.jsx';
 export { ImageOverlay } from './components/image/ImageOverlay.jsx';
+export { MediaGallery } from './components/media/MediaGallery.jsx';
 export { ResultSection, ResultRow } from './components/results/ResultSection.jsx';
 export { MeasurementResults } from './components/results/MeasurementResults.jsx';
 export { ClassificationResults } from './components/results/ClassificationResults.jsx';

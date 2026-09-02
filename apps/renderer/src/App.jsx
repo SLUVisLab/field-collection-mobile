@@ -15,6 +15,7 @@ import { createCapabilityActionHandler } from '../../../src/a2ui/capabilityActio
 import { fixtureCapabilities } from './fixtureCapabilities.js';
 import {
   Flow,
+  GatherCameraView,
   GatherCapture,
   GatherImageOverlay,
   GatherInstrumentError,
@@ -26,7 +27,7 @@ import './app.css';
 
 const gatherCatalog = new Catalog(
   GATHER_CATALOG_ID,
-  [...basicCatalog.components.values(), Flow, GatherCapture, GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError],
+  [...basicCatalog.components.values(), Flow, GatherCameraView, GatherCapture, GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError],
   [...basicCatalog.functions.values()]
 );
 

@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createToolFlowController } from '../../src/a2ui/toolFlowController.js';
+import { createFlowController } from '../../src/a2ui/flowController.js';
 
-test('a controller starts at its initial view and reports every change', () => {
+test('a flow controller starts at its initial view and reports every change', () => {
   const changes = [];
-  const controller = createToolFlowController({
+  const controller = createFlowController({
     initialView: 'capture',
     onViewChange: (view, previous) => changes.push([previous, view]),
   });
@@ -18,7 +18,7 @@ test('a controller starts at its initial view and reports every change', () => {
 });
 
 test('a controller resumes from durable state but resets to the initial view', () => {
-  const controller = createToolFlowController({ initialView: 'capture', startView: 'summary' });
+  const controller = createFlowController({ initialView: 'capture', startView: 'summary' });
 
   assert.equal(controller.activeView, 'summary', 'seeded from durable state');
   controller.reset();
@@ -27,7 +27,7 @@ test('a controller resumes from durable state but resets to the initial view', (
 
 test('dispatch routes an event to its handler with the controller', async () => {
   const seen = [];
-  const controller = createToolFlowController({
+  const controller = createFlowController({
     initialView: 'capture',
     handlers: {
       'tool.go': async (payload, flow) => {
@@ -46,24 +46,25 @@ test('dispatch routes an event to its handler with the controller', async () => 
 });
 
 test('unknown events are inert, so a surface may declare unimplemented actions', async () => {
-  const controller = createToolFlowController({ initialView: 'capture', handlers: {} });
+  const controller = createFlowController({ initialView: 'capture', handlers: {} });
 
   assert.equal(await controller.dispatch('tool.unknown', {}), undefined);
   assert.equal(controller.activeView, 'capture');
 });
 
 test('a controller requires an initial view and rejects empty view names', () => {
-  assert.throws(() => createToolFlowController({}), /requires an initial view/);
-  const controller = createToolFlowController({ initialView: 'capture' });
+  assert.throws(() => createFlowController({}), /requires an initial view/);
+  const controller = createFlowController({ initialView: 'capture' });
   assert.throws(() => controller.setView(''), /non-empty string/);
   assert.throws(() => controller.setView(null), /non-empty string/);
 });
 
-// The seam is deliberately not a statechart: no guards, nested states,
+// FlowController owns only active View selection: no guards, nested states,
 // entry/exit actions, timers, or parallel states. Transition policy lives in
-// the bespoke handlers so a generic driver can replace them later.
-test('the controller exposes only the small orchestration surface', () => {
-  const controller = createToolFlowController({ initialView: 'capture' });
+// composition-specific handlers until a second production composition shows
+// what the common model is.
+test('the controller exposes only active-View selection and event routing', () => {
+  const controller = createFlowController({ initialView: 'capture' });
   assert.deepEqual(
     Object.keys(controller).sort(),
     ['activeView', 'dispatch', 'reset', 'setView'],

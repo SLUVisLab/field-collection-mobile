@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useXFormsQuestion } from 'odk-xforms-react';
 
-import { CameraCapture } from '../../components/camera/CameraCapture.js';
+import { CameraView } from 'gather-components';
 import { CameraControls } from '../../components/camera/CameraControls.js';
 import { ActionButton } from '../../components/NavButton.js';
 import { ImagePreview } from '../../components/camera/ImagePreview.js';
@@ -50,8 +50,8 @@ export function XFormsImageControl({ node, indent, onLayout, onAttachImage, atta
         {filename ? `Attached: ${filename}` : 'No local image is attached.'}
       </Text>
       {showCamera ? (
-        <CameraCapture
-          onCaptured={(nextCapture) => {
+        <CameraView
+          onCapture={(nextCapture) => {
             setCapture(nextCapture);
             setShowCamera(false);
           }}

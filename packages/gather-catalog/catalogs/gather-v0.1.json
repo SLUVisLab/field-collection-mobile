@@ -947,6 +947,30 @@
       ],
       "unevaluatedProperties": false
     },
+    "CameraView": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "CameraView"
+            },
+            "statePath": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "component",
+            "statePath"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
     "Flow": {
       "type": "object",
       "allOf": [
@@ -3420,6 +3444,30 @@
       ],
       "unevaluatedProperties": false
     },
+    "gather-v0.1.source_CameraView": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "CameraView"
+            },
+            "statePath": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "component",
+            "statePath"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
     "gather-v0.1.source_Flow": {
       "type": "object",
       "allOf": [
@@ -3596,6 +3644,9 @@
         },
         {
           "$ref": "#/components/Button"
+        },
+        {
+          "$ref": "#/components/CameraView"
         },
         {
           "$ref": "#/components/Card"

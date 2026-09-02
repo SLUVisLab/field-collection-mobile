@@ -474,6 +474,151 @@ Until then: if a transition rule is getting complicated, that is a signal to
 check whether it belongs in the controller at all, or whether the Tool wants a
 durable form-level branch (P3 / XForms) instead of an in-instrument View.
 
+## Phase 1 (2026-09-01): components/capabilities ownership + contracts
+
+The Camera/Components/Capabilities architecture work is proceeding phase by phase.
+**Phase 1 is inventory + contracts** — no `gather-capabilities` package and no code
+moves yet (those are Phase 2+). Its deliverable is
+[components-capabilities-ownership.md](./components-capabilities-ownership.md),
+which records:
+
+- the **ownership rule** (Composer-visible primitives are package-owned; `src/`
+  consumes them) and a **file-by-file classification** of `src/components`,
+  `src/capabilities`, `src/scientific`, and `gather-components` with Phase-2+ move
+  targets;
+- the **capability definition schema** (`defineCapability` — native-free
+  `definitions.js` vs executable `runtime.js`, colocated with implementations);
+- **serializable asset contracts**: `ImageAsset` and `MaskAsset` confirmed
+  (implemented in `src/scientific/contracts.js`), `VideoAsset` specified for Phase 4;
+- the **`vision.* → image.*`** namespace consolidation (ML/OpenCV distinction
+  becomes metadata, not a public-id split);
+- confirmation that **`Flow`/`View`/`ToolFlowController`** (above) satisfy the
+  Phase 1 Flow/View contract, and that **A2UI v0.9 stays**;
+- the **three-abstraction** public model (below).
+
+`CameraView`/`VideoView`/`MediaGallery`, the internal `CameraSession` seam, the
+capture **Tools**, and the Segment & Measure migration are sequenced for later phases
+in that document.
+
+### Phase 2 (2026-09-01): `gather-capabilities` package (image + measure)
+
+The reusable M8 image/measure capabilities now live in the new
+[`gather-capabilities`](../packages/gather-capabilities/) package: native-free
+`defineCapability` + colocated definitions/implementations in concept-first folders
+(`image/segment`, `image/classify`, `measure/`), a native-free `definitions.js`
+aggregate the Composer agent can load without native deps, and a `runtime.js`
+(`createCapabilityRuntime`) that binds implementations to app-injected engines. The
+public `vision.*` namespace is consolidated to **`image.*`** (ML/OpenCV is `kind`
+metadata, not a public-id split), and only implemented capabilities are advertised.
+`GatherProvider` consumes the package; `src/capabilities/{vision,measure}` are
+deleted. To keep the package decoupled, capabilities receive the app-computed
+serializable `modelRef` (the `src/scientific` model subsystem still owns model
+resolution/validation) — so `contracts.js`/`modelPackage.js` were **not** moved (a
+future contracts-relocation step). Camera capabilities + the shared `CameraSession`
+seam are Phase 3. Verified: `test:packages` green (8 packages), Android Hermes export
+green, renderer build green. Detail in
+[components-capabilities-ownership.md](./components-capabilities-ownership.md) §7.
+
+### `src/scientific` audit (2026-09-01, analysis only)
+
+Before any model/runtime ownership change, every file under `src/scientific` was
+audited (responsibility, imports, consumers, serializable contracts, native deps,
+coupling, likely owner, confidence, move-now). Findings in
+[scientific-directory-audit.md](./scientific-directory-audit.md): the directory is an
+M8 vertical slice mixing a **Models subsystem** (modelPackage/store/availability/
+bundled — cohesive, native-free core + one native installer seam), **capability
+execution backends** (`modelExecutor` + ONNX + OpenCV adapters), **generic media
+storage** (`imageAssetService`, mislabeled as scientific), **capability-generic
+provenance** (`receipt`), and the **Segment & Measure Tool** (`workflows/…`,
+mislabeled as scientific). One real bug surfaced: `modelExecutor` still writes
+`vision.segment`/`vision.classify` receipt ids after the `image.*` rename. A future
+`gather-models` package is judged justified eventually but **not forced** by the
+current graph (Option B keeps `ModelRef` app-side; nothing outside the app reuses the
+model cluster). No files moved.
+
+### Phase 3 revised (2026-09-01): Component-owned camera, no `CameraSession`
+
+The earlier Phase 3 plan — an internal shared **`CameraSession`** registry/resolver
+plus public **`camera.capturePhoto`/`camera.recordVideo`** capabilities resolving an
+ambient mounted session — is **superseded and will not be built**. The benefit did
+not justify the added lifecycle, coupling, native dependency, and maintenance surface.
+
+Revised boundary: **Components own interactive acquisition** (`CameraView` →
+`ImageAsset`, `VideoView` → `VideoAsset`, owning permission/preview/lifecycle/
+shutter/flash/zoom/capture); **Capabilities operate on serializable data** (`image.*`,
+`measure.*`). A session-backed `camera.capturePhoto` would carry a hidden runtime
+dependency (mounted view + live session + permissions + registry lifecycle), unlike
+clean data capabilities — and *internal implementation reuse need not use the same
+abstraction as public composability*. Revised Phase 3 is a **simplification/refactor
+of the proven camera design**: consolidate the reusable camera machinery into
+`gather-components/camera` behind the existing `.native`/`.web` seam, add `VideoView`,
+consolidate permission ownership, and preserve an internal frame-processor/overlay
+extension seam (VisionCamera frame processors stay owned by `CameraView`; native
+`Frame`/worklet objects never cross the A2UI contract). Tripwire: introduce a
+session/service abstraction only if a real non-owner must programmatically control an
+already-mounted camera. Full decision + 10-step plan in
+[components-capabilities-ownership.md](./components-capabilities-ownership.md) §9.
+
+**Landed (2026-09-01):** `gather-components/src/camera/` now owns the camera surface,
+resolved per platform by the bundler (Metro → `.native.jsx`, Vite → `.web.jsx`;
+VisionCamera stays out of the web bundle). Shared `CameraFrame` presentation;
+`CameraView` (photo, Component-owned → plain capture) + new `VideoView` (video →
+plain capture) with `.native` (VisionCamera) / `.web` (getUserMedia/`MediaRecorder`)
+seams; shared `CameraDevicePreview.native` with a `frameProcessor` extension seam;
+shared `RecordButton`. Consumers (Segment & Measure, XFormsImageControl, renderer
+`GatherCapture`) rewired; old camera files deleted; `gather-components` gains a
+`react-native-vision-camera` peer dep. `test:packages` + renderer build + Android
+export all green. **Device validation pending** (physical photo/video capture, browser
+preview; `VideoView.native` recording + mic permission need on-device confirmation).
+
+**Phase 3 review (2026-09-01):** three boundary clarifications recorded in
+[components-capabilities-ownership.md](./components-capabilities-ownership.md) §9
+("Phase 3 review"): (1) the **public output contract** is descriptor → asset service
+→ typed asset today and must converge on `CameraView → ImageAsset` / `VideoView →
+VideoAsset` — the Composer/Tool boundary must never see raw platform URI shapes; (2)
+`CameraFrame`/`CameraDevicePreview`/`RecordButton`/`capturePhoto` are **internal, not
+Composer-visible** (only `CameraView`/`VideoView` are authoring surfaces); (3) the
+`src/capabilities/camera` namespace is now **misleading** — only QR/barcode result
+decoding (`scannedCodeValue`) remains, a future `code.scan`/`barcode.parse`/`qr.decode`
+concern, deferred (no impulsive rename).
+
+**Phase 4 — MediaGallery landed (2026-09-01):** added `MediaGallery` (Composer-visible,
+presentation-only) over mixed **photo + video** collections in `gather-components` — a
+thumbnail grid (video tiles get a play badge) with optional select/remove/reorder, plus a
+built-in **viewer modal** that displays photos and plays videos. The viewer's media
+surface is platform-seamed (`MediaSurface.web` = raw `<video>`/`<img>`, no dep;
+`MediaSurface.native` = `expo-video`); the gallery itself is one shared cross-platform
+component. Items are **duck-typed** (no asset-schema import), and the render-free
+`mediaModel.js` holds the tested logic — so the deferred `ImageAsset`/`VideoAsset`
+convergence needs no gallery change. New native dep `expo-video ~57.0.3` (imported only in
+the `.native` seam; config plugin registered; inline native playback device-validation
+pending). Design-doc items 15/16/18 were already satisfied by Phase 3; the doc's
+session-era acceptance lines stay superseded. Gates green: `test:packages` (8 pkgs,
+`fail 0`), renderer build (837 modules, `expo-video` not pulled), Android export (1458
+modules, native seam resolves `expo-video`). Full detail in
+[components-capabilities-ownership.md](./components-capabilities-ownership.md) §9
+("Phase 4 — landed").
+
+
+### Clarification (2026-09-01): three abstractions, and Tools replace "recipes"
+
+The public architecture is exactly three abstractions: **Components** (reusable
+UI/interaction primitives), **Capabilities** (reusable operations), and **Tools**
+(reusable typed data-collection workflows composed from Components, Capabilities,
+**and other Tools**). Components + Capabilities are primitives; **Tools are
+recursively composable workflows**.
+
+There is **no separate "recipe" concept**. Photo Capture, Video Capture, Multi-Image
+Capture, Segmented Capture, and Segment & Measure are all **Tools** — not recipes and
+not monolithic component variants. A Tool that reuses another (Segment & Measure →
+Segmented Capture → Photo Capture) is resolved by **authoring/build-time inlining**
+of the referenced Tool into the published artifact, preserving dependency/version
+provenance. **No nested-Tool runtime** is introduced now — consistent with the
+"establish the seam, defer the engine" stance on `ToolFlowController`. (The unrelated
+OpenCV operation "recipes" in `v2-release-planning.md` are a different concept and
+untouched.) Full detail in
+[components-capabilities-ownership.md](./components-capabilities-ownership.md) §0.
+
 ## Gather's v0.9 → v1.0 work, by area
 
 ### Already v1.0-shaped (no work)

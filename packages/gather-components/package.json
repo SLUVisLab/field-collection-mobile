@@ -13,7 +13,9 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-vision-camera": "*",
+    "expo-video": "*"
   },
   "scripts": {
     "test": "node --test $(find test -name '*.test.mjs' 2>/dev/null)"

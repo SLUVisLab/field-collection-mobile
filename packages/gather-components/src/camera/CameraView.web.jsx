@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
-import { CaptureView } from 'gather-components';
+
+import { CameraFrame } from './CameraFrame.jsx';
 
 const MAX_DIMENSION = 960;
 
 /**
- * Web capture surface: a live getUserMedia preview rendered inside the shared
- * CaptureView. When a camera is unavailable (headless preview, denied
- * permission, or a Composer iframe without camera policy) it falls back to a
- * placeholder and the shutter drives the fixture capture, so the flow always
- * works. The only platform-specific code here is the DOM camera/canvas glue.
+ * Web photo camera surface (`CameraView`): a live getUserMedia preview rendered
+ * inside the shared `CameraFrame`. When a camera is unavailable (headless preview,
+ * denied permission, or a Composer iframe without camera policy) it falls back to
+ * a placeholder and the shutter drives a fixture capture, so the flow always
+ * works. The only platform-specific code here is the DOM camera/canvas glue; it
+ * emits the same plain serializable capture as the native `CameraView`.
  */
-export function CameraSurfaceWeb({ onCapture, testIDPrefix = 'camera' }) {
+export function CameraView({ onCapture, testIDPrefix = 'camera' }) {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const [live, setLive] = useState(true);
@@ -84,7 +86,7 @@ export function CameraSurfaceWeb({ onCapture, testIDPrefix = 'camera' }) {
   );
 
   return (
-    <CaptureView
+    <CameraFrame
       testIDPrefix={testIDPrefix}
       viewport={viewport}
       capturing={capturing}

@@ -3,6 +3,7 @@ export const GATHER_CATALOG_REVISION = '0.1.0';
 
 export const GATHER_COMPONENT_IDS = Object.freeze({
   capture: 'GatherCapture',
+  cameraView: 'CameraView',
   flow: 'Flow',
   imageOverlay: 'ImageOverlay',
   outputReview: 'OutputReview',

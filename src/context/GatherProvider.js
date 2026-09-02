@@ -38,8 +38,8 @@ import { createOpenCvImageAdapter } from '../scientific/runtime/openCvImageAdapt
 import { createOpenCvMeasurementAdapter } from '../scientific/runtime/openCvMeasurementAdapter.js';
 import { createModelExecutor } from '../scientific/runtime/modelExecutor.js';
 import { createImageAssetService } from '../scientific/assets/imageAssetService.js';
-import { segment, classify } from '../capabilities/vision/index.js';
-import { measureImage, measureMask } from '../capabilities/measure/index.js';
+import { segment, classify, measureImage, measureMask } from 'gather-capabilities';
+import { createScientificModelRef } from '../scientific/models/modelPackage.js';
 
 /**
  * Runs the (pure) bootstrap orchestration against the real native storage layer
@@ -443,6 +443,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       return segment({
         image,
         model,
+        modelRef: createScientificModelRef(model),
         execute: (input) => scientificRuntime.executor.segment({ ...input, projectKey: activeProject.projectKey }),
       });
     },
@@ -456,6 +457,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       return classify({
         image,
         model,
+        modelRef: createScientificModelRef(model),
         execute: (input) => scientificRuntime.executor.classify({ ...input, projectKey: activeProject.projectKey }),
       });
     },

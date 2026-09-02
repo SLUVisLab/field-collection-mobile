@@ -63,7 +63,7 @@ test('model executor materializes a durable typed segmentation mask', async () =
   assert.equal(result.threshold, 0.5);
   assert.equal(result.mask.path, 'projects/project-a/media/mask-1-mask.png');
   assert.equal(result.mask.sourceImageAssetId, image.assetId);
-  assert.equal(result.receipt.capability, 'vision.segment');
+  assert.equal(result.receipt.capability, 'image.segment');
   assert.ok(result.performance.phases.some((phase) => phase.name === 'modelStoreResolve'));
   assert.ok(result.performance.phases.some((phase) => phase.name === 'pixelNormalizeTensor'));
 });
@@ -102,6 +102,6 @@ test('model executor resolves labels and returns ranked typed classifications', 
   });
   const result = await executor.classify({ projectKey: 'project-a', image, model: classificationModel });
   assert.deepEqual(result.ranked.map((item) => item.label), ['two', 'three']);
-  assert.equal(result.receipt.capability, 'vision.classify');
+  assert.equal(result.receipt.capability, 'image.classify');
   assert.ok(result.performance.phases.some((phase) => phase.name === 'labelsRead'));
 });

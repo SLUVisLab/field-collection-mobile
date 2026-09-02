@@ -26,6 +26,27 @@
       ],
       "unevaluatedProperties": false
     },
+    "CameraView": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "CameraView"
+            },
+            "statePath": {
+              "type": "string"
+            }
+          },
+          "required": ["component", "statePath"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
     "Flow": {
       "type": "object",
       "allOf": [
@@ -161,6 +182,9 @@
       "oneOf": [
         {
           "$ref": "#/components/GatherCapture"
+        },
+        {
+          "$ref": "#/components/CameraView"
         },
         {
           "$ref": "#/components/Flow"

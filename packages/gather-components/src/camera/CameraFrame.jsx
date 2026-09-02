@@ -1,26 +1,28 @@
 import { useCallback, useRef } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { tokens } from '../../theme/tokens.js';
-import { useTheme } from '../../theme/useTheme.js';
-import { Button } from '../actions/Button.jsx';
+import { tokens } from '../theme/tokens.js';
+import { useTheme } from '../theme/useTheme.js';
+import { Button } from '../components/actions/Button.jsx';
 
 /**
- * Shared, presentational capture surface: a full-width viewport frame, a
- * centered shutter, flash feedback, and permission/error affordances.
+ * Shared, presentational camera surface: a full-width viewport frame, a control
+ * row (a centered photo shutter by default, or a caller-supplied `control` such
+ * as a record button), flash feedback, and permission/error affordances.
  *
- * It renders identically on every platform. The live preview itself is passed
- * in as `viewport` (a platform `<Camera>` on native, a `<video>` on web) and the
- * capture mechanics are provided by the caller, so this component holds no
- * device- or DOM-specific code.
+ * It renders identically on every platform. The live preview is passed in as
+ * `viewport` (a platform `<Camera>` on native, a `<video>` on web); the capture
+ * mechanics are the caller's, so this component holds no device/DOM code. Both
+ * `CameraView` and `VideoView` render it so photo and video framing never drift.
  */
-export function CaptureView({
+export function CameraFrame({
   viewport,
   onCapture,
   capturing = false,
   error = null,
   permission = null,
   onCancel = null,
+  control = null,
   testIDPrefix = 'camera',
 }) {
   const theme = useTheme();
@@ -78,16 +80,18 @@ export function CaptureView({
         </Text>
       ) : null}
       <View style={styles.shutterRow}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={capturing ? 'Taking photo' : 'Take photo'}
-          disabled={capturing}
-          onPress={handleCapture}
-          testID={`${testIDPrefix}-capture`}
-          style={({ pressed }) => [styles.shutterOuter, pressed && styles.shutterPressed, capturing && styles.shutterDisabled]}
-        >
-          <View style={styles.shutterInner} />
-        </Pressable>
+        {control ?? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={capturing ? 'Taking photo' : 'Take photo'}
+            disabled={capturing}
+            onPress={handleCapture}
+            testID={`${testIDPrefix}-capture`}
+            style={({ pressed }) => [styles.shutterOuter, pressed && styles.shutterPressed, capturing && styles.shutterDisabled]}
+          >
+            <View style={styles.shutterInner} />
+          </Pressable>
+        )}
       </View>
       {onCancel ? (
         <Button label="Cancel" onPress={onCancel} variant="secondary" style={styles.inlineAction} testID={`${testIDPrefix}-cancel`} />

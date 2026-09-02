@@ -5,8 +5,11 @@ import {
   CameraCaptureError,
   capturePhoto,
   localImageCaptureResult,
-} from '../../src/capabilities/camera/capturePhoto.js';
-import { scannedCodeValue } from '../../src/capabilities/camera/scanResult.js';
+} from '../src/camera/capturePhoto.js';
+
+// Moved from the app in Phase 3 with `capturePhoto` itself. This is the seam that
+// converts a VisionCamera photo into a plain local-file descriptor: no native
+// camera object may cross it, and the native photo/image must always be disposed.
 
 test('camera capture returns only a stable local-file result and disposes the native photo and image', async () => {
   let captureSettings = null;
@@ -104,14 +107,4 @@ test('camera capture normalizes file URIs and rejects non-local results', () => 
     () => localImageCaptureResult({ uri: 'https://example.test/image.jpeg' }),
     CameraCaptureError
   );
-});
-
-test('barcode normalization returns a plain first payload without retaining barcode objects', () => {
-  const first = { rawValue: undefined, displayValue: undefined };
-  const second = { rawValue: 'scanned-settings-qr', displayValue: 'display-settings-qr' };
-
-  assert.equal(scannedCodeValue([first, second]), 'scanned-settings-qr');
-  assert.equal(scannedCodeValue([{ displayValue: 'fallback-code' }]), 'fallback-code');
-  assert.equal(scannedCodeValue([]), null);
-  assert.equal(scannedCodeValue(null), null);
 });

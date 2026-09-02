@@ -86,6 +86,7 @@ module.exports = {
       ],
       "@maplibre/maplibre-react-native",
       "onnxruntime-react-native",
+      "expo-video",
     ],
     runtimeVersion: {
       policy: "appVersion",

@@ -4,9 +4,14 @@
  * one child View whose `when` matches an externally controlled value.
  *
  * Flow is presentation only. It does not decide which View is active, own
- * transitions, or run capabilities — a host-side `ToolFlowController` owns that
- * (see `src/a2ui/toolFlowController.js`). Given an active view token, Flow
- * renders that View.
+ * transitions, or run capabilities — a host-side `FlowController` owns that
+ * (see `src/a2ui/flowController.js`). Given an active view token, Flow renders
+ * that View.
+ *
+ * Flow is the A2UI **authoring** primitive for selecting among authored Views.
+ * It is not a general React view-switching primitive: a Component that happens
+ * to have several internal screens uses ordinary component state, because its
+ * views are shipped behavior rather than authored structure.
  *
  * Several tokens may map onto one View (the working statuses of Segment &
  * Measure all render `processingView`), which is why the mapping is an authored
