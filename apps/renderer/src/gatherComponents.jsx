@@ -3,6 +3,8 @@ import { CommonSchemas } from '@a2ui/web_core/v0_9';
 import { z } from 'zod';
 import {
   CameraView,
+  MediaGallery,
+  MultiImageCapture,
   ImageOverlay,
   InstrumentError,
   OutputReview,
@@ -31,6 +33,30 @@ const CameraViewApi = {
   name: GATHER_COMPONENT_IDS.cameraView,
   schema: z.object({
     statePath: z.string().optional(),
+  }).strict(),
+};
+
+const MediaGalleryApi = {
+  name: GATHER_COMPONENT_IDS.mediaGallery,
+  schema: z.object({
+    items: CommonSchemas.DynamicValue.optional(),
+    statePath: z.string().optional(),
+    allowSelect: z.boolean().optional(),
+    allowRemove: z.boolean().optional(),
+    allowReorder: z.boolean().optional(),
+    columns: z.number().int().min(1).optional(),
+  }).strict(),
+};
+
+const MultiImageCaptureApi = {
+  name: GATHER_COMPONENT_IDS.multiImageCapture,
+  schema: z.object({
+    value: CommonSchemas.DynamicValue.optional(),
+    statePath: z.string().optional(),
+    minItems: z.number().int().min(0).optional(),
+    maxItems: z.number().int().min(1).optional(),
+    allowRemove: z.boolean().optional(),
+    allowReorder: z.boolean().optional(),
   }).strict(),
 };
 
@@ -96,6 +122,40 @@ export const GatherCameraView = createComponentImplementation(CameraViewApi, ({ 
   return (
     <CameraView
       onCapture={(capture) => context.dispatchAction(action(GATHER_ACTION_IDS.capture, statePath, capture ? { capture } : undefined))}
+    />
+  );
+});
+
+export const GatherMediaGallery = createComponentImplementation(MediaGalleryApi, ({ props, context }) => {
+  const statePath = props.statePath || DEFAULT_STATE_PATH;
+  return (
+    <MediaGallery
+      items={Array.isArray(props.items) ? props.items : []}
+      allowSelect={props.allowSelect ?? false}
+      allowRemove={props.allowRemove ?? false}
+      allowReorder={props.allowReorder ?? false}
+      columns={props.columns ?? 3}
+      onRemove={(_item, index) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaChanged, statePath, { index, change: 'remove' }))}
+      onReorder={(next) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaChanged, statePath, { items: next, change: 'reorder' }))}
+      onSelect={(_item, index) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaSelected, statePath, { index }))}
+      onBack={() => context.dispatchAction(action(GATHER_ACTION_IDS.mediaBack, statePath))}
+      onDone={() => context.dispatchAction(action(GATHER_ACTION_IDS.mediaDone, statePath))}
+    />
+  );
+});
+
+export const GatherMultiImageCapture = createComponentImplementation(MultiImageCaptureApi, ({ props, context }) => {
+  const statePath = props.statePath || DEFAULT_STATE_PATH;
+  return (
+    <MultiImageCapture
+      value={Array.isArray(props.value) ? props.value : []}
+      minItems={props.minItems ?? 0}
+      maxItems={props.maxItems ?? null}
+      allowRemove={props.allowRemove ?? true}
+      allowReorder={props.allowReorder ?? false}
+      onCapture={(capture) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaCaptured, statePath, capture ? { capture } : undefined))}
+      onChange={(next) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaChanged, statePath, { items: next, change: 'set' }))}
+      onDone={() => context.dispatchAction(action(GATHER_ACTION_IDS.mediaDone, statePath))}
     />
   );
 });

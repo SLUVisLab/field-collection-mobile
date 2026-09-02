@@ -1,6 +1,8 @@
 import {
   CameraView,
   ImageOverlay,
+  MediaGallery,
+  MultiImageCapture,
   InstrumentError,
   OutputReview,
   ProcessingView,
@@ -12,6 +14,8 @@ import { bindInstrumentComponent } from './InstrumentSurface.js';
 import {
   cameraViewApi,
   flowApi,
+  mediaGalleryApi,
+  multiImageCaptureApi,
   imageOverlayApi,
   instrumentErrorApi,
   outputReviewApi,
@@ -42,6 +46,40 @@ export const gatherComponentImplementations = {
         onCapture={(capture) =>
           context.dispatchAction(action(GATHER_ACTION_IDS.capture, statePath, { capture }))
         }
+      />
+    )),
+  },
+  [GATHER_COMPONENT_IDS.mediaGallery]: {
+    component: bindInstrumentComponent(mediaGalleryApi.schema, ({ items, statePath, allowSelect, allowRemove, allowReorder, columns, context }) => (
+      <MediaGallery
+        items={Array.isArray(items) ? items : []}
+        allowSelect={allowSelect ?? false}
+        allowRemove={allowRemove ?? false}
+        allowReorder={allowReorder ?? false}
+        columns={columns ?? 3}
+        onRemove={(_item, index) =>
+          context.dispatchAction(action(GATHER_ACTION_IDS.mediaChanged, statePath, { index, change: 'remove' }))
+        }
+        onReorder={(next) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaChanged, statePath, { items: next, change: 'reorder' }))}
+        onSelect={(item, index) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaSelected, statePath, { index }))}
+        onBack={() => context.dispatchAction(action(GATHER_ACTION_IDS.mediaBack, statePath))}
+        onDone={() => context.dispatchAction(action(GATHER_ACTION_IDS.mediaDone, statePath))}
+      />
+    )),
+  },
+  [GATHER_COMPONENT_IDS.multiImageCapture]: {
+    component: bindInstrumentComponent(multiImageCaptureApi.schema, ({ value, statePath, minItems, maxItems, allowRemove, allowReorder, context }) => (
+      <MultiImageCapture
+        value={Array.isArray(value) ? value : []}
+        minItems={minItems ?? 0}
+        maxItems={maxItems ?? null}
+        allowRemove={allowRemove ?? true}
+        allowReorder={allowReorder ?? false}
+        // The component never persists: it hands over the plain descriptor and
+        // the host materializes the ImageAsset and appends it.
+        onCapture={(capture) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaCaptured, statePath, { capture }))}
+        onChange={(next) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaChanged, statePath, { items: next, change: 'set' }))}
+        onDone={() => context.dispatchAction(action(GATHER_ACTION_IDS.mediaDone, statePath))}
       />
     )),
   },

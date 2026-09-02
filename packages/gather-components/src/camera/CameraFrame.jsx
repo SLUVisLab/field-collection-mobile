@@ -23,6 +23,8 @@ export function CameraFrame({
   permission = null,
   onCancel = null,
   control = null,
+  leading = null,
+  trailing = null,
   testIDPrefix = 'camera',
 }) {
   const theme = useTheme();
@@ -80,6 +82,7 @@ export function CameraFrame({
         </Text>
       ) : null}
       <View style={styles.shutterRow}>
+        <View style={styles.shutterSide}>{leading}</View>
         {control ?? (
           <Pressable
             accessibilityRole="button"
@@ -92,6 +95,7 @@ export function CameraFrame({
             <View style={styles.shutterInner} />
           </Pressable>
         )}
+        <View style={[styles.shutterSide, styles.shutterSideEnd]}>{trailing}</View>
       </View>
       {onCancel ? (
         <Button label="Cancel" onPress={onCancel} variant="secondary" style={styles.inlineAction} testID={`${testIDPrefix}-cancel`} />
@@ -108,7 +112,15 @@ const styles = StyleSheet.create({
   error: { lineHeight: tokens.typography.bodyLineHeight },
   viewportWrap: { position: 'relative', width: '100%', aspectRatio: 3 / 4, overflow: 'hidden' },
   flash: { ...StyleSheet.absoluteFillObject, backgroundColor: '#ffffff' },
-  shutterRow: { alignItems: 'center', paddingVertical: tokens.spacing.sm },
+  shutterRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: tokens.spacing.sm,
+  },
+  // Equal-weight sides keep the shutter centred with or without accessories.
+  shutterSide: { alignItems: 'flex-start', flex: 1 },
+  shutterSideEnd: { alignItems: 'flex-end' },
   shutterOuter: {
     width: 74,
     height: 74,

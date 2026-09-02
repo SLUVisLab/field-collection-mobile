@@ -28,6 +28,14 @@ export { CameraView, VideoView, CameraFrame } from './camera/index.js';
 export { Panel, Heading, Helper, SectionCopy } from './primitives.jsx';
 export { ImageOverlay } from './image/ImageOverlay.jsx';
 export { MediaGallery } from './media/MediaGallery.jsx';
+export { MultiImageCapture } from './image-collection/MultiImageCapture.jsx';
+export {
+  canCapture,
+  canComplete,
+  captureCountLabel,
+  removeItemAt,
+  appendItem,
+} from './image-collection/multiImageModel.js';
 export { ResultSection, ResultRow } from './results/ResultSection.jsx';
 export { MeasurementResults } from './results/MeasurementResults.jsx';
 export { ClassificationResults } from './results/ClassificationResults.jsx';

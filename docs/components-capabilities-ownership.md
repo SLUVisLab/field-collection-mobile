@@ -1180,3 +1180,83 @@ Still open from §15 before a derived-value workflow ships at volume: the
 **retention policy** for scientific captures (project media has no cleanup path
 outside project removal), and making "keep image / discard after compute" an
 explicit authoring choice.
+
+## 18. Track A — `MultiImageCapture` landed (2026-09-02)
+
+The §12 build order, implemented. Steps 1–4 done; step 5 reassigned (below).
+
+### What landed
+
+**Camera slots.** `CameraFrame` gains additive `leading` / `trailing` slots
+beside the shutter — `control` still *replaces* it, which is how `VideoView`
+swaps in `RecordButton`. Both `CameraView.native` and `CameraView.web` forward
+them, so the semantic contract is identical on both platforms. The shutter stays
+centred with or without accessories (equal-weight side cells).
+
+**`MultiImageCapture`** (`gather-components/src/image-collection/`) — a compound
+Component composing `CameraView` + `MediaGallery`, presenting as one field
+control producing `ImageAsset[]`:
+
+- **controlled** — the collection lives with the host, because drafts reload
+  mid-instance; only `view` / `busy` / `error` are internal;
+- **it never persists** — `onCapture(descriptor)` hands the plain descriptor over
+  and the host materializes and appends the asset; awaiting it drives the busy
+  state, so per-photo progress is visible without the Component knowing about
+  storage;
+- **no `Flow`** — camera↔gallery is ordinary component state, because those views
+  are shipped behavior rather than authored structure;
+- the camera accessory shows the latest thumbnail (tap → gallery) and a progress
+  count; `Done` appears only once `minItems` is met.
+
+Render-free rules live in `multiImageModel.js` (`canCapture`, `canComplete`,
+`removeItemAt`, `appendItem`, `captureCountLabel`), mirroring `mediaModel.js`.
+An exact-count field is expressible as `minItems === maxItems`.
+
+**Catalog registration.** `MediaGallery` and `MultiImageCapture` are both
+Composer-visible now, in the catalog source, the regenerated artifact, and both
+renderers. Registering `MediaGallery` independently is the escape hatch: an
+author needing a structurally different interaction composes
+`CameraView` + `MediaGallery` + `Flow` directly instead of configuring the
+convenience Component.
+
+**Shipped collection handler** (`src/a2ui/mediaCollectionActions.js`). A
+Component's action semantics ship *with* the Component, so these are written
+once rather than reinvented per composition — the authored-composition handler
+gap does not apply. Scope is mutation only: `gather.mediaCaptured` (persist and
+append) and `gather.mediaChanged` (remove / reorder / set). Selection, `back`
+and `done` are navigation and completion, which belong to the embedding
+composition.
+
+### Two decisions worth noting
+
+**A collection capture got its own action id.** `gather.capture` already means
+"capture, then advance the instrument view". Overloading it with "persist and
+append" would give one action two meanings, distinguishable only by state path,
+so `gather.mediaCaptured` was added instead.
+
+**Removal carries an index, not an array.** `reorder`/`set` carry the
+already-computed array, but `remove` sends only the index so a stale client list
+cannot silently replace newer state.
+
+### Step 5 reassigned — the orphan sweep has no owner here
+
+§12 listed an orphan-media sweep with this work. On implementation that turned
+out to be misplaced: `MultiImageCapture` is a Component over a controlled array
+and owns neither repeats nor `instance_media`. Which store an orphan lives in
+depends on the host — the scientific asset service (project media) for an A2UI
+composition, `attachImageMedia` (instance media) for an XForms field. Building a
+sweep now would be inventing an owner. It belongs with the **XForms collection
+binding**, where the repeat-backed representation is decided.
+
+### Also corrected
+
+`catalog.test.mjs` asserted Segment & Measure's `hostActions` deep-equals *every*
+catalog action id. That was always the wrong invariant — an instrument declares
+the actions it uses — and the collection actions made it false. It now asserts
+subset membership plus the specific actions S&M needs.
+
+**Verified:** `test:unit` 348 tests / 347 pass / 0 fail (1 known skip); Expo
+config; renderer Vite build; Android Hermes export; `git diff --check`; and a
+parity check that all nine Gather component ids resolve in catalog + mobile +
+web. **Not verified:** on-device behaviour — the camera accessories, gallery
+navigation, and capture loop need a device pass.

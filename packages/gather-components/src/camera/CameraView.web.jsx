@@ -12,7 +12,7 @@ const MAX_DIMENSION = 960;
  * works. The only platform-specific code here is the DOM camera/canvas glue; it
  * emits the same plain serializable capture as the native `CameraView`.
  */
-export function CameraView({ onCapture, testIDPrefix = 'camera' }) {
+export function CameraView({ onCapture, leading = null, trailing = null, testIDPrefix = 'camera' }) {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const [live, setLive] = useState(true);
@@ -91,6 +91,8 @@ export function CameraView({ onCapture, testIDPrefix = 'camera' }) {
       viewport={viewport}
       capturing={capturing}
       error={error}
+      leading={leading}
+      trailing={trailing}
       onCapture={handleCapture}
     />
   );

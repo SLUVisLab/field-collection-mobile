@@ -47,6 +47,46 @@
       ],
       "unevaluatedProperties": false
     },
+    "MediaGallery": {
+      "type": "object",
+      "allOf": [
+        { "$ref": "common_types.json#/$defs/ComponentCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "component": { "const": "MediaGallery" },
+            "items": { "$ref": "common_types.json#/$defs/DynamicValue" },
+            "statePath": { "type": "string" },
+            "allowSelect": { "type": "boolean" },
+            "allowRemove": { "type": "boolean" },
+            "allowReorder": { "type": "boolean" },
+            "columns": { "type": "integer", "minimum": 1 }
+          },
+          "required": ["component", "statePath"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "MultiImageCapture": {
+      "type": "object",
+      "allOf": [
+        { "$ref": "common_types.json#/$defs/ComponentCommon" },
+        {
+          "type": "object",
+          "properties": {
+            "component": { "const": "MultiImageCapture" },
+            "value": { "$ref": "common_types.json#/$defs/DynamicValue" },
+            "statePath": { "type": "string" },
+            "minItems": { "type": "integer", "minimum": 0 },
+            "maxItems": { "type": "integer", "minimum": 1 },
+            "allowRemove": { "type": "boolean" },
+            "allowReorder": { "type": "boolean" }
+          },
+          "required": ["component", "statePath"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
     "Flow": {
       "type": "object",
       "allOf": [
@@ -185,6 +225,12 @@
         },
         {
           "$ref": "#/components/CameraView"
+        },
+        {
+          "$ref": "#/components/MediaGallery"
+        },
+        {
+          "$ref": "#/components/MultiImageCapture"
         },
         {
           "$ref": "#/components/Flow"

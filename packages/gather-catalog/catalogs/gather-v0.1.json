@@ -971,6 +971,87 @@
       ],
       "unevaluatedProperties": false
     },
+    "MediaGallery": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "MediaGallery"
+            },
+            "items": {
+              "$ref": "#/$defs/common_types_DynamicValue"
+            },
+            "statePath": {
+              "type": "string"
+            },
+            "allowSelect": {
+              "type": "boolean"
+            },
+            "allowRemove": {
+              "type": "boolean"
+            },
+            "allowReorder": {
+              "type": "boolean"
+            },
+            "columns": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "component",
+            "statePath"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "MultiImageCapture": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "MultiImageCapture"
+            },
+            "value": {
+              "$ref": "#/$defs/common_types_DynamicValue"
+            },
+            "statePath": {
+              "type": "string"
+            },
+            "minItems": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxItems": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "allowRemove": {
+              "type": "boolean"
+            },
+            "allowReorder": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "component",
+            "statePath"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
     "Flow": {
       "type": "object",
       "allOf": [
@@ -3468,6 +3549,87 @@
       ],
       "unevaluatedProperties": false
     },
+    "gather-v0.1.source_MediaGallery": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "MediaGallery"
+            },
+            "items": {
+              "$ref": "#/$defs/common_types_DynamicValue"
+            },
+            "statePath": {
+              "type": "string"
+            },
+            "allowSelect": {
+              "type": "boolean"
+            },
+            "allowRemove": {
+              "type": "boolean"
+            },
+            "allowReorder": {
+              "type": "boolean"
+            },
+            "columns": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "component",
+            "statePath"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "gather-v0.1.source_MultiImageCapture": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common_types_ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "MultiImageCapture"
+            },
+            "value": {
+              "$ref": "#/$defs/common_types_DynamicValue"
+            },
+            "statePath": {
+              "type": "string"
+            },
+            "minItems": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxItems": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "allowRemove": {
+              "type": "boolean"
+            },
+            "allowReorder": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "component",
+            "statePath"
+          ]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
     "gather-v0.1.source_Flow": {
       "type": "object",
       "allOf": [
@@ -3688,7 +3850,13 @@
           "$ref": "#/components/List"
         },
         {
+          "$ref": "#/components/MediaGallery"
+        },
+        {
           "$ref": "#/components/Modal"
+        },
+        {
+          "$ref": "#/components/MultiImageCapture"
         },
         {
           "$ref": "#/components/OutputReview"
