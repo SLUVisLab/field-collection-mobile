@@ -1316,16 +1316,124 @@ can never complete.
 
 ### Verified
 
-`test:unit` 361 tests / 360 pass / 0 fail (1 known skip) — 10 new collection-field
+`test:unit` 367 tests / 366 pass / 0 fail (1 known skip) — 16 collection-field
 tests plus 3 for `releaseInstanceMedia`; Expo config; renderer Vite build;
 Android Hermes export; `git diff --check`.
 
-**Not verified:** on-device. Nothing has rendered this control yet — it needs a
-form whose repeat carries the appearance, and the interactive camera still wants
-a physical device.
+**Since device-verified** by the collection field gate — see §20. The
+interactive camera still wants a physical device.
 
 ### Also removed
 
 A dead guard in `releaseInstanceMedia`: `owned()` already fails for a missing
 instance or another project's, so the extra check was unreachable. A test
 asserting the wrong message is what surfaced it.
+
+## 20. Collection field gate — device-verified (2026-09-02)
+
+[`gates/CollectionFieldGateApp.js`](../gates/CollectionFieldGateApp.js) drives
+the sequence `XFormsMultiImageControl` performs, against the **real engine, real
+SQLite and real files**:
+
+```text
+appearance recognition -> capture x3 into repeat instances -> remove the middle
+one with orphan cleanup -> storage restart + draft resume -> finalize + submit
+both surviving attachments
+```
+
+**Result: 24/24 green on Android.** `schemaVersion: 10`. (23/23 on the first
+run; the 24th check arrived with the `childName` fix below, which that first
+fixture could not have caught.)
+
+### What the fixture form settles
+
+The fixture is the **pyxform-canonical** shape — appearance on the `<repeat>`,
+wrapping `<group>` bare — so the gate exercises what real authoring produces
+rather than a hand-tuned variant. It also carries an ordinary appearance-free
+repeat, which proves recognition is *additive*: that repeat still renders as
+`'repeat'`.
+
+The repeat is named `photos` but its image child is named **`frame`**. That is
+deliberate — see the defect below.
+
+Two engine facts came back as data rather than inference:
+
+| Observed | Consequence |
+| --- | --- |
+| `photosNodeType: "repeat-range:uncontrolled"` | confirms the uncontrolled-repeat choice in b-standard §2 — `0..N` add/remove, no `jr:count` |
+| `nodesAtPhotosReference: ["repeat-range:uncontrolled"]` | **the wrapping group collapses onto a single repeat-range node** |
+| `appearances: ["gather-multi-image","min=2","max=3"]` | `key=value` tokens survive from the `<repeat>` placement, in source order |
+
+The collapse is the missing explanation for the earlier precedence spike: group
+appearances "win" because there is only ever *one* node, and the group's
+attribute is what lands on it. It also means node selection is unambiguous —
+there is no second node at that reference for a renderer to pick by mistake.
+
+### The invariants it holds that unit tests cannot
+
+- **Identity is minted, not derived.** Three captures at three fresh instances
+  produced three distinct `image-<random>.jpg` filenames.
+- **One filename per repeat instance in the authoritative XML** — exactly three
+  `<photo>` elements, no array serialized into a hidden node (b-standard §4).
+- **Removal is precise.** Removing the middle item orphaned exactly one
+  filename; one row and one file went, the two survivors kept both. The
+  survivors **reindexed to positions 1,2 without being re-identified** — the
+  original defect, now held on device.
+- **Resume reconstructs the collection from the instance XML.** A fresh
+  `loadForm` projects an empty collection; after `closeGatherStorage()`, a
+  re-init, and `lifecycle.resume`, both survivors come back at positions 1,2
+  with their filenames intact. This is the requirement that made
+  `MultiImageCapture` a *controlled* Component.
+- **Submission carries one attachment per surviving item**, and the submitted
+  XML references exactly those two filenames.
+
+### The defect the first fixture hid — `childName` (fixed 2026-09-02)
+
+`collectionItemsFrom` defaulted the image child's name to `'photo'`, and nothing
+ever supplied it: `FormRunner`'s collection adapter passes `media`, `uriFor`,
+`onCapture` and `onRemove`, but never a child name. So:
+
+- **capture** resolved the new instance's binary child from a fresh snapshot —
+  correct, and author-agnostic
+- **projection** assumed the child was literally named `photo`
+
+A form whose image child was named `image` or `frame` would therefore capture
+and persist correctly and then project **zero items** — captures disappearing
+from the UI while the XML quietly filled up. Silent, and directly contrary to
+b-standard §1's "the child name belongs to the form author."
+
+The first version of this gate passed 24 checks' worth of behaviour while that
+bug was live, because its fixture named the child `photo` — the same string as
+the fallback. **A fixture that matches a hardcoded default cannot constrain it.**
+
+Fixed by deleting the guess. `binaryChildrenOf({ repeatReference,
+nodesByReference })` reads the binary child of each repeat instance from the
+engine, and `collectionItemsFrom` now **requires** `binaryChildOf` and throws
+without it — a silent `[]` is exactly how this hid, so the failure mode is now
+loud. `newestBinaryChild` resolves the newest slot from the same lookup, which
+also removed the control's private near-duplicate of that scan: capture and
+projection can no longer disagree about which node holds an instance's image.
+
+`FormRunner` needed no change — the control now derives what the adapter was
+never supplying.
+
+### Scope and what it deliberately does not cover
+
+The Central transport is stubbed (the multipart parts are captured), so the gate
+needs no server and creates no remote artifacts. The live submission path is
+unchanged and remains covered by the M5.5 runner and the media-identity live
+regression.
+
+The gate does **not** render React, so it verifies the *pipeline*, not the
+control's presentation. Still outstanding, and still wanting a physical device:
+the interactive camera — shutter, thumbnail accessory, gallery navigation, and
+the capture -> remove -> replace cycle through the UI.
+
+Cardinality remains **UI-level by design**: `min`/`max` are Component
+configuration, not XForms constraints, so nothing in this gate expects
+`finalize` to enforce them.
+
+The full XLSX -> Central -> device round trip is **deferred**. Its one real
+payoff was answered offline instead: converting the XLSForm row with pyxform
+showed the appearance lands on the `<repeat>`, which is now the canonical
+placement in b-standard §1 and the shape this gate uses.

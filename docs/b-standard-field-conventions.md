@@ -19,15 +19,25 @@ collection path concrete.
 
 ## 1. Recognition — appearance token on the repeat
 
-Canonical expanded shape:
+Canonical expanded shape — **exactly what pyxform emits** for a `begin_repeat`
+carrying an `appearance` (verified 2026-09-02, see below):
 
 ```xml
-<group ref="/data/photos" appearance="gather-multi-image min=2 max=6">
+<group ref="/data/photos">
   <label>Photos</label>
-  <repeat nodeset="/data/photos">
+  <repeat nodeset="/data/photos" appearance="gather-multi-image min=2 max=6">
     <upload ref="/data/photos/photo" mediatype="image/*"><label>Photo</label></upload>
   </repeat>
 </group>
+```
+
+From the XLSForm row:
+
+```text
+type          name    label   appearance
+begin_repeat  photos  Photos  gather-multi-image min=2 max=6
+image         photo   Photo
+end_repeat
 ```
 
 Gather sees `gather-multi-image` on the repeat-range node and substitutes
@@ -61,6 +71,8 @@ Driven headlessly through the real engine
 | `<repeat appearance="gather-multi-image min=2 max=6">` | `["gather-multi-image","min=2","max=6"]` |
 | `<group appearance="gather-multi-image min=1 max=3">` | `["gather-multi-image","min=1","max=3"]` |
 | **both** (group `field-list gather-multi-image`, repeat `… min=2 max=6`) | `["field-list","gather-multi-image"]` — **the group wins; the repeat's tokens are dropped** |
+| pyxform conversion of `begin_repeat … appearance=…` | emits it on the **`<repeat>`**, group left bare |
+| the canonical form above, on device | `["gather-multi-image","min=2","max=3"]`, node type `repeat-range:uncontrolled` |
 
 So:
 
@@ -68,10 +80,20 @@ So:
   parameters need no host or engine change.
 - Custom tokens survive too (`gather-custom` came through alongside the standard
   `multiline`), so the engine does not filter to a known vocabulary.
-- **Put the tokens on the `<group>`.** Either placement works alone, but the
-  group wins when both carry appearances, which makes it the unambiguous slot.
-  (Confirm which element pyxform's `begin_repeat` appearance column emits to
-  before relying on the sugar path.)
+- **The tokens go on the `<repeat>`** — corrected 2026-09-02. An earlier draft
+  recommended the `<group>` on the grounds that it wins when both carry
+  appearances, but converting the XLSForm above with **pyxform** puts the
+  appearance on the `<repeat>` element and leaves the `<group>` bare. Since the
+  runtime targets what pyxform produces (§3), the repeat is the canonical slot,
+  and the spike confirms it works alone.
+- **Footgun:** if appearances are authored on *both* elements, the group's win
+  and the repeat's are silently dropped — so tooling must never emit both.
+- **Why the group "wins":** the collection field gate showed only **one** node
+  exists at that reference (`nodesAtPhotosReference: ["repeat-range:uncontrolled"]`)
+  — the engine collapses the wrapping group onto the repeat-range node, and the
+  group's attribute is simply what lands on it. So this is one node with one
+  appearance set, not a precedence rule between two nodes, and renderer node
+  selection at that reference is unambiguous.
 
 ### Trap worth knowing
 
@@ -120,6 +142,16 @@ XForms                        adapter                 Component
 The Component knows nothing of XPath or repeat APIs; the XForms control/adapter
 owns both.
 
+**The image child's name is the form author's, and is always read from the
+engine.** `photo`, `image`, `frame` — the adapter resolves each instance's
+binary child from the engine's node model (`binaryChildrenOf`) rather than
+assuming a name, for projection as well as capture. This was briefly wrong: the
+projection side defaulted the name to `'photo'`, so any other form captured and
+persisted correctly but projected an empty collection. See §20 of
+[components-capabilities-ownership.md](./components-capabilities-ownership.md).
+The gate's fixture now names it `frame` so the convention is actually
+constrained.
+
 ## Prerequisite already satisfied
 
 The repeat-media identity spike is **done and fixed** — see
@@ -133,6 +165,19 @@ both platforms.
 So the concern that "positional references as persistent identity is an
 A/storage problem" was real, was hit, and is closed. Reorder remains untested,
 but position is no longer identity at all, which greatly reduces its risk.
+
+## All four conventions are device-verified
+
+[`gates/CollectionFieldGateApp.js`](../gates/CollectionFieldGateApp.js) drives
+the canonical form above through the real engine, SQLite and files — **23/23
+green on Android**. It covers §1 recognition (including that an ordinary
+appearance-free repeat in the same form still renders as a plain repeat, so
+recognition is additive), §2 cardinality from appearance parameters, §3 the
+canonical expanded shape as pyxform emits it, and §4 the repeat-as-data-model
+invariant — exactly one image element per instance in the authoritative XML,
+with no array serialized into a hidden node, and the element named as the form
+author named it rather than as the code assumed. See §20 of
+[components-capabilities-ownership.md](./components-capabilities-ownership.md).
 
 ## Roadmap position
 

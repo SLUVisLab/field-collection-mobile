@@ -7,9 +7,10 @@ import { FormField } from '../../components/forms/FormField.js';
 import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
 import {
+  binaryChildrenOf,
   collectionItemsFrom,
-  instancePositionOf,
   multiImageConfigFrom,
+  newestBinaryChild,
   orphanedFilenames,
 } from '../collectionField.js';
 
@@ -45,29 +46,21 @@ export function XFormsMultiImageControl({ node, indent, onLayout, collection }) 
   const snapshot = form?.snapshot ?? null;
   const valueAt = (reference) => snapshot?.nodesByReference?.[reference]?.instanceValue ?? '';
 
+  // The image child's name is the form author's (`photo`, `image`, `frame`, …),
+  // so it is read from the engine for both projection and capture rather than
+  // assumed by either.
+  const binaryChildren = binaryChildrenOf({
+    repeatReference: node.reference,
+    nodesByReference: snapshot?.nodesByReference,
+  });
+
   const items = collectionItemsFrom({
     instanceReferences: repeat?.instanceReferences ?? [],
+    binaryChildOf: (instanceReference) => binaryChildren.get(instanceReference) ?? null,
     valueAt,
     media: collection?.media ?? [],
     uriFor: collection?.uriFor,
-    childName: collection?.childName ?? 'photo',
   });
-
-  /** The binary child of the highest-positioned repeat instance. */
-  const newestImageReference = (nodesByReference) => {
-    const prefix = `${node.reference}[`;
-    let best = null;
-    let bestPosition = -1;
-    for (const [reference, entry] of Object.entries(nodesByReference ?? {})) {
-      if (!reference.startsWith(prefix) || entry?.valueType !== 'binary') continue;
-      const position = instancePositionOf(reference.slice(0, reference.lastIndexOf('/')));
-      if (position !== null && position > bestPosition) {
-        bestPosition = position;
-        best = reference;
-      }
-    }
-    return best;
-  };
 
   const handleCapture = useCallback(
     async (capture) => {
@@ -77,14 +70,19 @@ export function XFormsMultiImageControl({ node, indent, onLayout, collection }) 
         // snapshot — the child's name is the form author's, not ours to assume.
         await repeat.add();
         const refreshed = await form.refreshSnapshot('collection-capture');
-        const reference = newestImageReference(refreshed?.nodesByReference);
+        const reference = newestBinaryChild(
+          binaryChildrenOf({
+            repeatReference: node.reference,
+            nodesByReference: refreshed?.nodesByReference,
+          })
+        );
         if (!reference) throw new Error('The new photo slot could not be resolved.');
         await collection?.onCapture?.(reference, capture);
       } catch (error) {
         setMessage(error?.message ?? 'Could not add that photo.');
       }
     },
-    [collection, form, repeat]
+    [collection, form, node.reference, repeat]
   );
 
   const handleChange = useCallback(

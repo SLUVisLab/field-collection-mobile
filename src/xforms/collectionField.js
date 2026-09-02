@@ -55,6 +55,52 @@ export const instancePositionOf = (reference) => {
   return match ? Number.parseInt(match[1], 10) : null;
 };
 
+/**
+ * Maps each repeat instance to its **binary child**, as the engine reports it.
+ *
+ * The child's name belongs to the form author (`photo`, `image`, `frame`, …),
+ * so it is always read from the engine and never assumed. This is the single
+ * source of truth for "which node holds this instance's image" — both
+ * projecting the collection and resolving the newest slot after an add go
+ * through it, so the two can never disagree.
+ *
+ * @param {{ repeatReference: string, nodesByReference: Record<string, { valueType?: string }> }} input
+ * @returns {Map<string, string>} instance reference -> binary child reference
+ */
+export const binaryChildrenOf = ({ repeatReference, nodesByReference } = {}) => {
+  const byInstance = new Map();
+  if (typeof repeatReference !== 'string' || repeatReference.length === 0) return byInstance;
+  const prefix = `${repeatReference}[`;
+  for (const [reference, entry] of Object.entries(nodesByReference ?? {})) {
+    if (!reference.startsWith(prefix) || entry?.valueType !== 'binary') continue;
+    const cut = reference.lastIndexOf('/');
+    if (cut <= 0) continue;
+    const instanceReference = reference.slice(0, cut);
+    if (instancePositionOf(instanceReference) === null) continue;
+    // First wins, so a nested binary deeper in the instance cannot shadow the
+    // instance's own child.
+    if (!byInstance.has(instanceReference)) byInstance.set(instanceReference, reference);
+  }
+  return byInstance;
+};
+
+/**
+ * The binary child of the highest-positioned instance — the slot a fresh
+ * `addInstances()` just created.
+ */
+export const newestBinaryChild = (byInstance) => {
+  let best = null;
+  let bestPosition = -1;
+  for (const [instanceReference, reference] of byInstance ?? []) {
+    const position = instancePositionOf(instanceReference);
+    if (position !== null && position > bestPosition) {
+      bestPosition = position;
+      best = reference;
+    }
+  }
+  return best;
+};
+
 /** Orders repeat-instance references by their position, not lexically. */
 export const orderedInstanceReferences = (references) =>
   [...(references ?? [])]
@@ -72,25 +118,36 @@ export const orderedInstanceReferences = (references) =>
  * An instance whose image node is empty, or whose filename has no media row,
  * is skipped — a half-written instance is not a collection item.
  *
+ * `binaryChildOf` is **required**, and deliberately has no default. An earlier
+ * version defaulted the child's name to `'photo'`, which silently projected an
+ * empty collection for every form that named it anything else — captures
+ * persisted into the XML but vanished from the UI. There is no safe guess here:
+ * the name is the form author's, so the engine has to supply it. Build the
+ * lookup with {@link binaryChildrenOf}.
+ *
  * @param {{
  *   instanceReferences: string[],
+ *   binaryChildOf: (instanceReference: string) => string|null,
  *   valueAt: (reference: string) => string,
  *   media: Array<{ filename: string, contentType?: string, fileKey: string }>,
  *   uriFor: (fileKey: string) => string|null,
- *   childName?: string,
  * }} input
  */
 export const collectionItemsFrom = ({
   instanceReferences,
+  binaryChildOf,
   valueAt,
   media = [],
   uriFor,
-  childName = 'photo',
 } = {}) => {
+  if (typeof binaryChildOf !== 'function') {
+    throw new TypeError('collectionItemsFrom requires binaryChildOf; see binaryChildrenOf.');
+  }
   const byFilename = new Map((media ?? []).map((row) => [row.filename, row]));
   const items = [];
   for (const instanceReference of orderedInstanceReferences(instanceReferences)) {
-    const reference = `${instanceReference}/${childName}`;
+    const reference = binaryChildOf(instanceReference);
+    if (typeof reference !== 'string' || reference.length === 0) continue;
     const filename = valueAt?.(reference);
     if (typeof filename !== 'string' || filename.length === 0) continue;
     const row = byFilename.get(filename);

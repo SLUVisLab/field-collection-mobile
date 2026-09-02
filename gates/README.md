@@ -240,6 +240,47 @@ registerRootComponent(ShellNavGateApp);
 
 Then revert `index.js` to `import App from './App'`. (Android only — no iOS run.)
 
+## `CollectionFieldGateApp.js` — multi-image collection field gate
+
+The on-device counterpart to `docs/b-standard-field-conventions.md` and §19 of
+`docs/components-capabilities-ownership.md`. Drives the sequence
+`XFormsMultiImageControl` performs, but against the **real engine, real SQLite
+and real files**:
+
+```text
+appearance recognition -> capture x3 into repeat instances -> remove the middle
+one with orphan cleanup -> storage restart + draft resume -> finalize + submit
+both surviving attachments
+```
+
+The fixture form is the **pyxform-canonical** shape (appearance on the
+`<repeat>`, wrapping `<group>` bare) and also carries an ordinary
+appearance-free repeat, so recognition is proven *additive*. The Central
+transport is stubbed, so no server is touched and no remote artifacts are
+created. It emits exactly one `COLLECTION_FIELD_RESULT::{…}`.
+
+Point `index.js` at `./gates/CollectionFieldGateApp`, then:
+
+```bash
+scripts/run-android-gate.sh 'COLLECTION_FIELD_RESULT::' .gate-logs/collection-field.log 1200
+```
+
+Revert `index.js` afterwards. It does **not** render React, so it verifies the
+pipeline rather than the control's presentation — the interactive camera
+(shutter, thumbnail accessory, capture -> remove -> replace) still needs a
+physical device.
+
+## `MediaIdentityGateApp.js` — attachment identity gate
+
+Attachment identity must be minted at capture and never derived from the XForms
+binding reference, because repeat references reindex on deletion. See
+`docs/repeat-media-identity-characterization.md`. Emits
+`MEDIA_IDENTITY_RESULT::{…}`; Central transport stubbed.
+
+```bash
+scripts/run-android-gate.sh 'MEDIA_IDENTITY_RESULT::' .gate-logs/media-identity.log 1200
+```
+
 ## `ShellSmokeApp.js` — first-party package smoke (pre-shell)
 
 The original Expo-57 package smoke that exercised a call into every workspace
