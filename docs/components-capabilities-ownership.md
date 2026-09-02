@@ -913,12 +913,27 @@ Component — the orchestration tripwire stays untouched.
 
 ### Build order (after the ODK gate)
 
+> **Blocked on a storage fix (2026-09-02).** The repeat-media identity spike
+> found that media identity derived from the XForms binding reference is unique
+> but **not stable** under repeat mutation: deleting an item makes the survivor
+> inherit the deleted item's attachment filename and media row — a silent wrong
+> attachment, with no collision or error. `MultiImageCapture`'s design survives,
+> but the storage fix must land **first**. See
+> [repeat-media-identity-characterization.md](./repeat-media-identity-characterization.md).
+
+0. **Media identity fix**: generate the attachment filename once at capture,
+   write it into the node value, and re-key `instance_media` off the filename
+   rather than `binding_reference`.
 1. Catalog-register `MediaGallery` — required by the escape-hatch principle
    regardless, and the primitive `MultiImageCapture` sits on.
 2. Additive slot in `CameraFrame`; forward from `CameraView`.
 3. `MultiImageCapture` in `gather-components/src/image-collection/`, with
    render-free logic split for testing (`mediaModel.js` precedent).
 4. Catalog-register it with its shipped action handler.
+
+The §12 caution against implementing reorder by physically reordering repeat
+instances now generalises: **deletion alone breaks identity, so XPath position
+must never be treated as durable identity for anything.**
 
 ## 13. ODK image-capture gate — landed (2026-09-01); device run outstanding
 
