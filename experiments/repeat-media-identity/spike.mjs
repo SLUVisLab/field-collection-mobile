@@ -3,8 +3,14 @@
  *
  * Drives the real `@getodk/xforms-engine` headlessly to answer whether media
  * bound inside an XForms repeat has an identity that is both **unique** and
- * **stable under mutation** — because Gather derives attachment filenames and
- * `instance_media` primary keys from the binding reference.
+ * **stable under mutation**.
+ *
+ * It documents upstream engine behaviour: repeat references are positional and
+ * reindex on deletion. Gather originally derived attachment filenames and
+ * `instance_media` keys from those references, which made a survivor inherit a
+ * deleted item's attachment. That is fixed (migration 10 +
+ * `imageFilenameForCapture`); this spike keeps a local copy of the old
+ * derivation to show why it could never work.
  *
  * See experiments/repeat-media-identity/README.md for how to run it, and
  * docs/repeat-media-identity-characterization.md for the findings.
@@ -28,9 +34,6 @@ globalThis.__filename = join(engineDist, 'index.js');
 if (typeof globalThis.require !== 'function') globalThis.require = require;
 
 const { loadForm } = await import(pathToFileURL(join(engineDist, 'index.js')).href);
-const { imageFilenameForReference } = await import(
-  pathToFileURL(join(REPO, 'src/instances/instanceLifecycleService.js')).href
-);
 
 const flatten = (node, out = []) => {
   out.push(node);
@@ -43,7 +46,16 @@ const photos = (root) => nodesNamed(root, 'photo');
 // Upload nodes need a File-like value, so identity is marked on the sibling
 // string node instead; the spike is about references, not bytes.
 const captions = (root) => nodesNamed(root, 'caption');
-const nameFor = (reference) => imageFilenameForReference({ reference, contentType: 'image/jpeg' });
+// Reproduces the *original* defect: identity derived from the binding
+// reference. Gather no longer does this — `imageFilenameForCapture` mints a
+// filename once at capture — so this local copy exists only to show why.
+const legacyNameFor = (reference) => {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < reference.length; index += 1) {
+    hash = Math.imul(hash ^ reference.charCodeAt(index), 0x01000193);
+  }
+  return `image-${(hash >>> 0).toString(36)}.jpg`;
+};
 
 const report = (root, heading) => {
   console.log(`\n--- ${heading} ---`);
@@ -51,7 +63,7 @@ const report = (root, heading) => {
   photos(root).forEach((node, index) => {
     const reference = node.currentState.reference;
     console.log(`  photo ref=${reference}`);
-    console.log(`      marker=${JSON.stringify(marks[index]?.currentState?.value)}  attachment filename=${nameFor(reference)}`);
+    console.log(`      marker=${JSON.stringify(marks[index]?.currentState?.value)}  legacy derived filename=${legacyNameFor(reference)}`);
   });
 };
 
@@ -67,7 +79,7 @@ captions(root)[0].setValue('ALPHA');
 captions(root)[1].setValue('BETA');
 report(root, 'STEP 1-4: two repeat instances created');
 const referencesBefore = photos(root).map((n) => n.currentState.reference);
-const filenamesBefore = referencesBefore.map(nameFor);
+const filenamesBefore = referencesBefore.map(legacyNameFor);
 console.log(`  references unique: ${new Set(referencesBefore).size === 2}`);
 console.log(`  filenames unique:  ${new Set(filenamesBefore).size === 2}`);
 
@@ -80,9 +92,9 @@ console.log(`  reference was:    ${referencesBefore[1]}`);
 console.log(`  reference now:    ${survivorReference}`);
 console.log(`  REFERENCE STABLE: ${survivorReference === referencesBefore[1]}`);
 console.log(`  filename was:     ${filenamesBefore[1]}`);
-console.log(`  filename now:     ${nameFor(survivorReference)}`);
-console.log(`  FILENAME STABLE:  ${nameFor(survivorReference) === filenamesBefore[1]}`);
-console.log(`  survivor now claims the DELETED item's filename: ${nameFor(survivorReference) === filenamesBefore[0]}`);
+console.log(`  filename now:     ${legacyNameFor(survivorReference)}`);
+console.log(`  FILENAME STABLE:  ${legacyNameFor(survivorReference) === filenamesBefore[1]}`);
+console.log(`  survivor now claims the DELETED item's filename: ${legacyNameFor(survivorReference) === filenamesBefore[0]}`);
 
 // 9 — add another: uniqueness is restored, which is why nothing ever throws.
 range.addInstances();
@@ -90,4 +102,4 @@ captions(root)[1].setValue('GAMMA');
 report(root, 'STEP 9: added another repeat instance');
 const referencesAfter = photos(root).map((n) => n.currentState.reference);
 console.log(`  references unique now: ${new Set(referencesAfter).size === referencesAfter.length}`);
-console.log(`  filenames unique now:  ${new Set(referencesAfter.map(nameFor)).size === referencesAfter.length}`);
+console.log(`  filenames unique now:  ${new Set(referencesAfter.map(legacyNameFor)).size === referencesAfter.length}`);

@@ -3,8 +3,9 @@
 **Date:** 2026-09-02
 **Engine:** `@getodk/xforms-engine@1.0.3-gather.1` (driven headlessly in Node)
 **Spike:** [experiments/repeat-media-identity/](../experiments/repeat-media-identity/)
-**Status:** blocking finding — repeat-backed media must not ship on the current
-identity model
+**Status:** **fixed 2026-09-02** (migration 10 + `imageFilenameForCapture`);
+regression tests in place. The spike is retained as the record of upstream
+engine behaviour.
 
 **Question:** are repeat-bound media identities **unique** *and* **stable under
 repeat mutation**?
@@ -81,27 +82,56 @@ position never participates in identity.
 Gather's single-image path derives the filename instead, which is correct only
 because a non-repeat reference like `/data/photo` is stable.
 
-## What this changes
+## The fix (landed 2026-09-02)
+
+- **`imageFilenameForCapture({ contentType })`** mints the filename once at
+  capture with a random suffix, and it is written into the node value — so
+  identity travels with the node when it reindexes. `imageFilenameForReference`
+  and its `hashReference` helper are gone.
+- **Migration 10 (`instance_media_identity`)** rebuilds `instance_media` with
+  `PRIMARY KEY (local_instance_id, filename)`, keeping `binding_reference` as
+  provenance. SQLite cannot alter a primary key, so the table is rebuilt; the
+  copy is **lossless** because `filename` already existed and was already unique
+  per instance. No saved XML is rewritten.
+- **`attachImageMedia({ …, previousFilename })`** resolves the attachment being
+  replaced from the node's *current value*, not from its reference, and now
+  retires the prior **row** as well as its bytes — a replacement mints a new
+  filename, so the old row is no longer overwritten in place.
+  `instances.deleteMedia({ localInstanceId, filename })` was added for that.
+- `XFormsImageControl` passes the node's current value through `FormRunner`.
+
+A random suffix rather than a content hash: hashing would dedupe identical bytes
+for free, but collide when a researcher legitimately attaches the same photo
+twice in one instance.
+
+### Regression coverage
+
+- a filename is minted per capture, not derived from the reference (same
+  reference + same bytes → different identity);
+- replacement is identified by the node value and retires exactly the prior row
+  and its bytes;
+- **a capture at a reused reference cannot inherit another item's attachment** —
+  the direct regression: both rows survive, and the other item keeps its bytes;
+- migration 10 asserts the new key, the lossless column copy, index recreation,
+  and that the old primary key is gone.
+
+### Known follow-up
+
+Without an explicit `previousFilename` nothing is retired, which is the safe
+default — better to keep an unreferenced file than to delete a different item's.
+The cost is that a caller which forgets to pass it leaves an orphan row whose
+bytes would still be submitted. Deleting a repeat item also needs its media
+cleaned up; no orphan-media sweep exists yet, and that belongs with
+`MultiImageCapture`.
+
+## What this changed
 
 **Repeat-backed `ImageAsset[]` remains viable.** The XForms model is sound; our
 identity derivation is not. That is a materially better answer than "repeats do
 not work" — it means [§12](./components-capabilities-ownership.md#12-multi-image-capture--camera-slots--decision-2026-09-01)'s
 `MultiImageCapture` design survives.
 
-**But the fix is a storage change, and it must land before `MultiImageCapture`,
-not alongside it:**
-
-- generate the filename **once at capture** (random, or content-hash — a hash
-  also dedupes identical bytes, though a random component avoids collisions
-  between two genuinely identical photos in one instance);
-- write it into the node value, and treat that value as the identity;
-- re-key `instance_media` off the filename rather than `binding_reference` —
-  `UNIQUE (local_instance_id, filename)` already exists, it is the primary key
-  that is wrong;
-- audit `attachImageMedia`'s `priorMedia` lookup, which also matches on
-  `bindingReference`.
-
-**Non-repeat fields are unaffected.** A plain `/data/photo` reference is stable,
+**Non-repeat fields were never affected.** A plain `/data/photo` reference is stable,
 so today's single-image path — including the ODK gate in
 [§13](./components-capabilities-ownership.md#13-odk-image-capture-gate--landed-2026-09-01-device-run-outstanding) —
 is correct as written.

@@ -913,7 +913,9 @@ Component — the orchestration tripwire stays untouched.
 
 ### Build order (after the ODK gate)
 
-> **Blocked on a storage fix (2026-09-02).** The repeat-media identity spike
+> **Unblocked 2026-09-02** — the storage fix has landed (migration 10 +
+> `imageFilenameForCapture` + regression tests); step 0 below is done. Original
+> finding: the repeat-media identity spike
 > found that media identity derived from the XForms binding reference is unique
 > but **not stable** under repeat mutation: deleting an item makes the survivor
 > inherit the deleted item's attachment filename and media row — a silent wrong
@@ -921,9 +923,8 @@ Component — the orchestration tripwire stays untouched.
 > but the storage fix must land **first**. See
 > [repeat-media-identity-characterization.md](./repeat-media-identity-characterization.md).
 
-0. **Media identity fix**: generate the attachment filename once at capture,
-   write it into the node value, and re-key `instance_media` off the filename
-   rather than `binding_reference`.
+0. ~~**Media identity fix**~~ — **done**: the filename is minted at capture,
+   written into the node value, and `instance_media` is keyed on it.
 1. Catalog-register `MediaGallery` — required by the escape-hatch principle
    regardless, and the primitive `MultiImageCapture` sits on.
 2. Additive slot in `CameraFrame`; forward from `CameraView`.

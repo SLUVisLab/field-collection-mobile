@@ -34,7 +34,9 @@ export function XFormsImageControl({ node, indent, onLayout, onAttachImage, atta
   const filename = textValue(question.instanceValue);
   const attachCapture = async () => {
     if (!capture || attachBusy) return;
-    const attached = await onAttachImage?.(node, capture);
+    // `filename` is the node's current value — the attachment this capture
+    // replaces, if any.
+    const attached = await onAttachImage?.(node, capture, filename || null);
     if (attached) setCapture(null);
   };
 

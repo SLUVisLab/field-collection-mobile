@@ -96,8 +96,15 @@ const makeInstances = (calls) => {
     },
     async upsertMedia(input) {
       calls.push(['upsertMedia', input.localInstanceId]);
-      media.set(`${input.localInstanceId}:${input.bindingReference}`, { ...input });
+      // Keyed on the stable filename, matching migration 10 — never on the
+      // positional binding reference.
+      media.set(`${input.localInstanceId}:${input.filename}`, { ...input });
       return { ...input };
+    },
+    async deleteMedia({ localInstanceId, filename }) {
+      calls.push(['deleteMedia', localInstanceId]);
+      media.delete(`${localInstanceId}:${filename}`);
+      return { localInstanceId, filename };
     },
     async saveDraft({ localInstanceId, odkInstanceId }) {
       calls.push(['saveDraft', localInstanceId]);
@@ -442,4 +449,87 @@ test('submission sanitizer redacts common credential forms without erasing usefu
   assert.match(sanitized, /POST/);
   assert.doesNotMatch(sanitized, /user:pass|secret-value|one|two|three|four|five/);
   assert.match(sanitized, /<redacted>/);
+});
+
+// --- Repeat media identity (docs/repeat-media-identity-characterization.md) ---
+//
+// Attachment identity must never derive from the XForms binding reference:
+// repeat references are positional and reindex when an item is deleted, so a
+// survivor would inherit the deleted item's row and file — the wrong image on
+// the record, with no error. These lock in the replacement invariants.
+
+const attachOnce = async ({ service, reference, bytes, previousFilename = null, localInstanceId = null, state }) => {
+  const form = {
+    async setValue(_reference, value) { state.attached = value; },
+    serialize: async () => ({
+      status: 'success',
+      violationCount: 0,
+      xml: validXml.replace('</data>', `<flower_photo>${state.attached ?? ''}</flower_photo></data>`),
+    }),
+    getEntityEffects: async () => [],
+  };
+  return service.attachImageMedia({
+    project,
+    form,
+    version,
+    localInstanceId,
+    reference,
+    sourceFile: { bytes: async () => bytes },
+    contentType: 'image/jpeg',
+    previousFilename,
+  });
+};
+
+test('an attachment filename is minted per capture, not derived from the reference', async () => {
+  const { service } = makeService();
+  const state = {};
+  const first = await attachOnce({ service, reference: '/data/flower_photo', bytes: new Uint8Array([1]), state });
+  const { service: service2 } = makeService();
+  const second = await attachOnce({ service: service2, reference: '/data/flower_photo', bytes: new Uint8Array([1]), state: {} });
+
+  // Same reference, same bytes, different identity.
+  assert.notEqual(first.media.filename, second.media.filename);
+  assert.match(first.media.filename, /^image-[a-z0-9]+\.jpg$/);
+});
+
+test('replacement is identified by the node value, and retires exactly the prior row', async () => {
+  const { service, instances, files } = makeService();
+  const state = {};
+  const first = await attachOnce({ service, reference: '/data/flower_photo', bytes: new Uint8Array([1, 1]), state });
+  const replaced = await attachOnce({
+    service,
+    reference: '/data/flower_photo',
+    bytes: new Uint8Array([2, 2]),
+    localInstanceId: first.instance.localInstanceId,
+    previousFilename: first.media.filename,
+    state,
+  });
+
+  assert.notEqual(replaced.media.filename, first.media.filename, 'a replacement mints its own filename');
+  const rows = await instances.listMedia(first.instance.localInstanceId);
+  assert.deepEqual(rows.map((row) => row.filename), [replaced.media.filename], 'the prior row is retired');
+  assert.equal(files.content.has(first.media.fileKey), false, 'the prior bytes are deleted');
+  assert.deepEqual(files.content.get(replaced.media.fileKey), new Uint8Array([2, 2]));
+});
+
+test('a capture at a reused reference cannot inherit another item\'s attachment', async () => {
+  // The regression: previously a second capture at the same reference collided
+  // on the primary key and overwrote the existing row. After a repeat deletion
+  // that reference belongs to a *different* item, so overwriting destroyed its
+  // media. Without an explicit previousFilename, nothing is retired.
+  const { service, instances, files } = makeService();
+  const state = {};
+  const first = await attachOnce({ service, reference: '/data/photos[1]/photo', bytes: new Uint8Array([1]), state });
+  const second = await attachOnce({
+    service,
+    reference: '/data/photos[1]/photo',
+    bytes: new Uint8Array([2]),
+    localInstanceId: first.instance.localInstanceId,
+    state,
+  });
+
+  const rows = await instances.listMedia(first.instance.localInstanceId);
+  assert.equal(rows.length, 2, 'both attachments survive — neither inherits the other');
+  assert.notEqual(second.media.filename, first.media.filename);
+  assert.deepEqual(files.content.get(first.media.fileKey), new Uint8Array([1]), 'the other item keeps its bytes');
 });

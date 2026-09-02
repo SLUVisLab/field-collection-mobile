@@ -137,7 +137,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
   }, [associateFieldworkInstance, busy, fieldworkEntityId, fieldworkSessionId, form.serialize, instance?.localInstanceId, saveInstanceDraft, version]);
 
   const attachCapturedImage = useCallback(
-    async (node, capture) => {
+    async (node, capture, previousFilename = null) => {
       if (!version || busy || !node?.reference || typeof capture?.uri !== 'string') return false;
       setBusy(true);
       setMessage(null);
@@ -151,6 +151,9 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
           reference: node.reference,
           sourceFile,
           contentType: capture.contentType,
+          // The node's current value identifies the attachment being replaced;
+          // its reference does not (positional inside a repeat).
+          previousFilename,
         });
         setInstance(bound.instance);
         setMessage('Captured image attached and saved in this draft.');

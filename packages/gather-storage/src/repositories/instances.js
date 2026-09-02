@@ -216,10 +216,21 @@ export const createInstancesRepository = (db) => {
         `SELECT ${MEDIA_COLUMNS}
            FROM instance_media
           WHERE local_instance_id = ?
-          ORDER BY binding_reference ASC;`,
+          ORDER BY filename ASC;`,
         [id]
       );
       return (rows ?? []).map(rowToMedia);
+    },
+
+    async deleteMedia({ localInstanceId, filename } = {}) {
+      const id = assertLocalInstanceId(localInstanceId);
+      const name = assertMediaFilename(filename);
+      await db.runAsync(
+        `DELETE FROM instance_media
+           WHERE local_instance_id = ? AND filename = ?;`,
+        [id, name]
+      );
+      return { localInstanceId: id, filename: name };
     },
 
     async upsertMedia(input) {
@@ -229,7 +240,7 @@ export const createInstancesRepository = (db) => {
         `INSERT INTO instance_media (
            local_instance_id, binding_reference, filename, content_type, file_key
          ) VALUES (?, ?, ?, ?, ?)
-         ON CONFLICT(local_instance_id, binding_reference) DO UPDATE SET
+         ON CONFLICT(local_instance_id, filename) DO UPDATE SET
            filename = excluded.filename,
            content_type = excluded.content_type,
            file_key = excluded.file_key;`,

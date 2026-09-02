@@ -378,4 +378,34 @@ export const MIGRATIONS = Object.freeze([
          END;`,
     ],
   },
+  {
+    version: 10,
+    name: 'instance_media_identity',
+    statements: [
+      // Media identity must not derive from the XForms binding reference.
+      // Repeat instance references are positional and reindex on deletion, so a
+      // survivor inherits the deleted item's key — a silent wrong attachment.
+      // See docs/repeat-media-identity-characterization.md.
+      //
+      // SQLite cannot alter a primary key, so rebuild the table. The copy is
+      // lossless: `filename` already exists and was already unique per
+      // instance, so it simply becomes the key it should always have been.
+      `CREATE TABLE instance_media_next (
+         local_instance_id TEXT NOT NULL REFERENCES instances(local_instance_id) ON DELETE CASCADE,
+         binding_reference TEXT NOT NULL,
+         filename          TEXT NOT NULL,
+         content_type      TEXT NOT NULL,
+         file_key          TEXT NOT NULL,
+         PRIMARY KEY (local_instance_id, filename)
+       );`,
+      `INSERT INTO instance_media_next
+         (local_instance_id, binding_reference, filename, content_type, file_key)
+         SELECT local_instance_id, binding_reference, filename, content_type, file_key
+           FROM instance_media;`,
+      `DROP TABLE instance_media;`,
+      `ALTER TABLE instance_media_next RENAME TO instance_media;`,
+      `CREATE INDEX instance_media_by_instance
+         ON instance_media (local_instance_id);`,
+    ],
+  },
 ]);

@@ -41,7 +41,7 @@ const makeFakeDb = (startVersion = 0) => {
 test('the shipped MIGRATIONS are well-ordered', () => {
   assert.doesNotThrow(() => assertMigrationOrder(MIGRATIONS));
   assert.equal(latestVersion(MIGRATIONS), MIGRATIONS.length);
-  assert.equal(latestVersion(MIGRATIONS), 9);
+  assert.equal(latestVersion(MIGRATIONS), 10);
 });
 
 test('migration 3 provisions append-only form versions and draft references', () => {
@@ -207,4 +207,26 @@ test('applyMigrations resumes from a partially-migrated database', async () => {
   const result = await applyMigrations(db, migrations);
   assert.deepEqual(result, { from: 1, to: 2, applied: [2] });
   assert.deepEqual(db.executed, ['CREATE TABLE b (id INTEGER);']);
+});
+
+test('migration 10 re-keys instance media off the positional binding reference', () => {
+  // Repeat references reindex on deletion, so they cannot be a durable media
+  // identity. See docs/repeat-media-identity-characterization.md.
+  const media = MIGRATIONS.find((migration) => migration.name === 'instance_media_identity');
+  assert.equal(media.version, 10);
+  const sql = media.statements.join('\n');
+
+  assert.match(sql, /PRIMARY KEY \(local_instance_id, filename\)/);
+  assert.doesNotMatch(sql, /PRIMARY KEY \(local_instance_id, binding_reference\)/);
+
+  // The rebuild must be lossless: every column is carried across, because
+  // `filename` already existed and was already unique per instance.
+  assert.match(sql, /INSERT INTO instance_media_next/);
+  assert.match(sql, /SELECT local_instance_id, binding_reference, filename, content_type, file_key/);
+  assert.match(sql, /DROP TABLE instance_media;/);
+  assert.match(sql, /ALTER TABLE instance_media_next RENAME TO instance_media;/);
+  // The index is dropped with the old table, so it must be recreated.
+  assert.match(sql, /CREATE INDEX instance_media_by_instance/);
+  // binding_reference is retained as provenance, just no longer an identity.
+  assert.match(sql, /binding_reference TEXT NOT NULL/);
 });
