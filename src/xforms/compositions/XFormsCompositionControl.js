@@ -9,6 +9,8 @@ import { FormField } from '../../components/forms/FormField.js';
 import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
 import { compositionConfigFrom } from './recognition.js';
+import { createHostFunctions, mergeFunctions } from '../../a2ui/hostFunctions.js';
+import { createExecutionReceipt } from '../../scientific/provenance/receipt.js';
 
 const COMPONENT_APIS = [...mobileBasicApis, ...gatherComponentApis];
 const IMPLEMENTATIONS = { ...mobileBasicImplementations, ...gatherComponentImplementations };
@@ -80,6 +82,43 @@ export function XFormsCompositionControl({ node, indent, onLayout, composition }
 
   const createActionHandler = useMemo(() => entry?.createActionHandler ?? null, [entry]);
 
+  /**
+   * The functions this composition may call: Capabilities the app registered,
+   * plus the two Gather host seams bound to *this* instance.
+   *
+   * Host implementations are built here rather than imported, because they need
+   * live context the module scope does not have — the resolved field's binding
+   * manifest, the draft, and the Accept lifecycle.
+   */
+  const functions = useMemo(
+    () =>
+      mergeFunctions(
+        composition?.capabilityFunctions ?? [],
+        createHostFunctions({
+          persistAsset: composition?.persistAsset
+            ? ({ capture, retention }) => composition.persistAsset(capture, { retention })
+            : undefined,
+          completeComposition: field
+            ? async ({ outputs }) => {
+                // An authored composition has no handler to mint provenance, so
+                // the host does it from the composition's identity. "Computed"
+                // means produced by the composition, not by a model.
+                const receipt = createExecutionReceipt({
+                  capability: field.compositionId,
+                  capabilityRevision: String(entry?.definition?.revision ?? '0'),
+                  inputs: {},
+                  outputs,
+                  runtime: { kind: 'composition', surfaceId: entry?.definition?.surfaceId ?? null },
+                  timestamp: new Date().toISOString(),
+                });
+                return handleAccepted(outputs, { receipt });
+              }
+            : undefined,
+        })
+      ),
+    [composition, entry, field, handleAccepted]
+  );
+
   const unavailable = useMemo(() => {
     if (!config.compositionId) return 'This group declares a composition but names none.';
     if (!entry) return `Composition "${config.compositionId}" is not available in this build.`;
@@ -104,6 +143,7 @@ export function XFormsCompositionControl({ node, indent, onLayout, composition }
           <A2UIHost
             composition={entry.definition}
             componentApis={COMPONENT_APIS}
+            functions={functions}
             implementations={IMPLEMENTATIONS}
             createActionHandler={createActionHandler}
             onAcceptedResult={handleAccepted}

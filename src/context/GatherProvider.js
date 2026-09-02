@@ -43,6 +43,9 @@ import { createOpenCvMeasurementAdapter } from '../scientific/runtime/openCvMeas
 import { createModelExecutor } from '../scientific/runtime/modelExecutor.js';
 import { createImageAssetService } from '../scientific/assets/imageAssetService.js';
 import { segment, classify, measureImage, measureMask } from 'gather-capabilities';
+import { CAPABILITY_DEFINITIONS } from '../../packages/gather-capabilities/src/definitions.js';
+import { createCapabilityRuntime } from '../../packages/gather-capabilities/src/runtime.js';
+import { capabilityFunctions } from '../a2ui/capabilityFunctions.js';
 import { createScientificModelRef } from '../scientific/models/modelPackage.js';
 
 /**
@@ -550,6 +553,28 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     });
   }, [activeProject, assets, instances]);
 
+  /**
+   * Capabilities, registered as A2UI renderer Functions so an **authored**
+   * composition can call them without composition-specific JS.
+   *
+   * Built from the same portable definitions the Composer agent reads and the
+   * same engines the app already wires, so there is no second capability
+   * surface to keep in step. Only capabilities with a runtime entry register.
+   */
+  const a2uiCapabilityFunctions = useMemo(() => {
+    if (!scientificRuntime || !activeProject) return [];
+    return capabilityFunctions({
+      definitions: CAPABILITY_DEFINITIONS,
+      runtime: createCapabilityRuntime({
+        segmentExecute: (input) =>
+          scientificRuntime.executor.segment({ ...input, projectKey: activeProject.projectKey }),
+        classifyExecute: (input) =>
+          scientificRuntime.executor.classify({ ...input, projectKey: activeProject.projectKey }),
+        measurementAdapter: scientificRuntime.measurementAdapter,
+      }),
+    });
+  }, [activeProject, scientificRuntime]);
+
   const value = useMemo(
     () => ({
       status: state.status,
@@ -595,6 +620,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
         measureScientificImage,
         persistScientificCapture,
         sweepProjectMedia,
+        a2uiCapabilityFunctions,
       },
     }),
     [

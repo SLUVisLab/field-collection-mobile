@@ -264,3 +264,68 @@ pressed, then lands `{ value: 1234, unit: 'px^2' }` — from the real
 Delete `actionAdapter.js` and the `useFunctionCallActions` interception when an
 upstream A2UI runtime executes action-position FunctionCalls with an equivalent
 result destination, and passes Gather's composition execution gates.
+
+## Slice 3 — host functions, landed 2026-09-02
+
+```text
+measure_area, image_segment, …   → gather-capabilities      (application-independent)
+gather_persistAsset              → Gather media lifecycle   (instance-specific)
+gather_completeComposition       → Gather/XForms lifecycle  (instance-specific)
+```
+
+Both kinds enter the same `Catalog.functions`, so an authored composition sees
+one uniform mechanism — but ownership stays distinct, which is why
+[`hostFunctions.js`](../src/a2ui/hostFunctions.js) sits *beside*
+`capabilityFunctions.js` rather than inside it.
+
+Capability implementations are largely application-independent. Host functions
+are not: they need the live instance, its media store and ledger, the resolved
+field's binding manifest and the Accept lifecycle. So their implementations are
+**injected by whoever holds that context** — `XFormsCompositionControl` — never
+imported as module singletons.
+
+### `gather_persistAsset`
+
+Capture descriptor in, durable `ImageAsset` out. It knows nothing about what
+happens afterwards; an authored composition decides that with `resultPath`:
+
+```text
+CameraView capture → gather_persistAsset → resultPath: /working/image
+```
+
+`retention` is an optional authored argument, never inferred (b-custom §4).
+
+### `gather_completeComposition`
+
+Takes **only** the composition's declared output values, resolved from
+composition state. It structurally **cannot be told where they go**: the args
+schema is `.strict()` with a single `outputs` key, so an authored action naming
+XForms references — `bindings`, `reference`, a stray `resultPath` — is a loud
+validation failure rather than a silently ignored key. The form's binding
+manifest owns that mapping.
+
+Normally authored with **no `resultPath`**, because completion is the side
+effect.
+
+**The host mints the receipt.** An authored composition has no handler to
+produce provenance, so the control builds an `ExecutionReceipt` from the
+composition's identity and declared outputs — consistent with "computed means
+produced by the composition, not by a model".
+
+### `resultPath` hardening
+
+Upstream deliberately preserves unknown action properties rather than validating
+them, so nothing but Gather will catch a typo. `assertResultPath` runs when the
+handler is built — before any invocation or write — and rejects a non-string,
+empty, relative, trailing-slash or empty-segment path.
+
+**For Composer:** `resultPath` is a Gather extension to an A2UI v0.9.1 action
+FunctionCall. It stores the awaited serializable return value in composition
+state. It disappears if upstream gains equivalent semantics.
+
+### Still open
+
+Registration and execution are proven; **an authored composition completing into
+a real XForms instance is not yet demonstrated end to end on a device.** That is
+the step that closes composition portability, as distinct from the capability
+execution chain proven above. Sequencing remains deliberately untouched.

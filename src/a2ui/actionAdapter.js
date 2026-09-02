@@ -40,6 +40,39 @@
 /** The Gather extension key, a sibling of `functionCall` inside an action. */
 export const RESULT_PATH_KEY = 'resultPath';
 
+/**
+ * Validates the Gather extension itself.
+ *
+ * Upstream deliberately preserves unknown action properties rather than
+ * validating them, so nothing but this will catch a typo — and without it a
+ * mis-authored `resultPath` becomes a late runtime failure at press time. This
+ * runs when the handler is built, before any invocation or write.
+ */
+export const assertResultPath = (value) => {
+  if (typeof value !== 'string' || value.length === 0) {
+    throw new A2uiActionError(`${RESULT_PATH_KEY} must be a non-empty string.`, {
+      code: 'GATHER_A2UI_ACTION_INVALID',
+    });
+  }
+  if (!value.startsWith('/')) {
+    throw new A2uiActionError(
+      `${RESULT_PATH_KEY} must be an absolute data-model path, got: ${value}`,
+      { code: 'GATHER_A2UI_ACTION_INVALID' }
+    );
+  }
+  if (value !== '/' && value.endsWith('/')) {
+    throw new A2uiActionError(`${RESULT_PATH_KEY} must not end with '/': ${value}`, {
+      code: 'GATHER_A2UI_ACTION_INVALID',
+    });
+  }
+  if (value.includes('//')) {
+    throw new A2uiActionError(`${RESULT_PATH_KEY} has an empty path segment: ${value}`, {
+      code: 'GATHER_A2UI_ACTION_INVALID',
+    });
+  }
+  return value;
+};
+
 export class A2uiActionError extends Error {
   constructor(message, { code = 'GATHER_A2UI_ACTION_ERROR', cause = null } = {}) {
     super(message);
@@ -140,11 +173,7 @@ export const createFunctionCallHandler = ({
   }
   const call = rawAction.functionCall;
   const resultPath = rawAction[RESULT_PATH_KEY] ?? null;
-  if (resultPath !== null && (typeof resultPath !== 'string' || !resultPath.startsWith('/'))) {
-    throw new A2uiActionError(`${RESULT_PATH_KEY} must be an absolute data-model path.`, {
-      code: 'GATHER_A2UI_ACTION_INVALID',
-    });
-  }
+  if (resultPath !== null) assertResultPath(resultPath);
   if (typeof call?.call !== 'string' || call.call.length === 0) {
     throw new A2uiActionError('A functionCall needs a function name.', {
       code: 'GATHER_A2UI_ACTION_INVALID',

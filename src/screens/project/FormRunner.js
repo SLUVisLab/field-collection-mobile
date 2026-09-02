@@ -45,6 +45,8 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     saveInstanceDraft,
     finalizeInstance,
     attachImageMedia,
+    persistScientificCapture,
+    a2uiCapabilityFunctions,
     releaseInstanceMedia,
     discardInstance,
     sweepProjectMedia,
@@ -272,9 +274,14 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
         resolvedCompositions.fields.find((field) => field.reference === reference) ?? null,
       entryFor: (compositionId) => compositionEntryFor(compositionId),
       onAccepted: commitComposition,
+      // The host media seam an authored composition reaches through
+      // `gather_persistAsset`. Disposition is authored, never inferred.
+      persistAsset: (capture, options) => persistScientificCapture(capture, options),
+      // Capabilities this build can execute, already A2UI-registered.
+      capabilityFunctions: a2uiCapabilityFunctions,
       problems: resolvedCompositions.problems,
     }),
-    [commitComposition, resolvedCompositions]
+    [a2uiCapabilityFunctions, commitComposition, persistScientificCapture, resolvedCompositions]
   );
 
   const collectionAdapter = useMemo(
