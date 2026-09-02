@@ -41,10 +41,19 @@ export const gatherComponentImplementations = {
     }),
   },
   [GATHER_COMPONENT_IDS.cameraView]: {
-    component: bindInstrumentComponent(cameraViewApi.schema, ({ statePath, context }) => (
+    component: bindInstrumentComponent(cameraViewApi.schema, ({ statePath, setCapture, context }) => (
       <CameraView
         onCapture={(capture) =>
-          context.dispatchAction(action(GATHER_ACTION_IDS.capture, statePath, { capture }))
+          {
+            // Both paths, deliberately. `setCapture` serves an *authored*
+            // composition, which has no handler to receive an event; the event
+            // serves registered compositions whose handler owns the flow.
+            // They are independent, so supporting one never breaks the other.
+            setCapture?.(capture);
+            if (statePath) {
+              context.dispatchAction(action(GATHER_ACTION_IDS.capture, statePath, { capture }));
+            }
+          }
         }
       />
     )),

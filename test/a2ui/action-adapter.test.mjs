@@ -191,3 +191,31 @@ test('a Gather host function dispatches through the identical path', async () =>
   ]);
   assert.deepEqual(writes, [['/gather/completion', { status: 'committed', written: 2 }]]);
 });
+
+test('arguments resolve deeply, so nested bindings reach the host resolved', async () => {
+  // `gather_completeComposition` is authored as
+  // `outputs: { image: { path: … }, count: { path: … } }`. Resolving only the
+  // top level would hand the host unresolved `{ path }` objects.
+  const { handler } = harness({
+    rawAction: {
+      functionCall: {
+        call: 'gather_completeComposition',
+        args: {
+          outputs: {
+            image: { path: '/working/image' },
+            count: { path: '/working/count' },
+            literal: 'kept',
+          },
+          list: [{ path: '/working/count' }, 7],
+        },
+      },
+    },
+    invoke: (_name, args) => args,
+    model: { '/working/image': { assetId: 'image-1' }, '/working/count': 3 },
+  });
+
+  assert.deepEqual(await handler(), {
+    outputs: { image: { assetId: 'image-1' }, count: 3, literal: 'kept' },
+    list: [3, 7],
+  });
+});

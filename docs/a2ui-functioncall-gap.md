@@ -329,3 +329,51 @@ Registration and execution are proven; **an authored composition completing into
 a real XForms instance is not yet demonstrated end to end on a device.** That is
 the step that closes composition portability, as distinct from the capability
 execution chain proven above. Sequencing remains deliberately untouched.
+
+## Component output → composition state — solved upstream (2026-09-02)
+
+Preparing the handler-free proof hit the **first** diagnostic category, not
+sequencing: `CameraView` emitted its capture as an *event*
+(`GATHER_ACTION_IDS.capture`), which needs a registered handler. Handler-free,
+the capture went nowhere — so an authored composition could not use the camera
+at all.
+
+**Upstream already solves this.** `GenericBinder` injects a `set<Prop>` writer
+for any `DynamicValue` prop bound to a path — the same mechanism a `TextField`
+uses for `value`:
+
+```js
+const setterName = `set${k.charAt(0).toUpperCase() + k.slice(1)}`;
+result[setterName] = (newValue) => { …dataContext.set(rawPropValue.path, newValue); };
+```
+
+Proven for a top-level prop:
+
+```text
+props      : capture, setCapture
+setCapture : function
+data model : {"uri":"file:///shot.jpg","contentType":"image/jpeg"}
+```
+
+So `cameraViewApi` gains an optional `capture` DynamicValue prop, and the
+implementation calls `setCapture(descriptor)`. **No Gather extension.** The
+event is kept alongside it: `setCapture` serves authored compositions, the event
+serves registered ones whose handler owns the flow, and the two are independent.
+
+### A bug this exposed in the action adapter
+
+Argument resolution was only one level deep. `gather_completeComposition` is
+authored as `outputs: { image: { path: … }, count: { path: … } }`, so the host
+would have received unresolved `{ path }` objects. `resolveArgsDeep` now mirrors
+upstream's `resolveDeepSync`, walking plain objects and arrays and resolving
+`{ path }` / `{ call }` leaves.
+
+### Taxonomy after this
+
+| Requirement | State |
+| --- | --- |
+| Component output → composition state | **solved** — upstream binder setter |
+| one user action → one function | solved |
+| function result → composition state | solved — `resultPath` |
+| state → Flow/View | solved — existing bindings |
+| one user action → several ordered operations | **sequencing, deliberately unsolved** |

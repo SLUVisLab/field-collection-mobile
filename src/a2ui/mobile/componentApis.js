@@ -34,7 +34,22 @@ export const flowApi = {
 // durable ImageAsset.
 export const cameraViewApi = {
   name: GATHER_COMPONENT_IDS.cameraView,
-  schema: z.object({ statePath: z.string() }).strict(),
+  schema: z
+    .object({
+      statePath: z.string().optional(),
+      /**
+       * Where the capture descriptor lands, e.g. `{ path: '/working/capture' }`.
+       *
+       * This is the upstream Component-output mechanism, not a Gather
+       * invention: the binder injects a `setCapture` writer for any
+       * `DynamicValue` prop bound to a path, exactly as it does for a
+       * `TextField`'s `value`. It is what lets an **authored** composition
+       * receive a capture with no registered handler — the event below needs
+       * one, so handler-free compositions could not use the camera at all.
+       */
+      capture: CommonSchemas.DynamicValue.optional(),
+    })
+    .strict(),
 };
 
 // MediaGallery: manages a collection of durable media. Composer-visible so an

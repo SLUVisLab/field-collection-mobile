@@ -142,6 +142,24 @@ export const assertSerializableResult = (value, path = 'result', seen = new Weak
 };
 
 /**
+ * Resolves an argument structure, recursing into plain objects and arrays.
+ *
+ * A `{ path }` or `{ call }` leaf is handed to the context resolver; everything
+ * else is walked. This mirrors upstream's `resolveDeepSync` so authored
+ * arguments behave the same whichever path executes them.
+ */
+export const resolveArgsDeep = (value, resolveDynamicValue) => {
+  if (value === null || typeof value !== 'object') return value;
+  if ('path' in value || 'call' in value) return resolveDynamicValue(value);
+  if (Array.isArray(value)) return value.map((entry) => resolveArgsDeep(entry, resolveDynamicValue));
+  const resolved = {};
+  for (const [key, entry] of Object.entries(value)) {
+    resolved[key] = resolveArgsDeep(entry, resolveDynamicValue);
+  }
+  return resolved;
+};
+
+/**
  * Builds the callable for an action-position FunctionCall.
  *
  * Always async, so a synchronous capability works through the same path.
@@ -182,12 +200,11 @@ export const createFunctionCallHandler = ({
 
   return async () => {
     try {
-      // Upstream's own resolution, so path/literal semantics cannot drift from
-      // what value-position calls do.
-      const args = {};
-      for (const [key, value] of Object.entries(call.args ?? {})) {
-        args[key] = resolveDynamicValue(value);
-      }
+      // Deep resolution, mirroring upstream's `resolveDeepSync`: an argument
+      // may be a nested structure whose leaves are bindings, which is exactly
+      // the `outputs: { image: { path } }` shape completion needs. Resolving
+      // only the top level would hand the host an unresolved `{ path }` object.
+      const args = resolveArgsDeep(call.args ?? {}, resolveDynamicValue);
       const result = await invoke(call.call, args);
       if (resultPath === null) return result;
       assertSerializableResult(result, `${call.call} result`);
