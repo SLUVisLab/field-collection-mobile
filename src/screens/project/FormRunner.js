@@ -44,6 +44,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     attachImageMedia,
     releaseInstanceMedia,
     discardInstance,
+    sweepProjectMedia,
     associateFieldworkInstance,
   } = actions;
   const { loadForm, loadInstance } = form;
@@ -135,6 +136,13 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
         });
       }
       setMessage('Draft saved on this device.');
+      // A safe lifecycle boundary: the draft's XML is durable, so the
+      // referenced set is settled and a sweep can tell what is still needed.
+      // Cleanup must never fail a save, so this is best-effort and its outcome
+      // is not surfaced. The composition-commit boundary is the other place
+      // this belongs, once a composition control exists to reach it.
+      // docs/b-custom-composition-conventions.md §4.
+      void Promise.resolve(sweepProjectMedia?.()).catch(() => {});
       return true;
     } catch (error) {
       setMessage(error?.message ?? 'Could not save this draft.');
@@ -142,7 +150,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     } finally {
       setBusy(false);
     }
-  }, [associateFieldworkInstance, busy, fieldworkEntityId, fieldworkSessionId, form.serialize, instance?.localInstanceId, saveInstanceDraft, version]);
+  }, [associateFieldworkInstance, busy, fieldworkEntityId, fieldworkSessionId, form.serialize, instance?.localInstanceId, saveInstanceDraft, sweepProjectMedia, version]);
 
   // Collection field adapter (storage half). The control owns the repeat APIs;
   // this owns persistence and orphan cleanup. See

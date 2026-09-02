@@ -10,6 +10,7 @@ import {
   createSyncRepository,
   createFieldworkRepository,
   deleteFile,
+  listDirectory,
   ensureProjectDirectories,
   deleteProjectDirectory,
   fileForKey,
@@ -30,6 +31,7 @@ import { createProvisioningService } from '../provisioning/provisioningService.j
 import { createFormCatalogService } from '../forms/formCatalogService.js';
 import { createEntityService } from '../entities/entityService.js';
 import { createInstanceLifecycleService } from '../instances/instanceLifecycleService.js';
+import { sweepProjectAssets } from '../instances/assetCleanup.js';
 import { createSyncService } from '../sync/syncService.js';
 import { createFieldworkService } from '../fieldwork/fieldworkService.js';
 import { createModelStore } from '../scientific/models/modelStore.js';
@@ -527,6 +529,27 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     [activeProject, assets, imageAssetService]
   );
 
+  /**
+   * Reclaims local-only assets this project no longer needs.
+   *
+   * Lives here rather than in any composition runtime: a composition declares
+   * disposition, it does not know cleanup mechanics. Callers invoke this at
+   * their own safe lifecycle boundaries.
+   *
+   * `reclaimOrphans` stays false, so a file with no ledger row is kept — see
+   * docs/b-custom-composition-conventions.md §4.
+   */
+  const sweepProjectMedia = useCallback(async () => {
+    if (!activeProject || !instances || !assets) return null;
+    return sweepProjectAssets({
+      projectKey: activeProject.projectKey,
+      mediaDirectoryKey: GatherPaths.media(activeProject.projectKey),
+      files: { listDirectory, deleteFile },
+      instances,
+      assets,
+    });
+  }, [activeProject, assets, instances]);
+
   const value = useMemo(
     () => ({
       status: state.status,
@@ -571,6 +594,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
         measureScientificMask,
         measureScientificImage,
         persistScientificCapture,
+        sweepProjectMedia,
       },
     }),
     [
@@ -618,6 +642,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       measureScientificMask,
       measureScientificImage,
       persistScientificCapture,
+      sweepProjectMedia,
     ]
   );
 

@@ -1,0 +1,225 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import {
+  CompositionCommitError,
+  commitCompositionResult,
+  missingRequiredOutputs,
+} from '../../src/xforms/compositionCommit.js';
+import { parseBindingManifest } from '../../src/xforms/compositionField.js';
+
+// docs/b-custom-composition-conventions.md §7: a missing required output is a
+// composition completion failure, not a partially finalized instance.
+
+const field = (bindings) => ({ reference: '/data/flower', compositionId: 'flower_v1', bindings });
+
+const resolvedField = () =>
+  parseBindingManifest({
+    version: 1,
+    fields: [
+      {
+        reference: '/data/flower',
+        composition: 'flower_v1',
+        bindings: [
+          { path: 'petalCount', reference: '/data/flower/petal_count', required: true },
+          { path: 'color.name', reference: '/data/flower/color' },
+        ],
+      },
+    ],
+  }).fields[0];
+
+const makeForm = () => {
+  const writes = [];
+  return { writes, setValue: async (reference, value) => writes.push([reference, value]) };
+};
+
+const makeReceipts = () => {
+  const rows = new Map();
+  return {
+    rows,
+    upsertReceipt: async ({ bindingReference, receipt }) => rows.set(bindingReference, receipt),
+    deleteReceipt: async ({ bindingReference }) => rows.delete(bindingReference),
+  };
+};
+
+const receipt = { capability: 'image.classify', capabilityRevision: 'r1', revision: 'd1' };
+
+// --- required-output validation -----------------------------------------
+
+test('required outputs are checked before anything is written', () => {
+  const bindings = resolvedField().bindings;
+  assert.deepEqual(missingRequiredOutputs({ bindings, result: { petalCount: 7 } }), []);
+  assert.deepEqual(missingRequiredOutputs({ bindings, result: {} }), [
+    { path: 'petalCount', reference: '/data/flower/petal_count' },
+  ]);
+});
+
+test('a required output of null is missing, not present', () => {
+  // toXFormsValue clears the field for null as well as undefined, so a
+  // required value that came back null is not a value.
+  const bindings = resolvedField().bindings;
+  assert.equal(missingRequiredOutputs({ bindings, result: { petalCount: null } }).length, 1);
+  // Falsy-but-real values are present.
+  assert.deepEqual(missingRequiredOutputs({ bindings, result: { petalCount: 0 } }), []);
+  assert.deepEqual(missingRequiredOutputs({ bindings, result: { petalCount: false } }), []);
+  assert.deepEqual(missingRequiredOutputs({ bindings, result: { petalCount: '' } }), []);
+});
+
+test('an optional output may be absent without complaint', () => {
+  assert.deepEqual(
+    missingRequiredOutputs({ bindings: resolvedField().bindings, result: { petalCount: 7 } }),
+    []
+  );
+});
+
+// --- the Accept path ----------------------------------------------------
+
+test('Accept commits every binding and records provenance for each', async () => {
+  const form = makeForm();
+  const receipts = makeReceipts();
+
+  const outcome = await commitCompositionResult({
+    result: { petalCount: 7, color: { name: 'yellow' } },
+    field: resolvedField(),
+    form,
+    receipts,
+    receipt,
+    localInstanceId: 'i-1',
+  });
+
+  assert.deepEqual(form.writes, [
+    ['/data/flower/petal_count', '7'],
+    ['/data/flower/color', 'yellow'],
+  ]);
+  assert.deepEqual(outcome.recorded, ['/data/flower/petal_count', '/data/flower/color']);
+  assert.deepEqual(outcome.cleared, []);
+  assert.deepEqual(outcome.provenanceFailures, []);
+  // Every projected field can now answer "was this computed?" — principle 5.
+  assert.equal(receipts.rows.get('/data/flower/color'), receipt);
+});
+
+test('a missing required output fails Accept and writes nothing at all', async () => {
+  const form = makeForm();
+  const receipts = makeReceipts();
+
+  await assert.rejects(
+    () =>
+      commitCompositionResult({
+        result: { color: { name: 'yellow' } },
+        field: resolvedField(),
+        form,
+        receipts,
+        receipt,
+        localInstanceId: 'i-1',
+      }),
+    (error) => {
+      assert.ok(error instanceof CompositionCommitError);
+      assert.equal(error.code, 'GATHER_COMPOSITION_COMMIT_REQUIRED_MISSING');
+      assert.deepEqual(error.details.missing, [
+        { path: 'petalCount', reference: '/data/flower/petal_count' },
+      ]);
+      return true;
+    }
+  );
+
+  // The instance is untouched: no partial write, no provenance.
+  assert.deepEqual(form.writes, []);
+  assert.equal(receipts.rows.size, 0);
+});
+
+test('an absent optional output clears its field and its provenance', async () => {
+  // §7: clear any previous projected value, and the receipt must not outlive it.
+  const form = makeForm();
+  const receipts = makeReceipts();
+  receipts.rows.set('/data/flower/color', { stale: true });
+
+  const outcome = await commitCompositionResult({
+    result: { petalCount: 7 },
+    field: resolvedField(),
+    form,
+    receipts,
+    receipt,
+    localInstanceId: 'i-1',
+  });
+
+  assert.deepEqual(form.writes, [
+    ['/data/flower/petal_count', '7'],
+    ['/data/flower/color', ''],
+  ]);
+  assert.deepEqual(outcome.cleared, ['/data/flower/color']);
+  assert.equal(receipts.rows.has('/data/flower/color'), false, 'stale provenance is dropped');
+});
+
+test('a structured value is refused before it can reach a field', async () => {
+  // §17's guard: this is what keeps an ImageAsset out of a text field.
+  const form = makeForm();
+  await assert.rejects(
+    () =>
+      commitCompositionResult({
+        result: { petalCount: { count: 7 } },
+        field: resolvedField(),
+        form,
+      }),
+    /Only scalar values/
+  );
+  assert.deepEqual(form.writes, [], 'coercion happens before any write');
+});
+
+test('provenance failures are reported, not thrown — the values are committed', async () => {
+  // Telling the host that Accept failed would be worse than telling it
+  // provenance is incomplete, because the data is already in the form.
+  const form = makeForm();
+  const outcome = await commitCompositionResult({
+    result: { petalCount: 7, color: { name: 'yellow' } },
+    field: resolvedField(),
+    form,
+    receipts: {
+      upsertReceipt: async () => { throw new Error('disk full'); },
+      deleteReceipt: async () => {},
+    },
+    receipt,
+    localInstanceId: 'i-1',
+  });
+
+  assert.equal(form.writes.length, 2, 'the values still landed');
+  assert.deepEqual(outcome.recorded, []);
+  assert.equal(outcome.provenanceFailures.length, 2);
+  assert.equal(outcome.provenanceFailures[0].message, 'disk full');
+});
+
+test('committing without a receipt store simply skips provenance', async () => {
+  const form = makeForm();
+  const outcome = await commitCompositionResult({
+    result: { petalCount: 7, color: { name: 'yellow' } },
+    field: resolvedField(),
+    form,
+  });
+  assert.equal(form.writes.length, 2);
+  assert.deepEqual(outcome.recorded, []);
+  assert.deepEqual(outcome.provenanceFailures, []);
+});
+
+test('a receipt store with nothing to store is refused rather than silently skipped', async () => {
+  // Otherwise principle 5 would quietly not hold for this field.
+  const form = makeForm();
+  await assert.rejects(
+    () => commitCompositionResult({ result: { petalCount: 7 }, field: resolvedField(), form, receipts: makeReceipts(), localInstanceId: 'i-1' }),
+    /needs the execution receipt/
+  );
+  await assert.rejects(
+    () => commitCompositionResult({ result: { petalCount: 7 }, field: resolvedField(), form, receipts: makeReceipts(), receipt }),
+    /needs the instance it belongs to/
+  );
+  assert.deepEqual(form.writes, []);
+});
+
+test('a field with no bindings cannot be committed', async () => {
+  await assert.rejects(
+    () => commitCompositionResult({ result: {}, field: field([]), form: makeForm() }),
+    /needs a resolved field with bindings/
+  );
+  await assert.rejects(
+    () => commitCompositionResult({ result: {}, form: makeForm() }),
+    /needs a resolved field with bindings/
+  );
+});

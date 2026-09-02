@@ -255,6 +255,50 @@ optional output absent  → legitimate completion; clear any previous
 §17 already guarantees the atomicity this needs: every binding coerces before
 any write, so a failing binding cannot leave the instance half-populated.
 
+### Landed 2026-09-02
+
+[`src/xforms/compositionCommit.js`](../src/xforms/compositionCommit.js) is the
+Accept path:
+
+```text
+Accept
+  → validate the result
+  → required output missing?  yes → stay in the composition, write nothing
+  → coerce all bindings
+  → commit atomically
+  → record provenance
+```
+
+A missing required output is a **composition completion failure**, not a
+partially finalized instance — validation runs before any write, so an invalid
+accepted result never crosses into XForms.
+
+Three details worth knowing:
+
+- **A required output of `null` is missing.** `toXFormsValue` clears the field
+  for `null` as it does for `undefined`, so a required value that came back
+  null is not a value. The writer's own `present` flag is narrower — it reports
+  only `undefined` — and the difference is deliberate.
+- **An absent optional output clears its field *and* its provenance**, since a
+  receipt left behind would describe a value that is no longer there.
+- **Provenance failures are reported, not thrown.** The values are already
+  committed by then, so telling the host that Accept failed would be worse than
+  telling it provenance is incomplete. A receipt store supplied without a
+  receipt (or without an instance) *is* refused up front, because silently
+  skipping provenance would quietly break principle 5.
+
+### Where the sweep runs
+
+At the **instance lifecycle owner**, never inside the composition runtime: a
+composition declares disposition and does not know cleanup mechanics.
+`GatherProvider` exposes `sweepProjectMedia`, and `FormRunner` calls it after a
+successful draft save — a safe boundary, because the draft's XML is durable so
+the referenced set is settled. It is best-effort and its outcome is not
+surfaced: cleanup must never fail a save.
+
+The other boundary, **after a successful composition result commit**, is
+identified but unreachable until a composition control exists to reach it.
+
 ## Open dependencies
 
 Two things B-custom depends on that **do not exist yet**, and one is load-bearing
