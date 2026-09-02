@@ -54,7 +54,34 @@ const catalog = new Catalog(composition.catalogId, componentApis);
 The mechanism was never used. This is the largest single reason the audit
 mistook absence of use for absence of support.
 
-### 2. `action.functionCall` is evaluated **eagerly**, not on interaction
+### 2. ~~`action.functionCall` is evaluated eagerly~~ — **wrong; it is already lazy**
+
+> **Corrected by spike, same day.** This section originally claimed action-position
+> calls evaluate at prop-resolution time, read from `DataContext.resolveAction`.
+> The renderer does not use that path. `GenericBinder`'s `ACTION` case returns a
+> **callable**, and resolves the call inside it:
+>
+> ```js
+> case 'ACTION': return () => { ... this.context.dispatchAction(resolveDeepSync(value)); };
+> ```
+>
+> Driving the real binder
+> ([action-spike.mjs](../experiments/a2ui-function-call/action-spike.mjs)):
+>
+> ```text
+> calls BEFORE press : []             ← lazy
+> action prop type   : function
+> calls AFTER press  : [["sync",21]]  ← executes on press, arg resolved from /working/value
+> press returned     : undefined
+> dispatched to host : []
+> data model /working: {"value":21}   ← result discarded
+> ```
+>
+> So laziness, interaction-time execution and path-bound argument resolution are
+> **all already correct**. Two source-reading errors in a row here; both were
+> caught by running the thing.
+
+### 2 (actual). The result is computed and then dropped
 
 `rendering/data-context.js`:
 
@@ -82,7 +109,7 @@ model's raw action and defer invocation itself, keeping us at approach #1
 deliberately ignores `{functionCall}`, commenting that local function calls are
 "handled by the renderer or binder". The renderer is *expected* to own this.
 
-### 3. No result destination for an action-position call
+### 3. No result destination — the same gap, stated as the fix
 
 `resolveAction` returns the result to its caller; nothing writes it into the
 data model. So `imageSegment(...) → /working/segmentation` has no upstream
@@ -101,12 +128,16 @@ than add syntax. **Stopping here.**
 ## Consequence for the plan
 
 The plan's premise — *"add renderer-local FunctionCall execution"* — is
-substantially already satisfied upstream. What remains is:
+substantially already satisfied upstream. After both corrections, what remains
+is only:
 
-1. register Gather capabilities as catalog functions (plus the A2UI-safe id
-   mapping, since `image.segment` may not be a legal function identifier);
-2. defer `action.functionCall` to interaction time in the Gather host;
-3. decide result consumption — reactive-pull vs a minimal result destination.
+1. **register** Gather capabilities as catalog functions, with an A2UI-safe id
+   mapping (`image.segment` → `image_segment`), because Gather never passed a
+   third argument to `new Catalog(...)`;
+2. ~~defer action calls to interaction time~~ — **already correct**;
+3. a **result destination** so a user-triggered call's return value reaches
+   composition state, including *awaiting* it: `resolveDeepSync` does not await,
+   so an async capability currently yields a dropped Promise.
 
 Items 1 and 2 need no upstream change. Item 3 is the architectural question.
 
