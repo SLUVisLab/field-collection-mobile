@@ -72,6 +72,11 @@ export function MultiImageCapture({
   const countLabel = captureCountLabel({ items, minItems, maxItems });
   const latest = items.length > 0 ? items[items.length - 1] : null;
   const latestPoster = latest ? mediaPosterUri(latest) : null;
+  const limit = Number.isFinite(maxItems) ? Math.floor(maxItems) : null;
+  const limitNotice =
+    limit === null
+      ? null
+      : `This field takes ${limit} ${limit === 1 ? 'photo' : 'photos'}. Remove one to add another.`;
 
   const handleCapture = useCallback(
     async (capture) => {
@@ -113,7 +118,9 @@ export function MultiImageCapture({
   return (
     <View style={styles.container} testID={testIDPrefix}>
       <CameraView
-        onCapture={capturable ? handleCapture : undefined}
+        canCapture={capturable}
+        notice={capturable ? null : limitNotice}
+        onCapture={handleCapture}
         onCancel={onCancel}
         testIDPrefix={`${testIDPrefix}-camera`}
         leading={
@@ -135,7 +142,10 @@ export function MultiImageCapture({
           countLabel ? (
             <Text
               accessibilityLabel={`${items.length} captured`}
-              style={[styles.count, { color: theme.colors.textInverse }]}
+              // `textInverse` is for text over an inverted surface; the count
+              // sits in the shutter row on the ordinary one, where inverse
+              // resolves to near-black in the dark theme — invisible.
+              style={[styles.count, { color: theme.colors.text }]}
               testID={`${testIDPrefix}-count`}
             >
               {countLabel}
@@ -146,11 +156,6 @@ export function MultiImageCapture({
       {error ? (
         <Text accessibilityRole="alert" style={[styles.message, { color: theme.colors.danger }]}>
           {error}
-        </Text>
-      ) : null}
-      {!capturable ? (
-        <Text style={[styles.message, { color: theme.colors.textMuted }]} testID={`${testIDPrefix}-full`}>
-          {`This field takes ${Math.floor(maxItems)} ${Math.floor(maxItems) === 1 ? 'photo' : 'photos'}. Remove one to add another.`}
         </Text>
       ) : null}
       {busy ? (

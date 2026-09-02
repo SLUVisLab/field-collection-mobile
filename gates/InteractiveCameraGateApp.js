@@ -1,7 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
 import { File } from 'expo-file-system';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StatusBar as RNStatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { WebView } from 'react-native-webview';
 import {
   createFormsRepository,
@@ -26,6 +34,7 @@ import {
 import { buildSubmissionParts, toFormData } from 'odk-central-client';
 
 import { createInstanceLifecycleService } from '../src/instances/instanceLifecycleService.js';
+import { useTheme } from '../src/theme/useTheme.js';
 import { XFormsRenderer } from '../src/xforms/XFormsRenderer.js';
 
 /**
@@ -88,6 +97,7 @@ const OBSERVATIONS = [
 ];
 
 function Harness() {
+  const theme = useTheme();
   const form = useXForm();
   const { loadForm } = form;
   const services = useRef(null);
@@ -274,17 +284,17 @@ function Harness() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.body}>
-      <Text style={styles.title}>Interactive camera gate</Text>
-      <Text style={styles.status}>{status}</Text>
+    <ScrollView contentContainerStyle={[styles.body, { backgroundColor: theme.colors.background }]}>
+      <Text style={[styles.title, { color: theme.colors.text }]}>Interactive camera gate</Text>
+      <Text style={[styles.status, { color: theme.colors.textMuted }]}>{status}</Text>
       {message ? <Text style={styles.error}>{message}</Text> : null}
 
-      <View style={styles.panel}>
-        <Text style={styles.panelTitle}>derived (must agree)</Text>
-        <Text style={styles.mono}>engine (filled frames): {engineFilled}</Text>
-        <Text style={styles.mono}>media rows: {media.length}</Text>
-        <Text style={styles.mono}>&lt;frame&gt; in saved XML: {xmlFrameCount ?? '—'}</Text>
-        <Text style={styles.mono}>
+      <View style={[styles.panel, { backgroundColor: theme.colors.surfaceMuted }]}>
+        <Text style={[styles.panelTitle, { color: theme.colors.textMuted }]}>derived (must agree)</Text>
+        <Text style={[styles.mono, { color: theme.colors.text }]}>engine (filled frames): {engineFilled}</Text>
+        <Text style={[styles.mono, { color: theme.colors.text }]}>media rows: {media.length}</Text>
+        <Text style={[styles.mono, { color: theme.colors.text }]}>&lt;frame&gt; in saved XML: {xmlFrameCount ?? '—'}</Text>
+        <Text style={[styles.mono, { color: theme.colors.text }]}>
           all three agree:{' '}
           {String(derived.engineMatchesMediaRows && derived.engineMatchesSavedXml)}
         </Text>
@@ -296,8 +306,10 @@ function Harness() {
         <Text style={styles.status}>waiting for the engine…</Text>
       )}
 
-      <View style={styles.panel}>
-        <Text style={styles.panelTitle}>observed — tap each once true</Text>
+      <View style={[styles.panel, { backgroundColor: theme.colors.surfaceMuted }]}>
+        <Text style={[styles.panelTitle, { color: theme.colors.textMuted }]}>
+          observed — tap each once true
+        </Text>
         {OBSERVATIONS.map(([key, label]) => (
           <Pressable
             key={key}
@@ -306,7 +318,7 @@ function Harness() {
             testID={`observe-${key}`}
           >
             <Text style={styles.checkBox}>{observed[key] ? '[x]' : '[ ]'}</Text>
-            <Text style={styles.checkLabel}>{label}</Text>
+            <Text style={[styles.checkLabel, { color: theme.colors.text }]}>{label}</Text>
           </Pressable>
         ))}
       </View>
@@ -322,6 +334,7 @@ function Harness() {
 }
 
 export default function InteractiveCameraGateApp() {
+  const theme = useTheme();
   const webViewRef = useRef(null);
   const host = useMemo(() => new WebViewXFormsHost({ webViewRef, requestTimeoutMs: 45_000 }), []);
   const html = useMemo(() => createWebViewSidecarHtml(), []);
@@ -331,7 +344,7 @@ export default function InteractiveCameraGateApp() {
   );
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: theme.colors.background }]}>
       <XFormsProvider host={host}>
         <Harness />
       </XFormsProvider>
@@ -345,7 +358,14 @@ export default function InteractiveCameraGateApp() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#0b0d10' },
-  body: { padding: 16, gap: 12, paddingBottom: 48 },
+  // No safe-area-context in this project, so inset the Android status bar
+  // directly — otherwise the title sits under the clock on a tall device.
+  body: {
+    gap: 12,
+    padding: 16,
+    paddingBottom: 48,
+    paddingTop: (RNStatusBar.currentHeight ?? 0) + 16,
+  },
   title: { color: '#e8eaed', fontSize: 18, fontWeight: '700' },
   status: { color: '#7b8794', fontSize: 12 },
   error: { color: '#ff6b6b', fontSize: 12 },

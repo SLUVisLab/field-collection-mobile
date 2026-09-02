@@ -19,6 +19,8 @@ export function CameraFrame({
   viewport,
   onCapture,
   capturing = false,
+  captureDisabled = false,
+  notice = null,
   error = null,
   permission = null,
   onCancel = null,
@@ -31,11 +33,14 @@ export function CameraFrame({
   const flash = useRef(new Animated.Value(0)).current;
 
   const handleCapture = useCallback(() => {
-    if (capturing) return;
+    // A shutter that cannot append must not capture either: the caller's
+    // `onCapture` being absent used to leave the shutter live, so a tap at the
+    // maximum still ran the device capture and silently dropped the result.
+    if (capturing || captureDisabled) return;
     flash.setValue(0.9);
     Animated.timing(flash, { toValue: 0, duration: 220, useNativeDriver: Platform.OS !== 'web' }).start();
     onCapture?.();
-  }, [capturing, flash, onCapture]);
+  }, [captureDisabled, capturing, flash, onCapture]);
 
   if (permission) {
     return (
@@ -81,16 +86,34 @@ export function CameraFrame({
           {error}
         </Text>
       ) : null}
+      {notice ? (
+        // Beside the shutter, not below the frame: a limit message under the
+        // whole camera is off-screen on a phone, which is where it was.
+        <Text
+          accessibilityRole="alert"
+          style={[styles.error, { color: theme.colors.textMuted }]}
+          testID={`${testIDPrefix}-notice`}
+        >
+          {notice}
+        </Text>
+      ) : null}
       <View style={styles.shutterRow}>
         <View style={styles.shutterSide}>{leading}</View>
         {control ?? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={capturing ? 'Taking photo' : 'Take photo'}
-            disabled={capturing}
+            accessibilityLabel={
+              captureDisabled ? 'Photo limit reached' : capturing ? 'Taking photo' : 'Take photo'
+            }
+            accessibilityState={{ disabled: capturing || captureDisabled }}
+            disabled={capturing || captureDisabled}
             onPress={handleCapture}
             testID={`${testIDPrefix}-capture`}
-            style={({ pressed }) => [styles.shutterOuter, pressed && styles.shutterPressed, capturing && styles.shutterDisabled]}
+            style={({ pressed }) => [
+              styles.shutterOuter,
+              pressed && styles.shutterPressed,
+              (capturing || captureDisabled) && styles.shutterDisabled,
+            ]}
           >
             <View style={styles.shutterInner} />
           </Pressable>
@@ -111,7 +134,14 @@ const styles = StyleSheet.create({
   inlineAction: { alignSelf: 'center' },
   error: { lineHeight: tokens.typography.bodyLineHeight },
   viewportWrap: { position: 'relative', width: '100%', aspectRatio: 3 / 4, overflow: 'hidden' },
-  flash: { ...StyleSheet.absoluteFillObject, backgroundColor: '#ffffff' },
+  // The native camera preview is a platform surface, so a plain sibling is
+  // composited underneath it on Android and the flash is never seen.
+  flash: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#ffffff',
+    elevation: 8,
+    zIndex: 8,
+  },
   shutterRow: {
     alignItems: 'center',
     flexDirection: 'row',
