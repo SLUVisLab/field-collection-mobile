@@ -9,6 +9,9 @@ field needs. Arbitrary composition results (`_result`, result schema, retention
 `MultiImageCapture` needs **none** of B-custom: no `_result`, no result schema,
 no composition artifact, no projection machinery, no Tool packaging.
 
+B-custom is now settled in
+[b-custom-composition-conventions.md](./b-custom-composition-conventions.md).
+
 ## Why this split exists
 
 Standard Gather-enhanced controls can remain **directly valid XLSForm** —

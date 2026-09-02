@@ -1,0 +1,213 @@
+# B-custom: conventions for authored composition fields
+
+**Date:** 2026-09-02
+**Status:** decisions settled; §1 and §5 syntax verified against
+`@getodk/xforms-engine@1.0.3-gather.1`
+**Scope:** what an **authored composition** needs to act as a Gather-enhanced
+field. B-standard covered *standard* fields (`MultiImageCapture`); this covers
+arbitrary compositions that compute values.
+
+Prerequisites already landed: the collection binding (A), the
+computed-value → `setValue` seam (§17), and B-standard's recognition and
+canonical-form conventions.
+
+## The contract, in five principles
+
+1. **A reusable composition owns its typed result contract; the form owns how
+   those results bind into XForms.**
+2. **Other ODK clients degrade to the conventional backing fields** rather than
+   understanding the composition.
+3. **There is no canonical JSON result envelope** until a real requirement earns
+   one.
+4. **Persistence of binary outputs is explicit authoring policy, never inferred
+   from their type.**
+5. **Gather-computed projections are output-only in Gather, but remain ordinary
+   writable XForms values** for cross-client fallback.
+
+## 1. Declaration — recognition token plus a form-owned binding table
+
+An appearance token recognizes the field; a **form binding manifest**, shipped
+as a form attachment, maps outputs to XPaths.
+
+```xml
+<group ref="/data/flower_analysis" appearance="gather-composition:flower_v1">
+```
+
+```text
+composition artifact          form binding manifest
+  output: petalCount    →       petalCount → /data/flower_analysis/petal_count
+  output: color         →       color      → /data/flower_analysis/color
+```
+
+**The composition artifact must not contain XPaths.** The same composition has
+to be reusable across forms, so paths are the *form's* concern. Sibling-name
+conventions may be generated as authoring sugar, but the runtime contract must
+never depend on guessing paths.
+
+This is the same split §17 already implements: `createResultFieldWriter({ form,
+bindings })` takes `{ reference, path }` pairs, so the binding table is data the
+host supplies rather than anything the composition knows.
+
+### Verified (experiments/composition-appearance/)
+
+| Question | Answer |
+| --- | --- |
+| Does `gather-composition:flower_v1` survive? | **Yes, verbatim as one token** — the engine does not split on `:` |
+| Does a plain `<group>` expose appearances? | Yes, on its own `group` node |
+| Do children inherit the token? | No — `[]` |
+
+So recognition needs no engine change and no escaping. The group-collapse
+recorded in b-standard §1 was specific to a `<group>` wrapping a `<repeat>` of
+the same nodeset; an ordinary group is its own node.
+
+## 2. Cross-client degradation — the backing fields are real
+
+```text
+Collect → ordinary writable fields (manual entry)
+Gather  → composition → the same fields
+```
+
+Other clients see the ordinary backing group and can fill it by hand. This does
+not reproduce the Gather interaction, but **the form stays collectable and the
+resulting data stays conventional**. Outputs with no meaningful standard
+fallback simply remain unfilled.
+
+## 3. No canonical `_result`
+
+Only the **declared XForms projections** are committed — `petal_count`,
+`color`, an image slot, and so on. No JSON envelope.
+
+> **Revision of earlier thinking:** projections are canonical *because there is
+> no second representation*, not merely by preference.
+
+A `_result` envelope is added only if a concrete audit or replay requirement
+earns it. Nothing should duplicate every result speculatively.
+
+This keeps §17's guard intact: `toXFormsValue` refuses objects and arrays, which
+is the structural reason an `ImageAsset` cannot be stringified into a text field.
+
+## 4. Retention × projection — explicit per output
+
+Disposition is authored per output. **Nothing is uploaded because of its type.**
+
+| Projection | Retention | Meaning |
+| --- | --- | --- |
+| `media` | `keep` | Normal submitted attachment |
+| `none` | `keep` | Local-only asset, subject to project cleanup policy |
+| `none` | `discard` | Delete after accepted result, once no longer needed |
+| `media` | `discard` | Kept through the attachment/submission handoff; purged only under the normal media lifecycle |
+
+**`discard` + `media` must not mean "delete immediately after compute."** The
+bytes have to survive until submission has taken them.
+
+**A discarded file can still carry a receipt hash.** The tradeoff is only that
+later byte-level re-verification becomes impossible. Record that fact rather
+than preventing discard.
+
+### Prerequisite: project-level cleanup
+
+§15 already called this a prerequisite rather than a follow-up: scientific
+captures land in project media with no cleanup path outside project removal, so
+a high-volume derived-value workflow grows local storage unboundedly.
+**Lifecycle-based cleanup comes first**; TTLs should not be invented before the
+lifecycle rules are exhausted.
+
+## 5. Output-only in Gather, writable everywhere else
+
+The obvious move — emit `readonly` binds so a computed measurement cannot be
+hand-edited — **directly contradicts §2**:
+
+```text
+readonly bind  → Collect cannot fill the fallback
+writable bind  → Collect degrades gracefully
+```
+
+So no `readonly` is emitted. Instead:
+
+- **Gather** hides/replaces the backing fields and offers no manual editing.
+- **Other clients** see ordinary writable fields.
+- **An absent composition receipt distinguishes manual fallback from
+  Gather-computed data** — provenance, not the bind, is what tells them apart.
+
+A stricter authoring mode for workflows that genuinely require immutable
+computed outputs can come later. It is not the default.
+
+### Implementation note from the spike
+
+Hiding the backing fields reuses the subtree-ownership mechanism added for the
+collection field (§25, `visibleRenderNodes`), but **not its predicate**. A
+collection field suppresses descendants by the prefix `` `${reference}[` `` —
+the `[` of a repeat instance. A composition group's children have no index
+(`/data/flower_analysis/petal_count`), so they need `` `${reference}/` ``.
+
+## 6. Publishing and version pinning
+
+```text
+form version
+├── XForm
+├── form binding manifest
+├── composition attachment
+├── model / resources
+└── fingerprints
+```
+
+Everything travels as ordinary form resources and is pinned by the immutable
+form version. Drafts already pin `formVersionId` exactly, so a resumed draft
+gets the same composition it was started with. **No separate registry.**
+
+This also rides the existing download path unchanged: `loadVersion` already
+reads text resources from the manifest
+([`src/forms/formCatalogService.js`](../src/forms/formCatalogService.js)), which
+is what a JSON binding manifest is.
+
+## 7. Partial completion
+
+```text
+required output absent  → result invalid; commit nothing
+optional output absent  → legitimate completion; clear any previous
+                          projected value; report present: false
+```
+
+§17 already guarantees the atomicity this needs: every binding coerces before
+any write, so a failing binding cannot leave the instance half-populated.
+
+## Open dependencies
+
+Two things B-custom depends on that **do not exist yet**, and one is load-bearing
+for principle 5.
+
+### Receipts are created but never persisted
+
+`createExecutionReceipt` ([`src/scientific/provenance/receipt.js`](../src/scientific/provenance/receipt.js))
+produces receipts, and `segmentAndMeasure` returns them inside
+`provenance.executionReceipts` — but **nothing writes them to storage.** The
+schema has no receipt or provenance table (`send_receipt` on `instances` is a
+submission receipt, unrelated).
+
+That matters twice over:
+
+- §3 keeps provenance "in the existing receipt machinery", but with projections
+  as the only committed representation, an unpersisted receipt means provenance
+  does not survive acceptance at all.
+- §5 distinguishes manual fallback from computed data by **the presence of a
+  receipt** — which requires somewhere to look.
+
+So a receipt store, keyed by instance and binding reference, is a **prerequisite
+for principle 5**, not a later refinement. Its absence does not change any
+decision above; it changes what has to be built first.
+
+### Project-level asset cleanup
+
+Per §4 above and §15: required before any `retention: keep`, `projection: none`
+workflow ships at volume.
+
+## Roadmap position
+
+```text
+B-standard  →  A: collection binding  →  B-custom (this document)
+  (done)          (done, device-verified)   ├── receipt store        ← prerequisite
+                                            ├── asset cleanup        ← prerequisite
+                                            ├── binding manifest + recognition
+                                            ├── subtree ownership for groups
+                                            └── composition→ODK gate
+```
