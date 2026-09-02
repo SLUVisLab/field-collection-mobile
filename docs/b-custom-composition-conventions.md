@@ -548,10 +548,13 @@ dissolves most of a candidate vocabulary:
 | `persistAsset` | **Needed** — crosses into storage lifecycle |
 | `completeComposition` | **Needed** — the host/XForms completion seam, and it absorbs result assembly |
 
-Two *runtime* blockers matter more than the API: `@a2ui/web_core@0.9.1`
-implements **no function-call mechanism at all**, and there is still no
-conditional or comparison primitive. Both must be resolved before authored
-compositions can express capability invocation or guards.
+One runtime blocker remains, and it is smaller than first recorded.
+`@a2ui/web_core@0.9.1` **does** implement local `functionCall` — registry,
+argument validation, loud failure, async
+([a2ui-functioncall-gap.md](./a2ui-functioncall-gap.md) corrects the earlier
+claim). What is missing is interaction-time evaluation and a result destination.
+Separately, there is still **no conditional or comparison primitive**, so guards
+stay host-side or get designed away.
 
 `handlers/registry.js` being **empty in the shipped app is healthy**: nothing has
 been hardwired into a supposedly generic runtime merely to make the registry look

@@ -1816,9 +1816,12 @@ next session does not have to reconstruct it.
 
 ### The one strategic unknown
 
-The behaviour audit ([composition-behaviour-audit.md](./composition-behaviour-audit.md))
-found that `@a2ui/web_core@0.9.1` implements **no function-call mechanism**.
-That is the gate on authored capability invocation, and therefore on any
-"declarative widget architecture" direction. It is a *runtime* question —
-whether to move to a function-capable A2UI runtime — and it is independent of
-how many compositions exist, so it can be answered before the §6 tripwire fires.
+**Corrected 2026-09-02.** The behaviour audit claimed
+`@a2ui/web_core@0.9.1` implements no function-call mechanism. It does —
+[a2ui-functioncall-gap.md](./a2ui-functioncall-gap.md). So the gate on authored
+capability invocation is **not** "adopt a different runtime". It is two small
+Gather-side changes (register capabilities as catalog functions; defer
+`action.functionCall` to interaction time) plus one genuine design question:
+whether a function result reaches composition state by *reactive pull* — binding
+a value to a function call, which upstream already supports — or by an
+imperative result destination we would have to add.

@@ -69,6 +69,16 @@ These are the real findings, and they change sequencing.
 
 ### 1. The shipped runtime has no function-call mechanism
 
+> **⚠️ CORRECTED 2026-09-02 — this subsection was wrong.** `callFunction` is the
+> *agent→renderer RPC message*, which v0.9.1 lacks; the **local** action shape is
+> `functionCall`, and it is present and largely implemented (catalog function
+> registry, argument validation, loud failure on unknown names, async
+> execution). Searching for the wrong identifier produced a false negative.
+> The real gap is narrower: `action.functionCall` is evaluated *eagerly* rather
+> than on interaction, and there is no result destination for an action-position
+> call. See [a2ui-functioncall-gap.md](./a2ui-functioncall-gap.md), which
+> supersedes everything below in this subsection.
+
 `@a2ui/web_core@0.9.1` contains **no `callFunction` implementation at all**.
 Across the whole package: `createSurface` 45 occurrences,
 `updateDataModel` 30, `callFunction` **0**. `FunctionDefinition` appears only in

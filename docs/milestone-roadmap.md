@@ -39,11 +39,18 @@ A2UI composition data hosted by a Gather field.
 
 ### What actually gates the rest of M9
 
-Not a design question. `@a2ui/web_core@0.9.1` implements **no function-call
-mechanism** ([composition-behaviour-audit.md](./composition-behaviour-audit.md)),
-so an authored composition cannot invoke a capability. Until that is resolved —
-by adopting a function-capable A2UI runtime, or deciding not to — "instrument
-packaging" cannot mean "distribute a composition and have it run".
+**Corrected 2026-09-02.** An earlier audit claimed v0.9.1 implements no
+function-call mechanism. It does — see
+[a2ui-functioncall-gap.md](./a2ui-functioncall-gap.md). The catalog function
+registry, argument validation, loud failure and async execution are all
+upstream; Gather simply never registered any functions.
+
+What remains is narrow: register capabilities as catalog functions, defer
+`action.functionCall` to interaction time (it currently evaluates eagerly at
+prop resolution), and settle how a function result reaches composition state.
+None of the first two need an upstream change, so authored capability invocation
+is **much closer than previously recorded** — the open question is result
+consumption, not runtime capability.
 
 Everything else in M9's third bullet is done and verified on device. See
 [§26](./components-capabilities-ownership.md) for the working backlog.
