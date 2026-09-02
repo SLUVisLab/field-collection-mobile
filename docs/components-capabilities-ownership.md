@@ -1020,3 +1020,97 @@ list against the previous commit.
 Gates: `test:unit` 321/320 pass/0 fail (1 known skip), Expo config, renderer Vite
 build (react-native-web seams), Android Hermes export (`.native` seams),
 `git diff --check`.
+
+## 15. Derived values without image upload — confirmed possible; seam outstanding
+
+**The question:** can a composed workflow use the camera to *compute* a value —
+masked colour, petal count, mask area, a pose — and send only that value to the
+form, without uploading image bytes?
+
+**Yes, and nothing needs to be built for the no-upload half.** Verified from the
+submission path: attachments are derived entirely from instance-media rows.
+
+```js
+const media = await listInstanceMedia(instance.localInstanceId);
+const attachments = media.map(...);
+await client.submit({ xml, attachments });
+```
+
+Those rows are created by exactly one function — `attachImageMedia`, which
+writes bytes durably, binds a safe filename into the XML, *and* records the row.
+A derived-value workflow simply never calls it, and writes its scalar through
+the ordinary engine binding (`question.setValue`, the same path
+`XFormsInputControl` uses). The submission then carries **XML only, zero image
+bytes**.
+
+```text
+CameraView → descriptor → image.segment / measure.area
+                                ↓
+                     setValue(reference, 12.4)
+                                ↓
+                        XML only, no attachment
+```
+
+An ODK image slot is required only when the pixels themselves are the datum.
+This falls out of the Component/Capability split rather than needing support:
+acquisition is a Component, computation is a Capability, and a form value is
+just a value.
+
+### The one missing seam
+
+Nothing bridges a computed result into an XForms value. `onAcceptedResult` is
+still unwired, and Segment & Measure already produces a typed result with no
+path to `setValue`.
+
+Framed this way it is worth more than "persist Segment & Measure's output": it
+is **the general mechanism by which any computed value reaches a form field**. A
+`MaskArea` or `PetalCount` field then becomes a composition plus a binding, with
+no new machinery. This is the highest-value item in the composition→ODK gate.
+
+### Three decisions to make when building it
+
+**Does the image persist at all?** `persistScientificCapture` writes a durable
+`ImageAsset` today because models read from a file path and `ExecutionReceipt`
+hashes the input. A transient workflow could infer from the camera's temporary
+file instead — at the cost of the digest that makes the receipt verifiable.
+
+**"Don't upload" and "don't retain" are different.** Skipping `attachImageMedia`
+keeps bytes off the wire; it does not delete them. Scientific captures land in
+project media with no cleanup path outside project removal, so a high-volume
+derived-value workflow would grow local storage unboundedly. A retention policy
+is a prerequisite, not a follow-up.
+
+**Provenance is weakened deliberately.** "Petal count = 7" without the image
+cannot be re-audited. That may be exactly right for bandwidth-constrained
+fieldwork, but it should be an explicit authoring choice (keep image / discard
+after compute) rather than an accident of wiring — the same shape of decision as
+cardinality in §12: the host owns the rule, the Component does what it is told.
+
+## 16. Why `gather-components` has a `Button` when the Basic Catalog has one
+
+They are not duplicates; they are different layers.
+
+```text
+A2UI Basic Catalog `Button`     vocabulary — ButtonApi schema + binding
+        ↓ delegates to
+gather-components `Button`      the actual React Native presentation
+```
+
+The mobile implementation in `src/a2ui/mobile/basicCatalog.js` renders the
+package `Button` (imported as `SharedButton`). It is also used directly by three
+plain-React components that are not in any A2UI surface — `CameraFrame`,
+`MediaGallery`, `InstrumentError`. Removing it would leave the A2UI binding with
+nothing to render and break all three.
+
+It also carries two things the catalog needs but a naive button would not: a
+`children` slot, because A2UI Buttons take their label as a *child component*,
+and a `borderless` variant.
+
+**The genuine near-duplication is elsewhere:** `ActionButton` in
+`src/components/NavButton.js`, with 14 app call sites. It predates the shared
+component. It is not styling drift — both already consume the same
+`buttonPresentation` contract (`buttonAppearance` / `buttonHeightForVariant` /
+`resolveButtonVariant`) — so they are two `Pressable` wrappers over one
+presentation contract, differing only in that `ActionButton` adds `tone` and the
+package `Button` adds `children`/`borderless`. Consolidating is possible but is
+app-UI churn with no correctness gain today; revisit if the two drift.
