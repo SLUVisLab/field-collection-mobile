@@ -1549,11 +1549,23 @@ rather than duplicating.
 
 ### Verified
 
-`test:unit` — 6 new `mediaState` tests. **Not device-verified:** exercising
-`FormRunner`'s collection path on a device needs a provisioned form carrying the
-appearance in the real app, which is the deferred XLSX → Central → device round
-trip. The contract itself is now checked in both directions (§21's audit script
-found no remaining hook mismatches across 13 call sites).
+`test:unit` — 6 new `mediaState` tests, plus the contract checked in both
+directions (§21's audit found no remaining hook mismatches across 13 call
+sites).
+
+**Device-verified for the capture branch.** `gates/DevSeedCollectionFormApp.js`
+(§25) seeds a `gather-multi-image` form straight into the cache and mounts the
+real `App`, so `FormRunner`'s own collection adapter was driven on a Pixel 10:
+capture appends, tiles render, the counter tracks cardinality, and the shutter
+goes inert at the maximum.
+
+**The resume branch is deliberately unverified.** Reopening a saved draft goes
+through `resumeInstance` → `setMedia(resumed.media ?? [])`, a different
+assignment from capture's `mergeMedia`. The user's call (2026-09-02) was to skip
+it rather than extend the session: it should have been folded into the same
+device run, and if it is wrong it will surface as an empty collection on
+reopening a draft — loud and easy to recognise. Reinstate the seed and reopen a
+draft from **Drafts & submissions** to close it.
 
 ### Scoreboard for this field
 
@@ -1737,3 +1749,35 @@ contradict the screen, **check its timestamp against the app's last
 The same session also produced the inverse error — trusting a screenshot that
 was too early to show a fast animation. Both are the same mistake: treating an
 observation as current without establishing that it is.
+
+## 25. Dev seed — the collection field in the real app (2026-09-02)
+
+[`gates/DevSeedCollectionFormApp.js`](../gates/DevSeedCollectionFormApp.js)
+writes a project, an active selection and one cached form version carrying
+`gather-multi-image`, then mounts `App` **unmodified**. Everything after boot is
+the shipped shell, the shipped `FormRunner` and the shipped collection adapter.
+
+It exists because §20's headless gate and §21's interactive gate both supply
+their *own* collection adapter, so neither crosses `FormRunner`'s wiring — which
+is precisely how §22's defect survived them.
+
+`recordCachedVersion` is the same call the Central download path ends in, and it
+sets the version current (what `loadCurrentForm` requires), so the cached state
+is identical to a real download without a server. Confirming Central's
+*download* remains the deferred round trip's job.
+
+### What it found immediately
+
+Two bugs in shipped code, on the first run:
+
+| Bug | Cause |
+| --- | --- |
+| The form rendered in the top third of the screen | `FormRunner` rendered the engine's `WebView` sidecar as a bare sibling of the `flex: 1` `Screen`; `react-native-webview`'s container style is `flex: 1`, so the invisible sidecar claimed a share of the height |
+| Back from Forms dropped back into the form, making Drafts unreachable | both exit paths used `navigate('/project/forms')` — a push — leaving the form on the stack |
+
+The layout bug is the same shape as §21 and §22: **every gate wrapped that
+WebView in a hidden view and the real screen did not**, so no harness could
+have shown it. A harness that does not share the code path it is testing cannot
+test it — that is now three defects from this one cause.
+
+Also found through the seed, and fixed in §24: the red error flash on form open.
