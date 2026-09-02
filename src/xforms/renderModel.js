@@ -34,10 +34,31 @@ export const controlKindFor = (node) => {
 export const isNodeRelevant = (node, snapshot) =>
   snapshot?.nodesByReference?.[node.reference]?.relevant !== false;
 
-export const visibleRenderNodes = (renderModel, snapshot) =>
-  (renderModel?.nodes ?? []).filter(
+/**
+ * The ordered controls to render.
+ *
+ * A **collection field owns its whole subtree.** `MultiImageCapture` renders the
+ * repeat's instances itself, so the generic repeat-instance and image-upload
+ * controls must not render them a second time underneath it — which is exactly
+ * what happened until the interactive camera gate showed the duplicate stack.
+ * See docs/components-capabilities-ownership.md §21.
+ */
+export const visibleRenderNodes = (renderModel, snapshot) => {
+  const nodes = (renderModel?.nodes ?? []).filter(
     (node) => controlKindFor(node) !== 'structural' && isNodeRelevant(node, snapshot)
   );
+  const ownedPrefixes = nodes
+    .filter((node) => controlKindFor(node) === 'multi-image' && typeof node.reference === 'string')
+    .map((node) => `${node.reference}[`);
+  if (ownedPrefixes.length === 0) return nodes;
+  return nodes.filter(
+    (node) =>
+      controlKindFor(node) === 'multi-image' ||
+      !ownedPrefixes.some(
+        (prefix) => typeof node.reference === 'string' && node.reference.startsWith(prefix)
+      )
+  );
+};
 
 /**
  * This is navigation-only projection of the engine's ordered render sequence,

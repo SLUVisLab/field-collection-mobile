@@ -55,7 +55,7 @@ export function XFormsMultiImageControl({ node, indent, onLayout, collection }) 
   });
 
   const items = collectionItemsFrom({
-    instanceReferences: repeat?.instanceReferences ?? [],
+    instanceReferences: repeat?.instances ?? [],
     binaryChildOf: (instanceReference) => binaryChildren.get(instanceReference) ?? null,
     valueAt,
     media: collection?.media ?? [],

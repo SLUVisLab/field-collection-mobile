@@ -1437,3 +1437,69 @@ The full XLSX -> Central -> device round trip is **deferred**. Its one real
 payoff was answered offline instead: converting the XLSForm row with pyxform
 showed the appearance lands on the `<repeat>`, which is now the canonical
 placement in b-standard §1 and the shape this gate uses.
+
+## 21. Interactive camera gate — and the two defects it found (2026-09-02)
+
+[`gates/InteractiveCameraGateApp.js`](../gates/InteractiveCameraGateApp.js)
+mounts the **real** stack — `XFormsProvider` + `XFormsRenderer` +
+`XFormsMultiImageControl` + `MultiImageCapture` + `CameraView` — over real
+storage and the real lifecycle service, and asks a human to drive it.
+
+It exists because §20's headless gate, at 24/24 green, could not see the React
+binding seam or the camera interaction. Both were broken.
+
+### Defect 1 — the rendered collection was always empty
+
+The control read `repeat.instanceReferences`; `useXFormsRepeat` returns
+`instances`. With `?? []` absorbing the `undefined`, a rendered collection was
+**unconditionally empty**. Captures persisted to the XML and the media table
+correctly, and no tile ever appeared.
+
+Nothing caught it: the unit tests never mount the hook, the headless gate reads
+the snapshot directly, and `XFormsRepeatControl` — the only other consumer —
+uses just `add`/`remove`, so the name had never been exercised. `instanceReferences`
+was a local variable inside the hook that never made it into the return.
+
+### Defect 2 — the collection field did not own its subtree
+
+`visibleRenderNodes` returned the repeat-*instance* nodes and their upload
+children alongside the repeat-range, so beneath `MultiImageCapture` the generic
+`XFormsRepeatControl` and `XFormsImageControl` rendered the same photos again as
+a stack of "Remove" / "Take photo" rows. Fixed by suppressing any node under a
+repeat rendered as a collection field, scoped by the `[` in the instance prefix
+so a sibling like `/data/photos_notes` is untouched.
+
+### Verified on the emulator
+
+Driven by `adb` taps against the virtual camera: the harness reports **engine
+filled frames == media rows == `<frame>` in saved XML**, counted from three
+independent sources, and they agree at each capture (0 → 1 → 2). The count label
+tracks `min=2 max=4` from the appearance, the thumbnail accessory shows the
+latest capture, the gallery opens with per-tile remove, and nothing renders
+below the field.
+
+That equality is the harness's whole point: what the engine holds, what is
+durable, and what would be submitted are computed separately so they *can*
+disagree visibly. Defect 1 was exactly the case where the engine and the media
+table both said 2 while the UI showed nothing.
+
+### Still for a physical device
+
+The emulator's virtual camera validates the pipeline and the wiring, not the
+optics or the feel. The `OBSERVATIONS` checklist in the harness is the human's
+half — live preview, shutter responsiveness, gallery navigation, and the
+capture → remove → capture cycle — and it emits
+`INTERACTIVE_CAMERA_RESULT::{…}` when tapped through.
+
+Run it with `ANDROID_SERIAL=<serial> scripts/run-android-gate.sh
+'INTERACTIVE_CAMERA_RESULT::' .gate-logs/interactive.log 1500`, which sets up
+`adb reverse` and the `localhost` packager host for USB.
+
+### The pattern across §20 and §21
+
+Three defects in this field, all the same shape: **a seam no test crossed, with
+a silent empty result rather than a failure.** The `childName` default, the
+`instanceReferences` rename, and the unsuppressed subtree were each invisible to
+every layer above and below them. The lesson is not "add more tests" but that a
+default which fabricates a plausible empty answer will hide a broken seam
+indefinitely — `collectionItemsFrom` now throws instead.

@@ -59,3 +59,61 @@ test('visible controls and outline preserve engine render order and relevance', 
     ['/data/plant', '/data/site']
   );
 });
+
+test('a collection field owns its whole subtree', () => {
+  // The interactive camera gate found the generic repeat controls rendering the
+  // instances a second time underneath MultiImageCapture.
+  const renderModel = {
+    nodes: [
+      { reference: '/data/note', nodeType: 'input', valueType: 'string' },
+      {
+        reference: '/data/photos',
+        nodeType: 'repeat-range:uncontrolled',
+        appearances: ['gather-multi-image', 'min=2'],
+      },
+      { reference: '/data/photos[1]', nodeType: 'repeat-instance' },
+      { reference: '/data/photos[1]/frame', nodeType: 'upload', valueType: 'binary', mediaType: 'image' },
+      { reference: '/data/photos[2]', nodeType: 'repeat-instance' },
+      { reference: '/data/photos[2]/frame', nodeType: 'upload', valueType: 'binary', mediaType: 'image' },
+    ],
+  };
+
+  assert.deepEqual(
+    visibleRenderNodes(renderModel, null).map((node) => node.reference),
+    ['/data/note', '/data/photos']
+  );
+});
+
+test('an ordinary repeat still renders its instances', () => {
+  // The suppression must be scoped to collection fields only.
+  const renderModel = {
+    nodes: [
+      { reference: '/data/remarks', nodeType: 'repeat-range:uncontrolled' },
+      { reference: '/data/remarks[1]', nodeType: 'repeat-instance' },
+      { reference: '/data/remarks[1]/remark', nodeType: 'input', valueType: 'string' },
+    ],
+  };
+
+  assert.equal(visibleRenderNodes(renderModel, null).length, 3);
+});
+
+test('a collection field does not suppress a similarly-named sibling repeat', () => {
+  const renderModel = {
+    nodes: [
+      {
+        reference: '/data/photos',
+        nodeType: 'repeat-range:uncontrolled',
+        appearances: ['gather-multi-image'],
+      },
+      { reference: '/data/photos[1]', nodeType: 'repeat-instance' },
+      // `/data/photos_notes` shares a prefix but is a different node.
+      { reference: '/data/photos_notes', nodeType: 'repeat-range:uncontrolled' },
+      { reference: '/data/photos_notes[1]', nodeType: 'repeat-instance' },
+    ],
+  };
+
+  assert.deepEqual(
+    visibleRenderNodes(renderModel, null).map((node) => node.reference),
+    ['/data/photos', '/data/photos_notes', '/data/photos_notes[1]']
+  );
+});

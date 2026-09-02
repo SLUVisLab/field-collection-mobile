@@ -270,6 +270,33 @@ pipeline rather than the control's presentation — the interactive camera
 (shutter, thumbnail accessory, capture -> remove -> replace) still needs a
 physical device.
 
+## `InteractiveCameraGateApp.js` — interactive camera + collection field
+
+The only **human-driven** gate. Mounts the real stack (`XFormsProvider` ->
+`XFormsRenderer` -> `XFormsMultiImageControl` -> `MultiImageCapture` ->
+`CameraView`) over real storage and the real lifecycle service, so the camera
+interaction and the React binding seam are actually exercised. It found two
+defects the headless collection gate could not see -- see §21 of
+`docs/components-capabilities-ownership.md`.
+
+The panel shows three independently counted numbers -- engine filled frames,
+media rows, and `<frame>` elements in the saved XML -- which must agree. The
+checklist below is the human's half; tapping **Emit result** logs
+`INTERACTIVE_CAMERA_RESULT::{...}` once. Central is never contacted.
+
+Point `index.js` at `./gates/InteractiveCameraGateApp`, then for a USB device:
+
+```bash
+ANDROID_SERIAL=<serial> scripts/run-android-gate.sh \
+  'INTERACTIVE_CAMERA_RESULT::' .gate-logs/interactive.log 1500
+```
+
+`ANDROID_SERIAL` makes the runner use that device and set up `adb reverse` plus
+the `localhost` packager host. The device must be **authorized** for USB
+debugging first (`adb devices` must show `device`, not `unauthorized`) --
+otherwise `expo run:android` fails on device enumeration even when another
+device is selected. Revert `index.js` afterwards.
+
 ## `MediaIdentityGateApp.js` — attachment identity gate
 
 Attachment identity must be minted at capture and never derived from the XForms
