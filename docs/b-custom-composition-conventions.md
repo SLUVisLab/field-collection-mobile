@@ -521,15 +521,43 @@ and a frozen constant would have forced exactly that mistake again.
 Closing the gap needs either a declarative behaviour vocabulary or shipping
 executable code with a form — a decision, not an oversight.
 
-### Verified
+### Verified — device, 2026-09-02
 
-Headlessly, through the real runtime: composition → typed result + receipt →
-manifest resolution → commit → XForms values and provenance, both output
-variants, and the required-missing refusal writing nothing.
+Headlessly through the real runtime (both output variants and the
+required-missing refusal), **and on a Pixel 10 through the real `FormRunner`**
+via [`gates/DevSeedCompositionApp.js`](../gates/DevSeedCompositionApp.js).
 
-**Not device-verified.** The registry seam means a harness can now drive this
-through `FormRunner` rather than around it, which is what a device gate should
-do.
+Confirmed against the database and the authoritative XML rather than the
+on-screen message:
+
+```xml
+<quadrat><count>3</count><note>uncertain</note></quadrat>
+```
+
+```text
+instance_receipts:  /data/quadrat/count  gather.fixture.quadrat-tally  sha256:9a3bf5…
+                    /data/quadrat/note   gather.fixture.quadrat-tally  sha256:9a3bf5…
+```
+
+An unflagged tally then wrote `<note/>` and left **only** the `count` receipt —
+so §7's clear path, field *and* provenance, holds on device.
+
+### The defect it found
+
+Accepting threw `UNIQUE constraint failed: instances.project_key,
+instances.odk_instance_id`.
+
+`commitCompositionResult` needs a draft to exist so provenance has somewhere to
+attach, so the adapter created one — but the follow-up `saveDraft()` read
+`instance?.localInstanceId` from its **own closure**, which is still `null` in
+the same tick because `instance` is React state. So it created a *second* draft,
+and the engine's preloaded `instanceID` had not changed, so the two collided.
+
+`saveDraft` now takes an explicit `localInstanceId`, and the adapter passes the
+one it just created. Only a run through `FormRunner` could surface this: the
+headless tests inject a form seam, and a harness mounting the control directly
+would have supplied its own instance id — which is exactly why the composition
+registry is a registry rather than a frozen constant (§25).
 
 ## Roadmap position
 

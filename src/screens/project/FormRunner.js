@@ -125,13 +125,21 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     resumeInstance,
   ]);
 
-  const saveDraft = useCallback(async () => {
+  /**
+   * @param {string|null} explicitLocalInstanceId the draft to save into.
+   *   Needed because `instance` is React state: a caller that has just created
+   *   a draft still sees `null` here in the same tick, and saving again without
+   *   an id creates a SECOND draft — which collides on
+   *   `UNIQUE (project_key, odk_instance_id)`, since the engine's preloaded
+   *   instanceID has not changed. Found on device by the composition seed.
+   */
+  const saveDraft = useCallback(async (explicitLocalInstanceId = null) => {
     if (!version || busy) return false;
     setBusy(true);
     setMessage(null);
     try {
       const saved = await saveInstanceDraft({
-        localInstanceId: instance?.localInstanceId ?? null,
+        localInstanceId: explicitLocalInstanceId ?? instance?.localInstanceId ?? null,
         form: { serialize: form.serialize, getEntityEffects: () => host.getEntityEffects() },
         version,
       });
@@ -251,7 +259,8 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       // (another operation holds `busy`), and the values would then live only
       // in engine state until the next save — so report it rather than letting
       // "Recorded 3 values" stand for something not yet on disk.
-      const persisted = Boolean(await saveDraft());
+      // Save into the draft we know about, not the one React state remembers.
+      const persisted = Boolean(await saveDraft(localInstanceId));
       return { ...outcome, persisted };
     },
     [form.setValue, instance?.localInstanceId, repositories?.instances, saveDraft]

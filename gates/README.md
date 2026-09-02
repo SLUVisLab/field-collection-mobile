@@ -270,6 +270,35 @@ pipeline rather than the control's presentation — the interactive camera
 (shutter, thumbnail accessory, capture -> remove -> replace) still needs a
 physical device.
 
+## `DevSeedCompositionApp.js` — an authored composition in the REAL app
+
+A **dev seed**, not a gate. Registers the Quadrat Tally fixture, seeds a form
+whose group carries `gather-composition:<id>` plus a `gather-bindings.json`
+attachment, then mounts `App` unmodified -- so the shipped shell, `FormRunner`,
+its composition adapter and the commit path all run for real.
+
+Going *through* `FormRunner` is the point: it found a duplicate-draft
+`UNIQUE` violation that no headless test or directly-mounted control could
+(see §7 of `docs/b-custom-composition-conventions.md`).
+
+Emits `COMPOSITION_SEED_READY::{…}`. Navigate to **Forms -> Quadrat tally (dev
+seed)**, tally a few, optionally flag uncertain, and Accept. The backing fields
+are hidden because the composition owns its subtree, so verify the commit in the
+data rather than on screen:
+
+```bash
+PKG=com.sluvislab.BIIManualPhenotyper
+adb exec-out "run-as $PKG cat files/SQLite/gather.db" > /tmp/gather.db
+NEW=$(sqlite3 /tmp/gather.db "SELECT local_instance_id FROM instances \
+  WHERE project_key='dev-seed-composition' ORDER BY updated_at DESC LIMIT 1;")
+adb shell "run-as $PKG cat files/gather/projects/dev-seed-composition/instances/$NEW/instance.xml"
+sqlite3 /tmp/gather.db "SELECT binding_reference FROM instance_receipts WHERE local_instance_id='$NEW';"
+```
+
+**Always key that check to the newest draft.** The seed re-seeds each launch, so
+older drafts accumulate, and reading the wrong one shows empty fields that look
+exactly like a failed commit. Revert `index.js` afterwards.
+
 ## `DevSeedCollectionFormApp.js` — a collection form in the REAL app
 
 Not a gate: a **dev seed**. It writes a project, an active selection, and one
