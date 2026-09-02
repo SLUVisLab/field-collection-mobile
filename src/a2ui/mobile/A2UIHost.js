@@ -27,13 +27,14 @@ import { A2uiInstrumentSurface } from './InstrumentSurface.js';
 export function A2UIHost({
   composition,
   componentApis,
+  functions,
   implementations,
   createActionHandler,
   onAcceptedResult,
 }) {
   const runtime = useMemo(
-    () => createA2uiRuntime({ composition, componentApis }),
-    [composition, componentApis]
+    () => createA2uiRuntime({ composition, componentApis, functions }),
+    [composition, componentApis, functions]
   );
 
   // Rebuilt each render so the handler closes over current capabilities; the

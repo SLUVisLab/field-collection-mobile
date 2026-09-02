@@ -28,9 +28,10 @@ import { MessageProcessor } from '@a2ui/web_core/v0_9/processor';
  * @param {{
  *   composition: { catalogId: string, surfaceId: string, messages: object[] },  // an A2UI definition
  *   componentApis: Array<{ name: string, schema: unknown }>,
+ *   functions?: Array<{ name: string, returnType: string, schema: unknown, execute: Function }>,
  * }} options
  */
-export const createA2uiRuntime = ({ composition, componentApis } = {}) => {
+export const createA2uiRuntime = ({ composition, componentApis, functions = [] } = {}) => {
   if (!composition || typeof composition.catalogId !== 'string' || typeof composition.surfaceId !== 'string') {
     throw new Error('An A2UI runtime requires a definition with a catalogId and surfaceId.');
   }
@@ -46,7 +47,12 @@ export const createA2uiRuntime = ({ composition, componentApis } = {}) => {
   // refresh as its capabilities change.
   let actionHandler = null;
 
-  const catalog = new Catalog(composition.catalogId, componentApis);
+  // Registered renderer functions. A2UI v0.9.1 already owns the whole
+  // mechanism — registry, argument validation, loud failure on unknown names,
+  // and lazy interaction-time execution of `action.functionCall`. Gather's only
+  // omission was never passing this third argument.
+  // See docs/a2ui-functioncall-gap.md.
+  const catalog = new Catalog(composition.catalogId, componentApis, functions);
   const processor = new MessageProcessor([catalog], (action) => actionHandler?.(action));
   processor.processMessages(composition.messages);
 
@@ -56,6 +62,8 @@ export const createA2uiRuntime = ({ composition, componentApis } = {}) => {
   }
 
   return {
+    /** The function ids an authored composition may call. */
+    functionIds: functions.map((fn) => fn.name),
     processor,
     surface,
     /** Installs (or replaces) the composition-specific action handler. */

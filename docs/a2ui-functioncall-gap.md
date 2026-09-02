@@ -146,3 +146,47 @@ Items 1 and 2 need no upstream change. Item 3 is the architectural question.
 Unchanged in spirit, but narrower: retire the Gather deferral shim when an
 upstream runtime evaluates `action.functionCall` on interaction rather than on
 resolution, and passes Gather's composition execution gates.
+
+## Slice 1 — landed 2026-09-02
+
+[`src/a2ui/capabilityFunctions.js`](../src/a2ui/capabilityFunctions.js) bridges
+Gather Capabilities into A2UI's existing registry:
+
+```text
+capability definition (portable, native-free)  →  A2UI FunctionDefinition
+capability runtime entry (executable)          →  A2UI execute()
+```
+
+`createA2uiRuntime` and `A2UIHost` now accept `functions` and pass them as the
+third `Catalog` argument — the omission that made a present mechanism look
+absent.
+
+**Id mapping.** Capabilities keep their semantic dotted ids; only the wire name
+is aliased, `.` → `_` (`image.segment` → `image_segment`). The mapping is
+deterministic and reversible because `defineCapability` forbids underscores, and
+`a2uiFunctionId` refuses anything it could not reverse rather than aliasing
+ambiguously.
+
+**The capability's own input schema is the wire validation.** `catalog.invoker`
+calls `schema.parse(rawArgs)` before `execute`, so there is no second schema to
+drift.
+
+**Only implemented capabilities are advertised.** A definition with no runtime
+entry is not registered — advertising a function the runtime cannot execute
+would make the catalog lie to the Composer agent and fail at press time instead
+of build time.
+
+**`returnType`** is derived from the output schema and degrades to `'any'`
+rather than guessing; it is advisory metadata for authors, not runtime coercion.
+
+### Verified
+
+Eight tests, including **Spike C** — the real `measure.area` implementation
+executing through `catalog.invoker` — and the full authored path: a `Button`
+whose `action.functionCall` names `measure_area` with a `{ path }` argument runs
+nothing until pressed, then executes the capability with the argument resolved
+from the data model.
+
+The Capability itself remains ignorant of A2UI: it takes serializable input and
+returns serializable output. Placing that output into composition state is
+Slice 2's job, and the renderer's — not the Capability's.
