@@ -17,17 +17,23 @@ import { A2uiInstrumentSurface } from './InstrumentSurface.js';
  * docs/components-capabilities-ownership.md §10.
  *
  * @param {{
- *   tool: { catalogId: string, surfaceId: string, messages: object[] },  // an A2UI definition
+ *   composition: { catalogId: string, surfaceId: string, messages: object[] },  // an A2UI definition
  *   componentApis: Array<object>,
  *   implementations: Record<string, { component: Function }>,
  *   createActionHandler: (deps: { processor: object, onAcceptedResult?: Function }) => Function,
  *   onAcceptedResult?: (result: unknown, context: object) => unknown,
  * }} props
  */
-export function A2UIHost({ tool, componentApis, implementations, createActionHandler, onAcceptedResult }) {
+export function A2UIHost({
+  composition,
+  componentApis,
+  implementations,
+  createActionHandler,
+  onAcceptedResult,
+}) {
   const runtime = useMemo(
-    () => createA2uiRuntime({ tool, componentApis }),
-    [tool, componentApis]
+    () => createA2uiRuntime({ composition, componentApis }),
+    [composition, componentApis]
   );
 
   // Rebuilt each render so the handler closes over current capabilities; the

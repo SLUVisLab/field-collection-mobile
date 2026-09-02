@@ -26,7 +26,7 @@ import { commitCompositionResult } from '../../src/xforms/compositionCommit.js';
 const harness = () => {
   const accepted = [];
   const runtime = createA2uiRuntime({
-    tool: QUADRAT_TALLY_DEFINITION,
+    composition: QUADRAT_TALLY_DEFINITION,
     componentApis: [...mobileBasicApis, ...gatherComponentApis],
   });
   runtime.setActionHandler(

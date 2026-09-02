@@ -26,19 +26,19 @@ import { MessageProcessor } from '@a2ui/web_core/v0_9/processor';
  * React surface is the thin `A2UIHost` wrapper.
  *
  * @param {{
- *   tool: { catalogId: string, surfaceId: string, messages: object[] },  // an A2UI definition
+ *   composition: { catalogId: string, surfaceId: string, messages: object[] },  // an A2UI definition
  *   componentApis: Array<{ name: string, schema: unknown }>,
  * }} options
  */
-export const createA2uiRuntime = ({ tool, componentApis } = {}) => {
-  if (!tool || typeof tool.catalogId !== 'string' || typeof tool.surfaceId !== 'string') {
+export const createA2uiRuntime = ({ composition, componentApis } = {}) => {
+  if (!composition || typeof composition.catalogId !== 'string' || typeof composition.surfaceId !== 'string') {
     throw new Error('An A2UI runtime requires a definition with a catalogId and surfaceId.');
   }
-  if (!Array.isArray(tool.messages) || tool.messages.length === 0) {
-    throw new Error(`Definition '${tool.surfaceId}' has no messages to render.`);
+  if (!Array.isArray(composition.messages) || composition.messages.length === 0) {
+    throw new Error(`Definition '${composition.surfaceId}' has no messages to render.`);
   }
   if (!Array.isArray(componentApis) || componentApis.length === 0) {
-    throw new Error(`Definition '${tool.surfaceId}' requires the component APIs to register.`);
+    throw new Error(`Definition '${composition.surfaceId}' requires the component APIs to register.`);
   }
 
   // The processor needs an action callback at construction, and the handler
@@ -46,13 +46,13 @@ export const createA2uiRuntime = ({ tool, componentApis } = {}) => {
   // refresh as its capabilities change.
   let actionHandler = null;
 
-  const catalog = new Catalog(tool.catalogId, componentApis);
+  const catalog = new Catalog(composition.catalogId, componentApis);
   const processor = new MessageProcessor([catalog], (action) => actionHandler?.(action));
-  processor.processMessages(tool.messages);
+  processor.processMessages(composition.messages);
 
-  const surface = processor.model.getSurface(tool.surfaceId);
+  const surface = processor.model.getSurface(composition.surfaceId);
   if (!surface) {
-    throw new Error(`Definition '${tool.surfaceId}' did not create its surface.`);
+    throw new Error(`Definition '${composition.surfaceId}' did not create its surface.`);
   }
 
   return {

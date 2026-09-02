@@ -466,6 +466,71 @@ result + receipt → binding manifest resolution → `commitCompositionResult` �
 XForms values and provenance, including the flagged and unflagged variants and
 the required-missing refusal. No device, no model, no camera.
 
+## The composition control — landed 2026-09-02
+
+[`XFormsCompositionControl`](../src/xforms/controls/XFormsCompositionControl.js)
+hosts an authored composition for a group carrying the appearance and commits
+its result:
+
+```text
+A2UIHost → accepted result + receipt → commitCompositionResult → XForms values
+```
+
+The control owns none of that logic — resolution is the manifest's, commit and
+provenance are `compositionCommit`'s, and both arrive through an injected
+`composition` adapter, the same shape the collection field's `collection`
+adapter has. `FormRunner` builds it: it reads the manifest from the form's
+attachments at load, resolves fields against the render model, and commits.
+
+`A2UIHost`'s prop is now `composition`, not `tool` — the last of the naming
+§11 demoted. No production caller existed, so the rename touched two source
+files and three test call sites.
+
+### Two things `FormRunner` has to get right
+
+**A draft must exist before the commit.** Provenance attaches to an instance, so
+the very first composition run in a fresh form would otherwise be refused for
+want of somewhere to record it. The adapter creates the draft first — better
+than passing `receipts: null`, which would silently skip provenance and quietly
+break principle 5.
+
+**A commit that is not yet persisted says so.** After committing, the adapter
+saves the draft, and `saveDraft` can decline while another operation holds
+`busy`. The values would then live only in engine state until the next save, so
+the outcome carries `persisted` and the control reports "Recorded, but not yet
+saved to this draft" rather than letting "Recorded 3 values" stand for
+something not on disk.
+
+`saveDraft` now returns the saved instance rather than `true`, which is what
+makes the first of those possible; callers that only tested truthiness are
+unaffected.
+
+### §6's publishing model is half-achievable today
+
+Composition **structure** is data and travels as a form attachment. Composition
+**behaviour** is code: each needs its own action handler, the limitation
+recorded in [§10](./components-capabilities-ownership.md). So
+[`compositionRegistry.js`](../src/a2ui/compositionRegistry.js) holds what this
+build can run, and it is **empty in the shipped app**.
+
+It is a registry rather than a constant deliberately: a harness registers what
+it drives and then exercises the real `FormRunner` path. Testing *around* the
+screen instead of through it is what let three earlier defects survive (§25),
+and a frozen constant would have forced exactly that mistake again.
+
+Closing the gap needs either a declarative behaviour vocabulary or shipping
+executable code with a form — a decision, not an oversight.
+
+### Verified
+
+Headlessly, through the real runtime: composition → typed result + receipt →
+manifest resolution → commit → XForms values and provenance, both output
+variants, and the required-missing refusal writing nothing.
+
+**Not device-verified.** The registry seam means a harness can now drive this
+through `FormRunner` rather than around it, which is what a device gate should
+do.
+
 ## Roadmap position
 
 ```text

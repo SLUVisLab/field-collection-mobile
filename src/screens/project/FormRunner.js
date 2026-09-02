@@ -27,12 +27,15 @@ import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
 import { XFormsRenderer } from '../../xforms/XFormsRenderer.js';
 import { outlineFor } from '../../xforms/renderModel.js';
+import { bindingManifestFrom, resolveCompositionFields } from '../../xforms/compositionField.js';
+import { commitCompositionResult } from '../../xforms/compositionCommit.js';
+import { compositionEntryFor } from '../../a2ui/compositionRegistry.js';
 import { mergeMedia } from '../../instances/mediaState.js';
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId = null, fieldworkEntityId = null }) {
-  const { actions, activeProject } = useGather();
+  const { actions, activeProject, repositories } = useGather();
   const form = useXForm();
   const navigate = useNavigate();
   const backGuards = useBackGuardRegistry();
@@ -58,6 +61,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
   // it (`{ instance, media }`), never nested. Reading `instance.media` silently
   // yielded [] and emptied every collection field; see §22.
   const [media, setMedia] = useState([]);
+  const [manifest, setManifest] = useState(null);
   const [message, setMessage] = useState(null);
   const [busy, setBusy] = useState(false);
   const [showExitChoices, setShowExitChoices] = useState(false);
@@ -80,6 +84,10 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
         } else {
           const cached = await loadCachedForm(formId);
           await loadForm(cached.xml, cached.attachments);
+          // The manifest is form-owned and travels as an attachment (§6). A
+          // malformed one throws here, which surfaces as a load error rather
+          // than as a composition that quietly writes nowhere.
+          if (!cancelled) setManifest(bindingManifestFrom(cached.attachments));
           if (fieldworkEntityId) {
             const snapshot = await form.refreshSnapshot('fieldwork-preselect');
             const matchingReference = Object.entries(snapshot?.nodesByReference ?? {}).find(
@@ -140,10 +148,13 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       // referenced set is settled and a sweep can tell what is still needed.
       // Cleanup must never fail a save, so this is best-effort and its outcome
       // is not surfaced. The composition-commit boundary is the other place
-      // this belongs, once a composition control exists to reach it.
+      // this belongs, and the composition adapter reaches it.
       // docs/b-custom-composition-conventions.md §4.
       void Promise.resolve(sweepProjectMedia?.()).catch(() => {});
-      return true;
+      // The saved instance, not a boolean: the composition adapter needs its
+      // id to attach provenance, and an object is still truthy for callers
+      // that only check success.
+      return saved;
     } catch (error) {
       setMessage(error?.message ?? 'Could not save this draft.');
       return false;
@@ -202,6 +213,59 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       }
     },
     [form.serialize, instance?.localInstanceId, releaseInstanceMedia, version]
+  );
+
+  // Composition field adapter. Resolution is the manifest's, commit and
+  // provenance are compositionCommit's; this only supplies them and the
+  // lifecycle boundary. See docs/b-custom-composition-conventions.md.
+  const resolvedCompositions = useMemo(
+    () => resolveCompositionFields({ renderModel: form.renderModel, manifest }),
+    [form.renderModel, manifest]
+  );
+
+  const commitComposition = useCallback(
+    async ({ field, result, receipt }) => {
+      // Provenance attaches to an instance, so a draft has to exist before the
+      // commit — otherwise the very first composition run in a fresh form
+      // would be refused for want of somewhere to record it. Creating the
+      // draft first is better than skipping provenance, which would silently
+      // break principle 5.
+      let localInstanceId = instance?.localInstanceId ?? null;
+      if (!localInstanceId) {
+        const created = await saveDraft();
+        localInstanceId = created?.localInstanceId ?? null;
+        if (!localInstanceId) {
+          throw new Error('This result could not be saved: the draft could not be created.');
+        }
+      }
+      const outcome = await commitCompositionResult({
+        result,
+        field,
+        form: { setValue: form.setValue },
+        receipts: repositories?.instances ?? null,
+        receipt,
+        localInstanceId,
+      });
+      // Then persist the values the composition just wrote. saveDraft sweeps at
+      // its own boundary, which is the post-commit boundary too. It can decline
+      // (another operation holds `busy`), and the values would then live only
+      // in engine state until the next save — so report it rather than letting
+      // "Recorded 3 values" stand for something not yet on disk.
+      const persisted = Boolean(await saveDraft());
+      return { ...outcome, persisted };
+    },
+    [form.setValue, instance?.localInstanceId, repositories?.instances, saveDraft]
+  );
+
+  const compositionAdapter = useMemo(
+    () => ({
+      fieldFor: (reference) =>
+        resolvedCompositions.fields.find((field) => field.reference === reference) ?? null,
+      entryFor: (compositionId) => compositionEntryFor(compositionId),
+      onAccepted: commitComposition,
+      problems: resolvedCompositions.problems,
+    }),
+    [commitComposition, resolvedCompositions]
   );
 
   const collectionAdapter = useMemo(
@@ -380,6 +444,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       {form.ready ? (
         <XFormsRenderer
           collection={collectionAdapter}
+          composition={compositionAdapter}
           onAttachImage={attachCapturedImage}
           attachBusy={busy}
           onNodeLayout={(reference, event) => layouts.current.set(reference, event.nativeEvent.layout.y)}

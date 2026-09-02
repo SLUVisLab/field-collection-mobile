@@ -36,7 +36,7 @@ const descriptor = { uri: 'file:///tmp/camera.jpg', path: '/tmp/camera.jpg', con
 const harness = ({ persistCapture = async () => image, capture } = {}) => {
   const accepted = [];
   const runtime = createA2uiRuntime({
-    tool: PHOTO_CAPTURE_DEFINITION,
+    composition: PHOTO_CAPTURE_DEFINITION,
     componentApis: [...mobileBasicApis, ...gatherComponentApis],
   });
   const handler = createPhotoCaptureActionHandler({ capabilities: { persistCapture, capture } })({
@@ -175,7 +175,7 @@ test('the completion seam feeds the result binding — a value reaches a form fi
 
   let handleAction;
   const runtime = createA2uiRuntime({
-    tool: PHOTO_CAPTURE_DEFINITION,
+    composition: PHOTO_CAPTURE_DEFINITION,
     componentApis: [...mobileBasicApis, ...gatherComponentApis],
   });
   handleAction = createPhotoCaptureActionHandler({ capabilities: { persistCapture: async () => image } })({
@@ -201,7 +201,7 @@ test('a failed field write surfaces in the composition instead of completing sil
   const form = { setValue: async () => { throw new Error('constraint violated'); } };
   let handleAction;
   const runtime = createA2uiRuntime({
-    tool: PHOTO_CAPTURE_DEFINITION,
+    composition: PHOTO_CAPTURE_DEFINITION,
     componentApis: [...mobileBasicApis, ...gatherComponentApis],
   });
   handleAction = createPhotoCaptureActionHandler({ capabilities: { persistCapture: async () => image } })({

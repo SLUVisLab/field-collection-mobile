@@ -5,6 +5,7 @@ import { XFormsImageControl } from './controls/XFormsImageControl.js';
 import { XFormsInputControl } from './controls/XFormsInputControl.js';
 import { XFormsReadonlyControl } from './controls/XFormsReadonlyControl.js';
 import { XFormsRepeatControl } from './controls/XFormsRepeatControl.js';
+import { XFormsCompositionControl } from './controls/XFormsCompositionControl.js';
 import { XFormsMultiImageControl } from './controls/XFormsMultiImageControl.js';
 import { XFormsSelectControl } from './controls/XFormsSelectControl.js';
 import { compositionConfigFrom } from './compositionField.js';
@@ -15,7 +16,7 @@ import { useTheme } from '../theme/useTheme.js';
 const selectSnapshot = (state) => state.snapshot;
 const indentFor = (depth) => Math.min(Math.max(depth ?? 0, 0), 4) * 8;
 
-function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy, collection }) {
+function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy, collection, composition }) {
   const kind = controlKindFor(node);
   const indent = indentFor(node.depth);
   const question = useXFormsQuestion(node.reference);
@@ -41,7 +42,17 @@ function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy, collectio
   }
 
   if (kind === 'composition') {
-    // Interim: the composition runtime is not wired yet. This says so plainly
+    if (composition) {
+      return (
+        <XFormsCompositionControl
+          node={node}
+          indent={indent}
+          onLayout={onLayout}
+          composition={composition}
+        />
+      );
+    }
+    // With no adapter there is no runtime to host. This says so plainly
     // rather than falling through to "Unsupported XForms control: group",
     // which would be both wrong and quiet about the consequence — the group's
     // backing fields are suppressed because the composition owns its subtree
@@ -57,7 +68,7 @@ function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy, collectio
           {node.label ?? node.reference}
         </Text>
         <Text style={[styles.unsupportedText, { color: theme.colors.textMuted, lineHeight: tokens.typography.helperLineHeight }]}>
-          {`Collected by composition "${compositionConfigFrom(node.appearances).compositionId}", which this build cannot run yet. Its fields are hidden here; another ODK client can fill them directly.`}
+          {`Collected by composition "${compositionConfigFrom(node.appearances).compositionId}", which this build cannot run. Its fields are hidden here; another ODK client can fill them directly.`}
         </Text>
       </View>
     );
@@ -133,7 +144,13 @@ function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy, collectio
   );
 }
 
-export function XFormsRenderer({ onNodeLayout, onAttachImage, attachBusy = false, collection = null }) {
+export function XFormsRenderer({
+  onNodeLayout,
+  onAttachImage,
+  attachBusy = false,
+  collection = null,
+  composition = null,
+}) {
   const renderModel = useXFormsRenderModel();
   const snapshot = useXFormSelector(selectSnapshot);
   const nodes = visibleRenderNodes(renderModel, snapshot);
@@ -146,6 +163,7 @@ export function XFormsRenderer({ onNodeLayout, onAttachImage, attachBusy = false
       onAttachImage={onAttachImage}
       attachBusy={attachBusy}
       collection={collection}
+      composition={composition}
     />
   ));
 }
