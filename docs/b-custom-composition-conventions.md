@@ -530,9 +530,28 @@ assume today:
 **Tripwire.** When a second or third genuine authored composition needs
 substantial bespoke behaviour *and* those compositions must be distributable
 without an app release, extract the smallest portable behaviour model that makes
-it possible. It might be a tiny vocabulary — `setView`, `setValue`, `invoke`,
-`complete`, `reset` — or it might be more. We do not know yet, and designing it
-from one specimen would be guessing.
+it possible.
+
+**Do not build that model alongside A2UI.** Extend A2UI only where Gather
+behaviour cannot already be expressed through Components, bindings, actions and
+registered functions — preference order: A2UI directly, then a Component API,
+then a Capability contract, then a Gather extension.
+
+Auditing the largest real handler against that order
+([composition-behaviour-audit.md](./composition-behaviour-audit.md)) already
+dissolves most of a candidate vocabulary:
+
+| Candidate | Verdict |
+| --- | --- |
+| `setView` | **Not needed** — `Flow` binds `current: { path }`, so a transition already *is* a data-model write |
+| `invokeCapability` | **Not a Gather concept** — A2UI specifies a function mechanism; the Capability Registry should expose capabilities to it |
+| `persistAsset` | **Needed** — crosses into storage lifecycle |
+| `completeComposition` | **Needed** — the host/XForms completion seam, and it absorbs result assembly |
+
+Two *runtime* blockers matter more than the API: `@a2ui/web_core@0.9.1`
+implements **no function-call mechanism at all**, and there is still no
+conditional or comparison primitive. Both must be resolved before authored
+compositions can express capability invocation or guards.
 
 `handlers/registry.js` being **empty in the shipped app is healthy**: nothing has
 been hardwired into a supposedly generic runtime merely to make the registry look
