@@ -29,7 +29,8 @@ import { XFormsRenderer } from '../../xforms/XFormsRenderer.js';
 import { outlineFor } from '../../xforms/renderModel.js';
 import { bindingManifestFrom, resolveCompositionFields } from '../../xforms/compositions/manifest.js';
 import { commitCompositionResult } from '../../xforms/compositions/commit.js';
-import { compositionEntryFor } from '../../xforms/compositions/handlers/registry.js';
+import { compositionHandlerFor } from '../../xforms/compositions/handlers/registry.js';
+import { resolveCompositionDefinitions } from '../../xforms/compositions/definitionLoader.js';
 import { mergeMedia } from '../../instances/mediaState.js';
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
@@ -64,6 +65,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
   // yielded [] and emptied every collection field; see §22.
   const [media, setMedia] = useState([]);
   const [manifest, setManifest] = useState(null);
+  const [formAttachments, setFormAttachments] = useState([]);
   const [message, setMessage] = useState(null);
   const [busy, setBusy] = useState(false);
   const [showExitChoices, setShowExitChoices] = useState(false);
@@ -89,7 +91,11 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
           // The manifest is form-owned and travels as an attachment (§6). A
           // malformed one throws here, which surfaces as a load error rather
           // than as a composition that quietly writes nowhere.
-          if (!cancelled) setManifest(bindingManifestFrom(cached.attachments));
+          if (!cancelled) {
+            setManifest(bindingManifestFrom(cached.attachments));
+            // Composition definitions ride the same version-pinned resources.
+            setFormAttachments(cached.attachments ?? []);
+          }
           if (fieldworkEntityId) {
             const snapshot = await form.refreshSnapshot('fieldwork-preselect');
             const matchingReference = Object.entries(snapshot?.nodesByReference ?? {}).find(
@@ -268,20 +274,40 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     [form.setValue, instance?.localInstanceId, repositories?.instances, saveDraft]
   );
 
+  // Definitions come from the form's own resources, pinned to its version.
+  const resolvedDefinitions = useMemo(
+    () =>
+      resolveCompositionDefinitions({
+        fields: resolvedCompositions.fields,
+        attachments: formAttachments,
+      }),
+    [formAttachments, resolvedCompositions.fields]
+  );
+
   const compositionAdapter = useMemo(
     () => ({
       fieldFor: (reference) =>
         resolvedCompositions.fields.find((field) => field.reference === reference) ?? null,
-      entryFor: (compositionId) => compositionEntryFor(compositionId),
+      definitionFor: (reference) => resolvedDefinitions.definitions.get(reference) ?? null,
+      definitionProblemFor: (reference) =>
+        resolvedDefinitions.problems.find((problem) => problem.reference === reference)?.message ?? null,
+      // Optional app-shipped behaviour only — never the source of definitions.
+      handlerFor: (compositionId) => compositionHandlerFor(compositionId),
       onAccepted: commitComposition,
       // The host media seam an authored composition reaches through
       // `gather_persistAsset`. Disposition is authored, never inferred.
       persistAsset: (capture, options) => persistScientificCapture(capture, options),
       // Capabilities this build can execute, already A2UI-registered.
       capabilityFunctions: a2uiCapabilityFunctions,
-      problems: resolvedCompositions.problems,
+      problems: [...resolvedCompositions.problems, ...resolvedDefinitions.problems],
     }),
-    [a2uiCapabilityFunctions, commitComposition, persistScientificCapture, resolvedCompositions]
+    [
+      a2uiCapabilityFunctions,
+      commitComposition,
+      persistScientificCapture,
+      resolvedCompositions,
+      resolvedDefinitions,
+    ]
   );
 
   const collectionAdapter = useMemo(

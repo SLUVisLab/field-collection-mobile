@@ -95,6 +95,17 @@ const assertField = (field, index) => {
       { reference: field.reference }
     );
   }
+  // Where the composition's A2UI definition lives among the form's resources.
+  // Optional only so a form that ships an app-registered composition need not
+  // attach one; an authored composition must name it.
+  const definitionResource = field.definition ?? null;
+  if (definitionResource !== null && (typeof definitionResource !== 'string' || definitionResource.length === 0)) {
+    fail(
+      `Manifest field ${field.reference} has an invalid \`definition\` resource name.`,
+      'GATHER_COMPOSITION_FIELD_BAD_DEFINITION',
+      { reference: field.reference }
+    );
+  }
   const bindings = field.bindings.map((binding, bindingIndex) =>
     assertBinding(binding, { fieldReference: field.reference, index: bindingIndex })
   );
@@ -111,7 +122,7 @@ const assertField = (field, index) => {
     seen.add(binding.reference);
   }
   // The same output feeding two fields is legitimate, so `path` may repeat.
-  return { reference: field.reference, composition: field.composition, bindings };
+  return { reference: field.reference, composition: field.composition, definitionResource, bindings };
 };
 
 /**
@@ -240,6 +251,7 @@ export const resolveCompositionFields = ({ renderModel, manifest } = {}) => {
     fields.push({
       reference,
       compositionId: config.compositionId,
+      definitionResource: entry.definitionResource ?? null,
       bindings: entry.bindings,
     });
   }

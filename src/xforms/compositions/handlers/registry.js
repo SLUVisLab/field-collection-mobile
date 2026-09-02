@@ -1,48 +1,52 @@
 /**
- * The compositions this build can run.
+ * Optional, app-shipped **behaviour handlers**, keyed by composition identity.
  *
- * Composition **structure** is data and travels as a form attachment (§6), but
- * composition **behaviour** is still code: each needs its own action handler,
- * the known limitation recorded in
- * docs/components-capabilities-ownership.md §10. So a form may legitimately
- * declare a composition this build cannot run, and the control says so rather
- * than rendering an empty group.
+ * This registry is **not** where compositions come from. Composition *structure*
+ * is form data: the definition travels as a version-pinned form attachment and
+ * is loaded by `../definitionLoader.js`. Gather registers executable
+ * primitives — Components, Capabilities, host Functions — and **forms supply
+ * compositions**.
  *
- * That makes §6's publishing model **half-achievable today**: the definition
- * ships with the form, the handler does not. Closing it would need either a
- * declarative behaviour vocabulary or shipping executable code with a form —
- * a decision, not an oversight.
+ * What lives here is the optional escape hatch: a composition whose behaviour
+ * cannot yet be expressed with authored actions may ship bespoke JS in the app
+ * and register it under its id. A composition with **no** handler is a
+ * completely valid handler-free composition, not an unavailable one.
  *
- * Empty in the shipped app. It is a **registry rather than a constant** so a
- * harness can register what it drives and then exercise the real `FormRunner`
- * path: testing *around* the screen instead of through it is what let three
- * earlier defects survive (docs/components-capabilities-ownership.md §25).
+ * Keeping definitions out of here matters: if the registry could supply them,
+ * Composer portability would silently depend on app registration, and a test
+ * could "pass" while proving nothing.
  */
 
 const entries = new Map();
 
 /**
  * @param {string} id the composition id an appearance token names
- * @param {{ definition: object, createActionHandler: Function }} entry
+ * @param {{ createActionHandler: Function }} entry
  */
-export const registerComposition = (id, entry) => {
+export const registerCompositionHandler = (id, entry) => {
   if (typeof id !== 'string' || id.length === 0) {
     throw new Error('A composition needs a non-empty id to register under.');
   }
-  if (!entry?.definition || typeof entry.createActionHandler !== 'function') {
-    throw new Error(`Composition '${id}' needs a definition and a createActionHandler.`);
+  if (typeof entry?.createActionHandler !== 'function') {
+    throw new Error(`Composition handler '${id}' needs a createActionHandler.`);
+  }
+  if (entry.definition) {
+    // Definitions come from the form, never from app registration.
+    throw new Error(
+      `Composition handler '${id}' must not carry a definition — compositions are supplied by forms.`
+    );
   }
   entries.set(id, entry);
   return entry;
 };
 
-/** The runnable composition for an id, or `null` when this build has none. */
-export const compositionEntryFor = (id) => entries.get(id) ?? null;
+/** The app-shipped handler for an id, or `null` when the composition is handler-free. */
+export const compositionHandlerFor = (id) => entries.get(id) ?? null;
 
 /** Test seam: forget everything registered. */
-export const resetCompositionRegistry = () => {
+export const resetCompositionHandlers = () => {
   entries.clear();
 };
 
-/** The ids this build can run, for diagnostics. */
-export const registeredCompositionIds = () => [...entries.keys()];
+/** The ids with app-shipped behaviour, for diagnostics. */
+export const registeredHandlerIds = () => [...entries.keys()];

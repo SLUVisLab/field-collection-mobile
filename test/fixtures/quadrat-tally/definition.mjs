@@ -144,6 +144,8 @@ export const QUADRAT_TALLY_MANIFEST = Object.freeze({
     {
       reference: '/data/quadrat',
       composition: QUADRAT_TALLY_DEFINITION.id,
+      // The composition's definition travels with the form as a resource.
+      definition: `${QUADRAT_TALLY_DEFINITION.id}.a2ui.json`,
       bindings: [
         { path: 'count', reference: '/data/quadrat/count', required: true },
         { path: 'note', reference: '/data/quadrat/note' },

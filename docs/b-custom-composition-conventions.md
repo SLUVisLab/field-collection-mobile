@@ -505,15 +505,42 @@ something not on disk.
 makes the first of those possible; callers that only tested truthiness are
 unaffected.
 
-### §6 — a known deferred capability, not architecture debt
+### §6 — mostly closed (2026-09-02)
 
-The current execution model, stated plainly:
+**Compositions are supplied by forms.** The definition travels as a
+version-pinned form resource and is loaded by
+[`definitionLoader.js`](../src/xforms/compositions/definitionLoader.js):
 
 ```text
-form attachment      → declares composition structure + bindings
-installed Gather app → must have a registered behaviour handler for it
-handler missing      → explicit unsupported-composition error
+appearance  gather-composition:<id>
+        ↓
+form binding manifest  → names a definition resource
+        ↓
+version-pinned form attachment
+        ↓
+parse + validate
+        ↓
+generic A2UIHost
+        ↓
+optional registered handler?
+   ├─ yes → app-shipped specialization
+   └─ no  → authored actions/functions only  ← the normal case
 ```
+
+Gather registers **executable primitives** — Components, Capabilities, host
+Functions. It no longer registers compositions. `registerCompositionHandler`
+takes behaviour only and **refuses an entry carrying a definition**, because a
+registry that could supply definitions would make Composer portability silently
+depend on app registration.
+
+**Failure semantics changed with it.** "Unavailable" now means the attachment is
+missing, the manifest reference is invalid, the definition fails validation, or
+its id disagrees with the group — *not* "Gather has no bespoke JS for this". A
+handler-free composition is completely valid.
+
+What remains of the original §6 gap is narrow: a composition whose behaviour
+cannot be expressed with authored actions still needs app-shipped JS. That is
+the sequencing question, not a packaging one.
 
 That is **a perfectly valid intermediate architecture**, and it is deliberate.
 Composition *structure* is portable form data; composition *behaviour* is

@@ -48,7 +48,13 @@ export function XFormsCompositionControl({ node, indent, onLayout, composition }
 
   const config = compositionConfigFrom(node?.appearances);
   const field = composition?.fieldFor?.(node.reference) ?? null;
-  const entry = config.compositionId ? composition?.entryFor?.(config.compositionId) ?? null : null;
+  // The definition comes from the FORM, pinned to its version. The registry is
+  // consulted only for optional app-shipped behaviour — a composition with no
+  // handler is a completely valid handler-free composition.
+  const definition = field ? composition?.definitionFor?.(node.reference) ?? null : null;
+  const handler = config.compositionId
+    ? composition?.handlerFor?.(config.compositionId) ?? null
+    : null;
 
   const handleAccepted = useCallback(
     async (result, context) => {
@@ -80,7 +86,13 @@ export function XFormsCompositionControl({ node, indent, onLayout, composition }
     [composition, field]
   );
 
-  const createActionHandler = useMemo(() => entry?.createActionHandler ?? null, [entry]);
+  // A handler-free composition still needs an action handler slot for A2UIHost;
+  // authored behaviour runs entirely through Component bindings and
+  // `action.functionCall`, so a no-op suffices.
+  const createActionHandler = useMemo(
+    () => handler?.createActionHandler ?? (() => async () => undefined),
+    [handler]
+  );
 
   /**
    * The functions this composition may call: Capabilities the app registered,
@@ -105,10 +117,10 @@ export function XFormsCompositionControl({ node, indent, onLayout, composition }
                 // means produced by the composition, not by a model.
                 const receipt = createExecutionReceipt({
                   capability: field.compositionId,
-                  capabilityRevision: String(entry?.definition?.revision ?? '0'),
+                  capabilityRevision: String(definition?.revision ?? '0'),
                   inputs: {},
                   outputs,
-                  runtime: { kind: 'composition', surfaceId: entry?.definition?.surfaceId ?? null },
+                  runtime: { kind: 'composition', surfaceId: definition?.surfaceId ?? null },
                   timestamp: new Date().toISOString(),
                 });
                 return handleAccepted(outputs, { receipt });
@@ -116,17 +128,28 @@ export function XFormsCompositionControl({ node, indent, onLayout, composition }
             : undefined,
         })
       ),
-    [composition, entry, field, handleAccepted]
+    [composition, definition, field, handleAccepted]
   );
 
+  /**
+   * Why this composition cannot run — **never** merely "no bespoke JS".
+   *
+   * Since definitions travel with the form, unavailability now means the form
+   * is mispackaged or its definition is unusable. A missing handler is not a
+   * failure at all.
+   */
   const unavailable = useMemo(() => {
     if (!config.compositionId) return 'This group declares a composition but names none.';
-    if (!entry) return `Composition "${config.compositionId}" is not available in this build.`;
     if (!field) {
       return `Composition "${config.compositionId}" has no entry in this form's binding manifest, so its results have nowhere to go.`;
     }
+    const problem = composition?.definitionProblemFor?.(node.reference) ?? null;
+    if (problem) return problem;
+    if (!definition) {
+      return `Composition "${config.compositionId}" has no definition among this form version's resources.`;
+    }
     return null;
-  }, [config.compositionId, entry, field]);
+  }, [composition, config.compositionId, definition, field, node.reference]);
 
   return (
     <FormField label={node.label ?? node.reference} hint={node.hint} indent={indent} onLayout={onLayout}>
@@ -141,7 +164,7 @@ export function XFormsCompositionControl({ node, indent, onLayout, composition }
       ) : (
         <View testID={`composition-host-${node.reference}`}>
           <A2UIHost
-            composition={entry.definition}
+            composition={definition}
             componentApis={COMPONENT_APIS}
             functions={functions}
             implementations={IMPLEMENTATIONS}

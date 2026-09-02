@@ -10,7 +10,7 @@ import {
 } from 'gather-storage';
 
 import App from '../App.js';
-import { registerComposition } from '../src/xforms/compositions/handlers/registry.js';
+import { registerCompositionHandler } from '../src/xforms/compositions/handlers/registry.js';
 import {
   QUADRAT_TALLY_DEFINITION,
   QUADRAT_TALLY_MANIFEST,
@@ -68,10 +68,10 @@ const FORM_XML = `<?xml version="1.0"?>
   </h:body>
 </h:html>`;
 
-// Behaviour is code, so the harness supplies it; only the definition and the
-// manifest could travel with the form. See compositionRegistry.js.
-registerComposition(QUADRAT_TALLY_DEFINITION.id, {
-  definition: QUADRAT_TALLY_DEFINITION,
+// Quadrat Tally keeps bespoke behaviour, so this seed registers a HANDLER only.
+// Its definition still travels with the form as a resource, like any other
+// composition — the registry is not where compositions come from.
+registerCompositionHandler(QUADRAT_TALLY_DEFINITION.id, {
   createActionHandler: createQuadratTallyActionHandler({}),
 });
 
@@ -102,8 +102,13 @@ export default function DevSeedCompositionApp() {
         // application/json so `isTextResource` classifies it as text — if it
         // came back base64 the manifest would silently never be found.
         const manifestResourceKey = `${base}/gather-bindings.json`;
+        const definitionFilename = `${QUADRAT_TALLY_DEFINITION.id}.a2ui.json`;
+        const definitionResourceKey = `${base}/${definitionFilename}`;
         await writeTextAtomic(xmlFileKey, FORM_XML);
         await writeTextAtomic(manifestResourceKey, JSON.stringify(QUADRAT_TALLY_MANIFEST, null, 2));
+        // The composition definition travels as an ordinary form resource,
+        // pinned to this form version like the XForm itself.
+        await writeTextAtomic(definitionResourceKey, JSON.stringify(QUADRAT_TALLY_DEFINITION, null, 2));
 
         const resources = [
           {
@@ -111,6 +116,12 @@ export default function DevSeedCompositionApp() {
             contentType: 'application/json',
             fileKey: manifestResourceKey,
             hash: 'md5:devseedbindings',
+          },
+          {
+            filename: definitionFilename,
+            contentType: 'application/json',
+            fileKey: definitionResourceKey,
+            hash: 'md5:devseedcomposition',
           },
         ];
         await forms.recordCachedVersion({
