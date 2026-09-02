@@ -5,8 +5,8 @@ import {
   CompositionCommitError,
   commitCompositionResult,
   missingRequiredOutputs,
-} from '../../src/xforms/compositionCommit.js';
-import { parseBindingManifest } from '../../src/xforms/compositionField.js';
+} from '../../src/xforms/compositions/commit.js';
+import { parseBindingManifest } from '../../src/xforms/compositions/manifest.js';
 
 // docs/b-custom-composition-conventions.md §7: a missing required output is a
 // composition completion failure, not a partially finalized instance.

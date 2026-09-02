@@ -8,7 +8,7 @@ import { gatherComponentApis, mobileBasicApis } from '../../a2ui/mobile/componen
 import { FormField } from '../../components/forms/FormField.js';
 import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
-import { compositionConfigFrom } from '../compositionField.js';
+import { compositionConfigFrom } from './recognition.js';
 
 const COMPONENT_APIS = [...mobileBasicApis, ...gatherComponentApis];
 const IMPLEMENTATIONS = { ...mobileBasicImplementations, ...gatherComponentImplementations };

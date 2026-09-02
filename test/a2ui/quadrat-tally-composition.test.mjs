@@ -14,8 +14,8 @@ import {
 } from '../fixtures/quadrat-tally/definition.mjs';
 import { createQuadratTallyActionHandler } from '../fixtures/quadrat-tally/actionHandler.mjs';
 
-import { parseBindingManifest, resolveCompositionFields } from '../../src/xforms/compositionField.js';
-import { commitCompositionResult } from '../../src/xforms/compositionCommit.js';
+import { parseBindingManifest, resolveCompositionFields } from '../../src/xforms/compositions/manifest.js';
+import { commitCompositionResult } from '../../src/xforms/compositions/commit.js';
 
 /**
  * The composition→ODK path, end to end through the real A2UI runtime:

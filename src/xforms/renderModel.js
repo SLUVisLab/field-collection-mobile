@@ -3,7 +3,7 @@
  * inspect XForm XML, infer relevance, calculate values, or own form state.
  */
 import { multiImageConfigFrom } from './collectionField.js';
-import { compositionConfigFrom } from './compositionField.js';
+import { compositionConfigFrom } from './compositions/recognition.js';
 
 export const controlKindFor = (node) => {
   const type = node?.nodeType;

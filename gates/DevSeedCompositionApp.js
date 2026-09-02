@@ -10,7 +10,7 @@ import {
 } from 'gather-storage';
 
 import App from '../App.js';
-import { registerComposition } from '../src/a2ui/compositionRegistry.js';
+import { registerComposition } from '../src/xforms/compositions/handlers/registry.js';
 import {
   QUADRAT_TALLY_DEFINITION,
   QUADRAT_TALLY_MANIFEST,

@@ -24,8 +24,8 @@
 import {
   createResultFieldWriter,
   readResultValue,
-} from './resultBinding.js';
-import { writerBindingsFor } from './compositionField.js';
+} from '../resultBinding.js';
+import { writerBindingsFor } from './manifest.js';
 
 export class CompositionCommitError extends Error {
   constructor(message, { code = 'GATHER_COMPOSITION_COMMIT_ERROR', details = null } = {}) {

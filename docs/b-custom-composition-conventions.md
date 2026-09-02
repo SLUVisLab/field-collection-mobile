@@ -505,21 +505,41 @@ something not on disk.
 makes the first of those possible; callers that only tested truthiness are
 unaffected.
 
-### §6's publishing model is half-achievable today
+### §6 — a known deferred capability, not architecture debt
 
-Composition **structure** is data and travels as a form attachment. Composition
-**behaviour** is code: each needs its own action handler, the limitation
-recorded in [§10](./components-capabilities-ownership.md). So
-[`compositionRegistry.js`](../src/a2ui/compositionRegistry.js) holds what this
-build can run, and it is **empty in the shipped app**.
+The current execution model, stated plainly:
 
-It is a registry rather than a constant deliberately: a harness registers what
-it drives and then exercises the real `FormRunner` path. Testing *around* the
-screen instead of through it is what let three earlier defects survive (§25),
-and a frozen constant would have forced exactly that mistake again.
+```text
+form attachment      → declares composition structure + bindings
+installed Gather app → must have a registered behaviour handler for it
+handler missing      → explicit unsupported-composition error
+```
 
-Closing the gap needs either a declarative behaviour vocabulary or shipping
-executable code with a form — a decision, not an oversight.
+That is **a perfectly valid intermediate architecture**, and it is deliberate.
+Composition *structure* is portable form data; composition *behaviour* is
+registered application code (the limitation recorded in
+[§10](./components-capabilities-ownership.md)).
+
+The limit only becomes a problem under a stronger requirement than we need to
+assume today:
+
+> A researcher authors a brand-new composition, attaches it to a form, and an
+> already-installed Gather app executes it without any app code knowing what it
+> is.
+
+**Tripwire.** When a second or third genuine authored composition needs
+substantial bespoke behaviour *and* those compositions must be distributable
+without an app release, extract the smallest portable behaviour model that makes
+it possible. It might be a tiny vocabulary — `setView`, `setValue`, `invoke`,
+`complete`, `reset` — or it might be more. We do not know yet, and designing it
+from one specimen would be guessing.
+
+`handlers/registry.js` being **empty in the shipped app is healthy**: nothing has
+been hardwired into a supposedly generic runtime merely to make the registry look
+useful. It is a registry rather than a frozen constant so a harness registers
+what it drives and exercises the real `FormRunner` path — testing *around* the
+screen is what let three earlier defects survive (§25), and a constant would
+have forced that mistake again.
 
 ### Verified — device, 2026-09-02
 
@@ -558,6 +578,27 @@ one it just created. Only a run through `FormRunner` could surface this: the
 headless tests inject a form seam, and a harness mounting the control directly
 would have supplied its own instance id — which is exactly why the composition
 registry is a registry rather than a frozen constant (§25).
+
+## Where this code lives, and why
+
+All composition↔XForms integration sits in
+[`src/xforms/compositions/`](../src/xforms/compositions/) — recognition, the
+manifest runtime, binding and commit, the control, and the handler registry.
+Its README carries the ownership rules and the package test:
+
+> Could this module make sense in another application that uses the package but
+> does not know what Gather is?
+
+`odk-xforms-*` stays generic ODK/XForms machinery and learns nothing about
+`gather-composition`, manifests, receipts, retention or asset ledgers —
+otherwise a nominally reusable package becomes Gather core with a generic name.
+
+The one plausible near-term package move is the **portable** half of the
+manifest — its schema and validator — if Composer, a publisher, the runtime and
+tests all consume the same declaration. That is a `gather-catalog` shape. The
+runtime halves stay in the app. The receipt store and asset ledger stay in
+`gather-storage` (Gather's own storage layer) with composition-specific
+semantics; a generic media-ownership home has to be **earned by actual reuse**.
 
 ## Roadmap position
 

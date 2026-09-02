@@ -2,15 +2,17 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  BINDING_MANIFEST_FILENAME,
   COMPOSITION_APPEARANCE_PREFIX,
+  compositionConfigFrom,
+} from '../../src/xforms/compositions/recognition.js';
+import {
+  BINDING_MANIFEST_FILENAME,
   CompositionFieldError,
   bindingManifestFrom,
-  compositionConfigFrom,
   parseBindingManifest,
   resolveCompositionFields,
   writerBindingsFor,
-} from '../../src/xforms/compositionField.js';
+} from '../../src/xforms/compositions/manifest.js';
 
 // Conventions in docs/b-custom-composition-conventions.md §1; the appearance
 // syntax is verified against the engine in experiments/composition-appearance/.

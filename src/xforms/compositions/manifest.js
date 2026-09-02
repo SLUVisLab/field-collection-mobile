@@ -1,69 +1,34 @@
 /**
- * Render-free logic for **authored composition fields**.
- *
- * A composition field is recognized by an appearance token on a group, and the
- * mapping from its typed result into XForms fields comes from a **form binding
- * manifest** shipped as a form attachment:
+ * The **form binding manifest** — authored data mapping a composition's outputs
+ * onto XForms references.
  *
  * ```text
  * composition artifact          form binding manifest
  *   output: petalCount    →       petalCount → /data/flower_analysis/petal_count
  * ```
  *
- * The composition artifact carries **no XPaths** — the same composition has to
+ * The composition artifact carries **no XPaths**: the same composition has to
  * be reusable across forms, so paths are the form's concern. And the runtime
- * contract never guesses paths: an unmapped output is an error, not a
- * convention. Conventions in docs/b-custom-composition-conventions.md §1.
+ * never guesses paths — an unmapped output is an error, not a convention.
+ * Conventions in docs/b-custom-composition-conventions.md §1.
  *
- * Nothing here touches the engine, storage or React. Bindings come out in the
- * `{ reference, path }` shape `createResultFieldWriter` already consumes, so
- * there is no translation layer.
+ * Bindings come out in the `{ reference, path }` shape
+ * `createResultFieldWriter` already consumes, so there is no translation layer.
  */
 
-export const COMPOSITION_APPEARANCE_PREFIX = 'gather-composition:';
+import { CompositionFieldError, compositionConfigFrom, nonEmptyString } from './recognition.js';
+
+const fail = (message, code, details) => {
+  throw new CompositionFieldError(message, { code, details });
+};
+
+export { CompositionFieldError };
 
 /** The form attachment a binding manifest travels as. */
 export const BINDING_MANIFEST_FILENAME = 'gather-bindings.json';
 
 /** Manifest versions this runtime understands. */
 export const SUPPORTED_MANIFEST_VERSIONS = Object.freeze([1]);
-
-export class CompositionFieldError extends Error {
-  constructor(message, { code = 'GATHER_COMPOSITION_FIELD_ERROR', details = null } = {}) {
-    super(message);
-    this.name = 'CompositionFieldError';
-    this.code = code;
-    this.details = details;
-  }
-}
-
-const fail = (message, code, details) => {
-  throw new CompositionFieldError(message, { code, details });
-};
-
-const nonEmptyString = (value) => typeof value === 'string' && value.length > 0;
-
-/**
- * Reads the composition configuration off a group node's appearances.
- *
- * The id is carried after a colon, which the engine keeps verbatim — verified
- * in experiments/composition-appearance/, so no escaping is needed.
- *
- * @param {string[]|Iterable<string>} appearances
- * @returns {{ enabled: boolean, compositionId: string|null }}
- */
-export const compositionConfigFrom = (appearances) => {
-  const tokens = appearances == null ? [] : Array.from(appearances, (token) => String(token));
-  for (const token of tokens) {
-    if (!token.startsWith(COMPOSITION_APPEARANCE_PREFIX)) continue;
-    const compositionId = token.slice(COMPOSITION_APPEARANCE_PREFIX.length);
-    // A bare `gather-composition:` names nothing, so it is not a composition
-    // field — better inert than bound to an empty id.
-    if (!nonEmptyString(compositionId)) return { enabled: false, compositionId: null };
-    return { enabled: true, compositionId };
-  }
-  return { enabled: false, compositionId: null };
-};
 
 /** True when `reference` is at or below `groupReference`. */
 const isWithinGroup = (reference, groupReference) =>

@@ -27,9 +27,9 @@ import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
 import { XFormsRenderer } from '../../xforms/XFormsRenderer.js';
 import { outlineFor } from '../../xforms/renderModel.js';
-import { bindingManifestFrom, resolveCompositionFields } from '../../xforms/compositionField.js';
-import { commitCompositionResult } from '../../xforms/compositionCommit.js';
-import { compositionEntryFor } from '../../a2ui/compositionRegistry.js';
+import { bindingManifestFrom, resolveCompositionFields } from '../../xforms/compositions/manifest.js';
+import { commitCompositionResult } from '../../xforms/compositions/commit.js';
+import { compositionEntryFor } from '../../xforms/compositions/handlers/registry.js';
 import { mergeMedia } from '../../instances/mediaState.js';
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));

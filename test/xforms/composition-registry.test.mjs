@@ -6,7 +6,7 @@ import {
   registerComposition,
   registeredCompositionIds,
   resetCompositionRegistry,
-} from '../../src/a2ui/compositionRegistry.js';
+} from '../../src/xforms/compositions/handlers/registry.js';
 import { QUADRAT_TALLY_DEFINITION } from '../fixtures/quadrat-tally/definition.mjs';
 import { createQuadratTallyActionHandler } from '../fixtures/quadrat-tally/actionHandler.mjs';
 
