@@ -408,4 +408,38 @@ export const MIGRATIONS = Object.freeze([
          ON instance_media (local_instance_id);`,
     ],
   },
+  {
+    version: 11,
+    name: 'instance_receipts',
+    statements: [
+      // Provenance for computed field values. `createExecutionReceipt` has
+      // always produced receipts, but nothing persisted them — so provenance
+      // did not survive acceptance, and there was nowhere to look to tell a
+      // Gather-computed value apart from one typed in by hand in another ODK
+      // client. That distinction is what B-custom principle 5 rests on, since
+      // the backing fields stay ordinary writable XForms values rather than
+      // being marked readonly.
+      // See docs/b-custom-composition-conventions.md.
+      //
+      // One row per (instance, binding reference): a receipt describes how one
+      // projected field's value was produced. Cascades with the instance, so a
+      // discarded draft takes its provenance with it.
+      //
+      // `receipt_json` keeps the receipt verbatim for audit; the extracted
+      // columns exist so "is this value computed, and by what" is answerable
+      // without parsing every row.
+      `CREATE TABLE instance_receipts (
+         local_instance_id   TEXT NOT NULL REFERENCES instances(local_instance_id) ON DELETE CASCADE,
+         binding_reference   TEXT NOT NULL,
+         capability          TEXT NOT NULL,
+         capability_revision TEXT NOT NULL,
+         revision            TEXT NOT NULL,
+         recorded_at         TEXT NOT NULL,
+         receipt_json        TEXT NOT NULL,
+         PRIMARY KEY (local_instance_id, binding_reference)
+       );`,
+      `CREATE INDEX instance_receipts_by_instance
+         ON instance_receipts (local_instance_id);`,
+    ],
+  },
 ]);

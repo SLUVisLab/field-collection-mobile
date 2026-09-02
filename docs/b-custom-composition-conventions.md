@@ -196,6 +196,39 @@ So a receipt store, keyed by instance and binding reference, is a **prerequisite
 for principle 5**, not a later refinement. Its absence does not change any
 decision above; it changes what has to be built first.
 
+**Landed 2026-09-02** — migration 11, `instance_receipts`:
+
+```text
+PRIMARY KEY (local_instance_id, binding_reference)
+  → one receipt per projected field
+REFERENCES instances(...) ON DELETE CASCADE
+  → provenance never outlives the instance it describes
+receipt_json + extracted capability / capability_revision / revision / recorded_at
+  → verbatim for audit, indexed for "is this computed, and by what"
+```
+
+`instances` gained `upsertReceipt` / `getReceipt` / `listReceipts` /
+`deleteReceipt`. Four properties are deliberate:
+
+- **`getReceipt` returning `null` is the load-bearing answer.** It is how a
+  value typed by hand in another client is told apart from a computed one.
+- **Writes are draft-only**, like `upsertMedia`: provenance is recorded while
+  the value is collected. **Reads are not state-restricted** — a sent
+  instance's provenance has to stay readable for audit.
+- **Re-running a composition replaces the row**, so a field never carries
+  provenance from a superseded run.
+- **`deleteReceipt` exists because §7 clears absent optional outputs.** A
+  receipt left on a cleared field would claim provenance for a value that is
+  no longer there.
+
+Verified by unit tests, and the migration was executed against real SQLite
+(3.39.2) to confirm the `ON CONFLICT … DO UPDATE` upsert replaces rather than
+duplicates, `recorded_at` populates, and the cascade fires — the migration test
+alone only checks the SQL text.
+
+**No production consumer yet, by design** — the consumer is the composition→ODK
+gate, the same way §17 landed the `setValue` seam ahead of its caller.
+
 ### Project-level asset cleanup
 
 Per §4 above and §15: required before any `retention: keep`, `projection: none`

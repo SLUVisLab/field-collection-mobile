@@ -136,6 +136,60 @@ const INSTANCE_COLUMNS = `
   finalized_at, sent_at, send_receipt, send_error`;
 const MEDIA_COLUMNS = 'local_instance_id, binding_reference, filename, content_type, file_key';
 
+const RECEIPT_COLUMNS =
+  'local_instance_id, binding_reference, capability, capability_revision, revision, recorded_at, receipt_json';
+
+const rowToReceipt = (row) => {
+  if (!row) return null;
+  let receipt = null;
+  try {
+    receipt = JSON.parse(row.receipt_json);
+  } catch {
+    // A row that cannot be parsed is still evidence that a value was computed,
+    // which is what principle 5 asks. Surface the metadata and leave `receipt`
+    // null rather than failing the whole read.
+    receipt = null;
+  }
+  return {
+    localInstanceId: row.local_instance_id,
+    bindingReference: row.binding_reference,
+    capability: row.capability,
+    capabilityRevision: row.capability_revision,
+    revision: row.revision,
+    recordedAt: row.recorded_at,
+    receipt,
+  };
+};
+
+/**
+ * A receipt is opaque provenance produced by `createExecutionReceipt`. Only the
+ * fields this layer indexes are validated; the rest is stored verbatim.
+ */
+const assertReceiptInput = (input = {}) => {
+  const receipt = input.receipt;
+  if (receipt == null || typeof receipt !== 'object' || Array.isArray(receipt)) {
+    fail('receipt must be an object', 'GATHER_INSTANCES_INVALID', { field: 'receipt' });
+  }
+  let receiptJson;
+  try {
+    receiptJson = JSON.stringify(receipt);
+  } catch {
+    fail('receipt must be JSON-serializable', 'GATHER_INSTANCES_INVALID', { field: 'receipt' });
+  }
+  if (typeof receiptJson !== 'string') {
+    fail('receipt must be JSON-serializable', 'GATHER_INSTANCES_INVALID', { field: 'receipt' });
+  }
+  return {
+    localInstanceId: assertLocalInstanceId(input.localInstanceId),
+    bindingReference: assertBindingReference(input.bindingReference),
+    capability: nonEmpty(receipt.capability, 'receipt.capability'),
+    capabilityRevision: nonEmpty(receipt.capabilityRevision, 'receipt.capabilityRevision'),
+    revision: nonEmpty(receipt.revision, 'receipt.revision'),
+    receiptJson,
+    receipt,
+  };
+};
+
 const assertDraftInput = (input = {}) => ({
   localInstanceId: assertLocalInstanceId(input.localInstanceId),
   odkInstanceId: nonEmpty(input.odkInstanceId, 'odkInstanceId'),
@@ -253,6 +307,96 @@ export const createInstancesRepository = (db) => {
         ]
       );
       return value;
+    },
+
+    /**
+     * Records how one projected field's value was produced.
+     *
+     * Draft-only, like `upsertMedia`: provenance is written while the value is
+     * being collected. Re-running a composition replaces the row, so a field
+     * never carries provenance from a superseded run.
+     */
+    async upsertReceipt(input) {
+      const value = assertReceiptInput(input);
+      await requireState(value.localInstanceId, INSTANCE_STATES.DRAFT);
+      await db.runAsync(
+        `INSERT INTO instance_receipts (
+           local_instance_id, binding_reference, capability, capability_revision,
+           revision, recorded_at, receipt_json
+         ) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), ?)
+         ON CONFLICT(local_instance_id, binding_reference) DO UPDATE SET
+           capability = excluded.capability,
+           capability_revision = excluded.capability_revision,
+           revision = excluded.revision,
+           recorded_at = excluded.recorded_at,
+           receipt_json = excluded.receipt_json;`,
+        [
+          value.localInstanceId,
+          value.bindingReference,
+          value.capability,
+          value.capabilityRevision,
+          value.revision,
+          value.receiptJson,
+        ]
+      );
+      return {
+        localInstanceId: value.localInstanceId,
+        bindingReference: value.bindingReference,
+        capability: value.capability,
+        capabilityRevision: value.capabilityRevision,
+        revision: value.revision,
+        receipt: value.receipt,
+      };
+    },
+
+    /** Every receipt on an instance, in binding order. No state restriction: a
+     * sent instance's provenance must stay readable for audit. */
+    async listReceipts(localInstanceId) {
+      const id = assertLocalInstanceId(localInstanceId);
+      const rows = await db.getAllAsync(
+        `SELECT ${RECEIPT_COLUMNS}
+           FROM instance_receipts
+          WHERE local_instance_id = ?
+          ORDER BY binding_reference ASC;`,
+        [id]
+      );
+      return (rows ?? []).map(rowToReceipt);
+    },
+
+    /**
+     * The receipt for one projected field, or `null`.
+     *
+     * `null` is the load-bearing answer: it is how a value typed by hand in
+     * another ODK client is told apart from one Gather computed.
+     */
+    async getReceipt({ localInstanceId, bindingReference } = {}) {
+      const id = assertLocalInstanceId(localInstanceId);
+      const reference = assertBindingReference(bindingReference);
+      const row = await db.getFirstAsync(
+        `SELECT ${RECEIPT_COLUMNS}
+           FROM instance_receipts
+          WHERE local_instance_id = ? AND binding_reference = ?;`,
+        [id, reference]
+      );
+      return rowToReceipt(row);
+    },
+
+    /**
+     * Drops the provenance for one field.
+     *
+     * Required when a projected value is cleared — an optional output that was
+     * not produced this run (B-custom §7). A receipt left behind on a cleared
+     * field would claim provenance for a value that is no longer there.
+     */
+    async deleteReceipt({ localInstanceId, bindingReference } = {}) {
+      const id = assertLocalInstanceId(localInstanceId);
+      const reference = assertBindingReference(bindingReference);
+      await db.runAsync(
+        `DELETE FROM instance_receipts
+           WHERE local_instance_id = ? AND binding_reference = ?;`,
+        [id, reference]
+      );
+      return { localInstanceId: id, bindingReference: reference };
     },
 
     async createDraft(input) {

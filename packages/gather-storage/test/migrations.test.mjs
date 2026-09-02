@@ -41,7 +41,7 @@ const makeFakeDb = (startVersion = 0) => {
 test('the shipped MIGRATIONS are well-ordered', () => {
   assert.doesNotThrow(() => assertMigrationOrder(MIGRATIONS));
   assert.equal(latestVersion(MIGRATIONS), MIGRATIONS.length);
-  assert.equal(latestVersion(MIGRATIONS), 10);
+  assert.equal(latestVersion(MIGRATIONS), 11);
 });
 
 test('migration 3 provisions append-only form versions and draft references', () => {
@@ -229,4 +229,22 @@ test('migration 10 re-keys instance media off the positional binding reference',
   assert.match(sql, /CREATE INDEX instance_media_by_instance/);
   // binding_reference is retained as provenance, just no longer an identity.
   assert.match(sql, /binding_reference TEXT NOT NULL/);
+});
+
+test('migration 11 provisions instance-scoped provenance that cascades', () => {
+  const receipts = MIGRATIONS.find((m) => m.version === 11);
+  assert.ok(receipts, 'version 11 migration exists');
+  assert.equal(receipts.name, 'instance_receipts');
+  const sql = receipts.statements.join('\n');
+
+  // One receipt per projected field, so a value's provenance is addressable.
+  assert.match(sql, /PRIMARY KEY \(local_instance_id, binding_reference\)/);
+  // Provenance must not outlive the instance it describes.
+  assert.match(sql, /REFERENCES instances\(local_instance_id\) ON DELETE CASCADE/);
+  // The receipt is kept verbatim for audit, with the queried fields extracted.
+  assert.match(sql, /receipt_json\s+TEXT NOT NULL/);
+  for (const column of ['capability', 'capability_revision', 'revision', 'recorded_at']) {
+    assert.match(sql, new RegExp(`${column}\\s+TEXT NOT NULL`), `${column} is recorded`);
+  }
+  assert.match(sql, /CREATE INDEX instance_receipts_by_instance/);
 });
