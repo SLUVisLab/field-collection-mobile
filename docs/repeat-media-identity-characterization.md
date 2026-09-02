@@ -156,6 +156,33 @@ and the documented `Failure calling service package: Broken pipe (32)` appeared
 once immediately after the long build, then cleared — `adb install` of the
 already-built APK succeeded, so no rebuild was needed.
 
+### Live Central regression — both targets green (2026-09-02)
+
+The media fix changed `attachImageMedia` and the media schema, both on the
+M5-verified submission path, so the existing M5.5 runner was re-run against the
+live Central instance on both Hermes targets:
+
+```text
+M55_android_GATE::PASS      30/31 device checks, submissionStatus 201
+M55_ios_GATE::PASS          30/31 device checks, submissionStatus 201
+host read-back (both):      submissionFound, instanceId, entityId, observation,
+                            formVersion — all true
+cleanup (both):             deleteStatus 200, afterDeleteStatus 404
+journal (both):             pending → attempting → complete, attemptCount 1
+```
+
+The one non-true device check is `centralReadBack`, which is by design: the
+on-device App User token cannot read submissions back, so the outcome is
+`ready-for-readback` and the host-side Web User verifier performs it. Each run
+deleted its own test submission and confirmed the `404`.
+
+This exercises the changed path end to end — `fixtureImageCopied`,
+`uploadFilenameBound`, `draftMediaMetadata`, `resumedMediaMetadata`,
+`resumedUploadFilename`, `requiredImageUploadSupported`,
+`validationFinalizesBoundUpload`, `foregroundSubmit`, `sent` — so the new
+filename scheme and re-keyed `instance_media` survive a real submission,
+storage restart, resume, and Central read-back.
+
 ### Known follow-up
 
 Without an explicit `previousFilename` nothing is retired, which is the safe

@@ -936,7 +936,7 @@ The §12 caution against implementing reorder by physically reordering repeat
 instances now generalises: **deletion alone breaks identity, so XPath position
 must never be treated as durable identity for anything.**
 
-## 13. ODK image-capture gate — landed (2026-09-01); device run outstanding
+## 13. ODK image-capture gate — landed (2026-09-01); device-verified 2026-09-02
 
 Proves the Phase 3 boundary directly, without routing an ODK field through an
 A2UI composition:
@@ -995,10 +995,12 @@ Vite build; Android Hermes export; `git diff --check`. **The submission path is
 provably untouched** — zero diff across `src/instances`, `src/sync`,
 `odk-central-client`, and `gather-storage`.
 
-**Not verified:** the device run. Changes are presentation-only and the M5 path
-is byte-identical, but the gate is not complete until an on-device capture →
-attach → submit regression passes per
-[emulator-gate-runbook.md](./emulator-gate-runbook.md).
+**Device-verified 2026-09-02.** The M5.5 live regression passed on both Hermes
+targets against the live Central instance — `M55_android_GATE::PASS` and
+`M55_ios_GATE::PASS`, each with `submissionStatus 201`, full host-side read-back
+(instance ID, entity ID, observation, form version) and self-cleanup
+(`deleteStatus 200`, `afterDeleteStatus 404`). Details in
+[repeat-media-identity-characterization.md](./repeat-media-identity-characterization.md).
 
 ## 14. `gather-components` layout — flattened (2026-09-02)
 
