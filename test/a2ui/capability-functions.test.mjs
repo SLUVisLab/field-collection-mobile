@@ -184,3 +184,63 @@ test('an authored action.functionCall executes the capability on interaction', a
   // The argument was resolved from the data model, not passed literally.
   assert.equal(seen[0].mask.assetId, 'mask-1');
 });
+
+test('end to end: authored action + resultPath stores a real capability result', async () => {
+  // The whole point of Slice 2, through the real binder and the real
+  // measure.area implementation: press → resolve args → execute → await →
+  // write to resultPath → ordinary bindings can now read it.
+  const { createFunctionCallHandler } = await import('../../src/a2ui/actionAdapter.js');
+
+  const functions = capabilityFunctions({
+    definitions: [areaDefinition],
+    runtime: createCapabilityRuntime({ measurementAdapter: fakeAdapter }),
+  });
+  const catalog = new Catalog(
+    'gather.test',
+    [{ name: 'Button', schema: z.object({ action: CommonSchemas.Action }) }],
+    functions
+  );
+  const processor = new MessageProcessor([catalog], () => {});
+  processor.processMessages([
+    { version: 'v0.9', createSurface: { surfaceId: 's', catalogId: 'gather.test', sendDataModel: true } },
+    { version: 'v0.9', updateDataModel: { surfaceId: 's', path: '/working', value: { mask } } },
+    {
+      version: 'v0.9',
+      updateComponents: {
+        surfaceId: 's',
+        components: [
+          {
+            id: 'root',
+            component: 'Button',
+            action: {
+              functionCall: { call: 'measure_area', args: { mask: { path: '/working/mask' } } },
+              resultPath: '/working/area',
+            },
+          },
+        ],
+      },
+    },
+  ]);
+
+  const surface = processor.model.getSurface('s');
+  const context = new ComponentContext(surface, 'root', '/');
+
+  // `resultPath` survives message processing — component properties are raw.
+  const rawAction = context.componentModel.properties.action;
+  assert.equal(rawAction.resultPath, '/working/area');
+
+  const handler = createFunctionCallHandler({
+    rawAction,
+    resolveDynamicValue: (input) => context.dataContext.resolveDynamicValue(input),
+    invoke: (name, args) => context.dataContext.functionInvoker(name, args, context.dataContext, undefined),
+    writeResult: (path, result) => context.dataContext.set(path, result),
+  });
+
+  assert.equal(surface.dataModel.get('/working/area'), undefined, 'nothing before the press');
+  await handler();
+  assert.deepEqual(
+    surface.dataModel.get('/working/area'),
+    { value: 1234, unit: 'px^2' },
+    'the real capability result landed in composition state'
+  );
+});

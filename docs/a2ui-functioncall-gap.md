@@ -190,3 +190,77 @@ from the data model.
 The Capability itself remains ignorant of A2UI: it takes serializable input and
 returns serializable output. Placing that output into composition state is
 Slice 2's job, and the renderer's — not the Capability's.
+
+## Slice 2 — landed 2026-09-02
+
+[`src/a2ui/actionAdapter.js`](../src/a2ui/actionAdapter.js) is the **named seam**
+for Gather's one divergence, wired in `bindInstrumentComponent`:
+
+```text
+raw component action
+        │
+  no ───┴──→ upstream GenericBinder ACTION path, untouched
+ (event)     │
+            yes (functionCall)
+             ↓  resolve args via context.dataContext.resolveDynamicValue
+             ↓  context.dataContext.functionInvoker(...)
+             ↓  await
+             ↓  validate serializable
+             ↓  context.dataContext.set(resultPath, result)
+```
+
+**Gather owns execution of action-position FunctionCalls. `web_core` keeps
+ordinary bindings, value-position FunctionCalls, and event dispatch.** That is
+the whole divergence, and `state/surface-model.js` explicitly leaves local
+function calls to the renderer, so this implements a renderer responsibility
+Gather's binding layer had omitted rather than working around upstream.
+
+### The one wire extension
+
+`resultPath`, a sibling of `functionCall` inside an action, is **optional**:
+
+| Form | Meaning |
+| --- | --- |
+| `functionCall` alone | execute, await, discard the return — the `gather_completeComposition` shape |
+| `functionCall` + `resultPath` | execute, await, store — the `measure_area` / `image_segment` shape |
+
+It needs **no schema change**: component properties survive message processing
+raw, so an unknown key is neither stripped nor rejected. Verified by test.
+
+`resultPath` belongs to the adapter, never to the Capability — `measure.area`
+returns a number and knows nothing about where it lands.
+
+### Guardrails, each covered by a test
+
+- **Lazy and always async**, so a synchronous capability works through the same
+  path.
+- **Arguments resolve through the existing context**, so path/literal semantics
+  cannot drift from value-position calls.
+- **Failure writes nothing.** Argument resolution, execution and result
+  validation all complete before `resultPath` is touched; errors surface through
+  `dispatchExpressionError` rather than being swallowed.
+- **Serializability is enforced before mutation** — functions, symbols, bigints,
+  non-finite numbers, Promises (something was not awaited), class instances
+  (a native handle) and cycles are all refused.
+- **Writes use `dataContext.set`**, the context's own setter, so path semantics
+  match every other write and no v1 `null`-deletes-key behaviour leaks in.
+
+### Deliberately not here
+
+Sequencing. One gesture → one FunctionCall → one awaited result → optional
+write. No `call → set → call → branch` chains. If Segment & Measure later proves
+authored sequencing is needed, that is its own decision.
+
+### Verified
+
+21 tests across the adapter and the bridge, including an **end-to-end** case
+through the real binder: an authored `Button` whose action names `measure_area`
+with a `{ path }` argument and `resultPath: '/working/area'` runs nothing until
+pressed, then lands `{ value: 1234, unit: 'px^2' }` — from the real
+`measure.area` implementation — in composition state.
+
+### Removal condition
+
+Delete `actionAdapter.js` and the `useFunctionCallActions` interception when an
+upstream A2UI runtime executes action-position FunctionCalls with an equivalent
+result destination, and passes Gather's composition execution gates.
