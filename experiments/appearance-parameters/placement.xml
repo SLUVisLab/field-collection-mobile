@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa">
+  <h:head>
+    <h:title>Appearance parameter spike</h:title>
+    <model>
+      <instance>
+        <data id="appearance_spike">
+          <photos jr:template=""><photo/></photos>
+          <framed jr:template=""><shot/></framed>
+          <meta><instanceID/></meta>
+        </data>
+      </instance>
+      <bind nodeset="/data/photos/photo" type="binary"/>
+      <bind nodeset="/data/framed/shot" type="binary"/>
+      <bind nodeset="/data/meta/instanceID" type="string" jr:preload="uid"/>
+    </model>
+  </h:head>
+  <h:body>
+    <!-- Variant 1: appearance on the repeat element itself -->
+    <group ref="/data/photos">
+      <label>Photos</label>
+      <repeat nodeset="/data/photos" appearance="gather-multi-image min=2 max=6">
+        <upload ref="/data/photos/photo" mediatype="image/*"><label>Photo</label></upload>
+      </repeat>
+    </group>
+    <!-- Variant 2: appearance on the enclosing group -->
+    <group ref="/data/framed" appearance="gather-multi-image min=1 max=3">
+      <label>Framed</label>
+      <repeat nodeset="/data/framed">
+        <upload ref="/data/framed/shot" mediatype="image/*"><label>Shot</label></upload>
+      </repeat>
+    </group>
+  </h:body>
+</h:html>

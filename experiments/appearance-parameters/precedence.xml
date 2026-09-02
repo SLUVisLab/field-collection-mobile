@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa">
+  <h:head>
+    <h:title>Appearance probe</h:title>
+    <model>
+      <instance><data id="appearance_probe">
+        <note1/><pick/>
+        <photos jr:template=""><photo/></photos>
+        <meta><instanceID/></meta>
+      </data></instance>
+      <bind nodeset="/data/note1" type="string"/>
+      <bind nodeset="/data/pick" type="string"/>
+      <bind nodeset="/data/photos/photo" type="binary"/>
+      <bind nodeset="/data/meta/instanceID" type="string" jr:preload="uid"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/data/note1" appearance="multiline gather-custom min=2"><label>Note</label></input>
+    <select1 ref="/data/pick" appearance="minimal"><label>Pick</label>
+      <item><label>A</label><value>a</value></item>
+    </select1>
+    <group ref="/data/photos" appearance="field-list gather-multi-image">
+      <label>Photos</label>
+      <repeat nodeset="/data/photos" appearance="gather-multi-image min=2 max=6">
+        <upload ref="/data/photos/photo" mediatype="image/*"><label>Photo</label></upload>
+      </repeat>
+    </group>
+  </h:body>
+</h:html>
