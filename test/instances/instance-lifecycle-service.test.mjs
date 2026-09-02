@@ -533,3 +533,66 @@ test('a capture at a reused reference cannot inherit another item\'s attachment'
   assert.notEqual(second.media.filename, first.media.filename);
   assert.deepEqual(files.content.get(first.media.fileKey), new Uint8Array([1]), 'the other item keeps its bytes');
 });
+
+// --- Collection orphan cleanup (docs/b-standard-field-conventions.md §4) -----
+
+test('releasing collection media retires named rows and bytes, keeping the rest', async () => {
+  const { service, instances, files } = makeService();
+  const state = {};
+  const first = await attachOnce({ service, reference: '/data/photos[1]/photo', bytes: new Uint8Array([1]), state });
+  const second = await attachOnce({
+    service, reference: '/data/photos[2]/photo', bytes: new Uint8Array([2]),
+    localInstanceId: first.instance.localInstanceId, state,
+  });
+
+  const released = await service.releaseInstanceMedia({
+    project,
+    localInstanceId: first.instance.localInstanceId,
+    form: { serialize: async () => ({ status: 'success', violationCount: 0, xml: validXml }) },
+    version,
+    filenames: [first.media.filename],
+  });
+
+  assert.deepEqual(released.released, [first.media.filename]);
+  const rows = await instances.listMedia(first.instance.localInstanceId);
+  assert.deepEqual(rows.map((row) => row.filename), [second.media.filename], 'only the named row goes');
+  assert.equal(files.content.has(first.media.fileKey), false, 'its bytes go too');
+  assert.deepEqual(files.content.get(second.media.fileKey), new Uint8Array([2]), 'the survivor is untouched');
+  assert.equal(released.instance.state, 'draft');
+});
+
+test('releasing media rewrites the draft XML from the engine, not from the rows', async () => {
+  const { service, files } = makeService();
+  const state = {};
+  const attached = await attachOnce({ service, reference: '/data/photos[1]/photo', bytes: new Uint8Array([1]), state });
+  // The engine has already dropped the repeat instance, so its serialization is
+  // authoritative — the XML must come from there.
+  const engineXml = validXml.replace('</data>', '<marker>after-removal</marker></data>');
+
+  const released = await service.releaseInstanceMedia({
+    project,
+    localInstanceId: attached.instance.localInstanceId,
+    form: { serialize: async () => ({ status: 'success', violationCount: 0, xml: engineXml }) },
+    version,
+    filenames: [attached.media.filename],
+  });
+
+  assert.match(files.content.get(released.instance.xmlFileKey), /<marker>after-removal<\/marker>/);
+});
+
+test('releasing media validates its inputs', async () => {
+  const { service } = makeService();
+  const form = { serialize: async () => ({ status: 'success', violationCount: 0, xml: validXml }) };
+  await assert.rejects(
+    () => service.releaseInstanceMedia({ project, localInstanceId: 'nope', form, version, filenames: ['a.jpg'] }),
+    /no longer exists/,
+  );
+  const state = {};
+  const attached = await attachOnce({ service, reference: '/data/photos[1]/photo', bytes: new Uint8Array([1]), state });
+  await assert.rejects(
+    () => service.releaseInstanceMedia({
+      project, localInstanceId: attached.instance.localInstanceId, form, version, filenames: [],
+    }),
+    /No media was named/,
+  );
+});

@@ -362,6 +362,20 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     [activeProject, instanceLifecycle]
   );
 
+  const releaseInstanceMedia = useCallback(
+    async ({ localInstanceId, form, version, filenames }) => {
+      if (!instanceLifecycle || !activeProject) throw new Error('instance lifecycle not ready');
+      return instanceLifecycle.releaseInstanceMedia({
+        localInstanceId,
+        project: activeProject,
+        form,
+        version,
+        filenames,
+      });
+    },
+    [activeProject, instanceLifecycle]
+  );
+
   const discardInstance = useCallback(
     async (localInstanceId) => {
       if (!instanceLifecycle || !activeProject) throw new Error('instance lifecycle not ready');
@@ -511,6 +525,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
         saveInstanceDraft,
         finalizeInstance,
         attachImageMedia,
+        releaseInstanceMedia,
         discardInstance,
         sendInstance,
         sendAllReadyInstances,
@@ -556,6 +571,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       saveInstanceDraft,
       finalizeInstance,
       attachImageMedia,
+      releaseInstanceMedia,
       discardInstance,
       sendInstance,
       sendAllReadyInstances,

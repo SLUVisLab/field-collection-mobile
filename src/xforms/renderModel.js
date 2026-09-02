@@ -2,10 +2,21 @@
  * Pure presentation helpers over the public engine projections. They never
  * inspect XForm XML, infer relevance, calculate values, or own form state.
  */
+import { multiImageConfigFrom } from './collectionField.js';
 
 export const controlKindFor = (node) => {
   const type = node?.nodeType;
   if (type === 'group') return 'group';
+  // A repeat carrying the Gather appearance is a collection field, not an
+  // ordinary repeat. Other ODK clients still see the plain repeat — see
+  // docs/b-standard-field-conventions.md.
+  if (
+    typeof type === 'string' &&
+    type.startsWith('repeat-range:') &&
+    multiImageConfigFrom(node?.appearances).enabled
+  ) {
+    return 'multi-image';
+  }
   if (type === 'note') return 'note';
   if (type === 'model-value') return 'calculate';
   if (typeof type === 'string' && type.startsWith('repeat-range:')) return 'repeat';

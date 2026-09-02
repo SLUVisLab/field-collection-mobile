@@ -393,6 +393,60 @@ export const createInstanceLifecycleService = ({
      * generated safe filename through the engine, then persists authoritative
      * XML and relative media metadata.
      */
+    /**
+     * Retires media a collection edit orphaned, then persists the draft.
+     *
+     * The engine has already removed the repeat instances, so the XML no longer
+     * references these filenames. Identity is the **filename**, never a repeat
+     * position — positions reindex on deletion. See
+     * docs/repeat-media-identity-characterization.md.
+     */
+    async releaseInstanceMedia({
+      localInstanceId,
+      project: projectInput,
+      form,
+      version,
+      filenames = [],
+    } = {}) {
+      const project = assertProject(projectInput);
+      const identity = assertVersionForProject(version, project);
+      assertMediaDependencies();
+      if (!Array.isArray(filenames) || filenames.length === 0) {
+        fail('No media was named for release.', INSTANCE_LIFECYCLE_ERROR_CODES.INVALID);
+      }
+      // `owned` already fails for a missing instance or another project's.
+      const existing = await owned(nonEmpty(localInstanceId, 'localInstanceId'), project);
+      if (existing.state !== 'draft') {
+        fail('Only drafts can release media.', INSTANCE_LIFECYCLE_ERROR_CODES.INVALID_STATE);
+      }
+      if (existing.formVersionId !== identity.formVersionId) {
+        fail('A draft must keep its original form version.', INSTANCE_LIFECYCLE_ERROR_CODES.INVALID);
+      }
+
+      const named = new Set(filenames);
+      const doomed = (await listInstanceMedia(existing.localInstanceId)).filter((entry) =>
+        named.has(entry.filename)
+      );
+
+      // Persist the engine's current XML first: it is authoritative, and a
+      // failure here must not leave rows pointing at deleted bytes.
+      const serialized = await serializeFrom(form);
+      await files.writeTextAtomic(existing.xmlFileKey, serialized.xml);
+      const saved = await instances.saveDraft({
+        localInstanceId: existing.localInstanceId,
+        odkInstanceId: serialized.odkInstanceId,
+      });
+
+      for (const entry of doomed) {
+        await instances.deleteMedia({
+          localInstanceId: existing.localInstanceId,
+          filename: entry.filename,
+        });
+        await files.deleteFile(entry.fileKey);
+      }
+      return { instance: saved, released: doomed.map((entry) => entry.filename) };
+    },
+
     async attachImageMedia({
       localInstanceId = null,
       project: projectInput,

@@ -5,6 +5,7 @@ import { XFormsImageControl } from './controls/XFormsImageControl.js';
 import { XFormsInputControl } from './controls/XFormsInputControl.js';
 import { XFormsReadonlyControl } from './controls/XFormsReadonlyControl.js';
 import { XFormsRepeatControl } from './controls/XFormsRepeatControl.js';
+import { XFormsMultiImageControl } from './controls/XFormsMultiImageControl.js';
 import { XFormsSelectControl } from './controls/XFormsSelectControl.js';
 import { controlKindFor, visibleRenderNodes } from './renderModel.js';
 import { tokens } from '../theme/tokens.js';
@@ -13,7 +14,7 @@ import { useTheme } from '../theme/useTheme.js';
 const selectSnapshot = (state) => state.snapshot;
 const indentFor = (depth) => Math.min(Math.max(depth ?? 0, 0), 4) * 8;
 
-function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy }) {
+function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy, collection }) {
   const kind = controlKindFor(node);
   const indent = indentFor(node.depth);
   const question = useXFormsQuestion(node.reference);
@@ -32,6 +33,10 @@ function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy }) {
         ) : null}
       </View>
     );
+  }
+
+  if (kind === 'multi-image') {
+    return <XFormsMultiImageControl node={node} indent={indent} onLayout={onLayout} collection={collection} />;
   }
 
   if (kind === 'repeat' || kind === 'repeat-instance') {
@@ -104,7 +109,7 @@ function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy }) {
   );
 }
 
-export function XFormsRenderer({ onNodeLayout, onAttachImage, attachBusy = false }) {
+export function XFormsRenderer({ onNodeLayout, onAttachImage, attachBusy = false, collection = null }) {
   const renderModel = useXFormsRenderModel();
   const snapshot = useXFormSelector(selectSnapshot);
   const nodes = visibleRenderNodes(renderModel, snapshot);
@@ -116,6 +121,7 @@ export function XFormsRenderer({ onNodeLayout, onAttachImage, attachBusy = false
       onLayout={(event) => onNodeLayout?.(node.reference, event)}
       onAttachImage={onAttachImage}
       attachBusy={attachBusy}
+      collection={collection}
     />
   ));
 }

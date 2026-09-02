@@ -1262,3 +1262,70 @@ config; renderer Vite build; Android Hermes export; `git diff --check`; and a
 parity check that all nine Gather component ids resolve in catalog + mobile +
 web. **Not verified:** on-device behaviour — the camera accessories, gallery
 navigation, and capture loop need a device pass.
+
+## 19. A — collection binding landed (2026-09-02)
+
+`MultiImageCapture` now has a host. A repeat carrying `gather-multi-image`
+renders as one collection field, per
+[b-standard-field-conventions.md](./b-standard-field-conventions.md).
+
+### The layers
+
+| Layer | Owns |
+| --- | --- |
+| `src/xforms/collectionField.js` | render-free: appearance config, repeat↔`ImageAsset[]` projection, orphan detection |
+| `src/xforms/controls/XFormsMultiImageControl.js` | the adapter — XPath and repeat APIs |
+| `FormRunner` | persistence and orphan cleanup |
+| `MultiImageCapture` | interaction only; knows no XPath |
+
+`controlKindFor` returns `multi-image` only when the appearance is present, so a
+plain repeat — or one with just `field-list` — still renders as an ordinary
+repeat. The extension is additive.
+
+### Flows
+
+**Capture** adds the repeat instance first, then resolves the new instance's
+binary child from a **fresh snapshot** rather than assuming the child's name —
+that name belongs to the form author. The host then mints the filename and
+writes it as the node value.
+
+**Remove** diffs *filenames* to find what a gallery edit orphaned, removes those
+instances **highest-position-first** so earlier removals cannot shift later
+indices, then calls the new
+`releaseInstanceMedia({ localInstanceId, form, version, filenames })`. That
+persists the engine's current XML *before* deleting rows and bytes, so a failure
+can never leave rows pointing at deleted files.
+
+**Reorder is deliberately unavailable** (`allowReorder={false}`). Reordering
+repeat instances is precisely the operation that made positional identity
+unsafe.
+
+### Two things worth noting
+
+**Orphans are computed from filenames, never positions.** Positions reindex on
+deletion, so they are useless as identity — the whole lesson of
+[repeat-media-identity-characterization.md](./repeat-media-identity-characterization.md).
+
+**A half-written instance is not a collection item.** An instance whose image
+node is empty, or whose filename has no media row, is skipped — so an added-but-
+not-yet-captured slot never appears as a broken tile.
+
+**Cardinality degrades safely:** a `max` below `min` would be unsatisfiable, so
+it is treated as absent rather than trapping the researcher in a control they
+can never complete.
+
+### Verified
+
+`test:unit` 361 tests / 360 pass / 0 fail (1 known skip) — 10 new collection-field
+tests plus 3 for `releaseInstanceMedia`; Expo config; renderer Vite build;
+Android Hermes export; `git diff --check`.
+
+**Not verified:** on-device. Nothing has rendered this control yet — it needs a
+form whose repeat carries the appearance, and the interactive camera still wants
+a physical device.
+
+### Also removed
+
+A dead guard in `releaseInstanceMedia`: `owned()` already fails for a missing
+instance or another project's, so the extra check was unreachable. A test
+asserting the wrong message is what surfaced it.

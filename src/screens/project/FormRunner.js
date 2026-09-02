@@ -10,6 +10,7 @@ import {
 import { useNavigate, useParams, useSearchParams } from 'react-router-native';
 import { WebView } from 'react-native-webview';
 import { File } from 'expo-file-system';
+import { fileForKey } from 'gather-storage';
 
 import {
   WebViewXFormsHost,
@@ -40,6 +41,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     saveInstanceDraft,
     finalizeInstance,
     attachImageMedia,
+    releaseInstanceMedia,
     discardInstance,
     associateFieldworkInstance,
   } = actions;
@@ -135,6 +137,65 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       setBusy(false);
     }
   }, [associateFieldworkInstance, busy, fieldworkEntityId, fieldworkSessionId, form.serialize, instance?.localInstanceId, saveInstanceDraft, version]);
+
+  // Collection field adapter (storage half). The control owns the repeat APIs;
+  // this owns persistence and orphan cleanup. See
+  // docs/b-standard-field-conventions.md §4.
+  const captureIntoCollection = useCallback(
+    async (reference, capture) => {
+      if (!version || typeof capture?.uri !== 'string') return false;
+      setBusy(true);
+      setMessage(null);
+      try {
+        const sourceFile = new File(capture.uri);
+        if (!sourceFile.exists) throw new Error('The captured image is unavailable.');
+        const bound = await attachImageMedia({
+          localInstanceId: instance?.localInstanceId ?? null,
+          form: { setValue: form.setValue, serialize: form.serialize },
+          version,
+          reference,
+          sourceFile,
+          contentType: capture.contentType,
+        });
+        setInstance(bound.instance);
+        return true;
+      } finally {
+        setBusy(false);
+      }
+    },
+    [attachImageMedia, form.serialize, form.setValue, instance?.localInstanceId, version]
+  );
+
+  const removeFromCollection = useCallback(
+    async (filenames) => {
+      if (!version || !instance?.localInstanceId || !Array.isArray(filenames) || filenames.length === 0) return false;
+      setBusy(true);
+      setMessage(null);
+      try {
+        const saved = await releaseInstanceMedia({
+          localInstanceId: instance.localInstanceId,
+          form: { serialize: form.serialize },
+          version,
+          filenames,
+        });
+        setInstance(saved.instance);
+        return true;
+      } finally {
+        setBusy(false);
+      }
+    },
+    [form.serialize, instance?.localInstanceId, releaseInstanceMedia, version]
+  );
+
+  const collectionAdapter = useMemo(
+    () => ({
+      media: instance?.media ?? [],
+      uriFor: (fileKey) => fileForKey(fileKey)?.uri ?? null,
+      onCapture: captureIntoCollection,
+      onRemove: removeFromCollection,
+    }),
+    [captureIntoCollection, instance?.media, removeFromCollection]
+  );
 
   const attachCapturedImage = useCallback(
     async (node, capture, previousFilename = null) => {
@@ -298,6 +359,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       ) : null}
       {form.ready ? (
         <XFormsRenderer
+          collection={collectionAdapter}
           onAttachImage={attachCapturedImage}
           attachBusy={busy}
           onNodeLayout={(reference, event) => layouts.current.set(reference, event.nativeEvent.layout.y)}
