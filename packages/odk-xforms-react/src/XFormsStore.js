@@ -47,6 +47,10 @@ export class XFormsStore {
     this.hostUnsubscribe = null;
     this.disposed = false;
     this.refreshInFlight = null;
+    // Host events arrive before any form is loaded — the sidecar emits a
+    // lifecycle event as soon as it is ready. Snapshot refreshes only make
+    // sense once a form exists, so they are gated on this.
+    this.formLoaded = false;
     this.state = {
       phase: XFORMS_REACT_PHASES.IDLE,
       snapshot: null,
@@ -152,6 +156,7 @@ export class XFormsStore {
       await this.host.initialize();
       const loadResult = await this.host.loadForm(xml, attachments);
       const snapshot = loadResult?.snapshot ?? (await this.host.getSnapshot());
+      this.formLoaded = true;
       this.setState({
         phase: XFORMS_REACT_PHASES.READY,
         snapshot,
@@ -185,6 +190,7 @@ export class XFormsStore {
       await this.host.initialize();
       const loadResult = await this.host.loadInstance(xml, instanceXml, attachments);
       const snapshot = loadResult?.snapshot ?? (await this.host.getSnapshot());
+      this.formLoaded = true;
       this.setState({
         phase: XFORMS_REACT_PHASES.READY,
         snapshot,
@@ -369,6 +375,13 @@ export class XFormsStore {
 
   handleHostEvent(event) {
     this.setState({ lastEvent: event });
+    // Before a form is loaded there is nothing to snapshot, and asking anyway
+    // makes the host throw "No form loaded" — which was promoted to a
+    // user-visible engine error, so opening a form flashed red text during an
+    // entirely normal startup. The event itself is still recorded above.
+    if (!this.formLoaded) {
+      return;
+    }
     if (event?.type === XFORMS_EVENT_TYPES.STATE_CHANGED) {
       this.refreshSnapshot('stateChanged').catch((error) => {
         const resolved = resolveError(error, 'Failed to refresh snapshot after stateChanged event');
@@ -396,6 +409,7 @@ export class XFormsStore {
       return;
     }
     this.disposed = true;
+    this.formLoaded = false;
     if (this.hostUnsubscribe != null) {
       this.hostUnsubscribe();
       this.hostUnsubscribe = null;

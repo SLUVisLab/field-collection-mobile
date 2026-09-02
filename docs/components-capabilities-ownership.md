@@ -1685,3 +1685,55 @@ Corollary for gates: a screenshot is weak evidence of a short animation —
 4. Confirm the tap actually landed (the capture count must increment) before
    reading anything into a frame — one run here proved nothing because the tap
    missed and the count stayed at 0.
+5. **Truncate your own logcat capture file, not just the device buffer.**
+   `adb logcat -c` clears the *device* ring buffer; a long-running
+   `adb logcat > file` keeps appending, so the file still holds every earlier
+   run. Grepping it returns stale hits that look like current failures. Use
+   `: > file` before each run, or slice from the last `Running "main"` line.
+   This produced a false "still broken" verdict on a fix that was already
+   working — see §24.
+
+## 24. Red flash on form open — a real error surfaced during normal startup (2026-09-02)
+
+Opening a form flashed red text at the top of the screen, too briefly to read.
+It was **`Form engine error: getSnapshot failed: Error: No form loaded`** — an
+engine error shown to the researcher during an entirely successful startup.
+
+### Cause
+
+The WebView sidecar emits a **lifecycle** event as soon as it is ready, which is
+*before* any form has been loaded. `XFormsStore.handleHostEvent` answered every
+lifecycle event with `refreshSnapshot()`, the host correctly threw `No form
+loaded`, and both that call's own `catch` and the caller's `catch` promoted it to
+`phase: ERROR` with a user-visible message. `loadForm` then completed and
+cleared it — hence a flash rather than a stuck error.
+
+### Fix
+
+The store now tracks `formLoaded` (set by `loadForm`/`loadInstance`, cleared on
+dispose) and `handleHostEvent` returns early when no form is loaded. The event
+is still recorded in `lastEvent`; only the pointless refresh is skipped.
+Explicit, caller-initiated refreshes still surface their errors — it is only the
+*event-driven* refresh that had no business failing loudly.
+
+Covered by a regression test in `packages/odk-xforms-react/test/`, verified to
+fail without the guard.
+
+### The diagnostic lesson, which cost far more than the fix
+
+Chasing this burned several cycles on a **measurement error, not a code error**.
+`adb logcat -c` clears the device's ring buffer, but the long-running
+`adb logcat > capture.log` process keeps appending — so the capture file still
+held every previous run. Grepping it kept returning hits from *earlier* app
+launches, which read exactly like "the fix didn't work". The fix had been working
+for several iterations before that was noticed; the user spotted it from the
+device before the logs did.
+
+Two habits follow, now in §23's protocol: truncate the capture file (`: > file`)
+before every run rather than trusting `logcat -c`, and when a log line seems to
+contradict the screen, **check its timestamp against the app's last
+`Running "main"`** before believing it.
+
+The same session also produced the inverse error — trusting a screenshot that
+was too early to show a fast animation. Both are the same mistake: treating an
+observation as current without establishing that it is.
