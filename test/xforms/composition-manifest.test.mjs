@@ -74,8 +74,11 @@ test('a manifest maps composition outputs onto XForms references', () => {
   assert.equal(parsed.version, 1);
   assert.equal(parsed.fields.length, 1);
   assert.deepEqual(parsed.fields[0].bindings, [
-    { path: 'petalCount', reference: '/data/flower_analysis/petal_count', required: true },
-    { path: 'color.name', reference: '/data/flower_analysis/color', required: false },
+    // `projection` defaults to `none`: a scalar written into the node. `media`
+    // means the value is an asset whose bytes belong in the submission, which
+    // is deliberately distinct from retention (b-custom §4).
+    { path: 'petalCount', reference: '/data/flower_analysis/petal_count', required: true, projection: 'none' },
+    { path: 'color.name', reference: '/data/flower_analysis/color', required: false, projection: 'none' },
   ]);
 });
 
@@ -328,4 +331,21 @@ test('a JSON attachment reaches us as text, which manifest discovery depends on'
   const { isTextResource } = await import('../../src/forms/formCatalogService.js');
   assert.equal(isTextResource({ contentType: 'application/json' }), true);
   assert.equal(isTextResource({ contentType: 'image/jpeg' }), false);
+});
+
+test('an unsupported projection is refused rather than silently treated as scalar', () => {
+  assert.throws(
+    () =>
+      parseBindingManifest({
+        version: 1,
+        fields: [
+          {
+            reference: '/data/g',
+            composition: 'c',
+            bindings: [{ path: 'x', reference: '/data/g/x', projection: 'attachment' }],
+          },
+        ],
+      }),
+    /unsupported projection/
+  );
 });

@@ -81,6 +81,7 @@ export const commitCompositionResult = async ({
   receipts = null,
   receipt = null,
   localInstanceId = null,
+  attachMedia = null,
 } = {}) => {
   if (!field || !Array.isArray(field.bindings) || field.bindings.length === 0) {
     throw new CompositionCommitError('A composition commit needs a resolved field with bindings.', {
@@ -113,11 +114,65 @@ export const commitCompositionResult = async ({
     );
   }
 
-  // 2. Commit. The writer coerces every binding before it writes any of them,
-  //    so a failure here leaves nothing half-populated either.
-  const writes = await createResultFieldWriter({ form, bindings: writerBindingsFor(field) })(result);
+  // 2. Promote declared media projections BEFORE any XForms write.
+  //
+  //    A `projection: media` output is an asset whose bytes belong in the
+  //    submission. The composition never learns about `instance_media`: it
+  //    declared what the output *means*, and completion owns how that becomes a
+  //    valid ODK instance. Attaching first preserves the standing rule that XML
+  //    must never reference media that does not exist — a failure here leaves a
+  //    recoverable orphan rather than a broken instance.
+  const mediaBindings = (field.bindings ?? []).filter((binding) => binding.projection === 'media');
+  const attachedFilenames = new Map();
+  if (mediaBindings.length > 0) {
+    if (typeof attachMedia !== 'function') {
+      throw new CompositionCommitError(
+        'This composition projects media, so completion needs an attachment seam.',
+        { code: 'GATHER_COMPOSITION_COMMIT_NO_MEDIA_SEAM' }
+      );
+    }
+    for (const binding of mediaBindings) {
+      const asset = readResultValue(result, binding.path);
+      if (isAbsent(asset)) continue; // optional media output, legitimately absent
+      const attached = await attachMedia({ reference: binding.reference, asset });
+      const filename = attached?.filename;
+      if (typeof filename !== 'string' || filename.length === 0) {
+        throw new CompositionCommitError(
+          `Attaching ${binding.path} produced no submission filename.`,
+          { code: 'GATHER_COMPOSITION_COMMIT_ATTACH_FAILED', details: { path: binding.path } }
+        );
+      }
+      attachedFilenames.set(binding.path, filename);
+    }
+  }
 
-  // 3. Provenance, after the values — the data is the point, and a value with
+  // 3. Commit. Scalars go through the writer, which coerces every one of them
+  //    before writing any — so a mis-authored binding still cannot half-populate
+  //    the instance. Media nodes then receive their *submission filename*, which
+  //    is the one media identity: no Gather-internal id is serialized alongside
+  //    an ODK one.
+  const scalarBindings = (field.bindings ?? []).filter((binding) => binding.projection !== 'media');
+  const writes =
+    scalarBindings.length > 0
+      ? await createResultFieldWriter({
+          form,
+          bindings: writerBindingsFor({ bindings: scalarBindings }),
+        })(result)
+      : [];
+
+  for (const binding of mediaBindings) {
+    const filename = attachedFilenames.get(binding.path);
+    if (filename === undefined) {
+      // An absent optional media output clears its node, like any other.
+      await form.setValue(binding.reference, '');
+      writes.push({ reference: binding.reference, path: binding.path, value: '', present: false });
+      continue;
+    }
+    await form.setValue(binding.reference, filename);
+    writes.push({ reference: binding.reference, path: binding.path, value: filename, present: true });
+  }
+
+  // 4. Provenance, after the values — the data is the point, and a value with
   //    no receipt merely reads as manual, whereas a receipt with no value would
   //    claim provenance for something absent. Failures are reported rather than
   //    thrown: the values are already committed, so telling the host that

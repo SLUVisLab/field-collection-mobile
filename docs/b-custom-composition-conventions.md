@@ -244,6 +244,57 @@ reads text resources from the manifest
 ([`src/forms/formCatalogService.js`](../src/forms/formCatalogService.js)), which
 is what a JSON binding manifest is.
 
+## 4a. Media projection — completion owns it (2026-09-02)
+
+`gather_persistAsset` makes a capture **durable local Gather data**: project
+media plus an asset ledger row. It deliberately does **not** create an ODK
+attachment, because those are two separate concepts:
+
+```text
+persistAsset          → make this capture durable locally
+XForms media projection → include these bytes in this submission
+```
+
+Promotion is `gather_completeComposition`'s job, driven by the binding contract:
+
+```text
+/working/image  (ImageAsset)
+      ↓ gather_completeComposition(outputs)
+      ↓ manifest says this output is  projection: media
+      ↓ attach to instance_media via the existing attachment machinery
+      ↓ submission filename  IMG_1234.jpg
+      ↓ XForms image node = IMG_1234.jpg
+      ↓ commit
+```
+
+**There is no `gather_attachAsset`.** An authored composition never learns about
+`instance_media`. It declares what an output *means*; completion owns how that
+becomes a valid ODK instance.
+
+| retention | projection | outcome |
+| --- | --- | --- |
+| `keep` | `media` | durable locally **and** submitted |
+| `keep` | `none` | local-only asset, subject to project cleanup |
+| `discard` | `none` | swept after completion, per the ledger lifecycle |
+
+**One media identity.** The submission filename is the only identity written
+into the XForm; the project-media/ledger id stays an internal precursor. No
+Gather-specific filename is serialized alongside an ODK one.
+
+### Ordering
+
+Required outputs are validated, then media is attached, then scalars are
+coerced and written, then media nodes receive their filenames, then provenance.
+**Attachment precedes every XForms write**, so a failure leaves a recoverable
+orphan rather than XML pointing at media that does not exist — the same bias as
+`releaseInstanceMedia`. An attachment that yields no filename is a failure, not
+a silently empty node.
+
+Media reuses `attachImageMedia` rather than inventing a second media path, so
+the identity invariant established in
+[repeat-media-identity-characterization.md](./repeat-media-identity-characterization.md)
+continues to hold.
+
 ## 7. Partial completion
 
 ```text

@@ -261,6 +261,27 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
         receipts: repositories?.instances ?? null,
         receipt,
         localInstanceId,
+        // Media projection reuses the existing attachment machinery rather than
+        // inventing a second media path: it copies bytes, mints the submission
+        // filename, records the instance_media row and binds the node. The
+        // composition never learns any of that.
+        attachMedia: async ({ reference, asset }) => {
+          const sourceFile = fileForKey(asset?.fileKey ?? asset?.path);
+          if (!sourceFile?.exists) {
+            throw new Error('The asset for this output is no longer available.');
+          }
+          const bound = await attachImageMedia({
+            localInstanceId,
+            form: { setValue: form.setValue, serialize: form.serialize },
+            version,
+            reference,
+            sourceFile,
+            contentType: asset?.mimeType ?? asset?.contentType ?? 'image/jpeg',
+          });
+          setInstance(bound.instance);
+          setMedia((prev) => mergeMedia(prev, bound.media));
+          return { filename: bound.media.filename };
+        },
       });
       // Then persist the values the composition just wrote. saveDraft sweeps at
       // its own boundary, which is the post-commit boundary too. It can decline
@@ -271,7 +292,15 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       const persisted = Boolean(await saveDraft(localInstanceId));
       return { ...outcome, persisted };
     },
-    [form.setValue, instance?.localInstanceId, repositories?.instances, saveDraft]
+    [
+      attachImageMedia,
+      form.serialize,
+      form.setValue,
+      instance?.localInstanceId,
+      repositories?.instances,
+      saveDraft,
+      version,
+    ]
   );
 
   // Definitions come from the form's own resources, pinned to its version.

@@ -63,10 +63,23 @@ const assertBinding = (binding, { fieldReference, index }) => {
       { ...where, reference: binding.reference }
     );
   }
+  // How this output reaches the submission. `media` means the value is an asset
+  // whose bytes belong in the ODK submission; anything else is a scalar written
+  // into the XForms node. Deliberately distinct from *retention*, which is about
+  // whether local bytes survive — b-custom §4.
+  const projection = binding.projection ?? 'none';
+  if (projection !== 'none' && projection !== 'media') {
+    fail(
+      `Binding ${binding.reference} has an unsupported projection: ${JSON.stringify(projection)}.`,
+      'GATHER_COMPOSITION_BINDING_BAD_PROJECTION',
+      { ...where, projection }
+    );
+  }
   return {
     path: binding.path,
     reference: binding.reference,
     required: binding.required === true,
+    projection,
   };
 };
 

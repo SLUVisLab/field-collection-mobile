@@ -223,3 +223,111 @@ test('a field with no bindings cannot be committed', async () => {
     /needs a resolved field with bindings/
   );
 });
+
+// --- media projection ---------------------------------------------------
+
+const mediaField = () =>
+  parseBindingManifest({
+    version: 1,
+    fields: [
+      {
+        reference: '/data/site',
+        composition: 'authored_v1',
+        bindings: [
+          { path: 'note', reference: '/data/site/note' },
+          { path: 'image', reference: '/data/site/image', projection: 'media', required: true },
+        ],
+      },
+    ],
+  }).fields[0];
+
+test('a media projection becomes a real submission attachment, not an asset blob', async () => {
+  // The composition declared what the output MEANS; completion owns how it
+  // becomes a valid ODK instance. One media identity: the ODK filename.
+  const form = makeForm();
+  const attached = [];
+
+  const outcome = await commitCompositionResult({
+    result: { note: 'north face', image: { assetId: 'image-1', fileKey: 'projects/p/media/image-1.jpg' } },
+    field: mediaField(),
+    form,
+    attachMedia: async ({ reference, asset }) => {
+      attached.push([reference, asset.assetId]);
+      return { filename: 'IMG_1234.jpg' };
+    },
+  });
+
+  assert.deepEqual(attached, [['/data/site/image', 'image-1']]);
+  assert.deepEqual(form.writes, [
+    ['/data/site/note', 'north face'],
+    ['/data/site/image', 'IMG_1234.jpg'],
+  ]);
+  assert.equal(outcome.writes.find((w) => w.path === 'image').value, 'IMG_1234.jpg');
+});
+
+test('attachment happens before any XForms write, so XML never points at missing media', async () => {
+  const form = makeForm();
+  await assert.rejects(
+    () =>
+      commitCompositionResult({
+        result: { note: 'north face', image: { assetId: 'image-1' } },
+        field: mediaField(),
+        form,
+        attachMedia: async () => { throw new Error('no space left on device'); },
+      }),
+    /no space left on device/
+  );
+  assert.deepEqual(form.writes, [], 'not even the scalar was written');
+});
+
+test('an attachment that yields no filename is a failure, not a silent empty node', async () => {
+  const form = makeForm();
+  await assert.rejects(
+    () =>
+      commitCompositionResult({
+        result: { note: 'n', image: { assetId: 'image-1' } },
+        field: mediaField(),
+        form,
+        attachMedia: async () => ({}),
+      }),
+    /produced no submission filename/
+  );
+  assert.deepEqual(form.writes, []);
+});
+
+test('a composition that projects media cannot commit without an attachment seam', async () => {
+  const form = makeForm();
+  await assert.rejects(
+    () =>
+      commitCompositionResult({
+        result: { note: 'n', image: { assetId: 'image-1' } },
+        field: mediaField(),
+        form,
+      }),
+    /needs an attachment seam/
+  );
+  assert.deepEqual(form.writes, []);
+});
+
+test('a required media output that is absent fails before anything is attached', async () => {
+  const form = makeForm();
+  const attached = [];
+  await assert.rejects(
+    () =>
+      commitCompositionResult({
+        result: { note: 'n' },
+        field: mediaField(),
+        form,
+        attachMedia: async () => { attached.push(1); return { filename: 'x.jpg' }; },
+      }),
+    /did not produce a required value/
+  );
+  assert.deepEqual(attached, [], 'required validation runs before attachment');
+  assert.deepEqual(form.writes, []);
+});
+
+test('scalar-only compositions need no attachment seam at all', async () => {
+  const form = makeForm();
+  await commitCompositionResult({ result: { petalCount: 7 }, field: resolvedField(), form });
+  assert.equal(form.writes.length, 2);
+});
