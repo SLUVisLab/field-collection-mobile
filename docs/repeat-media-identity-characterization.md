@@ -3,9 +3,9 @@
 **Date:** 2026-09-02
 **Engine:** `@getodk/xforms-engine@1.0.3-gather.1` (driven headlessly in Node)
 **Spike:** [experiments/repeat-media-identity/](../experiments/repeat-media-identity/)
-**Status:** **fixed 2026-09-02** (migration 10 + `imageFilenameForCapture`);
-regression tests in place. The spike is retained as the record of upstream
-engine behaviour.
+**Status:** **fixed and device-verified 2026-09-02** (migration 10 +
+`imageFilenameForCapture`); regression tests in place and the Android gate is
+green. The spike is retained as the record of upstream engine behaviour.
 
 **Question:** are repeat-bound media identities **unique** *and* **stable under
 repeat mutation**?
@@ -114,6 +114,47 @@ twice in one instance.
   the direct regression: both rows survive, and the other item keeps its bytes;
 - migration 10 asserts the new key, the lossless column copy, index recreation,
   and that the old primary key is gone.
+
+### Device verification (Android emulator, 2026-09-02)
+
+[`gates/MediaIdentityGateApp.js`](../gates/MediaIdentityGateApp.js) exercises the
+invariants against **real SQLite, real files and the real WebView engine** —
+`Pixel_3a_API_34_extension_level_7_arm64-v8a`, cold boot, `BUILD SUCCESSFUL in
+14m 25s`. Result `ok: true`, `schemaVersion: 10`, all nine checks:
+
+```text
+PASS  migrationApplied                  schema 10 applied on device
+PASS  filenameMintedNotDerived          3 attaches, same reference, 3 filenames
+PASS  reusedReferenceKeepsBothRows      a reused reference inherits nothing
+PASS  reusedReferenceKeepsBothFiles     both files survive
+PASS  replaceRetiresOnlyNamedRow        retirement is precise
+PASS  replaceDeletesOnlyNamedBytes      only the named bytes go
+PASS  replacedXmlBindsNewFilename       XML binds the current filename
+PASS  submissionCarriesCurrentFilename  one attachment, the referenced name
+PASS  projectRemovalCleansMedia         project removal clears media
+```
+
+The Central transport is stubbed (multipart parts captured), so the gate needs
+no server and creates no remote artifacts; live submission is unchanged and
+remains covered by the M5.5 runner.
+
+**Every failure during the run was in the harness, not the product** — three of
+them, each worth recording because they are easy to repeat:
+
+1. Independent drafts in one project collide: `instances` is UNIQUE on
+   `(project_key, odk_instance_id)` and the engine's preloaded `instanceID` is
+   not distinct across fresh `loadForm` calls. A second draft needs its own
+   project.
+2. `deleteProjectDirectory` before evaluating the checks made every lazily
+   evaluated `.exists` report false. Sample byte presence *before* teardown.
+3. The reuse invariant describes an *intermediate* state; sampling once at the
+   end saw `second` already legitimately retired. Two sampling points are needed.
+
+Also noted: `expo start` must carry `EXPO_NO_TYPESCRIPT_SETUP=1` (it is baked
+into the npm scripts, and bypassing them trips the `archive/` TypeScript scan),
+and the documented `Failure calling service package: Broken pipe (32)` appeared
+once immediately after the long build, then cleared — `adb install` of the
+already-built APK succeeded, so no rebuild was needed.
 
 ### Known follow-up
 
