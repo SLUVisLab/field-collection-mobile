@@ -1114,3 +1114,53 @@ component. It is not styling drift — both already consume the same
 presentation contract, differing only in that `ActionButton` adds `tone` and the
 package `Button` adds `children`/`borderless`. Consolidating is possible but is
 app-UI churn with no correctness gain today; revisit if the two drift.
+
+## 17. Computed-value → `setValue` seam — landed (2026-09-02)
+
+Implements the mechanism §15 identified as missing:
+[`src/xforms/resultBinding.js`](../src/xforms/resultBinding.js).
+
+```text
+composition → typed result → result binding → form.setValue(reference, "12.4")
+                                                    ↓
+                                            XML only, no attachment
+```
+
+`createResultFieldWriter({ form, bindings })` returns a function matching the
+host's `onAcceptedResult(result, context)` shape, so it can be handed straight to
+`A2UIHost`: the host **delivers** the typed result, and this decides that
+completion means writing XForms field values. `bindings` is a list of
+`{ reference, path }`, so one result populates several fields —
+`measurements.area.value` → `/data/leaf_area`, `measurements.area.unit` →
+`/data/leaf_area_unit`, and so on.
+
+### Three decisions worth knowing
+
+**Structured values are refused.** `toXFormsValue` accepts strings, finite
+numbers, and booleans; objects and arrays throw. This is the structural guard
+that makes "no bytes" hold: an `ImageAsset` cannot be stringified into a text
+field by a mis-authored binding. Bind a scalar path *within* a result, or use
+the attachment path.
+
+**Absent optional values clear the field rather than throwing.** A classification
+that was not run writes `''` and is reported `present: false` — an optional
+measurement is a legitimate outcome, not an error.
+
+**All bindings coerce before any write.** A binding that is going to fail cannot
+leave the instance half-populated; the writer resolves every value first and
+only then calls `setValue`. A failure surfaces in the composition's error View
+rather than reporting silent success.
+
+### Status
+
+The mechanism is complete and covered end-to-end through the real A2UI runtime
+(composition completion → binding → `setValue`), including the failure path.
+
+**It has no production consumer yet, by design.** The consumer is an XForms
+control that hosts a composition, which is the composition→ODK gate. This lands
+the mechanism so that gate is a wiring exercise rather than a design exercise.
+
+Still open from §15 before a derived-value workflow ships at volume: the
+**retention policy** for scientific captures (project media has no cleanup path
+outside project removal), and making "keep image / discard after compute" an
+explicit authoring choice.

@@ -5,6 +5,7 @@ import { GATHER_ACTION_IDS } from '../../packages/gather-catalog/src/index.js';
 import { PHOTO_CAPTURE_DEFINITION, PHOTO_CAPTURE_VIEWS } from '../fixtures/photo-capture/definition.mjs';
 import { createPhotoCaptureActionHandler } from '../fixtures/photo-capture/actionHandler.mjs';
 import { createA2uiRuntime } from '../../src/a2ui/a2uiRuntime.js';
+import { createResultFieldWriter } from '../../src/xforms/resultBinding.js';
 import { gatherComponentApis, mobileBasicApis } from '../../src/a2ui/mobile/componentApis.js';
 
 /**
@@ -163,4 +164,61 @@ test('every view token the handler writes has a Flow View', () => {
   for (const token of Object.values(PHOTO_CAPTURE_VIEWS)) {
     assert.ok(flow.views.some((entry) => entry.when === token), `no Flow View for '${token}'`);
   }
+});
+
+test('the completion seam feeds the result binding — a value reaches a form field', async () => {
+  // The host delivers the typed result; the embedder decides what completion
+  // means. Here it means writing a scalar into an XForms field, with no
+  // attachment and therefore no image bytes in the submission.
+  const setValueCalls = [];
+  const form = { setValue: async (reference, value) => { setValueCalls.push([reference, value]); } };
+
+  let handleAction;
+  const runtime = createA2uiRuntime({
+    tool: PHOTO_CAPTURE_DEFINITION,
+    componentApis: [...mobileBasicApis, ...gatherComponentApis],
+  });
+  handleAction = createPhotoCaptureActionHandler({ capabilities: { persistCapture: async () => image } })({
+    processor: runtime.processor,
+    onAcceptedResult: createResultFieldWriter({
+      form,
+      bindings: [{ reference: '/data/photo_width', path: 'width' }],
+    }),
+  });
+  runtime.setActionHandler(handleAction);
+
+  const dispatch = (name, context) =>
+    runtime.surface.dispatchAction({ event: { name, ...(context ? { context } : {}) } }, name);
+  await dispatch(GATHER_ACTION_IDS.capture, { capture: descriptor });
+  await dispatch(GATHER_ACTION_IDS.accept);
+
+  assert.deepEqual(setValueCalls, [['/data/photo_width', '960']]);
+});
+
+test('a failed field write surfaces in the composition instead of completing silently', async () => {
+  // A constraint violation (or a mis-authored binding) must be visible: the
+  // composition lands on its error View rather than reporting success.
+  const form = { setValue: async () => { throw new Error('constraint violated'); } };
+  let handleAction;
+  const runtime = createA2uiRuntime({
+    tool: PHOTO_CAPTURE_DEFINITION,
+    componentApis: [...mobileBasicApis, ...gatherComponentApis],
+  });
+  handleAction = createPhotoCaptureActionHandler({ capabilities: { persistCapture: async () => image } })({
+    processor: runtime.processor,
+    onAcceptedResult: createResultFieldWriter({
+      form,
+      bindings: [{ reference: '/data/photo_width', path: 'width' }],
+    }),
+  });
+  runtime.setActionHandler(handleAction);
+
+  const dispatch = (name, context) =>
+    runtime.surface.dispatchAction({ event: { name, ...(context ? { context } : {}) } }, name);
+  await dispatch(GATHER_ACTION_IDS.capture, { capture: descriptor });
+  await dispatch(GATHER_ACTION_IDS.accept);
+
+  const state = runtime.state(PHOTO_CAPTURE_DEFINITION.statePath);
+  assert.equal(state.status, PHOTO_CAPTURE_VIEWS.error);
+  assert.equal(state.error, 'constraint violated');
 });
