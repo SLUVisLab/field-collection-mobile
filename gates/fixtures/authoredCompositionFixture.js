@@ -123,15 +123,10 @@ export const AUTHORED_COMPOSITION_MANIFEST = {
       bindings: [
         // `media` is what promotes the durable asset into a real ODK
         // attachment at completion. The composition never learns about that.
-        // `discard`: the submission owns the bytes once promotion succeeds, so
-        // the working asset is released rather than kept as a second copy.
-        {
-          path: 'image',
-          reference: '/data/photo/image',
-          required: true,
-          projection: 'media',
-          retention: 'discard',
-        },
+        // No `retention`: a media projection defaults to discarding the working
+        // duplicate, because the XForm has already named a durable owner for
+        // these bytes. `keep` would be the deliberate exception.
+        { path: 'image', reference: '/data/photo/image', required: true, projection: 'media' },
         { path: 'note', reference: '/data/photo/note' },
       ],
     },

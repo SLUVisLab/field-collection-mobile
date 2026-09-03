@@ -78,33 +78,27 @@ const assertBinding = (binding, { fieldReference, index }) => {
   // Retention is the **output's** disposition, not the capture's. Whoever made
   // the bytes durable could not know what role they would play; this binding is
   // where that is finally stated, and completion is where it is applied.
-  //
-  // Required on `media`, because promotion copies the bytes into the submission
-  // and the question "does the working copy survive that?" then has no default
-  // answer that is not a guess: `keep` silently duplicates every capture
-  // forever, `discard` silently destroys a working asset an author wanted.
-  // B-custom §4 already makes persistence explicit authoring policy.
-  const retention = binding.retention ?? null;
-  if (retention !== null && retention !== 'keep' && retention !== 'discard') {
+  const declared = binding.retention ?? null;
+  if (declared !== null && declared !== 'keep' && declared !== 'discard') {
     fail(
-      `Binding ${binding.reference} has an unsupported retention: ${JSON.stringify(retention)}.`,
+      `Binding ${binding.reference} has an unsupported retention: ${JSON.stringify(declared)}.`,
       'GATHER_COMPOSITION_BINDING_BAD_RETENTION',
-      { ...where, retention }
+      { ...where, retention: declared }
     );
   }
-  if (projection === 'media' && retention === null) {
-    fail(
-      `Binding ${binding.reference} projects media, so it must declare \`retention\`: 'keep' to also retain the working asset, 'discard' to leave only the submission's copy.`,
-      'GATHER_COMPOSITION_BINDING_NO_RETENTION',
-      where
-    );
-  }
-  // Completion only touches an asset where it promotes one, so a disposition
-  // anywhere else governs nothing. Dead configuration, and this manifest
-  // surfaces those rather than ignoring them.
+  // `media` defaults to `discard`, and only `media`. The XForm has already said
+  // this node is a binary submission field, so a *durable owner other than
+  // Gather* provably exists once promotion succeeds: the working copy was
+  // scaffolding, and keeping it is a deliberate request for a duplicate.
+  //
+  // The same default would be unsafe anywhere else. With no durable media
+  // destination, keep vs. discard decides whether the bytes survive at all, so
+  // that case must state it — see the refusal below, which stands until such an
+  // output is authorable.
+  const retention = projection === 'media' ? declared ?? 'discard' : declared;
   if (projection !== 'media' && retention !== null) {
     fail(
-      `Binding ${binding.reference} declares retention but does not project media, so there is no asset for it to govern.`,
+      `Binding ${binding.reference} declares retention but projects no media. An asset with no durable XForms destination cannot use the media default, and Gather cannot yet author one.`,
       'GATHER_COMPOSITION_BINDING_RETENTION_WITHOUT_MEDIA',
       { ...where, retention }
     );

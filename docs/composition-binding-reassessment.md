@@ -9,6 +9,13 @@ present in the XForm subtree, a duplicate of the appearance token that named the
 composition, or one of two small facts that fit existing XForm extension points.
 The manifest can be deleted rather than shrunk.
 
+Revised 2026-09-02 after review: the remaining metadata rides **namespaced
+`body::` / `bind::` attributes**, not appearance tokens; retention **defaults**
+for a media projection; and a separate packaging question — how Central learns
+the composition resource is an expected attachment — is split out below. Both
+implementation caveats raised in review have been spiked
+([experiments/namespaced-gather-attributes](../experiments/namespaced-gather-attributes/)).
+
 ## The precedent
 
 ODK Collect's external-app integration populates several fields at once from one
@@ -58,8 +65,8 @@ Per field: `{ reference, composition, definition, bindings }`.
 | manifest field | derivable? | from what |
 | --- | --- | --- |
 | `reference` | **Yes** | it *is* the composition group node |
-| `composition` | **Yes** | already in the `gather-composition:` appearance. The manifest copy exists only so the two can be cross-checked against each other |
-| `definition` | No | but expressible inline, `select_one_from_file`-style |
+| `composition` | **Yes** | already in the `gather-composition` appearance. The manifest copy exists only so the two can be cross-checked against each other |
+| `definition` | No | but expressible as `body::gather:composition` on the group row |
 | `bindings` | **Yes** | per the table above |
 
 Both real compositions in the tree already match by name, exactly:
@@ -92,69 +99,123 @@ That is *stronger* validation than the manifest provides, not weaker.
 ## The proposal
 
 ```text
-begin_group  flower_analysis   appearance: gather-composition:flower_v1.a2ui.json
-  image      image             appearance: gather-retention:keep      ← only if not the default
-  decimal    area
-  integer    petal_count
-end_group
+survey
+  begin_group  flower_analysis   appearance: gather-composition
+    image      image
+    decimal    area
+    integer    petal_count
+  end_group
+
+body::gather:composition   flower_v1.gather      ← on the group row
+bind::gather:retention     keep                  ← exceptional, on the image row
+bind::gather:output        petalCount            ← exceptional, on the child row
 ```
 
-Ordinary XLSForm group, ordinary typed children, one appearance token. No
-side-car document.
+Ordinary XLSForm group, ordinary typed children. No side-car document.
 
-Binding is **group-relative and by name**: the composition's declared output
-names must be child names of its group. The composition artifact still carries
-no XPaths, so reuse across forms is unaffected — a form chooses the group's
-reference and its place in the tree, and only gives up the freedom to name the
-children arbitrarily. That is precisely ODK's own constraint for external apps,
-and it holds in practice.
+Binding is **group-relative and by name**: a composition's declared output names
+must be names of the group's **body-backed** children. The artifact still
+carries no XPaths, so reuse across forms is unaffected — a form chooses the
+group's reference and its place in the tree, and only gives up the freedom to
+name the children arbitrarily. That is precisely ODK's own constraint for
+external apps, and it holds in practice.
 
-### What stays Gather-specific, and where it goes
-
-**1. Which resource carries the composition.** Put the filename in the
-appearance token, following `select_one_from_file lgas.csv`:
+The load-time contract is then:
 
 ```text
-appearance: gather-composition:flower_v1.a2ui.json
+composition  result.outputs
+        ↕ validate: name matches (unless overridden), type is compatible
+XForm        body-backed children of the composition group
+
+requiredness comes from XForms, at runtime
 ```
 
-The artifact is then the authority on its own `id`, and a registered handler is
-looked up by that id rather than by the appearance. The alternative — keep the
-token as the id and resolve `<id>.a2ui.json` by convention — is one fewer
-character but reintroduces a guess. The naming rule is that a token cannot
-contain whitespace, which is the constraint `select_one_from_file` has anyway.
+### Appearance marks rendering; namespaced attributes carry data semantics
 
-*Considered and rejected:* referencing the artifact as a secondary instance
-(`<instance id="flower_v1" src="jr://file/flower_v1.a2ui.json"/>`), which is how
-ODK reaches attached CSV/XML. The engine would try to parse it as XML.
+`appearance` is a body/UI property in XForms. "Substitute a composition UI for
+this group" belongs there. Which resource supplies it, where an output lands,
+and whether working bytes survive are **data-binding semantics**, and XLSForm
+has a sanctioned mechanism for exactly this: `body::`, `bind::` and `instance::`
+columns emitting custom attributes in a namespace declared on the settings
+sheet.
 
-**2. Retention.** Not an XForms concept, and it belongs to the output, so put it
-on the question whose asset it governs:
+The precedent is Entities: `entities:saveto` is a namespaced *bind* attribute
+saying that a form node maps to a named Entity property. `gather:output` is
+almost the same class of relationship.
+
+| carries | mechanism |
+| --- | --- |
+| Gather should render a composition here | `appearance = gather-composition` |
+| which resource supplies it | `body::gather:composition` on the group |
+| where an output lands | ordinary child name + XForms type |
+| exceptional output mapping | `bind::gather:output` |
+| exceptional storage lifecycle | `bind::gather:retention` |
+
+**Verified, not assumed** ([experiments/namespaced-gather-attributes](../experiments/namespaced-gather-attributes/)):
+the engine exposes all three through the live definition objects —
+`node.definition.bodyElement.element.getAttributeNS(ns, 'composition')` and
+`node.definition.bind.bindElement.getAttributeNS(ns, 'retention')`, the second
+being exactly how the vendored `entity-effects.js` already reads
+`entities:saveto`. Our **render model** does not project them yet; the sidecar's
+`buildRenderModel` has to read them inside the WebView and emit plain strings,
+as it already does for `appearances` and `mediaType`.
+
+### Body-backed children, not all children
+
+The spike also showed something the earlier draft of this document got wrong. A
+node with a bind and **no body control** still appears as a child of the group —
+as `nodeType: 'model-value'`, with no `bodyElement` at all:
 
 ```text
-image  image  appearance: gather-retention:keep
+model-value  /data/flower_analysis/hidden_note  <no bodyElement>
 ```
 
-This is the same mechanism `gather-composition:` and `gather-multi-image`
-already use, and it degrades the same way: another ODK client sees an unknown
-appearance on an ordinary image question and ignores it.
+So the degradation guarantee is not automatic. Binding must filter to
+body-backed children **explicitly**; without that filter, name-based binding
+would write into a node no other ODK client can see or fill — the exact failure
+the manifest was accused of permitting.
 
-**3. Exceptional name mapping**, if we ever need it — an appearance token on the
-child that names the output it takes:
+## What stays Gather-specific, and where it goes
 
-```text
-integer  petal_count  appearance: gather-output:petalCount
-```
+**1. Which resource carries the composition.** `body::gather:composition` on the
+group row. The artifact is then the authority on its own `id`, and a registered
+handler is looked up by that id rather than by the appearance.
 
-This also covers the two things the manifest can express that plain name
-matching cannot: a nested result path (`gather-output:color.name`) and one
-output feeding two fields (two children naming the same path). So even the
-escape hatch needs no JSON.
+**2. Retention.** `bind::gather:retention` on the child whose asset it governs —
+and, per the rule below, only ever as an exception.
+
+**3. Exceptional name mapping.** `bind::gather:output` on the child, naming the
+output it takes. This also covers the two things plain name matching cannot: a
+nested result path (`gather:output="color.name"`) and one output feeding two
+fields (two children naming the same path). So even the escape hatch needs no
+JSON.
 
 There is exactly one thing the manifest can express that this cannot: binding to
 a node with **no body control**. That should not be expressible — it is the case
 that breaks ODK degradation, because another client cannot fill by hand what it
 cannot see.
+
+## Retention: default only where the XForm proves another owner exists
+
+Landed 2026-09-02, superseding "required on every media binding".
+
+```text
+binary XForms media destination exists   →  default: discard the working duplicate
+no durable media destination             →  retention must be explicit
+```
+
+Once promotion and the XML commit have succeeded, an asset bound to an ordinary
+`<upload>` has a durable owner that is not Gather: `instance_media` holds the
+submission copy and the XForms node holds its filename. The Gather working copy
+is then simply a duplicate, so `discard` is the honest default and `keep` is the
+deliberate request to retain a project-local copy. That is what gives the
+ordinary image case **zero** Gather metadata.
+
+The same default would be unsafe anywhere else. For an asset output with no
+durable XForms destination, `keep` versus `discard` decides whether the bytes
+survive at all, so that case must state it. Gather cannot author such an output
+today, and the manifest parser refuses one rather than guessing —
+`GATHER_COMPOSITION_BINDING_RETENTION_WITHOUT_MEDIA`.
 
 ## Effect on degradation
 
@@ -165,41 +226,78 @@ refuses it. Name-based binding makes the group's ordinary typed children the
 plain group it can fill by hand" becomes structural rather than a convention
 authors are asked to honour.
 
-## Risk
+## Appearance survival is no longer the risk
 
-The whole proposal rests on **appearance tokens surviving XLSForm → pyxform →
-Central → device**. That is not a new risk: it is the one
-[b-standard §3](./b-standard-field-conventions.md) already verified for repeats —
-pyxform passes appearance through verbatim, custom tokens included, and does not
-filter to a known vocabulary. Two things still need confirming for this shape
-specifically:
-
-- a `begin_group` appearance lands on the `<group>` element (for `begin_repeat`
-  pyxform puts it on the `<repeat>` and leaves the group bare — the footgun
-  already documented there);
-- an appearance on an `image` question survives, which is where retention rides.
+The earlier draft flagged two unknowns. Both are settled without a spike:
+ODK's own external-app documentation shows a `begin_group` with
+`appearance=field-list` becoming `<group … appearance="field-list">`, and ODK
+documents `annotate`, `new`, `new-front`, `draw`, `signature` and `external-app`
+appearances on **image** questions. Combined with the custom-token pyxform check
+already recorded in [b-standard §3](./b-standard-field-conventions.md), this is
+not a meaningful blocker.
 
 It also **removes** a risk. The manifest was a `.json` form resource, and Central
 may serve `.json` as `application/octet-stream`, which makes `isTextResource`
 false and the manifest silently never found — the Step 5b hazard. Deleting the
-manifest halves that surface: only the composition artifact still has to arrive
-as a readable text resource.
+manifest halves that surface.
 
-## Open question for the decision
+## The real open question is packaging, not binding
 
-**Should `retention` default, or stay required?**
+Central will not accept an attachment it did not expect, and it decides what to
+expect by scanning the XForm. Its scan
+(`central-backend lib/data/schema.js`, `expectedFormAttachments`) covers
+`<instance src>`, itext `<value form="image|audio|video|big-image">`, instance
+default values, `<input query>` and select `search()` appearances, matching
+`^jr://(?:images|audio|video|file|file-csv)/([^/]+)$`. It does **not** scan
+arbitrary attributes.
 
-We landed on "required on a media binding" in §4b on the grounds that neither
-default is safe. That reasoning was made when retention was the *only* signal.
-Here the XForm itself already says the node is a binary submission field, which
-is independent evidence that the bytes' destination is the submission — so
-`discard` has a defensible default reading: the working copy was scaffolding,
-and `keep` is the deliberate exception that asks for a duplicate.
+So `body::gather:composition="flower_v1.gather"` names the resource for *Gather*
+but creates no attachment slot in Central. `select_one_from_file` works because
+pyxform turns it into a standard external secondary instance with a `jr://file…`
+reference — that is what Central recognises.
 
-Making it default is what lets the common case carry **zero** Gather metadata
-beyond the composition marker. Keeping it required means every composition form
-still needs a Gather-specific token on its media child, and the manifest
-collapses to "almost nothing" rather than nothing.
+This is a distribution problem, not a binding problem. If it is unsolved, the
+answer is a sanctioned way to make the composition bundle a recognised form
+resource — **not** the return of the binding manifest, which would face exactly
+the same attachment question.
+
+### What the spike already settled
+
+[experiments/namespaced-gather-attributes §2](../experiments/namespaced-gather-attributes/)
+ran the secondary-instance route locally:
+
+| resource content type | result |
+| --- | --- |
+| `application/json` | rejected: *Failed to determine external secondary instance format … content type: "application/json"* |
+| `text/xml` | past format determination |
+| `text/csv` | loads cleanly |
+
+Two consequences:
+
+- **Nothing needs to reference the instance.** An unreferenced
+  `<instance id="…" src="jr://file/…"/>` loads fine, so declaring one purely to
+  claim Central's attachment slot is viable in principle.
+- **The blocker is ours, not Central's.** Central's regex accepts
+  `flower_v1.a2ui.json` as a `file` attachment; it is the *engine* that fetches
+  the resource eagerly and refuses JSON. Format is decided by response content
+  type, not extension — the `.a2ui.json` name loaded happily as `text/csv`.
+
+So the remaining choice is between delivering the artifact in a format the
+engine parses, putting the reference somewhere else Central scans, and patching
+the engine to skip unreferenced instances of unknown format. Deciding needs a
+real Central draft, which the local spike cannot reach; Central's behaviour above
+is read from its source, not observed.
+
+## Next implementation steps
+
+1. ~~Verify `@getodk/xforms-engine` exposes namespaced body/bind attributes.~~
+   **Done** — it does, through `definition.bodyElement.element` and
+   `definition.bind.bindElement`.
+2. Project those attributes through `buildRenderModel` in the WebView sidecar,
+   which is the only reason they are not already usable app-side.
+3. Spike Central recognition of the composition resource reference against a
+   real draft.
+4. Then delete the manifest code.
 
 ## Answers to the three questions
 
@@ -209,10 +307,11 @@ collapses to "almost nothing" rather than nothing.
 composition node itself, and `composition` is already in its appearance.
 
 **What genuinely remains Gather-specific?** Two facts: which resource carries
-the composition, and retention. Plus an optional output-name escape hatch. All
-three fit existing XForm extension points — the type-style inline reference and
-appearance tokens — with no parallel binding language.
+the composition, and retention — plus an optional output-name escape hatch. All
+three ride namespaced `body::` / `bind::` attributes, the mechanism XLSForm
+provides for exactly this and Entities already uses. No parallel binding
+language. With retention defaulted, only the first appears in an ordinary form.
 
-**Can the normal case be group + marker + attachment, with no manifest?** Yes.
-And with `retention` defaulted, the normal case is an ordinary XLSForm group
-with one appearance token on it and nothing else.
+**Can the normal case be group + marker + attachment, with no manifest?** Yes —
+an ordinary XLSForm group with `appearance = gather-composition` and one
+`body::gather:composition` cell. Everything else is ordinary typed children.

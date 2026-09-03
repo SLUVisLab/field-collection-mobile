@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms"
+        xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns:jr="http://openrosa.org/javarosa"
+        xmlns:gather="http://gather.slu.edu/xforms">
+  <h:head><h:title>Namespaced attribute probe</h:title><model>
+    <instance><data id="ns_probe">
+      <site_name/>
+      <flower_analysis>
+        <image/>
+        <area/>
+        <petal_count/>
+        <hidden_note/>
+      </flower_analysis>
+      <meta><instanceID/></meta>
+    </data></instance>
+    <bind nodeset="/data/site_name" type="string"/>
+    <bind nodeset="/data/flower_analysis/image" type="binary" gather:retention="keep"/>
+    <bind nodeset="/data/flower_analysis/area" type="decimal"/>
+    <bind nodeset="/data/flower_analysis/petal_count" type="int" required="true()" gather:output="petalCount"/>
+    <bind nodeset="/data/flower_analysis/hidden_note" type="string"/>
+    <bind nodeset="/data/meta/instanceID" type="string" jr:preload="uid"/>
+  </model></h:head>
+  <h:body>
+    <input ref="/data/site_name"><label>Site name</label></input>
+    <group ref="/data/flower_analysis"
+           appearance="gather-composition"
+           gather:composition="jr://file/flower_v1.gather">
+      <label>Flower analysis</label>
+      <upload ref="/data/flower_analysis/image" mediatype="image/*"><label>Image</label></upload>
+      <input ref="/data/flower_analysis/area"><label>Area</label></input>
+      <input ref="/data/flower_analysis/petal_count"><label>Petal count</label></input>
+    </group>
+  </h:body>
+</h:html>

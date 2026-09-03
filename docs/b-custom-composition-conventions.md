@@ -718,16 +718,22 @@ gather_completeComposition(outputs)
 
 Three consequences worth stating:
 
-- **`retention` is required on a `projection: media` binding.** Neither default
-  is safe, and §4 already makes persistence explicit authoring policy rather
-  than something inferred from a type.
+- **A `projection: media` binding defaults to `discard`** — revised 2026-09-02;
+  it was briefly required. The default is safe *here specifically* because the
+  XForm has already named a durable owner other than Gather: once promotion and
+  the XML commit succeed, `instance_media` holds the submission copy and the
+  node holds its filename, so the working copy is a duplicate. `keep` is the
+  deliberate request to retain a project-local one.
 - **Disposition is settled last**, after both the attachment and every XForms
   write. Releasing earlier could hand a sweep bytes the instance still needs.
   Failures are reported, never thrown — the same bias as provenance, because an
   unsettled disposition leaves bytes behind rather than losing any.
-- **Retention on a non-media binding is a manifest error.** Completion only
-  touches an asset where it promotes one, so a disposition anywhere else governs
-  nothing. Dead configuration, surfaced rather than ignored.
+- **Retention with no media projection is refused.** The default above does not
+  generalise: with no durable XForms destination, `keep` versus `discard`
+  decides whether the bytes survive at all, so that case must state it. Gather
+  cannot author such an output today, so the parser refuses rather than guesses.
+  See [the binding reassessment](./composition-binding-reassessment.md) for
+  where this metadata is headed once the manifest goes.
 
 The ownership model the sweep now sees is clean:
 

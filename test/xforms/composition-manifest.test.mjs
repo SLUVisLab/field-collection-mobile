@@ -95,12 +95,12 @@ test('a manifest maps composition outputs onto XForms references', () => {
   ]);
 });
 
-test('a media binding must declare its output disposition', () => {
-  // Retention is a property of the OUTPUT, not of the capture: at capture time
-  // nothing knows what role the bytes will play. Neither default is safe once
-  // promotion has copied them into the submission — `keep` duplicates every
-  // capture forever, `discard` destroys a working asset an author wanted — so
-  // a media binding states it or the manifest refuses to load.
+test('a media output defaults to discarding the working duplicate', () => {
+  // The XForm has already said this node is a binary submission field, so a
+  // durable owner other than Gather provably exists once promotion succeeds.
+  // The working copy was scaffolding; `keep` is the deliberate request for a
+  // duplicate. This is what lets the ordinary image case carry no Gather
+  // metadata at all.
   const mediaBinding = (extra) => ({
     version: 1,
     fields: [
@@ -112,26 +112,24 @@ test('a media binding must declare its output disposition', () => {
     ],
   });
 
-  assert.throws(() => parseBindingManifest(mediaBinding()), (error) => {
-    assert.ok(error instanceof CompositionFieldError);
-    assert.equal(error.code, 'GATHER_COMPOSITION_BINDING_NO_RETENTION');
-    return true;
-  });
-
-  assert.throws(
-    () => parseBindingManifest(mediaBinding({ retention: 'sometimes' })),
-    /unsupported retention/
-  );
+  assert.equal(parseBindingManifest(mediaBinding()).fields[0].bindings[0].retention, 'discard');
 
   for (const retention of ['keep', 'discard']) {
     const parsed = parseBindingManifest(mediaBinding({ retention }));
     assert.equal(parsed.fields[0].bindings[0].retention, retention);
   }
+
+  assert.throws(() => parseBindingManifest(mediaBinding({ retention: 'sometimes' })), (error) => {
+    assert.ok(error instanceof CompositionFieldError);
+    assert.equal(error.code, 'GATHER_COMPOSITION_BINDING_BAD_RETENTION');
+    return true;
+  });
 });
 
-test('a disposition on a binding that projects no media is dead configuration', () => {
-  // Completion only touches an asset where it promotes one, so retention
-  // anywhere else governs nothing at all. Surfaced rather than ignored.
+test('the media default does not extend to an output with no durable destination', () => {
+  // Where nothing else owns the bytes, keep vs. discard decides whether they
+  // survive at all, so there is no defensible default — and Gather cannot yet
+  // author such an output, so declaring one is refused rather than guessed at.
   assert.throws(
     () =>
       parseBindingManifest({
@@ -144,7 +142,7 @@ test('a disposition on a binding that projects no media is dead configuration', 
           },
         ],
       }),
-    /does not project media/
+    /no durable XForms destination/
   );
 });
 
