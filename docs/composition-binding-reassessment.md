@@ -4,6 +4,10 @@
 most or all of its job be done by ordinary XForms structure the form already
 carries?
 
+**Status: decided.** The manifest is to be deleted. What remains open is
+narrower and separable — how the opaque composition bundle claims a Central
+attachment slot.
+
 **Answer.** Yes — all of it. Every field in the manifest is either already
 present in the XForm subtree, a duplicate of the appearance token that named the
 composition, or one of two small facts that fit existing XForm extension points.
@@ -78,23 +82,44 @@ authored_photo_v1  outputs image, note   →  /data/photo/image,    /data/photo/
 
 The manifest is currently restating what the group already says.
 
-### It is also a third copy
+### The manifest is the redundant copy — the other two are not
 
-`required` and `type` are declared in **three** places today: the composition
-artifact's `result.outputs`, the binding manifest, and the XForm bind. Nothing
-reconciles them — a `string` output bound to an `int` node is accepted at load
-and fails later, during coercion.
+`required` and `type` appear in three places today. Only one of them is
+redundant, and it is the manifest's.
 
-Deriving the binding from the subtree collapses this to two declarations with a
-real contract between them, checkable at load:
+The other two are **different contracts that happen to share a word**:
 
 ```text
-artifact says:  count is int, required        (the composition's contract)
-XForm says:     /data/quadrat/count is int, required=true()   (the instance)
-                ↑ cross-check at load, exactly ODK's "type and name"
+composition.result.outputs.foo.required
+    producer contract — can this composition legitimately complete without foo?
+
+RenderNode.required
+    form contract — does this particular form require foo right now?
 ```
 
-That is *stronger* validation than the manifest provides, not weaker.
+The second can vary with instance state, because XForms `required` is an
+evaluated XPath expression. So they are not two statements of one fact, and
+reconciling them means combining them rather than checking they agree:
+
+```text
+required now =  composition output intrinsically required
+             OR XForms node currently required
+```
+
+| composition says | XForm says now | absent output |
+| --- | --- | --- |
+| required | anything | Accept fails |
+| optional | not required | fine |
+| optional | required | Accept fails *now* |
+
+Type divides the same way — producer type versus destination type — so the
+loader validates that the pair is **projectably compatible**, not that the two
+strings match. `int` into `int`, `ImageAsset` into `binary`/`upload`.
+
+The manifest's copy is the one that carries no independent meaning, and today
+nothing reconciles it with either: a `string` output bound to an `int` node
+loads happily and fails later, during coercion. Deleting it leaves two contracts
+with a real check between them — exactly ODK's "type and name".
 
 ## The proposal
 
@@ -261,32 +286,70 @@ answer is a sanctioned way to make the composition bundle a recognised form
 resource — **not** the return of the binding manifest, which would face exactly
 the same attachment question.
 
-### What the spike already settled
+### Two routes rejected
 
-[experiments/namespaced-gather-attributes §2](../experiments/namespaced-gather-attributes/)
-ran the secondary-instance route locally:
+Neither of these is acceptable, and both were tempting:
 
-| resource content type | result |
-| --- | --- |
-| `application/json` | rejected: *Failed to determine external secondary instance format … content type: "application/json"* |
-| `text/xml` | past format determination |
-| `text/csv` | loads cleanly |
+- **Disguising the bundle as CSV or XML** so an external secondary instance will
+  parse. `<instance src="jr://file/flower.gather"/>` would then mean *"do not
+  interpret this as an instance; I am exploiting it to make Central notice a
+  file."* That is exactly the clever coupling this whole reassessment removes,
+  and it could fail the form in another conforming client.
+- **Patching the engine** to ignore an opaque unreferenced secondary instance.
+  Same problem, moved into our fork.
 
-Two consequences:
+Problem **A** — what a Gather composition artifact *is* — must not be dictated
+by problem **B** — how an XForm tells Central the file is one of its resources.
 
-- **Nothing needs to reference the instance.** An unreferenced
-  `<instance id="…" src="jr://file/…"/>` loads fine, so declaring one purely to
-  claim Central's attachment slot is viable in principle.
-- **The blocker is ours, not Central's.** Central's regex accepts
-  `flower_v1.a2ui.json` as a `file` attachment; it is the *engine* that fetches
-  the resource eagerly and refuses JSON. Format is decided by response content
-  type, not extension — the `.a2ui.json` name loaded happily as `text/csv`.
+### What the resource spike found
 
-So the remaining choice is between delivering the artifact in a format the
-engine parses, putting the reference somewhere else Central scans, and patching
-the engine to skip unreferenced instances of unknown format. Deciding needs a
-real Central draft, which the local spike cannot reach; Central's behaviour above
-is read from its source, not observed.
+[experiments/opaque-resource-declaration](../experiments/opaque-resource-declaration/)
+ran both remaining candidates against the real engine.
+
+**The binary node default pollutes submissions.** The engine never fetches it
+and it surfaces as `model-value` with no body control, so nothing renders — but
+the value is in the primary instance and therefore in every submission:
+
+```text
+<data id="binary_default"><site_name>North ridge</site_name>
+  <gather_composition_bundle>jr://images/flower_v1.gather</gather_composition_bundle>
+  <meta>…</meta></data>
+```
+
+A resource-distribution detail becomes a permanent fake answer in the collected
+data. Rejected.
+
+**An inline secondary instance is clean on every axis.**
+
+```xml
+<instance id="gather_resources">
+  <root><item><name>composition</name><uri>jr://images/flower_v1.gather</uri></item></root>
+</instance>
+```
+
+Nothing is fetched (an inline instance has no `src`, which is the whole
+difference from the external one the engine refused); the primary instance is
+untouched, so submissions are unaffected; and it makes no false claim about
+being loadable, because an inline secondary instance genuinely *is* static model
+data. Another conforming client ignores an unused one.
+
+The residual dishonesty is confined to a **URI scheme prefix**. Central's
+default-value scan matches `^jr://images/` only — `jr://file/` is accepted for
+`<instance src>` and itext but *not* for instance defaults — so the bundle has
+to be announced as `jr://images/flower_v1.gather`. Nothing about the artifact's
+format, the form's behaviour, or the submission changes.
+
+### The remaining choice
+
+| | cost | buys |
+| --- | --- | --- |
+| inline secondary instance, `images/` prefix | one misleading scheme on one URI | ODK-native declaration, zero submission impact, no constraint on `.gather` |
+| a narrow Gather publishing convention | a Gather-specific publishing step | total honesty |
+
+Still unobserved: Central's behaviour above is read from its source. The
+default-value traversal visits every `<instance>` element with no bind-type
+filter — Central's own comment concedes *"we're cheating for now"* — but that
+needs confirming against a real draft before either route is committed to.
 
 ## Next implementation steps
 
@@ -295,9 +358,13 @@ is read from its source, not observed.
    `definition.bind.bindElement`.
 2. Project those attributes through `buildRenderModel` in the WebView sidecar,
    which is the only reason they are not already usable app-side.
-3. Spike Central recognition of the composition resource reference against a
-   real draft.
-4. Then delete the manifest code.
+3. Confirm against a real Central draft that an inline secondary instance's
+   `jr://images/…` node text claims an attachment slot — the only remaining
+   unobserved link.
+4. Delete the manifest code, and rename what survives. `manifest.js` will no
+   longer describe a manifest; `compositionBinding.js` names the responsibility
+   that remains. A deleted architectural concept should not linger as the module
+   everyone keeps adding to.
 
 ## Answers to the three questions
 
