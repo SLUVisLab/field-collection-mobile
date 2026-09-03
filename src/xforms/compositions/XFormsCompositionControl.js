@@ -18,16 +18,15 @@ const IMPLEMENTATIONS = { ...mobileBasicImplementations, ...gatherComponentImple
 /**
  * The Gather-enhanced **composition field**.
  *
- * Hosts an authored composition for a group carrying
- * `gather-composition:<id>`, and commits its typed result through the form's
- * binding manifest:
+ * Hosts an authored composition for a group carrying `gather-composition`, and
+ * commits its typed result into the group's own child questions:
  *
  * ```text
  * A2UIHost → accepted result + receipt → commitCompositionResult → XForms values
  * ```
  *
- * This control owns none of that logic. Resolution comes from the manifest
- * (`resolveCompositionFields`), commit and provenance from
+ * This control owns none of that logic. Resolution comes from the XForm itself
+ * (`compositionBinding.js`), commit and provenance from
  * `commitCompositionResult`, and both arrive through the injected `composition`
  * adapter — the same shape the collection field's `collection` adapter has.
  * What this adds is mounting, and turning a refused Accept into something the
@@ -99,8 +98,8 @@ export function XFormsCompositionControl({ node, indent, onLayout, composition }
    * plus the two Gather host seams bound to *this* instance.
    *
    * Host implementations are built here rather than imported, because they need
-   * live context the module scope does not have — the resolved field's binding
-   * manifest, the draft, and the Accept lifecycle.
+   * live context the module scope does not have — the resolved field's
+   * bindings, the draft, and the Accept lifecycle.
    *
    * They are named `useCallback`s rather than inline arrows inside the object
    * literal: a conditional whose branches are destructuring arrows in a
@@ -149,17 +148,19 @@ export function XFormsCompositionControl({ node, indent, onLayout, composition }
    * failure at all.
    */
   const unavailable = useMemo(() => {
-    if (!config.compositionId) return 'This group declares a composition but names none.';
-    if (!field) {
-      return `Composition "${config.compositionId}" has no entry in this form's binding manifest, so its results have nowhere to go.`;
-    }
+    // Resolution problems are specific and worth stating verbatim: an unbound
+    // output, a type that cannot reach its destination, a group with no
+    // question to write into. Each names something an author can fix.
     const problem = composition?.definitionProblemFor?.(node.reference) ?? null;
     if (problem) return problem;
     if (!definition) {
-      return `Composition "${config.compositionId}" has no definition among this form version's resources.`;
+      return `The composition for this group has no definition among this form version's resources.`;
+    }
+    if (!field) {
+      return 'This group declares a composition, but none of its questions match the outputs the composition produces.';
     }
     return null;
-  }, [composition, config.compositionId, definition, field, node.reference]);
+  }, [composition, definition, field, node.reference]);
 
   return (
     <FormField label={node.label ?? node.reference} hint={node.hint} indent={indent} onLayout={onLayout}>

@@ -112,32 +112,10 @@ export const AUTHORED_COMPOSITION_DEFINITION = {
   ],
 };
 
-/** The form's binding manifest: it owns where outputs land, and the projection. */
-export const AUTHORED_COMPOSITION_MANIFEST = {
-  version: 1,
-  fields: [
-    {
-      reference: '/data/photo',
-      composition: AUTHORED_COMPOSITION_ID,
-      definition: AUTHORED_COMPOSITION_FILENAME,
-      bindings: [
-        // `media` is what promotes the durable asset into a real ODK
-        // attachment at completion. The composition never learns about that.
-        // No `retention`: a media projection defaults to discarding the working
-        // duplicate, because the XForm has already named a durable owner for
-        // these bytes. `keep` would be the deliberate exception.
-        { path: 'image', reference: '/data/photo/image', required: true, projection: 'media' },
-        { path: 'note', reference: '/data/photo/note' },
-      ],
-    },
-  ],
-};
-
-/** Ordinary writable backing fields, so other ODK clients degrade gracefully. */
 export const AUTHORED_FORM_ID = 'dev_seed_authored_photo';
 
 export const AUTHORED_FORM_XML = `<?xml version="1.0"?>
-<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa">
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:gather="http://gather.slu.edu/xforms">
   <h:head><h:title>Authored photo (dev seed)</h:title><model>
     <instance><data id="${AUTHORED_FORM_ID}">
       <site_name/>
@@ -147,6 +125,15 @@ export const AUTHORED_FORM_XML = `<?xml version="1.0"?>
       </photo>
       <meta><instanceID/></meta>
     </data></instance>
+    <!--
+      Attachment discovery only. Central derives a form's expected attachments
+      by scanning the XForm, and nothing else declares this opaque bundle. An
+      INLINE secondary instance is static model data: the engine never resolves
+      it, and it never reaches a submission.
+    -->
+    <instance id="gather_resources">
+      <root><item><kind>composition</kind><uri>jr://images/${AUTHORED_COMPOSITION_FILENAME}</uri></item></root>
+    </instance>
     <bind nodeset="/data/site_name" type="string"/>
     <bind nodeset="/data/photo/note" type="string"/>
     <bind nodeset="/data/photo/image" type="binary"/>
@@ -154,7 +141,7 @@ export const AUTHORED_FORM_XML = `<?xml version="1.0"?>
   </model></h:head>
   <h:body>
     <input ref="/data/site_name"><label>Site name</label></input>
-    <group ref="/data/photo" appearance="gather-composition:${AUTHORED_COMPOSITION_ID}">
+    <group ref="/data/photo" appearance="gather-composition" gather:composition="${AUTHORED_COMPOSITION_FILENAME}">
       <label>Photo</label>
       <input ref="/data/photo/note"><label>Note</label></input>
       <upload ref="/data/photo/image" mediatype="image/*"><label>Image</label></upload>

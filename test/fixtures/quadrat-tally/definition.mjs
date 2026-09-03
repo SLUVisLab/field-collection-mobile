@@ -54,8 +54,9 @@ export const QUADRAT_TALLY_DEFINITION = Object.freeze({
   statePath: STATE_PATH,
   /**
    * The declared outputs. Names only — **no XPaths**: the same composition has
-   * to be reusable across forms, so the mapping is the form's binding manifest
-   * (docs/b-custom-composition-conventions.md §1).
+   * to be reusable across forms, so the destination is whichever question in
+   * the composition group carries the matching name
+   * (docs/composition-binding-reassessment.md).
    */
   result: Object.freeze({
     kind: 'object',
@@ -138,18 +139,3 @@ export const QUADRAT_TALLY_DEFINITION = Object.freeze({
 });
 
 /** The binding manifest a *form* hosting this composition would ship. */
-export const QUADRAT_TALLY_MANIFEST = Object.freeze({
-  version: 1,
-  fields: [
-    {
-      reference: '/data/quadrat',
-      composition: QUADRAT_TALLY_DEFINITION.id,
-      // The composition's definition travels with the form as a resource.
-      definition: `${QUADRAT_TALLY_DEFINITION.id}.a2ui.json`,
-      bindings: [
-        { path: 'count', reference: '/data/quadrat/count', required: true },
-        { path: 'note', reference: '/data/quadrat/note' },
-      ],
-    },
-  ],
-});

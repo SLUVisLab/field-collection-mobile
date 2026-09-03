@@ -4,7 +4,9 @@
 most or all of its job be done by ordinary XForms structure the form already
 carries?
 
-**Status: decided.** The manifest is to be deleted. What remains open is
+**Status: landed 2026-09-02.** The manifest is gone —
+`src/xforms/compositions/manifest.js` is deleted and
+`compositionBinding.js` derives every binding from the XForm group. What remains open is
 narrower and separable — how the opaque composition bundle claims a Central
 attachment slot.
 
@@ -354,17 +356,17 @@ needs confirming against a real draft before either route is committed to.
 ## Next implementation steps
 
 1. ~~Verify `@getodk/xforms-engine` exposes namespaced body/bind attributes.~~
-   **Done** — it does, through `definition.bodyElement.element` and
-   `definition.bind.bindElement`.
-2. Project those attributes through `buildRenderModel` in the WebView sidecar,
-   which is the only reason they are not already usable app-side.
+   **Done.**
+2. ~~Project those attributes through `buildRenderModel` in the WebView
+   sidecar.~~ **Done** — `RenderNode` now carries `bodyBacked` and `gather`.
+2b. ~~Name-based binding, body-backed filter, `manifest.js` →
+   `compositionBinding.js`.~~ **Done.**
 3. Confirm against a real Central draft that an inline secondary instance's
    `jr://images/…` node text claims an attachment slot — the only remaining
    unobserved link.
-4. Delete the manifest code, and rename what survives. `manifest.js` will no
-   longer describe a manifest; `compositionBinding.js` names the responsibility
-   that remains. A deleted architectural concept should not linger as the module
-   everyone keeps adding to.
+4. ~~Delete the manifest code and rename what survives.~~ **Done.**
+5. Re-run the physical-device disposition lifecycle against the rewritten
+   binding path.
 
 ## Answers to the three questions
 

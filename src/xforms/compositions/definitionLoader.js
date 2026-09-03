@@ -2,9 +2,9 @@
  * Loads an authored composition **from the form**, not from the app.
  *
  * ```text
- * XForm field appearance  gather-composition:<id>
+ * XForm group appearance  gather-composition
  *         ↓
- * form binding manifest   field entry naming a definition resource
+ * body::gather:composition  names the resource
  *         ↓
  * version-pinned form attachment
  *         ↓
@@ -55,19 +55,19 @@ const assertRenderable = (definition, { reference, filename }) => {
  * Resolves the definition for one composition field.
  *
  * @param {{
- *   field: { reference: string, compositionId: string, definitionResource?: string|null },
+ *   field: { reference: string, compositionId?: string|null, definitionResource?: string|null },
  *   attachments?: Array<{ filename?: string, text?: string }>,
  * }} input
  * @returns {object} the validated A2UI composition definition
  */
 export const resolveCompositionDefinition = ({ field, attachments = [] } = {}) => {
-  if (!field?.compositionId) {
+  if (!field?.reference) {
     fail('A composition field is required.', 'GATHER_COMPOSITION_DEFINITION_NO_FIELD');
   }
   const filename = field.definitionResource;
   if (typeof filename !== 'string' || filename.length === 0) {
     fail(
-      `The binding manifest entry for ${field.reference} does not name a composition definition resource.`,
+      `${field.reference} does not name a composition resource. Set gather:composition on the group.`,
       'GATHER_COMPOSITION_DEFINITION_NOT_DECLARED',
       { reference: field.reference }
     );

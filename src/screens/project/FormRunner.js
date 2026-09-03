@@ -27,7 +27,7 @@ import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
 import { XFormsRenderer } from '../../xforms/XFormsRenderer.js';
 import { outlineFor } from '../../xforms/renderModel.js';
-import { bindingManifestFrom, resolveCompositionFields } from '../../xforms/compositions/manifest.js';
+import { bindCompositionOutputs, resolveCompositionFields } from '../../xforms/compositions/compositionBinding.js';
 import { commitCompositionResult } from '../../xforms/compositions/commit.js';
 import { compositionHandlerFor } from '../../xforms/compositions/handlers/registry.js';
 import { resolveCompositionDefinitions } from '../../xforms/compositions/definitionLoader.js';
@@ -65,7 +65,6 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
   // it (`{ instance, media }`), never nested. Reading `instance.media` silently
   // yielded [] and emptied every collection field; see §22.
   const [media, setMedia] = useState([]);
-  const [manifest, setManifest] = useState(null);
   const [formAttachments, setFormAttachments] = useState([]);
   const [message, setMessage] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -86,21 +85,14 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
             setMedia(resumed.media ?? []);
             setVersion(resumed.version);
             // Same form-owned resources a fresh fill reads. Resuming without
-            // them left every composition field unbound on resume only.
-            setManifest(bindingManifestFrom(resumed.attachments));
+            // them left every composition unresolvable on resume only.
             setFormAttachments(resumed.attachments ?? []);
           }
         } else {
           const cached = await loadCachedForm(formId);
           await loadForm(cached.xml, cached.attachments);
-          // The manifest is form-owned and travels as an attachment (§6). A
-          // malformed one throws here, which surfaces as a load error rather
-          // than as a composition that quietly writes nowhere.
-          if (!cancelled) {
-            setManifest(bindingManifestFrom(cached.attachments));
-            // Composition definitions ride the same version-pinned resources.
-            setFormAttachments(cached.attachments ?? []);
-          }
+          // Composition definitions ride the form's version-pinned resources.
+          if (!cancelled) setFormAttachments(cached.attachments ?? []);
           if (fieldworkEntityId) {
             const snapshot = await form.refreshSnapshot('fieldwork-preselect');
             const matchingReference = Object.entries(snapshot?.nodesByReference ?? {}).find(
@@ -236,12 +228,13 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     [form.serialize, instance?.localInstanceId, releaseInstanceMedia, version]
   );
 
-  // Composition field adapter. Resolution is the manifest's, commit and
-  // provenance are compositionCommit's; this only supplies them and the
-  // lifecycle boundary. See docs/b-custom-composition-conventions.md.
+  // Composition field adapter. Resolution is compositionBinding's — derived
+  // from the XForm's own group, in two phases — and commit and provenance are
+  // commit.js's; this only supplies them and the lifecycle boundary. See
+  // docs/composition-binding-reassessment.md.
   const resolvedCompositions = useMemo(
-    () => resolveCompositionFields({ renderModel: form.renderModel, manifest }),
-    [form.renderModel, manifest]
+    () => resolveCompositionFields({ renderModel: form.renderModel }),
+    [form.renderModel]
   );
 
   const commitComposition = useCallback(
@@ -324,10 +317,37 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     [formAttachments, resolvedCompositions.fields]
   );
 
+  /**
+   * Phase two of binding. Which children a composition writes depends on what
+   * it declares, so bindings cannot be derived until the definition loads —
+   * and deriving them from the children alone would *clear* every question the
+   * composition does not produce, on every Accept.
+   */
+  const boundFields = useMemo(() => {
+    const fields = new Map();
+    const problems = [];
+    for (const field of resolvedCompositions.fields) {
+      const definition = resolvedDefinitions.definitions.get(field.reference) ?? null;
+      // No definition is already reported by the loader; adding "nothing bound"
+      // on top would bury the reason under its own consequence.
+      if (!definition) continue;
+      const bound = bindCompositionOutputs({ field, definition });
+      problems.push(...bound.problems);
+      fields.set(field.reference, {
+        reference: field.reference,
+        // The artifact is the authority on its own identity; the appearance's
+        // id, when present, names a composition this build registered.
+        compositionId: definition.id ?? field.compositionId,
+        definitionResource: field.definitionResource,
+        bindings: bound.bindings,
+      });
+    }
+    return { fields, problems };
+  }, [resolvedCompositions.fields, resolvedDefinitions.definitions]);
+
   const compositionAdapter = useMemo(
     () => ({
-      fieldFor: (reference) =>
-        resolvedCompositions.fields.find((field) => field.reference === reference) ?? null,
+      fieldFor: (reference) => boundFields.fields.get(reference) ?? null,
       definitionFor: (reference) => resolvedDefinitions.definitions.get(reference) ?? null,
       definitionProblemFor: (reference) =>
         resolvedDefinitions.problems.find((problem) => problem.reference === reference)?.message ?? null,
@@ -339,10 +359,15 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       persistAsset: (capture) => persistScientificCapture(capture),
       // Capabilities this build can execute, already A2UI-registered.
       capabilityFunctions: a2uiCapabilityFunctions,
-      problems: [...resolvedCompositions.problems, ...resolvedDefinitions.problems],
+      problems: [
+        ...resolvedCompositions.problems,
+        ...resolvedDefinitions.problems,
+        ...boundFields.problems,
+      ],
     }),
     [
       a2uiCapabilityFunctions,
+      boundFields,
       commitComposition,
       persistScientificCapture,
       resolvedCompositions,

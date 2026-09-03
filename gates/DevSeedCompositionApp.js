@@ -13,7 +13,6 @@ import App from '../App.js';
 import { registerCompositionHandler } from '../src/xforms/compositions/handlers/registry.js';
 import {
   QUADRAT_TALLY_DEFINITION,
-  QUADRAT_TALLY_MANIFEST,
 } from '../test/fixtures/quadrat-tally/definition.mjs';
 import { createQuadratTallyActionHandler } from '../test/fixtures/quadrat-tally/actionHandler.mjs';
 
@@ -21,7 +20,7 @@ import { createQuadratTallyActionHandler } from '../test/fixtures/quadrat-tally/
  * Dev seed — an authored composition field in the **real app**.
  *
  * Registers Quadrat Tally, seeds a form whose group carries
- * `gather-composition:<id>` plus a `gather-bindings.json` attachment, then
+ * `gather-composition:<id>` plus `gather:composition`, then
  * mounts `App` unmodified. Everything after boot is the shipped shell, the
  * shipped `FormRunner`, its composition adapter, and the shipped commit path.
  *
@@ -42,8 +41,10 @@ const GROUP = '/data/quadrat';
 // The pyxform-canonical shape: the composition token on a plain group, with
 // ordinary writable backing fields so another ODK client can fill them by hand
 // (docs/b-custom-composition-conventions.md §1 and §2).
+const DEFINITION_FILENAME = `${QUADRAT_TALLY_DEFINITION.id}.a2ui.json`;
+
 const FORM_XML = `<?xml version="1.0"?>
-<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa">
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:gather="http://gather.slu.edu/xforms">
   <h:head><h:title>Quadrat tally (dev seed)</h:title><model>
     <instance><data id="${SEED_FORM_ID}">
       <site_name/>
@@ -54,13 +55,13 @@ const FORM_XML = `<?xml version="1.0"?>
       <meta><instanceID/></meta>
     </data></instance>
     <bind nodeset="/data/site_name" type="string"/>
-    <bind nodeset="/data/quadrat/count" type="int"/>
+    <bind nodeset="/data/quadrat/count" type="int" required="true()"/>
     <bind nodeset="/data/quadrat/note" type="string"/>
     <bind nodeset="/data/meta/instanceID" type="string" jr:preload="uid"/>
   </model></h:head>
   <h:body>
     <input ref="/data/site_name"><label>Site name</label></input>
-    <group ref="${GROUP}" appearance="gather-composition:${QUADRAT_TALLY_DEFINITION.id}">
+    <group ref="${GROUP}" appearance="gather-composition:${QUADRAT_TALLY_DEFINITION.id}" gather:composition="${DEFINITION_FILENAME}">
       <label>Quadrat</label>
       <input ref="/data/quadrat/count"><label>Count</label></input>
       <input ref="/data/quadrat/note"><label>Note</label></input>
@@ -101,24 +102,15 @@ export default function DevSeedCompositionApp() {
         // makes it an attachment `loadVersion` hands back as text. Declared
         // application/json so `isTextResource` classifies it as text — if it
         // came back base64 the manifest would silently never be found.
-        const manifestResourceKey = `${base}/gather-bindings.json`;
-        const definitionFilename = `${QUADRAT_TALLY_DEFINITION.id}.a2ui.json`;
-        const definitionResourceKey = `${base}/${definitionFilename}`;
+        const definitionResourceKey = `${base}/${DEFINITION_FILENAME}`;
         await writeTextAtomic(xmlFileKey, FORM_XML);
-        await writeTextAtomic(manifestResourceKey, JSON.stringify(QUADRAT_TALLY_MANIFEST, null, 2));
         // The composition definition travels as an ordinary form resource,
         // pinned to this form version like the XForm itself.
         await writeTextAtomic(definitionResourceKey, JSON.stringify(QUADRAT_TALLY_DEFINITION, null, 2));
 
         const resources = [
           {
-            filename: 'gather-bindings.json',
-            contentType: 'application/json',
-            fileKey: manifestResourceKey,
-            hash: 'md5:devseedbindings',
-          },
-          {
-            filename: definitionFilename,
+            filename: DEFINITION_FILENAME,
             contentType: 'application/json',
             fileKey: definitionResourceKey,
             hash: 'md5:devseedcomposition',

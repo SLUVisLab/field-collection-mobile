@@ -26,6 +26,16 @@ canonical-form conventions.
 
 ## 1. Declaration — recognition token plus a form-owned binding table
 
+> **Superseded 2026-09-02.** There is no binding manifest. The composition group
+> already carries the whole contract — outputs bind to its direct body-backed
+> children by name, and the control type supplies the projection — following
+> ODK Collect's own external-app group behaviour. The remaining Gather metadata
+> rides namespaced `body::` / `bind::` attributes. See
+> [the reassessment](./composition-binding-reassessment.md) and §1a below. This
+> section is kept for the reasoning that survived the change: the composition
+> artifact must not contain XPaths, and the writer takes `{ reference, path }`
+> pairs the host supplies.
+
 An appearance token recognizes the field; a **form binding manifest**, shipped
 as a form attachment, maps outputs to XPaths.
 
@@ -124,6 +134,60 @@ below.
 So recognition needs no engine change and no escaping. The group-collapse
 recorded in b-standard §1 was specific to a `<group>` wrapping a `<repeat>` of
 the same nodeset; an ordinary group is its own node.
+
+## 1a. The group is the binding contract — landed 2026-09-02
+
+```xml
+<group ref="/data/flower_analysis" appearance="gather-composition"
+       gather:composition="flower_v1.gather">
+  <input  ref="/data/flower_analysis/petal_count"/>
+  <upload ref="/data/flower_analysis/image" mediatype="image/*"/>
+</group>
+```
+
+```text
+composition result.outputs
+        ↕  name match (or bind::gather:output), type projectable
+direct BODY-BACKED children of the composition group
+```
+
+[`src/xforms/compositions/compositionBinding.js`](../src/xforms/compositions/compositionBinding.js)
+replaces `manifest.js`. Everything the manifest restated now comes from the
+XForm: the destination is the child's own reference, the output name is the
+child's name, `<upload>` means a media projection, and requiredness is the
+engine's live evaluation of the bind.
+
+Four decisions in it are load-bearing:
+
+- **Two phases.** `resolveCompositionFields` finds the groups and their
+  *candidate* children; `bindCompositionOutputs` matches the composition's
+  declared outputs against them once the definition has loaded.
+- **Bindings come from declared outputs, never from children.** Deriving them
+  from children would bind a question the composition does not produce, and
+  then *clear* it on every Accept — destroying what another ODK client typed.
+- **Only body-backed children bind.** XForms permits a bound model node with no
+  presentation control and the engine surfaces one, so the filter is explicit;
+  without it, §2's degradation guarantee would be a convention rather than a
+  property. Verified against the real engine in
+  [experiments/namespaced-gather-attributes](../experiments/namespaced-gather-attributes/).
+- **Requiredness is an OR of two contracts**, not a duplicated fact: the
+  composition's `required` says whether it can legitimately complete without the
+  output; the node's says whether *this form* requires it right now, and that is
+  an evaluated XPath expression. Type divides the same way — producer versus
+  destination — and is checked for projectability, not equality.
+
+The namespaced attributes reach the app through the render model:
+`buildRenderModel` in the WebView sidecar reads them off the live definition
+(`definition.bodyElement.element`, `definition.bind.bindElement`) and emits
+plain strings, because the definition object graph cannot cross the RPC seam.
+`RenderNode` gains `bodyBacked` and `gather` for this.
+
+**Central attachment discovery is a separate problem** and is not solved here.
+The form declares the opaque bundle through an inline secondary instance, which
+is static model data the engine never resolves and which never reaches a
+submission — see
+[experiments/opaque-resource-declaration](../experiments/opaque-resource-declaration/).
+That declaration is unverified against a real Central draft.
 
 ## 2. Cross-client degradation — the backing fields are real
 

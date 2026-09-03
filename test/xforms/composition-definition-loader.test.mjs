@@ -5,7 +5,7 @@ import {
   resolveCompositionDefinition,
   resolveCompositionDefinitions,
 } from '../../src/xforms/compositions/definitionLoader.js';
-import { parseBindingManifest, resolveCompositionFields } from '../../src/xforms/compositions/manifest.js';
+import { resolveCompositionFields } from '../../src/xforms/compositions/compositionBinding.js';
 import { COMPOSITION_APPEARANCE_PREFIX } from '../../src/xforms/compositions/recognition.js';
 
 // Compositions are supplied by FORMS, never by app registration.
@@ -44,7 +44,7 @@ test('a field that names no definition resource is a packaging problem', () => {
   // that handler-free compositions are the normal case.
   assert.throws(
     () => resolveCompositionDefinition({ field: field({ definitionResource: null }), attachments: [] }),
-    /does not name a composition definition resource/
+    /does not name a composition resource. Set gather:composition/
   );
 });
 
@@ -112,49 +112,54 @@ test('one bad attachment does not blank the whole form', () => {
   assert.equal(problems[0].reference, '/data/broken');
 });
 
-test('the manifest carries the definition resource through to the resolved field', () => {
-  const manifest = parseBindingManifest({
-    version: 1,
-    fields: [
-      {
-        reference: '/data/authored',
-        composition: 'authored_v1',
-        definition: 'authored_v1.a2ui.json',
-        bindings: [{ path: 'count', reference: '/data/authored/count' }],
-      },
-    ],
-  });
-  assert.equal(manifest.fields[0].definitionResource, 'authored_v1.a2ui.json');
-
-  const { fields } = resolveCompositionFields({
+test('the group names its own definition resource', () => {
+  // `body::gather:composition` on the group. No side-car document names it, and
+  // a jr:// form is reduced to its basename because the same file is separately
+  // declared to Central as a jr:// reference.
+  const groupWith = (composition) => ({
     renderModel: {
       nodes: [
         {
           reference: '/data/authored',
           nodeType: 'group',
-          appearances: [`${COMPOSITION_APPEARANCE_PREFIX}authored_v1`],
+          appearances: ['gather-composition'],
+          gather: { composition },
+        },
+        {
+          reference: '/data/authored/count',
+          nodeType: 'input',
+          valueType: 'int',
+          parentReference: '/data/authored',
+          bodyBacked: true,
         },
       ],
     },
-    manifest,
   });
-  assert.equal(fields[0].definitionResource, 'authored_v1.a2ui.json');
+
+  assert.equal(
+    resolveCompositionFields(groupWith('authored_v1.a2ui.json')).fields[0].definitionResource,
+    'authored_v1.a2ui.json'
+  );
+  assert.equal(
+    resolveCompositionFields(groupWith('jr://images/authored_v1.a2ui.json')).fields[0].definitionResource,
+    'authored_v1.a2ui.json'
+  );
 });
 
-test('an invalid definition resource name is refused at manifest parse', () => {
-  assert.throws(
-    () =>
-      parseBindingManifest({
-        version: 1,
-        fields: [
-          {
-            reference: '/data/a',
-            composition: 'c',
-            definition: '',
-            bindings: [{ path: 'x', reference: '/data/a/x' }],
-          },
-        ],
-      }),
-    /invalid `definition` resource name/
-  );
+test('a composition naming neither a resource nor a registered id is a problem, not a guess', () => {
+  const { fields, problems } = resolveCompositionFields({
+    renderModel: {
+      nodes: [
+        { reference: '/data/authored', nodeType: 'group', appearances: ['gather-composition'] },
+        {
+          reference: '/data/authored/count',
+          nodeType: 'input',
+          parentReference: '/data/authored',
+          bodyBacked: true,
+        },
+      ],
+    },
+  });
+  assert.deepEqual(fields, []);
+  assert.equal(problems[0].code, 'GATHER_COMPOSITION_NO_RESOURCE');
 });

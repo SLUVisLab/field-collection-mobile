@@ -6,27 +6,33 @@ import {
   commitCompositionResult,
   missingRequiredOutputs,
 } from '../../src/xforms/compositions/commit.js';
-import { parseBindingManifest } from '../../src/xforms/compositions/manifest.js';
+
 
 // docs/b-custom-composition-conventions.md §7: a missing required output is a
 // composition completion failure, not a partially finalized instance.
 
 const field = (bindings) => ({ reference: '/data/flower', compositionId: 'flower_v1', bindings });
 
-const resolvedField = () =>
-  parseBindingManifest({
-    version: 1,
-    fields: [
-      {
-        reference: '/data/flower',
-        composition: 'flower_v1',
-        bindings: [
-          { path: 'petalCount', reference: '/data/flower/petal_count', required: true },
-          { path: 'color.name', reference: '/data/flower/color' },
-        ],
-      },
-    ],
-  }).fields[0];
+// Bindings as `compositionBinding` derives them from the XForm group: a path
+// into the result, the node it writes, live requiredness, and the projection
+// the control type implies.
+const binding = (path, reference, extra = {}) => ({
+  path,
+  reference,
+  required: false,
+  projection: 'none',
+  retention: null,
+  ...extra,
+});
+
+const resolvedField = () => ({
+  reference: '/data/flower',
+  compositionId: 'flower_v1',
+  bindings: [
+    binding('petalCount', '/data/flower/petal_count', { required: true }),
+    binding('color.name', '/data/flower/color'),
+  ],
+});
 
 const makeForm = () => {
   const writes = [];
@@ -227,25 +233,14 @@ test('a field with no bindings cannot be committed', async () => {
 // --- media projection ---------------------------------------------------
 
 const mediaField = () =>
-  parseBindingManifest({
-    version: 1,
-    fields: [
-      {
-        reference: '/data/site',
-        composition: 'authored_v1',
-        bindings: [
-          { path: 'note', reference: '/data/site/note' },
-          {
-            path: 'image',
-            reference: '/data/site/image',
-            projection: 'media',
-            required: true,
-            retention: 'discard',
-          },
-        ],
-      },
+  ({
+    reference: '/data/site',
+    compositionId: 'authored_v1',
+    bindings: [
+      binding('note', '/data/site/note'),
+      binding('image', '/data/site/image', { projection: 'media', required: true, retention: 'discard' }),
     ],
-  }).fields[0];
+  });
 
 test('a media projection becomes a real submission attachment, not an asset blob', async () => {
   // The composition declared what the output MEANS; completion owns how it
@@ -308,18 +303,11 @@ test('a promoted asset is settled only after the commit succeeds', async () => {
 test('a keep disposition reaches the seam unchanged, so a duplicate is deliberate', async () => {
   const form = makeForm();
   const settled = [];
-  const keepField = parseBindingManifest({
-    version: 1,
-    fields: [
-      {
-        reference: '/data/site',
-        composition: 'authored_v1',
-        bindings: [
-          { path: 'image', reference: '/data/site/image', projection: 'media', retention: 'keep' },
-        ],
-      },
-    ],
-  }).fields[0];
+  const keepField = {
+    reference: '/data/site',
+    compositionId: 'authored_v1',
+    bindings: [binding('image', '/data/site/image', { projection: 'media', retention: 'keep' })],
+  };
 
   await commitCompositionResult({
     result: { image: { assetId: 'image-1', fileKey: 'projects/p/media/image-1.jpg' } },
@@ -336,18 +324,11 @@ test('an absent optional media output settles nothing', async () => {
   // Nothing was promoted, so there is no working asset to dispose of.
   const form = makeForm();
   const settled = [];
-  const optionalField = parseBindingManifest({
-    version: 1,
-    fields: [
-      {
-        reference: '/data/site',
-        composition: 'authored_v1',
-        bindings: [
-          { path: 'image', reference: '/data/site/image', projection: 'media', retention: 'discard' },
-        ],
-      },
-    ],
-  }).fields[0];
+  const optionalField = {
+    reference: '/data/site',
+    compositionId: 'authored_v1',
+    bindings: [binding('image', '/data/site/image', { projection: 'media', retention: 'discard' })],
+  };
 
   const outcome = await commitCompositionResult({
     result: {},

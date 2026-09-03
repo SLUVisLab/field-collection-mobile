@@ -10,11 +10,13 @@ import { createA2uiRuntime } from '../../src/a2ui/a2uiRuntime.js';
 import {
   QUADRAT_TALLY_ACTIONS,
   QUADRAT_TALLY_DEFINITION,
-  QUADRAT_TALLY_MANIFEST,
 } from '../fixtures/quadrat-tally/definition.mjs';
 import { createQuadratTallyActionHandler } from '../fixtures/quadrat-tally/actionHandler.mjs';
 
-import { parseBindingManifest, resolveCompositionFields } from '../../src/xforms/compositions/manifest.js';
+import {
+  bindCompositionOutputs,
+  resolveCompositionFields,
+} from '../../src/xforms/compositions/compositionBinding.js';
 import { commitCompositionResult } from '../../src/xforms/compositions/commit.js';
 
 /**
@@ -57,6 +59,9 @@ const makeReceipts = () => {
   };
 };
 
+// The seed form's own group, as the render model projects it. Nothing else
+// declares the binding: `count` and `note` are ordinary questions whose names
+// match the composition's declared outputs.
 const resolvedField = () => {
   const { fields, problems } = resolveCompositionFields({
     renderModel: {
@@ -65,13 +70,33 @@ const resolvedField = () => {
           reference: '/data/quadrat',
           nodeType: 'group',
           appearances: [`gather-composition:${QUADRAT_TALLY_DEFINITION.id}`],
+          gather: { composition: `${QUADRAT_TALLY_DEFINITION.id}.a2ui.json` },
+        },
+        {
+          reference: '/data/quadrat/count',
+          nodeType: 'input',
+          valueType: 'int',
+          required: true,
+          parentReference: '/data/quadrat',
+          bodyBacked: true,
+        },
+        {
+          reference: '/data/quadrat/note',
+          nodeType: 'input',
+          valueType: 'string',
+          parentReference: '/data/quadrat',
+          bodyBacked: true,
         },
       ],
     },
-    manifest: parseBindingManifest(QUADRAT_TALLY_MANIFEST),
   });
-  assert.deepEqual(problems, [], 'the fixture form and its manifest agree');
-  return fields[0];
+  assert.deepEqual(problems, [], 'the fixture form resolves cleanly');
+  const bound = bindCompositionOutputs({
+    field: fields[0],
+    definition: QUADRAT_TALLY_DEFINITION,
+  });
+  assert.deepEqual(bound.problems, [], 'every declared output has a question to land in');
+  return { ...fields[0], bindings: bound.bindings };
 };
 
 test('the composition starts on its single View with an empty tally', () => {

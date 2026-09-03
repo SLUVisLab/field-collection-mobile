@@ -1,21 +1,23 @@
 /**
  * Recognition: is this group a composition field, and which one?
  *
- * The id rides an appearance token on the group:
+ * The marker rides an appearance token on the group:
  *
  * ```text
- * <group ref="/data/flower_analysis" appearance="gather-composition:flower_v1">
+ * <group ref="/data/flower_analysis" appearance="gather-composition"
+ *        gather:composition="flower_v1.gather">
  * ```
  *
- * That is all this module answers. Where the composition's outputs *go* is the
- * form binding manifest's job (`./manifest.js`), and what it means to run one
- * is the handler registry's (`./handlers/`). Conventions in
- * docs/b-custom-composition-conventions.md §1.
+ * That is all this module answers. Where the composition's outputs *go* is
+ * `./compositionBinding.js`'s job — derived from the group's own children — and
+ * what it means to run one is the handler registry's (`./handlers/`).
+ * Conventions in docs/b-custom-composition-conventions.md §1.
  *
  * Nothing here touches the engine, storage or React.
  */
 
-export const COMPOSITION_APPEARANCE_PREFIX = 'gather-composition:';
+export const COMPOSITION_APPEARANCE = 'gather-composition';
+export const COMPOSITION_APPEARANCE_PREFIX = `${COMPOSITION_APPEARANCE}:`;
 
 export class CompositionFieldError extends Error {
   constructor(message, { code = 'GATHER_COMPOSITION_FIELD_ERROR', details = null } = {}) {
@@ -40,10 +42,16 @@ export const nonEmptyString = (value) => typeof value === 'string' && value.leng
 export const compositionConfigFrom = (appearances) => {
   const tokens = appearances == null ? [] : Array.from(appearances, (token) => String(token));
   for (const token of tokens) {
+    // The canonical form. Which composition it is comes from
+    // `body::gather:composition`, and the artifact is the authority on its own
+    // id — so the appearance says only "render a composition here", which is
+    // what an appearance is for.
+    if (token === COMPOSITION_APPEARANCE) return { enabled: true, compositionId: null };
     if (!token.startsWith(COMPOSITION_APPEARANCE_PREFIX)) continue;
+    // The id-bearing form still resolves, for a composition this build
+    // registered rather than one the form supplies.
     const compositionId = token.slice(COMPOSITION_APPEARANCE_PREFIX.length);
-    // A bare `gather-composition:` names nothing, so it is not a composition
-    // field — better inert than bound to an empty id.
+    // A trailing colon naming nothing is inert rather than bound to an empty id.
     if (!nonEmptyString(compositionId)) return { enabled: false, compositionId: null };
     return { enabled: true, compositionId };
   }

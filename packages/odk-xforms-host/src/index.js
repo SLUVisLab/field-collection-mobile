@@ -110,6 +110,12 @@ const notImplemented = (methodName) =>
  * - `choices` mirrors the engine's `valueOptions` for select controls.
  * - `depth` and `parentReference` describe the node's place in the structural
  *   sequence; the containing `nodes` array is already in engine document order.
+ * - `bodyBacked` is whether the node has a presentation control at all. A bind
+ *   with no body element still produces a node, and that node is not a valid
+ *   destination for anything another ODK client must be able to fill by hand.
+ * - `gather` carries this form's Gather extension attributes, resolved from the
+ *   live definition inside the engine host because the definition object graph
+ *   cannot cross a serialization boundary.
  *
  * @typedef {{
  *   nodeId: string,
@@ -126,6 +132,8 @@ const notImplemented = (methodName) =>
  *   choices?: Array<{ label: string | number | boolean | null, value: string | number | boolean | null }>,
  *   readonly: boolean | null,
  *   required: boolean | null,
+ *   bodyBacked?: boolean,
+ *   gather?: { composition: string | null, output: string | null, retention: string | null },
  *   depth: number,
  *   parentReference: string | null,
  *   childCount: number | null

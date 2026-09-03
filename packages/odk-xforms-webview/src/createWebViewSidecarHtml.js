@@ -177,6 +177,36 @@ export const createWebViewSidecarHtml = ({
         return [];
       };
 
+      // Gather's own XForm extension namespace. Metadata that XForms has no
+      // concept of — which resource supplies a composition, where an output
+      // lands, whether a working asset survives — rides namespaced body/bind
+      // attributes, the mechanism XLSForm provides for exactly this and the
+      // engine's own Entity support already uses for entities:saveto.
+      //
+      // It has to be read HERE: the engine definition is a live object graph
+      // and cannot cross the RPC seam, so the render model carries the resolved
+      // strings instead. See docs/composition-binding-reassessment.md.
+      const GATHER_NAMESPACE_URI = "http://gather.slu.edu/xforms";
+
+      const attributeNS = (element, localName) => {
+        if (element == null || typeof element.getAttributeNS !== "function") {
+          return null;
+        }
+        const value = element.getAttributeNS(GATHER_NAMESPACE_URI, localName);
+        return typeof value === "string" && value.length > 0 ? value : null;
+      };
+
+      const readGatherAttributes = (node) => {
+        const definition = node?.definition ?? null;
+        const bodyElement = definition?.bodyElement?.element ?? null;
+        const bindElement = definition?.bind?.bindElement ?? null;
+        return {
+          composition: attributeNS(bodyElement, "composition"),
+          output: attributeNS(bindElement, "output"),
+          retention: attributeNS(bindElement, "retention"),
+        };
+      };
+
       // Build the engine-derived, ordered render model. The node array is in
       // engine document order (depth-first pre-order); depth + parentReference
       // convey the structural sequence/hierarchy. This preserves engine
@@ -197,6 +227,12 @@ export const createWebViewSidecarHtml = ({
             hint: textRangeToString(currentState.hint ?? null),
             labelMedia: textRangeMedia(label),
             appearances: readAppearances(node),
+            // A bound model node with no presentation control is NOT a binding
+            // destination: the XForms spec allows it, and another ODK client
+            // could neither see nor fill it. Composition binding filters on
+            // this, so the cross-client degradation guarantee is structural.
+            bodyBacked: node?.definition?.bodyElement != null,
+            gather: readGatherAttributes(node),
             selectType: typeof node.selectType === "string" ? node.selectType : null,
             valueType: typeof node.valueType === "string" ? node.valueType : null,
             mediaType: typeof node.nodeOptions?.media?.type === "string" ? node.nodeOptions.media.type : null,

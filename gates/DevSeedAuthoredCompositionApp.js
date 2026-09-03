@@ -14,7 +14,6 @@ import {
   AUTHORED_COMPOSITION_DEFINITION,
   AUTHORED_COMPOSITION_FILENAME,
   AUTHORED_COMPOSITION_ID,
-  AUTHORED_COMPOSITION_MANIFEST,
   AUTHORED_FORM_ID,
   AUTHORED_FORM_XML,
 } from './fixtures/authoredCompositionFixture.js';
@@ -86,11 +85,9 @@ export default function DevSeedAuthoredCompositionApp() {
 
         const base = `projects/${SEED_PROJECT_KEY}/forms/${AUTHORED_FORM_ID}`;
         const xmlFileKey = `${base}/form.xml`;
-        const manifestKey = `${base}/gather-bindings.json`;
         const definitionKey = `${base}/${AUTHORED_COMPOSITION_FILENAME}`;
 
         await writeTextAtomic(xmlFileKey, AUTHORED_FORM_XML);
-        await writeTextAtomic(manifestKey, JSON.stringify(AUTHORED_COMPOSITION_MANIFEST, null, 2));
         // The composition itself, as ordinary form content.
         await writeTextAtomic(
           definitionKey,
@@ -98,12 +95,6 @@ export default function DevSeedAuthoredCompositionApp() {
         );
 
         const resources = [
-          {
-            filename: 'gather-bindings.json',
-            contentType: 'application/json',
-            fileKey: manifestKey,
-            hash: 'md5:authoredbindings',
-          },
           {
             filename: AUTHORED_COMPOSITION_FILENAME,
             contentType: 'application/json',
