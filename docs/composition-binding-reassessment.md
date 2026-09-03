@@ -369,8 +369,56 @@ needs confirming against a real draft before either route is committed to.
    Central form version carry our opaque composition resource using the
    `gather_resources` declaration? It decides nothing about binding, composition
    execution or XForms persistence.
-6. Re-run the physical-device disposition lifecycle against the rewritten
-   binding path.
+6. ~~Re-run the physical-device disposition lifecycle against the rewritten
+   binding path.~~ **Done — see below.**
+
+## Device proof of the rewritten path (2026-09-02)
+
+Physical Pixel, `gates/DevSeedAuthoredCompositionApp.js`, no binding manifest
+anywhere in the form (`Version 1 · 1 resource` — the composition artifact alone).
+
+The composition resolved and rendered from the group's own children, and the
+whole disposition lifecycle held:
+
+```text
+Save photo   project_assets: image-1788403091274-…  discard  released_at=NULL
+                             ↑ working, still in use — planner rule 4
+                             ↑ asset_id == filename == receipt.assetId
+
+Accept       instance_media: /data/photo/image → image-mtkx1bxezyx353.jpg
+             receipts:       /data/photo/note + /data/photo/image
+             XML:            <photo><note>authored</note>
+                               <image>image-mtkx1bxezyx353.jpg</image></photo>
+             project_assets: working row GONE, file GONE from disk
+```
+
+So both earlier defects are fixed in the field, not just in tests: the working
+duplicate is released and swept once the submission owns its copy, and one
+persisted asset now has exactly one Gather identity — the ledger row, the
+filename and the receipt's `assetId` all agree.
+
+Save → exit → reopen → resume → save preserved the XML, the media row and both
+receipts. A draft created *before* the rewrite, under the manifest, also resumes
+cleanly under name-based binding — the XForm structure is what both read.
+
+### The defect it found
+
+The canonical appearance is bare `gather-composition`, so `field.compositionId`
+is legitimately `null` and the artifact is the authority on its own id. The
+definition loader still compared the two unconditionally, and reported:
+
+```text
+authored_photo_v1.a2ui.json declares composition "authored_photo_v1"
+  but /data/photo names "null".
+```
+
+Every handler-free composition — the normal case — was unavailable. The
+comparison now runs only when the group actually named an id, which is the
+registered-composition form. Regression tests both ways.
+
+Worth noting what caught it: the message named the real mismatch and its two
+sides, so the cause was obvious on sight. The manifest-era wording would have
+said only that something had no entry.
 
 The compatibility contract the rewrite settled is tabulated in
 [b-custom §1a](./b-custom-composition-conventions.md).

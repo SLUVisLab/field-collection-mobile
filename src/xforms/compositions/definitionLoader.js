@@ -103,9 +103,13 @@ export const resolveCompositionDefinition = ({ field, attachments = [] } = {}) =
   }
   assertRenderable(parsed, { reference: field.reference, filename });
 
-  if (parsed.id !== field.compositionId) {
-    // A mismatch means the form points at a different composition than the
-    // group declares — silently rendering the attachment would be worse.
+  // The group only names an id when it points at a composition this build
+  // registered; the canonical `gather-composition` appearance names none,
+  // because the artifact is the authority on its own identity. So this compares
+  // two claims only when there are two — and a mismatch then means the form
+  // points at a different composition than the group declares, which is worse
+  // to render silently than to refuse.
+  if (field.compositionId != null && parsed.id !== field.compositionId) {
     fail(
       `${filename} declares composition "${parsed.id}" but ${field.reference} names "${field.compositionId}".`,
       'GATHER_COMPOSITION_DEFINITION_ID_MISMATCH',

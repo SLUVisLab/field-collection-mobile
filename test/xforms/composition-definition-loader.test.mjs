@@ -163,3 +163,31 @@ test('a composition naming neither a resource nor a registered id is a problem, 
   assert.deepEqual(fields, []);
   assert.equal(problems[0].code, 'GATHER_COMPOSITION_NO_RESOURCE');
 });
+
+test('the artifact is the authority on its own id when the group names none', () => {
+  // `gather-composition` names no id — the canonical form. Comparing the
+  // artifact's id against a null claim reported a mismatch against "null" and
+  // made every handler-free composition unavailable. Found on device.
+  const resolved = resolveCompositionDefinition({
+    field: { reference: '/data/authored', compositionId: null, definitionResource: 'authored_v1.a2ui.json' },
+    attachments: attachment(definition()),
+  });
+  assert.equal(resolved.id, 'authored_v1');
+});
+
+test('a group that DOES name an id must agree with the artifact', () => {
+  // The id-bearing appearance is for a composition this build registered, so
+  // two claims exist and pointing at a different artifact is a real error.
+  assert.throws(
+    () =>
+      resolveCompositionDefinition({
+        field: {
+          reference: '/data/authored',
+          compositionId: 'something_else',
+          definitionResource: 'authored_v1.a2ui.json',
+        },
+        attachments: attachment(definition()),
+      }),
+    /declares composition "authored_v1" but \/data\/authored names "something_else"/
+  );
+});
