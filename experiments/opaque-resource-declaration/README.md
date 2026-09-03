@@ -113,6 +113,59 @@ What is *not* on the table, per review: disguising the bundle as CSV/XML so an
 external secondary instance will parse it, and patching the engine to ignore
 opaque unreferenced instances.
 
+## The Central gate
+
+`central-gate-form.xml` is the form to upload. **No XLSForm and no pyxform** —
+Central accepts an XForm definition directly, and the gate's question is about
+the XForm, not about spreadsheet conversion. (Whether pyxform passes the
+namespace and `body::gather:composition` through is a separate, later question.)
+
+It loads cleanly in the engine, and the primary instance is untouched by the
+`gather_resources` declaration:
+
+```text
+primary-instance nodes:
+  input   /data/site_name        body-backed=true
+  group   /data/photo            body-backed=true
+  input   /data/photo/note       body-backed=true
+  upload  /data/photo/image      body-backed=true
+
+fresh instance XML:
+  <data id="gather_packaging_gate" version="1"><site_name/>
+    <photo><note/><image/></photo><meta>…</meta></data>
+attachments in payload: []
+```
+
+### What to check, in order
+
+```text
+1  create a draft from central-gate-form.xml
+      → does the draft list flower_v1.gather as an EXPECTED attachment?
+         if no, the shim fails and the answer is a Gather publishing convention
+
+2  upload the opaque bundle to that slot
+      → does Central accept bytes it cannot interpret?
+
+3  download it back
+      → byte-identical? what Content-Type does Central serve?
+
+4  sync the form version into Gather
+      → does the resource arrive through the ordinary form-resource path?
+      → NOTE: formCatalogService's isTextResource decides text vs binary from
+        the served content type. A bundle served as application/octet-stream
+        must still reach the composition loader.
+
+5  fill and submit once
+      → the submission must contain site_name, photo/note, photo/image and
+        meta only. Any trace of gather_resources is a failure.
+```
+
+Step 1 is the gate. Steps 2–4 are the ones Central has historically been
+quirkiest about, around MIME metadata for uncommon extensions.
+
+If step 1 fails, **the binding architecture is unaffected** — the remaining
+problem is only how to declare one opaque form attachment to Central.
+
 ## Running it
 
 ```bash
