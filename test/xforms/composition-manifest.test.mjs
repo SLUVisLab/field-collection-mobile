@@ -76,10 +76,76 @@ test('a manifest maps composition outputs onto XForms references', () => {
   assert.deepEqual(parsed.fields[0].bindings, [
     // `projection` defaults to `none`: a scalar written into the node. `media`
     // means the value is an asset whose bytes belong in the submission, which
-    // is deliberately distinct from retention (b-custom §4).
-    { path: 'petalCount', reference: '/data/flower_analysis/petal_count', required: true, projection: 'none' },
-    { path: 'color.name', reference: '/data/flower_analysis/color', required: false, projection: 'none' },
+    // is deliberately distinct from retention (b-custom §4). A scalar has no
+    // asset, so it carries no disposition either.
+    {
+      path: 'petalCount',
+      reference: '/data/flower_analysis/petal_count',
+      required: true,
+      projection: 'none',
+      retention: null,
+    },
+    {
+      path: 'color.name',
+      reference: '/data/flower_analysis/color',
+      required: false,
+      projection: 'none',
+      retention: null,
+    },
   ]);
+});
+
+test('a media binding must declare its output disposition', () => {
+  // Retention is a property of the OUTPUT, not of the capture: at capture time
+  // nothing knows what role the bytes will play. Neither default is safe once
+  // promotion has copied them into the submission — `keep` duplicates every
+  // capture forever, `discard` destroys a working asset an author wanted — so
+  // a media binding states it or the manifest refuses to load.
+  const mediaBinding = (extra) => ({
+    version: 1,
+    fields: [
+      {
+        reference: '/data/site',
+        composition: 'site_v1',
+        bindings: [{ path: 'image', reference: '/data/site/image', projection: 'media', ...extra }],
+      },
+    ],
+  });
+
+  assert.throws(() => parseBindingManifest(mediaBinding()), (error) => {
+    assert.ok(error instanceof CompositionFieldError);
+    assert.equal(error.code, 'GATHER_COMPOSITION_BINDING_NO_RETENTION');
+    return true;
+  });
+
+  assert.throws(
+    () => parseBindingManifest(mediaBinding({ retention: 'sometimes' })),
+    /unsupported retention/
+  );
+
+  for (const retention of ['keep', 'discard']) {
+    const parsed = parseBindingManifest(mediaBinding({ retention }));
+    assert.equal(parsed.fields[0].bindings[0].retention, retention);
+  }
+});
+
+test('a disposition on a binding that projects no media is dead configuration', () => {
+  // Completion only touches an asset where it promotes one, so retention
+  // anywhere else governs nothing at all. Surfaced rather than ignored.
+  assert.throws(
+    () =>
+      parseBindingManifest({
+        version: 1,
+        fields: [
+          {
+            reference: '/data/site',
+            composition: 'site_v1',
+            bindings: [{ path: 'note', reference: '/data/site/note', retention: 'discard' }],
+          },
+        ],
+      }),
+    /does not project media/
+  );
 });
 
 test('a manifest parses from JSON text as it ships', () => {

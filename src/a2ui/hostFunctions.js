@@ -28,21 +28,25 @@ export const HOST_FUNCTION_IDS = Object.freeze({
 });
 
 /**
- * `gather_persistAsset` — a local capture descriptor becomes a durable asset.
+ * `gather_persistAsset` — a local capture descriptor becomes a durable
+ * **working** asset.
  *
  * Deliberately boring: capture in, `ImageAsset` out. The implementation owns
- * writing bytes, the ledger row and its declared disposition; the function
- * knows nothing about what happens to the asset afterwards. An authored
- * composition decides that with `resultPath`.
+ * writing bytes and the ledger row; the function knows nothing about what
+ * happens to the asset afterwards. An authored composition decides where the
+ * value goes with `resultPath`.
+ *
+ * It takes **no retention**. Retention is an output disposition, and at capture
+ * time nobody yet knows what role the asset will play — asking here made the
+ * caller guess, and the guess (`keep`) duplicated every promoted capture
+ * forever. The form's binding manifest states it per output; completion applies
+ * it. One source of truth. See docs/b-custom-composition-conventions.md §4.
  */
 const PersistAssetArgs = z
   .object({
     // The plain descriptor a Component emits. `passthrough` because the
     // descriptor's shape belongs to the Component, not to this seam.
     capture: z.object({ uri: z.string().min(1) }).passthrough(),
-    // Optional authored disposition, per b-custom §4 — persistence is explicit
-    // authoring policy, never inferred.
-    retention: z.enum(['keep', 'discard']).optional(),
   })
   .strict();
 
@@ -65,7 +69,7 @@ const CompleteCompositionArgs = z
  * Builds the host function implementations.
  *
  * @param {{
- *   persistAsset: (input: { capture: object, retention?: string }) => Promise<object>,
+ *   persistAsset: (input: { capture: object }) => Promise<object>,
  *   completeComposition: (input: { outputs: object }) => Promise<object>,
  * }} implementations bound to the live instance by the caller
  */

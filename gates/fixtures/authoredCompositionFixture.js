@@ -70,7 +70,7 @@ export const AUTHORED_COMPOSITION_DEFINITION = {
             action: {
               functionCall: {
                 call: 'gather_persistAsset',
-                args: { capture: { path: '/working/capture' }, retention: 'keep' },
+                args: { capture: { path: '/working/capture' } },
               },
               resultPath: '/working/image',
             },
@@ -123,7 +123,15 @@ export const AUTHORED_COMPOSITION_MANIFEST = {
       bindings: [
         // `media` is what promotes the durable asset into a real ODK
         // attachment at completion. The composition never learns about that.
-        { path: 'image', reference: '/data/photo/image', required: true, projection: 'media' },
+        // `discard`: the submission owns the bytes once promotion succeeds, so
+        // the working asset is released rather than kept as a second copy.
+        {
+          path: 'image',
+          reference: '/data/photo/image',
+          required: true,
+          projection: 'media',
+          retention: 'discard',
+        },
         { path: 'note', reference: '/data/photo/note' },
       ],
     },

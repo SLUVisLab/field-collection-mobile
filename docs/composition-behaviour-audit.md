@@ -194,7 +194,9 @@ object literal failed the bundle with `Property id of VariableDeclarator …
 got "ObjectExpression"` — a Metro 500, not a runtime error. Fixed by hoisting
 both host implementations into named `useCallback`s.
 
-**3. A promoted working asset is never reclaimed.** After
+**3. A promoted working asset is never reclaimed.** *(Resolved — see
+[b-custom §4b](./b-custom-composition-conventions.md); retention moved from
+`persistAsset` to the output binding, applied at completion.)* After
 `completeComposition` copied the capture into
 `media/<instance>/image-mtkqqk2r09y6mj.jpg`, the ledger still holds the source:
 
@@ -208,7 +210,9 @@ the ledger is behaving as declared — the open question is whether
 `completeComposition`, which already owns media promotion, should also release
 the working assets it promoted. Not changed here; it is a semantics decision.
 
-**4. `assetId` is minted twice.** The ledger row's `asset_id` and filename
+**4. `assetId` is minted twice.** *(Resolved — `persistCapture` now takes the
+caller's id; promotion consumes the existing asset rather than creating a
+second Gather identity.)* The ledger row's `asset_id` and filename
 (`image-…633`) differ from the `assetId` on the returned `ImageAsset`
 (`image-…694`), because `imageAssetService.persistCapture` mints its own id
 rather than reusing the ledger's. The `path` (fileKey) is the only shared

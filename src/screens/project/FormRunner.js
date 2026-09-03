@@ -47,6 +47,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     finalizeInstance,
     attachImageMedia,
     persistScientificCapture,
+    applyAssetDisposition,
     a2uiCapabilityFunctions,
     releaseInstanceMedia,
     discardInstance,
@@ -286,6 +287,11 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
           setMedia((prev) => mergeMedia(prev, bound.media));
           return { filename: bound.media.filename };
         },
+        // Settles the working asset once the submission owns its copy: `keep`
+        // makes it canonical, `discard` releases it for the next sweep. The
+        // composition declared which; nothing here infers it.
+        applyDisposition: async ({ asset, retention }) =>
+          applyAssetDisposition({ fileKey: asset?.fileKey ?? asset?.path, retention }),
       });
       // Then persist the values the composition just wrote. saveDraft sweeps at
       // its own boundary, which is the post-commit boundary too. It can decline
@@ -297,6 +303,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       return { ...outcome, persisted };
     },
     [
+      applyAssetDisposition,
       attachImageMedia,
       form.serialize,
       form.setValue,
@@ -329,7 +336,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       onAccepted: commitComposition,
       // The host media seam an authored composition reaches through
       // `gather_persistAsset`. Disposition is authored, never inferred.
-      persistAsset: (capture, options) => persistScientificCapture(capture, options),
+      persistAsset: (capture) => persistScientificCapture(capture),
       // Capabilities this build can execute, already A2UI-registered.
       capabilityFunctions: a2uiCapabilityFunctions,
       problems: [...resolvedCompositions.problems, ...resolvedDefinitions.problems],

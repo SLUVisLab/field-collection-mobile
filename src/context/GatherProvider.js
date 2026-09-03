@@ -496,21 +496,37 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     async ({ image, mask }) => measureImage({ image, mask, adapter: scientificRuntime?.measurementAdapter }),
     [scientificRuntime]
   );
+  /**
+   * Makes a capture durable as a **working** asset.
+   *
+   * It deliberately takes no disposition. At capture time nothing knows what
+   * role these bytes will play — that is a property of the *output* they end up
+   * being, which only the binding manifest states and only completion resolves.
+   * Asking here would be asking the wrong moment, and it is what produced a
+   * permanently duplicated 257 KB per capture: `keep` was recorded before
+   * anyone knew the submission would own a copy.
+   *
+   * So the ledger row is `discard` and **unreleased**, which the cleanup
+   * planner reads as "still in use" (rule 4). Nothing reclaims it until a
+   * producer releases it, and completion is the producer.
+   */
   const persistScientificCapture = useCallback(
-    async (capture, { retention = null } = {}) => {
+    async (capture) => {
       if (!imageAssetService || !activeProject) throw new Error('scientific image storage is not ready');
       const assetId = `image-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
       const fileKey = GatherPaths.media(activeProject.projectKey, `${assetId}.jpg`);
+      // The same id the storage key and the ledger row use. One persisted
+      // working asset has exactly one Gather identity; the ODK attachment it
+      // may later become is a separate record, not a second asset.
       const asset = await imageAssetService.persistCapture({
         capture,
         fileKey,
+        assetId,
         capturedAt: new Date().toISOString(),
       });
-      // Record it in the asset ledger. Without a row these bytes are
-      // referenced by nothing in the database, which is what made project
-      // cleanup unsafe: a sweep could not tell a deliberately-kept capture
-      // from an orphan. `keep` is the conservative default; an authored
-      // discard policy overrides it per output (B-custom §4).
+      // Without a row these bytes are referenced by nothing in the database,
+      // which is what made project cleanup unsafe: a sweep could not tell a
+      // deliberately-kept capture from an orphan.
       if (assets) {
         try {
           await assets.recordAsset({
@@ -518,7 +534,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
             projectKey: activeProject.projectKey,
             assetId,
             contentType: asset?.mimeType ?? capture?.contentType ?? 'image/jpeg',
-            retention: retention ?? ASSET_RETENTION.KEEP,
+            retention: ASSET_RETENTION.DISCARD,
           });
         } catch {
           // The bytes are already durable and usable. A missing ledger row
@@ -530,6 +546,32 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       return asset;
     },
     [activeProject, assets, imageAssetService]
+  );
+
+  /**
+   * Settles a working asset's disposition once an output binding has declared
+   * one. This is the other half of `persistScientificCapture`: capture makes
+   * bytes durable, completion says what they were for.
+   *
+   * ```text
+   * keep    → the canonical Gather asset survives the sweep
+   * discard → released, so the sweep reclaims it; after a media projection
+   *           that means only the submission-owned copy remains
+   * ```
+   *
+   * Releasing is a *record*, never a delete. The bytes go at the next sweep, at
+   * a lifecycle boundary this module does not choose.
+   */
+  const applyAssetDisposition = useCallback(
+    async ({ fileKey, retention } = {}) => {
+      if (!assets || !fileKey) return { fileKey: fileKey ?? null, retention: retention ?? null };
+      await assets.setRetention({ fileKey, retention });
+      if (retention === ASSET_RETENTION.DISCARD) {
+        await assets.releaseAsset(fileKey);
+      }
+      return { fileKey, retention };
+    },
+    [assets]
   );
 
   /**
@@ -619,6 +661,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
         measureScientificMask,
         measureScientificImage,
         persistScientificCapture,
+        applyAssetDisposition,
         sweepProjectMedia,
         a2uiCapabilityFunctions,
       },
@@ -668,6 +711,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       measureScientificMask,
       measureScientificImage,
       persistScientificCapture,
+      applyAssetDisposition,
       sweepProjectMedia,
     ]
   );

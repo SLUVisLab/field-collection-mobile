@@ -273,7 +273,8 @@ becomes a valid ODK instance.
 
 | retention | projection | outcome |
 | --- | --- | --- |
-| `keep` | `media` | durable locally **and** submitted |
+| `keep` | `media` | durable locally **and** submitted — a duplicate, deliberately |
+| `discard` | `media` | released after promotion succeeds; only the submission's copy remains |
 | `keep` | `none` | local-only asset, subject to project cleanup |
 | `discard` | `none` | swept after completion, per the ledger lifecycle |
 
@@ -452,11 +453,9 @@ Three properties are deliberate:
   that nothing records — the unreclaimable case.
 
 `sweepProjectAssets` composes enumeration, planning and execution with
-everything injected. `persistScientificCapture` now records each capture with
-`retention: 'keep'` by default, and takes an override so an authored discard
-policy can set it per output. Ledger failures never fail a capture: the bytes
-are already durable, and an unrecorded asset is merely un-reclaimable, which
-the conservative default already treats as "keep".
+everything injected. Ledger failures never fail a capture: the bytes are already
+durable, and an unrecorded asset is merely un-reclaimable, which the
+conservative default already treats as "keep".
 
 Migration 12 was executed against real SQLite 3.39.2 — apply, `created_at`
 default, the retention CHECK rejecting a bad value, and the project cascade.
@@ -678,6 +677,86 @@ one it just created. Only a run through `FormRunner` could surface this: the
 headless tests inject a form seam, and a harness mounting the control directly
 would have supplied its own instance id — which is exactly why the composition
 registry is a registry rather than a frozen constant (§25).
+
+## 4b. Retention is an output disposition, not a capture argument (2026-09-02)
+
+The first device run left 257 KB duplicated per capture, permanently. The ledger
+row said `retention: keep` with no `local_instance_id`, which puts it outside
+every sweep — while the submission already owned a copy of the same bytes.
+
+Nothing was behaving incorrectly. `gather_persistAsset` took a `retention`
+argument and the authored composition passed `keep`, so the ledger did exactly
+what it was told. The mistake was **where the question was asked.**
+
+```text
+persistAsset             completeComposition + binding
+"make this durable"      "this output is media + discard"
+     ↑                              ↑
+capture time:            completion: the role is finally known
+the role is unknown
+```
+
+Retention is a property of the *output*, and an asset does not become an output
+until completion. Asking at capture time forces the author to predict a role,
+and any default the runtime picks for them is a guess: `keep` duplicates every
+promoted capture forever, `discard` destroys a working asset someone wanted.
+
+So:
+
+```text
+gather_persistAsset(capture)
+  → a durable WORKING asset
+  → ledger row: discard, unreleased  ("still in use", planner rule 4)
+  → no disposition argument at all
+
+gather_completeComposition(outputs)
+  → projection: media  → promote bytes into instance_media, filename into XML
+  → then, per binding retention:
+       keep    → setRetention(keep)     the canonical Gather asset survives
+       discard → releaseAsset()          the sweep reclaims it
+```
+
+Three consequences worth stating:
+
+- **`retention` is required on a `projection: media` binding.** Neither default
+  is safe, and §4 already makes persistence explicit authoring policy rather
+  than something inferred from a type.
+- **Disposition is settled last**, after both the attachment and every XForms
+  write. Releasing earlier could hand a sweep bytes the instance still needs.
+  Failures are reported, never thrown — the same bias as provenance, because an
+  unsettled disposition leaves bytes behind rather than losing any.
+- **Retention on a non-media binding is a manifest error.** Completion only
+  touches an asset where it promotes one, so a disposition anywhere else governs
+  nothing. Dead configuration, surfaced rather than ignored.
+
+The ownership model the sweep now sees is clean:
+
+| ledger state | meaning |
+| --- | --- |
+| `discard`, unreleased | working asset, still in use |
+| `keep` | canonical Gather asset, deliberately retained |
+| `discard`, released | reclaimable |
+
+### One asset, one Gather identity
+
+The same run showed the ledger's `asset_id` and the returned `ImageAsset.assetId`
+disagreeing (`image-…633` vs `image-…694`): `persistScientificCapture` minted an
+id to build the storage key and record the row, and `imageAssetService.persistCapture`
+minted a *second* one for the object it returned. Only `path` — the fileKey —
+was shared, which is why nothing visibly broke.
+
+Two records are legitimate here and stay:
+
+```text
+Gather ImageAsset   → the project working asset
+ODK instance_media  → the submission attachment, with its own filename
+```
+
+What is not legitimate is a second *Gather* identity for the same persisted
+bytes. `persistCapture` now takes the caller's `assetId` when it has one and
+mints only as a fallback, so the ledger row and the `ImageAsset` agree.
+Promotion **consumes** that asset — it reads its fileKey and creates the ODK
+row — rather than creating another.
 
 ## Where this code lives, and why
 

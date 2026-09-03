@@ -137,6 +137,26 @@ export const createAssetsRepository = (db) => {
     },
 
     /**
+     * Records the disposition an output binding declared for an asset.
+     *
+     * `recordAsset` writes a *provisional* retention when the bytes are first
+     * made durable, because at that moment nothing knows what role the asset
+     * will play. Completion is where that is finally known, and this is the
+     * seam it uses. Deliberately not `recordAsset`: the row already exists and
+     * only its disposition is in question, so a caller that has an asset but
+     * not its project identity can still settle it.
+     */
+    async setRetention(input = {}) {
+      const fileKey = assertRelativeKey(input.fileKey);
+      const retention = assertRetention(input.retention);
+      await db.runAsync(`UPDATE project_assets SET retention = ? WHERE file_key = ?;`, [
+        retention,
+        fileKey,
+      ]);
+      return { fileKey, retention };
+    },
+
+    /**
      * Marks a `discard` asset as no longer needed.
      *
      * This is the seam that keeps "discard" from meaning "delete immediately

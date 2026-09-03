@@ -15,10 +15,11 @@
  * invalid accepted result never crosses into XForms. That preserves the rule
  * §17 already established — no half-populated writes.
  *
- * Storage cleanup is deliberately absent. A composition declares disposition;
- * it does not know cleanup mechanics, so sweeping belongs to the instance
- * lifecycle owner at its own safe boundaries.
- * See docs/b-custom-composition-conventions.md §4 and §7.
+ * Storage cleanup is deliberately absent. Completion *records* the disposition
+ * each output binding declared — the last moment at which a working asset's
+ * role is finally known — but it never deletes bytes. Acting on those records
+ * is sweeping, and sweeping belongs to the instance lifecycle owner at its own
+ * safe boundaries. See docs/b-custom-composition-conventions.md §4 and §7.
  */
 
 import {
@@ -67,11 +68,15 @@ export const missingRequiredOutputs = ({ bindings = [], result } = {}) =>
  *   receipts?: { upsertReceipt: Function, deleteReceipt: Function }|null,
  *   receipt?: object|null,
  *   localInstanceId?: string|null,
+ *   attachMedia?: Function|null,
+ *   applyDisposition?: Function|null,
  * }} input
  * @returns {Promise<{
  *   writes: Array<{reference: string, path: string, value: string, present: boolean}>,
  *   recorded: string[], cleared: string[],
  *   provenanceFailures: Array<{reference: string, message: string}>,
+ *   dispositions: Array<{reference: string, retention: string}>,
+ *   dispositionFailures: Array<{reference: string, message: string}>,
  * }>}
  */
 export const commitCompositionResult = async ({
@@ -82,6 +87,7 @@ export const commitCompositionResult = async ({
   receipt = null,
   localInstanceId = null,
   attachMedia = null,
+  applyDisposition = null,
 } = {}) => {
   if (!field || !Array.isArray(field.bindings) || field.bindings.length === 0) {
     throw new CompositionCommitError('A composition commit needs a resolved field with bindings.', {
@@ -124,6 +130,9 @@ export const commitCompositionResult = async ({
   //    recoverable orphan rather than a broken instance.
   const mediaBindings = (field.bindings ?? []).filter((binding) => binding.projection === 'media');
   const attachedFilenames = new Map();
+  // The working assets promotion consumed, kept so their declared disposition
+  // can be settled once the commit has actually succeeded.
+  const promotedAssets = new Map();
   if (mediaBindings.length > 0) {
     if (typeof attachMedia !== 'function') {
       throw new CompositionCommitError(
@@ -143,6 +152,7 @@ export const commitCompositionResult = async ({
         );
       }
       attachedFilenames.set(binding.path, filename);
+      promotedAssets.set(binding.path, asset);
     }
   }
 
@@ -172,11 +182,44 @@ export const commitCompositionResult = async ({
     writes.push({ reference: binding.reference, path: binding.path, value: filename, present: true });
   }
 
-  // 4. Provenance, after the values — the data is the point, and a value with
+  // 5. Provenance, after the values — the data is the point, and a value with
   //    no receipt merely reads as manual, whereas a receipt with no value would
   //    claim provenance for something absent. Failures are reported rather than
   //    thrown: the values are already committed, so telling the host that
   //    Accept failed would be worse than telling it provenance is incomplete.
+  // 4. Settle each promoted asset's disposition, now that the XML and the
+  //    submission's copy are both committed. `keep` means the working asset is
+  //    canonical and survives; `discard` means the submission's copy is the only
+  //    one that should remain, so the working asset is *released* — a record,
+  //    never a delete. Ordering matters in one direction only: releasing before
+  //    the commit succeeded could hand a sweep bytes the instance still needs.
+  //
+  //    Failures are reported rather than thrown, for the same reason provenance
+  //    failures are: the values are committed, and an unsettled disposition
+  //    leaves bytes behind rather than losing any.
+  const dispositions = [];
+  const dispositionFailures = [];
+  for (const binding of mediaBindings) {
+    const asset = promotedAssets.get(binding.path);
+    if (!asset || !binding.retention) continue;
+    if (typeof applyDisposition !== 'function') {
+      dispositionFailures.push({
+        reference: binding.reference,
+        message: 'This composition declares asset retention, but completion has no disposition seam.',
+      });
+      continue;
+    }
+    try {
+      await applyDisposition({ reference: binding.reference, asset, retention: binding.retention });
+      dispositions.push({ reference: binding.reference, retention: binding.retention });
+    } catch (error) {
+      dispositionFailures.push({
+        reference: binding.reference,
+        message: error?.message ?? String(error),
+      });
+    }
+  }
+
   const recorded = [];
   const cleared = [];
   const provenanceFailures = [];
@@ -206,5 +249,5 @@ export const commitCompositionResult = async ({
     }
   }
 
-  return { writes, recorded, cleared, provenanceFailures };
+  return { writes, recorded, cleared, provenanceFailures, dispositions, dispositionFailures };
 };

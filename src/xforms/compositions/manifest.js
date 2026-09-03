@@ -75,11 +75,46 @@ const assertBinding = (binding, { fieldReference, index }) => {
       { ...where, projection }
     );
   }
+  // Retention is the **output's** disposition, not the capture's. Whoever made
+  // the bytes durable could not know what role they would play; this binding is
+  // where that is finally stated, and completion is where it is applied.
+  //
+  // Required on `media`, because promotion copies the bytes into the submission
+  // and the question "does the working copy survive that?" then has no default
+  // answer that is not a guess: `keep` silently duplicates every capture
+  // forever, `discard` silently destroys a working asset an author wanted.
+  // B-custom §4 already makes persistence explicit authoring policy.
+  const retention = binding.retention ?? null;
+  if (retention !== null && retention !== 'keep' && retention !== 'discard') {
+    fail(
+      `Binding ${binding.reference} has an unsupported retention: ${JSON.stringify(retention)}.`,
+      'GATHER_COMPOSITION_BINDING_BAD_RETENTION',
+      { ...where, retention }
+    );
+  }
+  if (projection === 'media' && retention === null) {
+    fail(
+      `Binding ${binding.reference} projects media, so it must declare \`retention\`: 'keep' to also retain the working asset, 'discard' to leave only the submission's copy.`,
+      'GATHER_COMPOSITION_BINDING_NO_RETENTION',
+      where
+    );
+  }
+  // Completion only touches an asset where it promotes one, so a disposition
+  // anywhere else governs nothing. Dead configuration, and this manifest
+  // surfaces those rather than ignoring them.
+  if (projection !== 'media' && retention !== null) {
+    fail(
+      `Binding ${binding.reference} declares retention but does not project media, so there is no asset for it to govern.`,
+      'GATHER_COMPOSITION_BINDING_RETENTION_WITHOUT_MEDIA',
+      { ...where, retention }
+    );
+  }
   return {
     path: binding.path,
     reference: binding.reference,
     required: binding.required === true,
     projection,
+    retention,
   };
 };
 

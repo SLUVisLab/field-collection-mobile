@@ -40,6 +40,11 @@ const makeFakeDb = () => {
         });
         return { changes: 1 };
       }
+      if (sql.includes('SET retention')) {
+        const row = rows.get(params[1]);
+        if (row) row.retention = params[0];
+        return { changes: row ? 1 : 0 };
+      }
       if (sql.includes('SET released_at')) {
         const row = rows.get(params[0]);
         if (row) row.released_at = 'released';
@@ -64,6 +69,26 @@ const input = (overrides = {}) => ({
   contentType: 'image/jpeg',
   retention: ASSET_RETENTION.KEEP,
   ...overrides,
+});
+
+test('a working asset settles its disposition later, when the output is known', async () => {
+  // recordAsset writes a PROVISIONAL retention: at capture time nothing knows
+  // what role the bytes will play. Completion is where that is finally known.
+  const repo = createAssetsRepository(makeFakeDb());
+  await repo.recordAsset(input({ retention: ASSET_RETENTION.DISCARD }));
+
+  assert.deepEqual(await repo.setRetention({ fileKey: input().fileKey, retention: 'keep' }), {
+    fileKey: input().fileKey,
+    retention: 'keep',
+  });
+  assert.equal((await repo.getAsset(input().fileKey)).retention, 'keep');
+
+  // Still a closed set. An unrecognised value must not reach the row.
+  await assert.rejects(
+    () => repo.setRetention({ fileKey: input().fileKey, retention: 'maybe' }),
+    AssetsRepositoryError
+  );
+  assert.equal((await repo.getAsset(input().fileKey)).retention, 'keep');
 });
 
 test('an asset records its retention explicitly', async () => {

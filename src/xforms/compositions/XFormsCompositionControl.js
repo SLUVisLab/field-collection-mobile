@@ -108,10 +108,7 @@ export function XFormsCompositionControl({ node, indent, onLayout, composition }
    * VariableDeclarator ... got "ObjectExpression"`, and the failure is a Metro
    * 500 at bundle time, not a runtime error.
    */
-  const persistAssetFn = useCallback(
-    (args) => composition.persistAsset(args.capture, { retention: args.retention }),
-    [composition]
-  );
+  const persistAssetFn = useCallback((args) => composition.persistAsset(args.capture), [composition]);
 
   const completeCompositionFn = useCallback(
     async (args) => {

@@ -235,7 +235,13 @@ const mediaField = () =>
         composition: 'authored_v1',
         bindings: [
           { path: 'note', reference: '/data/site/note' },
-          { path: 'image', reference: '/data/site/image', projection: 'media', required: true },
+          {
+            path: 'image',
+            reference: '/data/site/image',
+            projection: 'media',
+            required: true,
+            retention: 'discard',
+          },
         ],
       },
     ],
@@ -263,6 +269,133 @@ test('a media projection becomes a real submission attachment, not an asset blob
     ['/data/site/image', 'IMG_1234.jpg'],
   ]);
   assert.equal(outcome.writes.find((w) => w.path === 'image').value, 'IMG_1234.jpg');
+});
+
+test('a promoted asset is settled only after the commit succeeds', async () => {
+  // The disposition the binding declared is applied once the XML and the
+  // submission's copy both exist. Releasing earlier could hand a sweep bytes
+  // the instance still needs.
+  const form = makeForm();
+  const order = [];
+  const settled = [];
+
+  const outcome = await commitCompositionResult({
+    result: { note: 'n', image: { assetId: 'image-1', fileKey: 'projects/p/media/image-1.jpg' } },
+    field: mediaField(),
+    form: {
+      setValue: async (reference, value) => {
+        order.push(`write:${reference}`);
+        form.writes.push([reference, value]);
+      },
+    },
+    attachMedia: async () => {
+      order.push('attach');
+      return { filename: 'IMG_1234.jpg' };
+    },
+    applyDisposition: async ({ asset, retention }) => {
+      order.push('settle');
+      settled.push([asset.fileKey, retention]);
+    },
+  });
+
+  assert.deepEqual(settled, [['projects/p/media/image-1.jpg', 'discard']]);
+  assert.equal(order[0], 'attach');
+  assert.equal(order.at(-1), 'settle', 'disposition is settled last, after every write');
+  assert.deepEqual(outcome.dispositions, [{ reference: '/data/site/image', retention: 'discard' }]);
+  assert.deepEqual(outcome.dispositionFailures, []);
+});
+
+test('a keep disposition reaches the seam unchanged, so a duplicate is deliberate', async () => {
+  const form = makeForm();
+  const settled = [];
+  const keepField = parseBindingManifest({
+    version: 1,
+    fields: [
+      {
+        reference: '/data/site',
+        composition: 'authored_v1',
+        bindings: [
+          { path: 'image', reference: '/data/site/image', projection: 'media', retention: 'keep' },
+        ],
+      },
+    ],
+  }).fields[0];
+
+  await commitCompositionResult({
+    result: { image: { assetId: 'image-1', fileKey: 'projects/p/media/image-1.jpg' } },
+    field: keepField,
+    form,
+    attachMedia: async () => ({ filename: 'IMG_1234.jpg' }),
+    applyDisposition: async ({ retention }) => settled.push(retention),
+  });
+
+  assert.deepEqual(settled, ['keep']);
+});
+
+test('an absent optional media output settles nothing', async () => {
+  // Nothing was promoted, so there is no working asset to dispose of.
+  const form = makeForm();
+  const settled = [];
+  const optionalField = parseBindingManifest({
+    version: 1,
+    fields: [
+      {
+        reference: '/data/site',
+        composition: 'authored_v1',
+        bindings: [
+          { path: 'image', reference: '/data/site/image', projection: 'media', retention: 'discard' },
+        ],
+      },
+    ],
+  }).fields[0];
+
+  const outcome = await commitCompositionResult({
+    result: {},
+    field: optionalField,
+    form,
+    attachMedia: async () => ({ filename: 'never.jpg' }),
+    applyDisposition: async ({ retention }) => settled.push(retention),
+  });
+
+  assert.deepEqual(settled, []);
+  assert.deepEqual(form.writes, [['/data/site/image', '']], 'the node is cleared, as always');
+  assert.deepEqual(outcome.dispositions, []);
+});
+
+test('a failed disposition is reported, never thrown: the values are already committed', async () => {
+  // Same bias as provenance. An unsettled disposition leaves bytes behind; a
+  // thrown Accept would tell the researcher their data did not land.
+  const form = makeForm();
+  const outcome = await commitCompositionResult({
+    result: { note: 'n', image: { assetId: 'image-1', fileKey: 'k' } },
+    field: mediaField(),
+    form,
+    attachMedia: async () => ({ filename: 'IMG_1234.jpg' }),
+    applyDisposition: async () => { throw new Error('ledger is locked'); },
+  });
+
+  assert.deepEqual(
+    form.writes,
+    [['/data/site/note', 'n'], ['/data/site/image', 'IMG_1234.jpg']],
+    'every value still landed'
+  );
+  assert.deepEqual(outcome.dispositions, []);
+  assert.deepEqual(outcome.dispositionFailures, [
+    { reference: '/data/site/image', message: 'ledger is locked' },
+  ]);
+});
+
+test('a declared disposition with no seam to apply it is reported, not silently dropped', async () => {
+  const form = makeForm();
+  const outcome = await commitCompositionResult({
+    result: { note: 'n', image: { assetId: 'image-1', fileKey: 'k' } },
+    field: mediaField(),
+    form,
+    attachMedia: async () => ({ filename: 'IMG_1234.jpg' }),
+  });
+
+  assert.equal(outcome.dispositionFailures.length, 1);
+  assert.match(outcome.dispositionFailures[0].message, /no disposition seam/);
 });
 
 test('attachment happens before any XForms write, so XML never points at missing media', async () => {

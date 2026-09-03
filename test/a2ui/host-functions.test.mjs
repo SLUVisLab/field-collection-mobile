@@ -63,14 +63,15 @@ test('persistAsset takes a capture descriptor and returns a durable asset', asyn
   assert.equal(asset.assetId, 'image-1');
 });
 
-test('persistAsset accepts an authored disposition but never infers one', async () => {
-  // b-custom §4: persistence is explicit authoring policy.
-  const { catalog, calls } = bind();
-  await catalog.invoker(HOST_FUNCTION_IDS.persistAsset, { capture, retention: 'discard' }, {}, undefined);
-  assert.equal(calls[0][1].retention, 'discard');
-
+test('persistAsset refuses a disposition: retention is an output property', async () => {
+  // Retention belongs to the binding manifest, applied at completion. Taking it
+  // here asked the capture moment a question only the output can answer, and
+  // the answer it guessed duplicated every promoted capture forever. `.strict()`
+  // makes the old call a loud failure rather than a silently ignored key.
+  const { catalog } = bind();
   await assert.rejects(
-    async () => catalog.invoker(HOST_FUNCTION_IDS.persistAsset, { capture, retention: 'sometimes' }, {}, undefined),
+    async () =>
+      catalog.invoker(HOST_FUNCTION_IDS.persistAsset, { capture, retention: 'keep' }, {}, undefined),
     /Validation failed/
   );
 });
