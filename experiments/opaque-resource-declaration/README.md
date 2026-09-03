@@ -146,8 +146,10 @@ attachments in payload: []
 2  upload the opaque bundle to that slot
       → does Central accept bytes it cannot interpret?
 
-3  download it back
-      → byte-identical? what Content-Type does Central serve?
+3  download it back through the normal form-resource API
+      → checksum before upload == checksum after download
+         the whole point is that .gather stays opaque
+      → what Content-Type does Central serve?
 
 4  sync the form version into Gather
       → does the resource arrive through the ordinary form-resource path?
@@ -155,13 +157,17 @@ attachments in payload: []
         the served content type. A bundle served as application/octet-stream
         must still reach the composition loader.
 
-5  fill and submit once
-      → the submission must contain site_name, photo/note, photo/image and
-        meta only. Any trace of gather_resources is a failure.
 ```
 
-Step 1 is the gate. Steps 2–4 are the ones Central has historically been
-quirkiest about, around MIME metadata for uncommon extensions.
+Steps 1–4 are the whole gate. There is no step 5: that an inline secondary
+declaration stays out of the primary instance, stays out of the submission XML,
+and is never fetched or parsed by the engine is **already proven locally**
+(Run 2 above), so re-running a collection lifecycle would answer a question that
+is not open.
+
+Step 1 is the architectural answer. Steps 2–4 are where Central has historically
+been quirkiest, around MIME metadata for uncommon extensions — hence the
+checksum.
 
 If step 1 fails, **the binding architecture is unaffected** — the remaining
 problem is only how to declare one opaque form attachment to Central.

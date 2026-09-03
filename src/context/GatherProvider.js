@@ -40,6 +40,7 @@ import { BUNDLED_MODEL_PACKAGES } from '../scientific/models/bundledModelPackage
 import { createReactNativeOnnxRuntime } from '../scientific/runtime/onnxReactNativeAdapter.js';
 import { createOpenCvImageAdapter } from '../scientific/runtime/openCvImageAdapter.js';
 import { createOpenCvMeasurementAdapter } from '../scientific/runtime/openCvMeasurementAdapter.js';
+import { workingAssetIdentity } from '../scientific/assets/workingAssetIdentity.js';
 import { createModelExecutor } from '../scientific/runtime/modelExecutor.js';
 import { createImageAssetService } from '../scientific/assets/imageAssetService.js';
 import { segment, classify, measureImage, measureMask } from 'gather-capabilities';
@@ -513,11 +514,14 @@ export function GatherProvider({ children, deps, onReady, onError }) {
   const persistScientificCapture = useCallback(
     async (capture) => {
       if (!imageAssetService || !activeProject) throw new Error('scientific image storage is not ready');
-      const assetId = `image-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
-      const fileKey = GatherPaths.media(activeProject.projectKey, `${assetId}.jpg`);
-      // The same id the storage key and the ledger row use. One persisted
-      // working asset has exactly one Gather identity; the ODK attachment it
-      // may later become is a separate record, not a second asset.
+      // One mint for the ledger row, the file on disk and the ImageAsset the
+      // composition receives — they were three, and they disagreed. The ODK
+      // attachment a promotion may later create is a separate record with its
+      // own filename, not a second asset identity.
+      const { assetId, fileKey } = workingAssetIdentity({
+        projectKey: activeProject.projectKey,
+        media: GatherPaths.media,
+      });
       const asset = await imageAssetService.persistCapture({
         capture,
         fileKey,

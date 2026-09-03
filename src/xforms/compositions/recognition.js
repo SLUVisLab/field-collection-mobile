@@ -8,6 +8,24 @@
  *        gather:composition="flower_v1.gather">
  * ```
  *
+ * The token has **two distinct meanings**, and the difference is deliberate
+ * rather than one form being an incomplete version of the other:
+ *
+ * ```text
+ * appearance="gather-composition"          "execute the attached composition"
+ *   + gather:composition="foo.gather"      the artifact owns its identity
+ *                                          no form-level id comparison
+ *
+ * appearance="gather-composition:quadrat"  "this form requires composition X"
+ *                                          registered-handler lookup allowed
+ *                                          a loaded artifact must agree with X
+ * ```
+ *
+ * Treating the bare form as a missing id is what made every handler-free
+ * composition — the normal case — report a mismatch against `"null"`, found on
+ * device. A composition id is a *claim the form chooses to make*, not a field
+ * the form failed to fill in.
+ *
  * That is all this module answers. Where the composition's outputs *go* is
  * `./compositionBinding.js`'s job — derived from the group's own children — and
  * what it means to run one is the handler registry's (`./handlers/`).

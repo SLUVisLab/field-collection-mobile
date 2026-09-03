@@ -20,10 +20,12 @@ import {
 
 // --- recognition ---------------------------------------------------------
 
-test('a bare appearance token marks the group, and says nothing more', () => {
-  // Which composition it is comes from `body::gather:composition`, and the
-  // artifact is the authority on its own id. An appearance is a rendering
-  // property, so that is all it carries now.
+test('the bare token means "execute the attached composition"', () => {
+  // A null compositionId is not a missing declaration. The artifact named by
+  // `body::gather:composition` owns its identity, so the form makes no claim
+  // about it and nothing compares the two. Treating the absence as incomplete
+  // is what reported a mismatch against "null" for every handler-free
+  // composition — the normal case — and it took a device run to see.
   assert.deepEqual(compositionConfigFrom([COMPOSITION_APPEARANCE]), {
     enabled: true,
     compositionId: null,
@@ -34,12 +36,15 @@ test('a bare appearance token marks the group, and says nothing more', () => {
   });
 });
 
-test('the id-bearing token still resolves, for a composition this build registered', () => {
+test('the id-bearing token means "this form requires composition X"', () => {
+  // A claim the form chooses to make. It enables registered-handler lookup, and
+  // any loaded artifact must then agree with it — see the definition loader.
   assert.deepEqual(compositionConfigFrom([`${COMPOSITION_APPEARANCE_PREFIX}flower_v1`]), {
     enabled: true,
     compositionId: 'flower_v1',
   });
-  // A trailing colon naming nothing is inert rather than bound to an empty id.
+  // A trailing colon claims an identity and names none, which is neither
+  // meaning — inert rather than bound to an empty id.
   assert.equal(compositionConfigFrom([COMPOSITION_APPEARANCE_PREFIX]).enabled, false);
 });
 

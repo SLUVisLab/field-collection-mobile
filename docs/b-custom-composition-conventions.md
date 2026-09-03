@@ -176,6 +176,42 @@ Four decisions in it are load-bearing:
   an evaluated XPath expression. Type divides the same way — producer versus
   destination — and is checked for projectability, not equality.
 
+### The appearance token has two meanings
+
+Not one form and an incomplete version of it:
+
+| appearance | means | id comparison |
+| --- | --- | --- |
+| `gather-composition` + `gather:composition="foo.gather"` | *execute the attached composition* — the artifact owns its identity | none; the form makes no claim |
+| `gather-composition:quadrat_tally_v1` | *this form requires composition X* — registered-handler lookup allowed | a loaded artifact must agree with X |
+
+A composition id is a claim a form **chooses** to make. Reading its absence as a
+field the form failed to fill in is what made every handler-free composition —
+the normal case — report a mismatch against `"null"`, and only a device run
+showed it.
+
+### One working asset, one Gather identity
+
+Four names refer to a persisted capture, and they are one mint
+(`src/scientific/assets/workingAssetIdentity.js`):
+
+```text
+project_assets.asset_id        the ledger row
+ImageAsset.assetId             what the composition receives
+<assetId>.jpg                  the file on disk
+receipt.outputs.<x>.assetId    the provenance record
+```
+
+They were three independent mints and they disagreed: the ledger said
+`image-…633` while the receipt said `image-…694` for the same bytes. Only the
+fileKey was shared, which is why nothing visibly broke. Minting the pair
+together makes the agreement structural rather than a property of three call
+sites happening to use the same variable.
+
+The ODK `instance_media` row a promotion creates is a **different record with
+its own filename**, and deliberately so: one working asset, one Gather identity,
+one submission attachment.
+
 ### The compatibility contract
 
 | # | rule | why it is that way |
