@@ -34,6 +34,19 @@
  * child the composition does not produce stays hand-fillable; deriving bindings
  * from children would instead *clear* it on every Accept.
  *
+ * The compatibility contract, in full:
+ *
+ * 1. Extra XForm children are allowed and left untouched — another ODK client
+ *    fills them by hand.
+ * 2. An output with no compatible destination is a **load-time problem**,
+ *    unless the composition declares it `projected: false`.
+ * 3. `bind::gather:output` overrides the name match, but can only ever target a
+ *    body-backed child.
+ * 4. Effective requiredness is `compositionRequired || liveXFormsRequired`.
+ * 5. Projection comes from the destination control, never from producer type.
+ * 6. `retention` defaults to `discard` only where the destination is a real
+ *    media projection.
+ *
  * Rationale in docs/composition-binding-reassessment.md.
  */
 
@@ -81,8 +94,9 @@ const projectionFor = (node) => (node?.nodeType === 'upload' ? 'media' : 'none')
  * `media` defaults to `discard`: the XForm has already named a durable owner
  * for these bytes, so once promotion succeeds the working copy is a duplicate.
  * `keep` is the deliberate request to retain a project-local one. The default
- * does not generalise — see the refusal in `assertBinding`, and
- * docs/b-custom-composition-conventions.md §4b.
+ * does not generalise: with no durable XForms destination, keep versus discard
+ * decides whether the bytes survive at all, so that case is refused rather than
+ * guessed. docs/b-custom-composition-conventions.md §4b.
  */
 const retentionFor = (node, projection) => {
   const declared = node?.gather?.retention ?? null;
@@ -153,6 +167,18 @@ export const resolveCompositionFields = ({ renderModel } = {}) => {
 
     const children = directChildrenOf(nodes, reference);
     const candidates = children.filter((child) => child?.bodyBacked !== false);
+    // Gather metadata on a node that can never be a destination reads as
+    // configuration that should work, and silently does nothing.
+    for (const child of children) {
+      if (child?.bodyBacked !== false) continue;
+      const declared = child?.gather?.output ?? child?.gather?.retention ?? null;
+      if (declared == null) continue;
+      problems.push({
+        code: 'GATHER_COMPOSITION_METADATA_ON_UNBINDABLE_NODE',
+        reference: child.reference,
+        message: `${child.reference} carries Gather binding metadata but has no presentation control, so it can never receive a composition output.`,
+      });
+    }
     if (candidates.length === 0) {
       problems.push({
         code: 'GATHER_COMPOSITION_NO_BINDABLE_CHILDREN',
@@ -188,6 +214,10 @@ const SCALAR_COMPATIBILITY = Object.freeze({
   int: ['int'],
   decimal: ['decimal', 'int'],
   boolean: ['boolean'],
+  // An object has no scalar rendering. Reaching a non-media control it would be
+  // written as whatever String() makes of it, which is a value nobody wants and
+  // nobody would notice until they read the submission.
+  object: [],
 });
 
 const isProjectable = (outputType, node, projection) => {
@@ -217,7 +247,10 @@ const isProjectable = (outputType, node, projection) => {
  *
  * @param {{
  *   field: { reference: string, candidates: Array<object> },
- *   definition?: { id?: string, result?: { outputs?: Array<{path: string, type?: string, required?: boolean}> } }|null,
+ *   definition?: {
+ *     id?: string,
+ *     result?: { outputs?: Array<{path: string, type?: string, required?: boolean, projected?: boolean}> },
+ *   }|null,
  * }} input
  * @returns {{ bindings: Array<object>, problems: Array<{code: string, reference: string, message: string}> }}
  */
@@ -256,6 +289,12 @@ export const bindCompositionOutputs = ({ field, definition } = {}) => {
   for (const output of outputs) {
     const path = output?.path;
     if (!nonEmptyString(path)) continue;
+    // A composition may legitimately produce a value it does not project into
+    // the form — an intermediate a later step consumes, or something kept only
+    // for local review. That has to be *declared*, because the alternative is
+    // treating every unbound output as intentional, which is how a mis-authored
+    // form silently drops a result.
+    if (output?.projected === false) continue;
     const matched = byOutputName.get(path);
     if (!matched) {
       problems.push({

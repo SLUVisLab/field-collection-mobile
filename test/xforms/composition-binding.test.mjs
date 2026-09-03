@@ -335,3 +335,79 @@ test('bindings come out in the shape the result writer already consumes', () => 
   ]);
   assert.deepEqual(writerBindingsFor(null), []);
 });
+
+// --- the compatibility contract, stated ----------------------------------
+
+test('an output the composition declares non-projected is not expected to land anywhere', () => {
+  // A composition may legitimately produce a value it does not project into the
+  // form — an intermediate, or something kept only for local review. That has
+  // to be DECLARED, because the alternative is treating every unbound output as
+  // intentional, which is how a mis-authored form silently drops a result.
+  const { bindings, problems } = bind(
+    [child('note')],
+    [
+      { path: 'note', type: 'string' },
+      { path: 'mask', type: 'object', projected: false },
+    ]
+  );
+  assert.deepEqual(problems, [], 'a declared-local output is not a missing destination');
+  assert.deepEqual(
+    bindings.map((binding) => binding.path),
+    ['note']
+  );
+});
+
+test('an undeclared output with nowhere to land is still an error', () => {
+  // The escape above is opt-in precisely so this one keeps failing loudly.
+  const { problems } = bind(
+    [child('note')],
+    [
+      { path: 'note', type: 'string' },
+      { path: 'mask', type: 'object' },
+    ]
+  );
+  assert.equal(problems.length, 1);
+  assert.equal(problems[0].code, 'GATHER_COMPOSITION_OUTPUT_UNBOUND');
+});
+
+test('gather:output on a node with no presentation control is reported, not ignored', () => {
+  // The override can only ever target a body-backed child. On a model-only node
+  // it reads as configuration that should work and silently does nothing.
+  const { problems } = resolveCompositionFields(
+    model(
+      group(),
+      child('note'),
+      child('hidden', { nodeType: 'model-value', bodyBacked: false, gather: { output: 'note' } })
+    )
+  );
+  assert.equal(problems.length, 1);
+  assert.equal(problems[0].code, 'GATHER_COMPOSITION_METADATA_ON_UNBINDABLE_NODE');
+  assert.equal(problems[0].reference, '/data/flower/hidden');
+});
+
+test('gather:retention on a node with no presentation control is reported too', () => {
+  const { problems } = resolveCompositionFields(
+    model(
+      group(),
+      child('note'),
+      child('hidden', { nodeType: 'model-value', bodyBacked: false, gather: { retention: 'keep' } })
+    )
+  );
+  assert.equal(problems[0].code, 'GATHER_COMPOSITION_METADATA_ON_UNBINDABLE_NODE');
+});
+
+test('projection follows the destination control, never the producer type', () => {
+  // The same declared output type reaches a media projection or a scalar one
+  // purely by which control the form put there.
+  const media = bind(
+    [child('image', { nodeType: 'upload', valueType: 'binary' })],
+    [{ path: 'image', type: 'object' }]
+  );
+  assert.equal(media.bindings[0].projection, 'media');
+
+  // And a producer type that cannot reach a scalar control is caught rather
+  // than quietly written as a stringified object.
+  const scalar = bind([child('image', { valueType: 'string' })], [{ path: 'image', type: 'object' }]);
+  assert.deepEqual(scalar.bindings, []);
+  assert.equal(scalar.problems[0].code, 'GATHER_COMPOSITION_OUTPUT_TYPE_MISMATCH');
+});

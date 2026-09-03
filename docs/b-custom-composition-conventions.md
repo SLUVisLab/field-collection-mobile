@@ -176,6 +176,41 @@ Four decisions in it are load-bearing:
   an evaluated XPath expression. Type divides the same way — producer versus
   destination — and is checked for projectability, not equality.
 
+### The compatibility contract
+
+| # | rule | why it is that way |
+| --- | --- | --- |
+| 1 | **Extra XForm children are allowed and untouched.** | Another ODK client fills them by hand; §2's whole point. Bindings therefore come from declared outputs, never from children — the other way round would *clear* them on every Accept. |
+| 2 | **An output with no compatible destination is a load-time problem**, unless the composition declares it `projected: false`. | A composition may legitimately produce an intermediate, or something kept only for local review. Making that opt-in keeps every *accidental* unbound output loud. |
+| 3 | **`bind::gather:output` overrides the name match, and only ever targets a body-backed child.** | On a model-only node it would read as configuration that should work and silently do nothing, so it is reported instead. |
+| 4 | **Effective requiredness is `compositionRequired \|\| liveXFormsRequired`.** | Two contracts, not one fact: the producer's "can I complete without this?" and the form's "do I require it right now?", the second an evaluated XPath expression. |
+| 5 | **Projection comes from the destination control, never from producer type.** | `<upload>` decides. An `object` reaching a scalar control is a mismatch, not a stringification nobody would notice until they read the submission. |
+| 6 | **`retention` defaults to `discard` only where the destination is a real media projection.** | Only there has the XForm named a durable owner. Elsewhere the choice decides whether bytes survive at all, so it is refused rather than guessed. |
+
+Rules 2, 3 and 5 all exist because the failure they prevent is *silent*. That is
+the through-line of every defect this area has produced.
+
+### Errors now name authoring problems, not implementation artifacts
+
+The manifest could only ever report its own absence:
+
+```text
+Composition "flower_v1" has no entry in this form's binding manifest.
+```
+
+What the group reports instead is something an author — or the Composer agent —
+can act on:
+
+```text
+The composition produces "image" but /data/flower has no question named "image".
+The composition declares "count" as string, which cannot be written to
+  /data/flower/count (input/int).
+flower_v1.gather is declared for /data/flower but is not among this form
+  version's resources.
+/data/flower/hidden carries Gather binding metadata but has no presentation
+  control, so it can never receive a composition output.
+```
+
 The namespaced attributes reach the app through the render model:
 `buildRenderModel` in the WebView sidecar reads them off the live definition
 (`definition.bodyElement.element`, `definition.bind.bindElement`) and emits

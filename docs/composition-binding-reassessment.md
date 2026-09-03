@@ -365,8 +365,15 @@ needs confirming against a real draft before either route is committed to.
    `jr://images/…` node text claims an attachment slot — the only remaining
    unobserved link.
 4. ~~Delete the manifest code and rename what survives.~~ **Done.**
-5. Re-run the physical-device disposition lifecycle against the rewritten
+5. The **Central gate**, now narrow enough to state in one sentence: can a stock
+   Central form version carry our opaque composition resource using the
+   `gather_resources` declaration? It decides nothing about binding, composition
+   execution or XForms persistence.
+6. Re-run the physical-device disposition lifecycle against the rewritten
    binding path.
+
+The compatibility contract the rewrite settled is tabulated in
+[b-custom §1a](./b-custom-composition-conventions.md).
 
 ## Answers to the three questions
 

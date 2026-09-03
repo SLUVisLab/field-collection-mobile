@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { Script } from 'node:vm';
 
 import {
   WEBVIEW_XFORMS_HOST_ERROR_CODES,
@@ -93,6 +94,38 @@ test('createWebViewSidecarHtml projects an engine-derived ordered render model',
   assert.match(html, /parentReference/);
   assert.match(html, /node\.nodeOptions\?\.media\?\.type/);
   assert.match(html, /mediaAccept/);
+});
+
+test('the generated sidecar script is syntactically valid JavaScript', () => {
+  // The sidecar's JS is maintained INSIDE a template literal, so an unescaped
+  // backtick or `${` in a comment silently changes what is emitted. Grepping
+  // the output cannot see that; parsing it can. Found the hard way while adding
+  // the Gather namespace reader — a backtick in a comment broke the bundle.
+  const html = createWebViewSidecarHtml();
+  const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].map(
+    (match) => match[1]
+  );
+  assert.ok(scripts.length > 0, 'the sidecar has at least one inline script');
+  for (const [index, source] of scripts.entries()) {
+    assert.doesNotThrow(
+      () => new Script(source),
+      `inline script ${index} does not parse as JavaScript`
+    );
+  }
+});
+
+test('the render model projects Gather namespace attributes and body-backing', () => {
+  // These cannot be read app-side: the engine definition is a live object graph
+  // that cannot cross the RPC seam, so the resolved strings have to be projected
+  // here. See experiments/namespaced-gather-attributes.
+  const html = createWebViewSidecarHtml();
+  assert.match(html, /http:\/\/gather\.slu\.edu\/xforms/);
+  assert.match(html, /readGatherAttributes/);
+  assert.match(html, /definition\?\.bodyElement\?\.element/);
+  assert.match(html, /definition\?\.bind\?\.bindElement/);
+  // A bound model node with no presentation control is not a binding
+  // destination; composition binding filters on this.
+  assert.match(html, /bodyBacked: node\?\.definition\?\.bodyElement != null/);
 });
 
 test('createWebViewSidecarHtml binds a safe upload filename through an ephemeral web File', () => {
