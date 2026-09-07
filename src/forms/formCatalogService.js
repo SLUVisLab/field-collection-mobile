@@ -1,4 +1,7 @@
 import { OdkCentralClient, createAppUserAuth } from 'odk-central-client';
+import { digestBytes } from 'gather-hashing';
+
+import { sweepResourceBlobs } from './resourceBlobCleanup.js';
 import { GatherPaths } from 'gather-storage/paths';
 import {
   formKeyFor,
@@ -100,10 +103,24 @@ export const contentTypeFor = (resource, response) => {
   return resource?.isEntityList ? 'text/csv' : 'application/octet-stream';
 };
 
+/**
+ * Whether a form resource should be cached and handed back as text.
+ *
+ * The filename clause is not belt-and-braces: Central serves an attachment it
+ * classified as `image` — which is what its scanner calls anything declared
+ * through an itext media value — as `application/octet-stream`. Verified live
+ * against Central v2026.2.4. Without it a composition artifact downloads
+ * intact, is cached as bytes, and then reaches the composition loader with no
+ * `text`, which reports it as "present but empty".
+ *
+ * `.gather` is deliberately absent: that bundle is opaque by design, and the
+ * loader decodes it rather than the cache guessing it is text.
+ */
 export const isTextResource = (resource) =>
   Boolean(resource?.isEntityList) ||
   /^text\//i.test(resource?.contentType ?? '') ||
-  /(?:json|xml|javascript|csv)$/i.test(resource?.contentType ?? '');
+  /(?:json|xml|javascript|csv)$/i.test(resource?.contentType ?? '') ||
+  /\.(?:json|xml|csv|txt)$/i.test(resource?.filename ?? '');
 
 export const bytesToBase64 = (input) => {
   const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
@@ -121,20 +138,22 @@ export const bytesToBase64 = (input) => {
   return encoded;
 };
 
-const cacheKeysFor = ({ projectKey, formId, sourceVersion, sourceHash, fingerprint, resource = null }) => {
+/**
+ * Where a resource's BYTES live: under their own digest, not under the form
+ * revision that happened to reference them.
+ *
+ * A form revision references bytes; it does not own them. Keying by revision is
+ * what made one changed resource re-store every sibling — see
+ * docs/reference/architecture/form-refresh-cost.md.
+ */
+export const blobKeyFor = ({ projectKey, digest }) =>
+  GatherPaths.resources(projectKey, 'blobs', digest.replace(':', '-'));
+
+const cacheKeysFor = ({ projectKey, formId, sourceVersion, sourceHash, fingerprint }) => {
   const formSegment = `form-${cacheSegment(formId)}`;
   const revisionSegment = `revision-${cacheSegment(
     JSON.stringify([sourceVersion, sourceHash, fingerprint])
   )}`;
-  if (resource) {
-    return GatherPaths.resources(
-      projectKey,
-      formSegment,
-      revisionSegment,
-      `resource-${cacheSegment(resource.filename)}`,
-      'payload'
-    );
-  }
   return {
     xmlFileKey: GatherPaths.forms(projectKey, formSegment, revisionSegment, 'form.xml'),
     manifestFileKey: GatherPaths.forms(projectKey, formSegment, revisionSegment, 'manifest.json'),
@@ -158,6 +177,12 @@ const assertDependencies = ({ forms, credentials, files, createClient }) => {
     typeof forms.findVersion !== 'function' ||
     typeof forms.recordCachedVersion !== 'function' ||
     typeof forms.promoteVersion !== 'function' ||
+    // The content-addressed resource cache. Required rather than optional:
+    // silently falling back to per-version storage would reintroduce the
+    // duplication these exist to remove, and nothing would say so.
+    typeof forms.findResourceByValidator !== 'function' ||
+    typeof forms.getResourceBlob !== 'function' ||
+    typeof forms.recordResourceBlob !== 'function' ||
     !credentials ||
     typeof credentials.getProjectToken !== 'function' ||
     !files ||
@@ -165,6 +190,7 @@ const assertDependencies = ({ forms, credentials, files, createClient }) => {
     typeof files.writeBytesAtomic !== 'function' ||
     typeof files.readText !== 'function' ||
     typeof files.readBytes !== 'function' ||
+    typeof files.fileForKey !== 'function' ||
     typeof createClient !== 'function'
   ) {
     throw new FormCatalogError('Form catalog is not available yet.', {
@@ -328,27 +354,55 @@ export const createFormCatalogService = ({
             JSON.stringify({ formId: details.formId, resources: manifest })
           );
 
+          // Two different questions, and they need two different answers.
+          //
+          //   the server's validator  →  must I fetch this again?
+          //   our digest of the bytes →  do I already hold these?
+          //
+          // The second cannot be derived from the first: Central computes a
+          // Dataset attachment's hash from the dataset's last-updated
+          // timestamp, so an Entity List's validator changes when its bytes do
+          // not. That forces a download the digest then proves was redundant —
+          // and we still decline to write a second copy.
           const resources = [];
           for (const resource of manifest) {
+            const known = await forms.findResourceByValidator({
+              projectKey: project.projectKey,
+              formId: details.formId,
+              filename: resource.filename,
+              resourceHash: resource.hash,
+            });
+            if (known?.blobDigest && (await files.fileForKey(known.fileKey))?.exists) {
+              // The server says nothing changed and we still have the bytes.
+              resources.push({
+                ...resource,
+                contentType: known.contentType,
+                fileKey: known.fileKey,
+                blobDigest: known.blobDigest,
+              });
+              continue;
+            }
+
             const response = await client.downloadFormAttachment({
               formId: details.formId,
               filename: resource.filename,
             });
             const contentType = contentTypeFor(resource, response);
-            const fileKey = cacheKeysFor({
-              projectKey: project.projectKey,
-              formId: details.formId,
-              sourceVersion: details.sourceVersion,
-              sourceHash: details.sourceHash,
-              fingerprint,
-              resource,
-            });
-            if (isTextResource({ ...resource, contentType })) {
-              await files.writeTextAtomic(fileKey, await response.text());
-            } else {
-              await files.writeBytesAtomic(fileKey, new Uint8Array(await response.arrayBuffer()));
+            const bytes = new Uint8Array(await response.arrayBuffer());
+            const blobDigest = digestBytes(bytes);
+
+            const blob = await forms.getResourceBlob(blobDigest);
+            let fileKey = blob?.fileKey ?? null;
+            if (!fileKey || !(await files.fileForKey(fileKey))?.exists) {
+              fileKey = blobKeyFor({ projectKey: project.projectKey, digest: blobDigest });
+              await files.writeBytesAtomic(fileKey, bytes);
+              await forms.recordResourceBlob({
+                digest: blobDigest,
+                byteLength: bytes.byteLength,
+                fileKey,
+              });
             }
-            resources.push({ ...resource, contentType, fileKey });
+            resources.push({ ...resource, contentType, fileKey, blobDigest });
           }
 
           await forms.recordCachedVersion({
@@ -364,7 +418,17 @@ export const createFormCatalogService = ({
           failures.push({ formId: details?.formId ?? 'unknown', message: 'Could not cache this form.' });
         }
       }
-      return { refreshed, failures };
+      // A refresh is the moment the reachable set changes, so it is the natural
+      // sweep boundary. Best-effort and its outcome unreported: an uncollected
+      // blob costs disk, and failing a refresh over it would cost the fieldwork.
+      const swept = await sweepResourceBlobs({
+        projectKey: project.projectKey,
+        forms,
+        files,
+        blobDirectoryKey: GatherPaths.resources(project.projectKey, 'blobs'),
+      }).catch(() => null);
+
+      return { refreshed, failures, swept: swept?.deleted?.length ?? 0 };
     },
 
     /** Read any exact immutable version and turn resources into public host descriptors. */

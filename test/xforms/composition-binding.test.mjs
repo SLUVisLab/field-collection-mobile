@@ -15,7 +15,7 @@ import {
 } from '../../src/xforms/compositions/compositionBinding.js';
 
 // The XForm group IS the binding contract. Rationale in
-// docs/composition-binding-reassessment.md; the engine's exposure of the
+// docs/reference/architecture/composition-binding-reassessment.md; the engine's exposure of the
 // namespaced attributes is verified in experiments/namespaced-gather-attributes.
 
 // --- recognition ---------------------------------------------------------

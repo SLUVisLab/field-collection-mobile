@@ -64,12 +64,16 @@ export const formVersionKeyFor = ({
 
 const rowToResource = (row) => ({
   filename: row.filename,
+  // The SERVER's validator — whether we must fetch again.
   hash: row.resource_hash || null,
   type: row.resource_type ?? null,
   isEntityList: Number(row.is_entity_list) === 1,
   entityDataset: row.entity_dataset_name ?? null,
   contentType: row.content_type,
   fileKey: row.file_key,
+  // OUR digest of the bytes — whether we already hold them. Empty for rows
+  // written before migration 13, which still resolve through `fileKey`.
+  blobDigest: row.blob_digest || null,
 });
 
 const rowToVersion = (row) => {
@@ -138,7 +142,8 @@ export const createFormsRepository = (db) => {
     if (!row) return null;
     const version = rowToVersion(row);
     const resources = await db.getAllAsync(
-      `SELECT filename, resource_hash, resource_type, is_entity_list, entity_dataset_name, content_type, file_key
+      `SELECT filename, resource_hash, resource_type, is_entity_list, entity_dataset_name,
+              content_type, file_key, blob_digest
          FROM form_resources WHERE form_version_id = ? ORDER BY filename COLLATE NOCASE ASC;`,
       [version.formVersionId]
     );
@@ -220,6 +225,7 @@ export const createFormsRepository = (db) => {
         entityDataset: resource?.entityDataset == null ? null : nonEmpty(resource.entityDataset, 'entity dataset'),
         contentType: nonEmpty(resource?.contentType, 'resource contentType'),
         fileKey: nonEmpty(resource?.fileKey, 'resource fileKey'),
+        blobDigest: stringOrEmpty(resource?.blobDigest),
       }));
 
       await db.withTransactionAsync(async () => {
@@ -253,8 +259,8 @@ export const createFormsRepository = (db) => {
           await db.runAsync(
             `INSERT OR IGNORE INTO form_resources (
                form_version_id, filename, resource_hash, resource_type,
-               is_entity_list, entity_dataset_name, content_type, file_key
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
+               is_entity_list, entity_dataset_name, content_type, file_key, blob_digest
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
             [
               versionId,
               resource.filename,
@@ -264,6 +270,7 @@ export const createFormsRepository = (db) => {
               resource.entityDataset,
               resource.contentType,
               resource.fileKey,
+              resource.blobDigest,
             ]
           );
         }
@@ -275,6 +282,89 @@ export const createFormsRepository = (db) => {
         );
       });
       return getVersion(versionId);
+    },
+
+    /**
+     * Has this form already downloaded this filename under this server
+     * validator? If so the bytes need not be fetched again — which is the whole
+     * OpenRosa caching rule, applied per media file rather than per form
+     * version.
+     *
+     * Scoped to the form deliberately. A validator is only meaningful where the
+     * server issued it: a Dataset attachment's hash is a timestamp, not a
+     * content digest, so it says nothing across forms.
+     */
+    async findResourceByValidator({ projectKey, formId, filename, resourceHash }) {
+      if (typeof resourceHash !== 'string' || resourceHash.length === 0) return null;
+      const formKey = formKeyFor({ projectKey, formId });
+      const row = await db.getFirstAsync(
+        `SELECT fr.filename, fr.resource_hash, fr.resource_type, fr.is_entity_list,
+                fr.entity_dataset_name, fr.content_type, fr.file_key, fr.blob_digest
+           FROM form_resources fr
+           JOIN form_versions fv ON fv.form_version_id = fr.form_version_id
+          WHERE fv.form_key = ? AND fr.filename = ? AND fr.resource_hash = ?
+                AND fr.blob_digest <> ''
+          LIMIT 1;`,
+        [formKey, nonEmpty(filename, 'filename'), resourceHash]
+      );
+      return row ? rowToResource(row) : null;
+    },
+
+    /** The bytes, if we already hold them under this digest. */
+    async getResourceBlob(digest) {
+      if (typeof digest !== 'string' || digest.length === 0) return null;
+      const row = await db.getFirstAsync(
+        `SELECT digest, byte_length, file_key, created_at FROM resource_blobs WHERE digest = ? LIMIT 1;`,
+        [digest]
+      );
+      return row
+        ? { digest: row.digest, byteLength: Number(row.byte_length), fileKey: row.file_key, createdAt: row.created_at }
+        : null;
+    },
+
+    async recordResourceBlob({ digest, byteLength, fileKey }) {
+      const value = {
+        digest: nonEmpty(digest, 'blob digest'),
+        byteLength: Number(byteLength) || 0,
+        fileKey: nonEmpty(fileKey, 'blob fileKey'),
+      };
+      await db.runAsync(
+        `INSERT INTO resource_blobs (digest, byte_length, file_key) VALUES (?, ?, ?)
+         ON CONFLICT (digest) DO UPDATE SET byte_length = excluded.byte_length, file_key = excluded.file_key;`,
+        [value.digest, value.byteLength, value.fileKey]
+      );
+      return value;
+    },
+
+    /**
+     * Reachability inputs for the blob sweep: every blob any form revision
+     * still references, and every blob we have recorded.
+     *
+     * Mark-and-sweep rather than reference counts. A counter has to stay
+     * correct across a refresh that fails half way through; reachability is
+     * simply recomputed, and the number of form resources on a device is small.
+     */
+    async listReferencedBlobDigests() {
+      const rows = await db.getAllAsync(
+        `SELECT DISTINCT blob_digest FROM form_resources WHERE blob_digest <> '';`
+      );
+      return (rows ?? []).map((row) => row.blob_digest);
+    },
+
+    async listResourceBlobs() {
+      const rows = await db.getAllAsync(
+        `SELECT digest, byte_length, file_key FROM resource_blobs ORDER BY digest ASC;`
+      );
+      return (rows ?? []).map((row) => ({
+        digest: row.digest,
+        byteLength: Number(row.byte_length),
+        fileKey: row.file_key,
+      }));
+    },
+
+    async deleteResourceBlob(digest) {
+      await db.runAsync(`DELETE FROM resource_blobs WHERE digest = ?;`, [nonEmpty(digest, 'digest')]);
+      return { digest };
     },
 
     /** Promote an already immutable version after a repeated explicit refresh. */

@@ -8,7 +8,7 @@ import {
 } from '../src/repositories/assets.js';
 
 // The ledger that makes project cleanup safe.
-// See docs/b-custom-composition-conventions.md §4.
+// See docs/reference/conventions/b-custom-composition-conventions.md §4.
 
 const makeFakeDb = () => {
   const rows = new Map();

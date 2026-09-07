@@ -60,5 +60,5 @@ has been hardwired into a supposedly generic runtime merely to make the registry
 look useful. A form may declare a composition this build cannot run, and the
 control says so explicitly.
 
-See §6 of [docs/b-custom-composition-conventions.md](../../../docs/b-custom-composition-conventions.md)
+See §6 of [docs/reference/conventions/b-custom-composition-conventions.md](../../../docs/reference/conventions/b-custom-composition-conventions.md)
 for the deferral and its tripwire.

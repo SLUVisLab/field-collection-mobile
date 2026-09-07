@@ -8,7 +8,7 @@
  * disables capture; an unmet minimum disables completion). Ownership of the
  * underlying rule belongs to the host — a composition's config, or XForms
  * constraint/repeat semantics via an adapter — so there is one source of truth.
- * See docs/components-capabilities-ownership.md §12.
+ * See docs/reference/architecture/components-capabilities-ownership.md §12.
  */
 
 const count = (items) => (Array.isArray(items) ? items.length : 0);

@@ -10,7 +10,7 @@ import {
 } from '../src/image-collection/multiImageModel.js';
 
 // Cardinality lives with the Component because it affects interaction; the host
-// owns the underlying rule. See docs/components-capabilities-ownership.md §12.
+// owns the underlying rule. See docs/reference/architecture/components-capabilities-ownership.md §12.
 
 test('capture stays available until the collection is full', () => {
   assert.equal(canCapture({ items: [], maxItems: 2 }), true);

@@ -2,13 +2,13 @@
  * Ledger for project assets that are **not** form attachments.
  *
  * Form attachments are tracked by `instance_media` and are needed until
- * submission takes them. Everything else — a scientific capture kept for local
+ * submission takes them. Everything else — a capture kept for local
  * review, an intermediate a composition computed from — is referenced by
  * nothing in the database, so a sweep cannot tell it apart from an orphaned
  * byte. This table is what makes cleanup safe: retention is recorded
  * explicitly, per asset.
  *
- * See docs/b-custom-composition-conventions.md §4.
+ * See docs/reference/conventions/b-custom-composition-conventions.md §4.
  */
 
 import { assertProjectKey, assertRelativeKey } from '../paths.js';

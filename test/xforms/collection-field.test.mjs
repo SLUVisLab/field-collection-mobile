@@ -13,7 +13,7 @@ import {
 } from '../../src/xforms/collectionField.js';
 
 // Conventions verified against the engine in experiments/appearance-parameters/
-// and settled in docs/b-standard-field-conventions.md.
+// and settled in docs/reference/conventions/b-standard-field-conventions.md.
 
 test('the appearance token turns an ordinary repeat into a collection field', () => {
   assert.equal(multiImageConfigFrom([MULTI_IMAGE_APPEARANCE]).enabled, true);

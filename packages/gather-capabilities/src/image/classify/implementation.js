@@ -7,12 +7,21 @@ const requireImageAsset = (image) => {
   }
 };
 
-const requireProfile = (modelRef, expected) => {
+/**
+ * The accepted profiles come from the capability's own definition rather than a
+ * constant in here, so the pairing is machine-readable — Composer filtering and
+ * default-model validation read the same list this check enforces.
+ */
+const requireProfile = (modelRef, accepted) => {
   if (!modelRef || typeof modelRef !== 'object' || typeof modelRef.taskProfile !== 'string') {
     throw new CapabilityError('A resolved model reference is required.', { code: 'GATHER_IMAGE_INVALID_MODEL' });
   }
-  if (modelRef.taskProfile !== expected) {
-    throw new CapabilityError(`Model does not support ${expected}.`, { code: 'GATHER_IMAGE_UNSUPPORTED_PROFILE' });
+  const profiles = Array.isArray(accepted) && accepted.length > 0 ? accepted : [];
+  if (!profiles.includes(modelRef.taskProfile)) {
+    throw new CapabilityError(
+      `Model profile "${modelRef.taskProfile}" does not satisfy ${profiles.join(', ') || 'this capability'}.`,
+      { code: 'GATHER_IMAGE_UNSUPPORTED_PROFILE' }
+    );
   }
 };
 
@@ -27,9 +36,9 @@ const requireExecute = (execute) => {
  * durable inputs, run the injected inference `execute`, shape a serializable
  * ranked-label result.
  */
-export const classify = async ({ image, model, modelRef, execute } = {}) => {
+export const classify = async ({ image, model, modelRef, execute, acceptedModelProfiles } = {}) => {
   requireImageAsset(image);
-  requireProfile(modelRef, IMAGE_TASK_PROFILES.classificationRanked);
+  requireProfile(modelRef, acceptedModelProfiles ?? [IMAGE_TASK_PROFILES.classificationRanked]);
   requireExecute(execute);
   const result = await execute({ image, model });
   if (!Array.isArray(result?.ranked) || result.ranked.some((item) => typeof item?.label !== 'string' || !Number.isFinite(item?.score))) {

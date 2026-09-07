@@ -41,7 +41,7 @@ const makeFakeDb = (startVersion = 0) => {
 test('the shipped MIGRATIONS are well-ordered', () => {
   assert.doesNotThrow(() => assertMigrationOrder(MIGRATIONS));
   assert.equal(latestVersion(MIGRATIONS), MIGRATIONS.length);
-  assert.equal(latestVersion(MIGRATIONS), 12);
+  assert.equal(latestVersion(MIGRATIONS), 13);
 });
 
 test('migration 3 provisions append-only form versions and draft references', () => {
@@ -211,7 +211,7 @@ test('applyMigrations resumes from a partially-migrated database', async () => {
 
 test('migration 10 re-keys instance media off the positional binding reference', () => {
   // Repeat references reindex on deletion, so they cannot be a durable media
-  // identity. See docs/repeat-media-identity-characterization.md.
+  // identity. See docs/reference/conventions/repeat-media-identity-characterization.md.
   const media = MIGRATIONS.find((migration) => migration.name === 'instance_media_identity');
   assert.equal(media.version, 10);
   const sql = media.statements.join('\n');
@@ -263,4 +263,23 @@ test('migration 12 provisions the asset ledger that makes cleanup safe', () => {
   assert.match(sql, /released_at\s+TEXT/);
   assert.match(sql, /REFERENCES projects\(project_key\) ON DELETE CASCADE/);
   assert.match(sql, /CREATE INDEX project_assets_by_project/);
+});
+
+test('migration 13 makes a form revision reference bytes rather than own them', () => {
+  // resource_hash is the SERVER's validator; blob_digest is ours, over the
+  // actual bytes. They cannot be one field: Central derives a Dataset
+  // attachment's hash from the dataset's last-updated timestamp, so the
+  // validator changes when the content does not.
+  const blobs = MIGRATIONS.find((m) => m.version === 13);
+  assert.ok(blobs, 'version 13 migration exists');
+  assert.equal(blobs.name, 'content_addressed_form_resources');
+  const sql = blobs.statements.join('\n');
+  assert.match(sql, /CREATE TABLE resource_blobs/);
+  assert.match(sql, /digest\s+TEXT PRIMARY KEY NOT NULL/);
+  assert.match(sql, /ALTER TABLE form_resources ADD COLUMN blob_digest TEXT NOT NULL DEFAULT ''/);
+  // The per-resource validator lookup the refresh performs.
+  assert.match(sql, /CREATE INDEX form_resources_by_validator/);
+  // Existing rows must keep resolving through file_key, so nothing
+  // re-downloads on upgrade.
+  assert.doesNotMatch(sql, /UPDATE form_resources/);
 });

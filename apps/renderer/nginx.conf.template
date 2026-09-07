@@ -1,0 +1,29 @@
+# An nginx *template*: the container substitutes ${RENDERER_...} variables at
+# startup. `NGINX_ENVSUBST_FILTER=RENDERER_` in compose.yml is what keeps
+# nginx's own `$uri` from being substituted into nothing.
+#
+# `frame-ancestors` is the reason this file is a template. The renderer is
+# meant to be embedded by an A2UI Composer, and which Composer that is depends
+# on the deployment. Hard-coding the Google-hosted one meant a self-hosted
+# Composer was blocked by the browser with no server-side symptom at all — the
+# renderer served 200, and the iframe simply never loaded.
+#
+# The hosted Composer stays in the literal list rather than moving into the
+# variable, so an image run without configuration still supports the
+# integration that has been verified end to end.
+
+server {
+  listen 8080;
+  server_name _;
+
+  root /usr/share/nginx/html;
+  index index.html;
+
+  add_header Content-Security-Policy "default-src 'self'; img-src 'self' https://placehold.co data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors https://a2ui-project.github.io ${RENDERER_FRAME_ANCESTORS}" always;
+  add_header X-Content-Type-Options nosniff always;
+  add_header Referrer-Policy no-referrer always;
+
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+}

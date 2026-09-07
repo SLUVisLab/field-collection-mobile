@@ -45,7 +45,7 @@ import {
  *
  * The form is the **pyxform-canonical** shape — appearance on the `<repeat>`,
  * wrapping `<group>` left bare — which is what `begin_repeat … appearance=…`
- * actually compiles to (docs/b-standard-field-conventions.md §1). It also
+ * actually compiles to (docs/reference/conventions/b-standard-field-conventions.md §1). It also
  * carries an ordinary appearance-free repeat, so recognition is proven
  * *additive* rather than a change to how every repeat renders.
  *

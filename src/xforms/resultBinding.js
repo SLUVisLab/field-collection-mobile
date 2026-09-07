@@ -15,7 +15,7 @@
  * attachments — so a workflow that writes values through here and never calls
  * it submits XML with zero image bytes. That is the point: an ODK image slot is
  * needed only when the pixels themselves are the datum. See
- * docs/components-capabilities-ownership.md §15.
+ * docs/reference/architecture/components-capabilities-ownership.md §15.
  *
  * The structural guard below is load-bearing: an object or array can never
  * become a field value, so an `ImageAsset` cannot be stringified into a text

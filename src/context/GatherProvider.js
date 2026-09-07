@@ -34,20 +34,20 @@ import { createInstanceLifecycleService } from '../instances/instanceLifecycleSe
 import { sweepProjectAssets } from '../instances/assetCleanup.js';
 import { createSyncService } from '../sync/syncService.js';
 import { createFieldworkService } from '../fieldwork/fieldworkService.js';
-import { createModelStore } from '../scientific/models/modelStore.js';
-import { ensureBundledModel, installBundledModel } from '../scientific/models/bundledModelInstaller.js';
-import { BUNDLED_MODEL_PACKAGES } from '../scientific/models/bundledModelPackages.js';
-import { createReactNativeOnnxRuntime } from '../scientific/runtime/onnxReactNativeAdapter.js';
-import { createOpenCvImageAdapter } from '../scientific/runtime/openCvImageAdapter.js';
-import { createOpenCvMeasurementAdapter } from '../scientific/runtime/openCvMeasurementAdapter.js';
-import { workingAssetIdentity } from '../scientific/assets/workingAssetIdentity.js';
-import { createModelExecutor } from '../scientific/runtime/modelExecutor.js';
-import { createImageAssetService } from '../scientific/assets/imageAssetService.js';
-import { segment, classify, measureImage, measureMask } from 'gather-capabilities';
+import { createModelStore } from 'gather-models';
+import { ensureBundledModel, installBundledModel } from '../compute/models/bundledModelInstaller.js';
+import { bundledModelForRef, defaultModelRefFor } from '../compute/models/modelPolicy.js';
+import { buildModelCatalog } from '../compute/models/modelCatalog.js';
+import { createReactNativeOnnxRuntime } from '../compute/runtime/onnxReactNativeAdapter.js';
+import { createOpenCvImageAdapter } from '../compute/runtime/openCvImageAdapter.js';
+import { createOpenCvMeasurementAdapter } from '../compute/runtime/openCvMeasurementAdapter.js';
+import { workingAssetIdentity } from '../media/workingAssetIdentity.js';
+import { createModelExecutor } from '../compute/runtime/modelExecutor.js';
+import { createImageAssetService } from '../media/imageAssetService.js';
+import { capabilityDefinitionsById, classify, measureImage, measureMask, segment } from 'gather-capabilities';
 import { CAPABILITY_DEFINITIONS } from '../../packages/gather-capabilities/src/definitions.js';
 import { createCapabilityRuntime } from '../../packages/gather-capabilities/src/runtime.js';
 import { capabilityFunctions } from '../a2ui/capabilityFunctions.js';
-import { createScientificModelRef } from '../scientific/models/modelPackage.js';
 
 /**
  * Runs the (pure) bootstrap orchestration against the real native storage layer
@@ -130,7 +130,17 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     return createFormCatalogService({
       forms,
       credentials: state.boot.storage.credentials,
-      files: { readBytes, readText, writeBytesAtomic, writeTextAtomic },
+      // `fileForKey` and the directory helpers are what let the catalog reuse a
+      // blob it already holds and sweep the ones nothing references.
+      files: {
+        readBytes,
+        readText,
+        writeBytesAtomic,
+        writeTextAtomic,
+        fileForKey,
+        deleteFile,
+        listDirectory,
+      },
       entities: entityService,
     });
   }, [entityService, forms, state.boot?.storage]);
@@ -184,7 +194,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       fileForKey,
     });
   }, [state.boot?.storage]);
-  const scientificRuntime = useMemo(() => {
+  const computeRuntime = useMemo(() => {
     if (!modelStore || !state.boot?.storage) return null;
     const files = { readBytes, readText, fileForKey };
     const imageAdapter = createOpenCvImageAdapter();
@@ -447,55 +457,93 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     },
     [activeProject, fieldworkService]
   );
-  const installScientificModel = useCallback(
+  const installModel = useCallback(
     async (name) => {
       if (!modelStore || !activeProject) throw new Error('model store is not ready');
       return installBundledModel({ modelStore, projectKey: activeProject.projectKey, name });
     },
     [activeProject, modelStore]
   );
-  const resolveScientificModel = useCallback(
+  const resolveModel = useCallback(
     async (modelRef) => {
       if (!modelStore || !activeProject) throw new Error('model store is not ready');
       return modelStore.resolve({ projectKey: activeProject.projectKey, modelRef });
     },
     [activeProject, modelStore]
   );
-  const segmentScientificImage = useCallback(
-    async ({ image, modelName = 'u2netp' }) => {
-      if (!scientificRuntime || !activeProject) throw new Error('scientific runtime is not ready');
-      const model = BUNDLED_MODEL_PACKAGES[modelName];
-      await ensureBundledModel({ modelStore, projectKey: activeProject.projectKey, name: modelName });
+  /**
+   * The model boundary: a serialized `ModelRef` — or none, meaning "use this
+   * build's default" — becomes the resolved descriptor the inference engine
+   * needs, installing lazily if the bytes are not on the device yet.
+   *
+   * Injected into the capability runtime rather than imported by it, because
+   * *which* model answers an absent ref is app policy and not capability
+   * semantics. Both paths converge here, so provenance records a concrete ref
+   * whichever one was taken.
+   */
+  const resolveCapabilityModel = useCallback(
+    async ({ capabilityId, acceptedModelProfiles, modelRef }) => {
+      if (!modelStore || !activeProject) throw new Error('the model store is not ready');
+      const wanted = modelRef ?? defaultModelRefFor(capabilityId, acceptedModelProfiles);
+      if (!wanted) {
+        throw new Error(`${capabilityId} needs a model and this build declares no default for it.`);
+      }
+      const declared = bundledModelForRef(wanted);
+      const resolved = declared
+        ? await ensureBundledModel({
+            modelStore,
+            projectKey: activeProject.projectKey,
+            name: declared.name,
+          })
+        : await modelStore.resolve({ projectKey: activeProject.projectKey, modelRef: wanted });
+      return { model: resolved.model, modelRef: resolved.modelRef };
+    },
+    [activeProject, modelStore]
+  );
+
+  const runImageSegmentation = useCallback(
+    async ({ image, modelRef = null }) => {
+      if (!computeRuntime || !activeProject) throw new Error('the on-device compute runtime is not ready');
+      const definition = capabilityDefinitionsById['image.segment'];
+      const resolved = await resolveCapabilityModel({
+        capabilityId: 'image.segment',
+        acceptedModelProfiles: definition?.acceptedModelProfiles ?? [],
+        modelRef,
+      });
       return segment({
         image,
-        model,
-        modelRef: createScientificModelRef(model),
-        execute: (input) => scientificRuntime.executor.segment({ ...input, projectKey: activeProject.projectKey }),
+        ...resolved,
+        acceptedModelProfiles: definition?.acceptedModelProfiles,
+        execute: (input) => computeRuntime.executor.segment({ ...input, projectKey: activeProject.projectKey }),
       });
     },
-    [activeProject, modelStore, scientificRuntime]
+    [activeProject, computeRuntime, resolveCapabilityModel]
   );
-  const classifyScientificImage = useCallback(
-    async ({ image, modelName = 'mobilenetV3Large' }) => {
-      if (!scientificRuntime || !activeProject) throw new Error('scientific runtime is not ready');
-      const model = BUNDLED_MODEL_PACKAGES[modelName];
-      await ensureBundledModel({ modelStore, projectKey: activeProject.projectKey, name: modelName });
+  const runImageClassification = useCallback(
+    async ({ image, modelRef = null }) => {
+      if (!computeRuntime || !activeProject) throw new Error('the on-device compute runtime is not ready');
+      const definition = capabilityDefinitionsById['image.classify'];
+      const resolved = await resolveCapabilityModel({
+        capabilityId: 'image.classify',
+        acceptedModelProfiles: definition?.acceptedModelProfiles ?? [],
+        modelRef,
+      });
       return classify({
         image,
-        model,
-        modelRef: createScientificModelRef(model),
-        execute: (input) => scientificRuntime.executor.classify({ ...input, projectKey: activeProject.projectKey }),
+        ...resolved,
+        acceptedModelProfiles: definition?.acceptedModelProfiles,
+        execute: (input) => computeRuntime.executor.classify({ ...input, projectKey: activeProject.projectKey }),
       });
     },
-    [activeProject, modelStore, scientificRuntime]
+    [activeProject, computeRuntime, resolveCapabilityModel]
   );
-  const measureScientificMask = useCallback(
-    async ({ mask }) => measureMask({ mask, adapter: scientificRuntime?.measurementAdapter }),
-    [scientificRuntime]
+  const runMaskMeasurement = useCallback(
+    async ({ mask }) => measureMask({ mask, adapter: computeRuntime?.measurementAdapter }),
+    [computeRuntime]
   );
-  const measureScientificImage = useCallback(
-    async ({ image, mask }) => measureImage({ image, mask, adapter: scientificRuntime?.measurementAdapter }),
-    [scientificRuntime]
+  const runImageMeasurement = useCallback(
+    async ({ image, mask }) => measureImage({ image, mask, adapter: computeRuntime?.measurementAdapter }),
+    [computeRuntime]
   );
   /**
    * Makes a capture durable as a **working** asset.
@@ -511,9 +559,9 @@ export function GatherProvider({ children, deps, onReady, onError }) {
    * planner reads as "still in use" (rule 4). Nothing reclaims it until a
    * producer releases it, and completion is the producer.
    */
-  const persistScientificCapture = useCallback(
+  const persistWorkingAsset = useCallback(
     async (capture) => {
-      if (!imageAssetService || !activeProject) throw new Error('scientific image storage is not ready');
+      if (!imageAssetService || !activeProject) throw new Error('media storage is not ready');
       // One mint for the ledger row, the file on disk and the ImageAsset the
       // composition receives — they were three, and they disagreed. The ODK
       // attachment a promotion may later create is a separate record with its
@@ -554,7 +602,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
 
   /**
    * Settles a working asset's disposition once an output binding has declared
-   * one. This is the other half of `persistScientificCapture`: capture makes
+   * one. This is the other half of `persistWorkingAsset`: capture makes
    * bytes durable, completion says what they were for.
    *
    * ```text
@@ -586,7 +634,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
    * their own safe lifecycle boundaries.
    *
    * `reclaimOrphans` stays false, so a file with no ledger row is kept — see
-   * docs/b-custom-composition-conventions.md §4.
+   * docs/reference/conventions/b-custom-composition-conventions.md §4.
    */
   const sweepProjectMedia = useCallback(async () => {
     if (!activeProject || !instances || !assets) return null;
@@ -608,18 +656,35 @@ export function GatherProvider({ children, deps, onReady, onError }) {
    * surface to keep in step. Only capabilities with a runtime entry register.
    */
   const a2uiCapabilityFunctions = useMemo(() => {
-    if (!scientificRuntime || !activeProject) return [];
+    if (!computeRuntime || !activeProject) return [];
     return capabilityFunctions({
       definitions: CAPABILITY_DEFINITIONS,
       runtime: createCapabilityRuntime({
         segmentExecute: (input) =>
-          scientificRuntime.executor.segment({ ...input, projectKey: activeProject.projectKey }),
+          computeRuntime.executor.segment({ ...input, projectKey: activeProject.projectKey }),
         classifyExecute: (input) =>
-          scientificRuntime.executor.classify({ ...input, projectKey: activeProject.projectKey }),
-        measurementAdapter: scientificRuntime.measurementAdapter,
+          computeRuntime.executor.classify({ ...input, projectKey: activeProject.projectKey }),
+        measurementAdapter: computeRuntime.measurementAdapter,
+        resolveModel: resolveCapabilityModel,
       }),
     });
-  }, [activeProject, scientificRuntime]);
+  }, [activeProject, computeRuntime, resolveCapabilityModel]);
+
+  /**
+   * The Model Catalog the Composer discovers, beside the Component and
+   * Capability catalogs. Gather-owned and A2UI-independent: A2UI only ever sees
+   * a `ModelRef` inside a capability's input schema.
+   */
+  const modelCatalog = useCallback(
+    async () => {
+      const installed =
+        modelStore && activeProject
+          ? await modelStore.listInstalled({ projectKey: activeProject.projectKey }).catch(() => [])
+          : [];
+      return buildModelCatalog({ installed });
+    },
+    [activeProject, modelStore]
+  );
 
   const value = useMemo(
     () => ({
@@ -658,14 +723,15 @@ export function GatherProvider({ children, deps, onReady, onError }) {
         getFieldworkSession,
         updateFieldworkSession,
         associateFieldworkInstance,
-        installScientificModel,
-        resolveScientificModel,
-        segmentScientificImage,
-        classifyScientificImage,
-        measureScientificMask,
-        measureScientificImage,
-        persistScientificCapture,
+        installModel,
+        resolveModel,
+        runImageSegmentation,
+        runImageClassification,
+        runMaskMeasurement,
+        runImageMeasurement,
+        persistWorkingAsset,
         applyAssetDisposition,
+        modelCatalog,
         sweepProjectMedia,
         a2uiCapabilityFunctions,
       },
@@ -708,14 +774,15 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       getFieldworkSession,
       updateFieldworkSession,
       associateFieldworkInstance,
-      installScientificModel,
-      resolveScientificModel,
-      segmentScientificImage,
-      classifyScientificImage,
-      measureScientificMask,
-      measureScientificImage,
-      persistScientificCapture,
+      installModel,
+      resolveModel,
+      runImageSegmentation,
+      runImageClassification,
+      runMaskMeasurement,
+      runImageMeasurement,
+      persistWorkingAsset,
       applyAssetDisposition,
+      modelCatalog,
       sweepProjectMedia,
     ]
   );

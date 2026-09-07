@@ -56,7 +56,7 @@ function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy, collectio
     // rather than falling through to "Unsupported XForms control: group",
     // which would be both wrong and quiet about the consequence — the group's
     // backing fields are suppressed because the composition owns its subtree
-    // (docs/b-custom-composition-conventions.md §5), so there is nothing else
+    // (docs/reference/conventions/b-custom-composition-conventions.md §5), so there is nothing else
     // on screen to explain the gap.
     return (
       <View

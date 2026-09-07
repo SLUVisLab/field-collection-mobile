@@ -13,14 +13,15 @@ import {
   writeBytesAtomic,
   writeTextAtomic,
 } from 'gather-storage';
-import { BUNDLED_MODEL_PACKAGES } from '../src/scientific/models/bundledModelPackages.js';
-import { createModelStore } from '../src/scientific/models/modelStore.js';
-import { createReactNativeOnnxRuntime } from '../src/scientific/runtime/onnxReactNativeAdapter.js';
-import { createOpenCvImageAdapter } from '../src/scientific/runtime/openCvImageAdapter.js';
-import { createOpenCvMeasurementAdapter } from '../src/scientific/runtime/openCvMeasurementAdapter.js';
-import { createModelExecutor } from '../src/scientific/runtime/modelExecutor.js';
-import { createImageAsset, createMaskAsset, sha256For } from '../src/scientific/contracts.js';
-import { createSegmentAndMeasureResult } from '../src/scientific/workflows/segmentAndMeasure.js';
+import { BUNDLED_MODEL_PACKAGES } from '../src/compute/models/bundledModelPackages.js';
+import { createModelStore } from 'gather-models';
+import { createReactNativeOnnxRuntime } from '../src/compute/runtime/onnxReactNativeAdapter.js';
+import { createOpenCvImageAdapter } from '../src/compute/runtime/openCvImageAdapter.js';
+import { createOpenCvMeasurementAdapter } from '../src/compute/runtime/openCvMeasurementAdapter.js';
+import { createModelExecutor } from '../src/compute/runtime/modelExecutor.js';
+import { createImageAsset, createMaskAsset } from '../src/media/assetContracts.js';
+import { digestBytes } from 'gather-hashing';
+import { createSegmentAndMeasureResult } from '../src/a2ui/legacy/segmentAndMeasureResult.js';
 import { classify, segment } from '../src/capabilities/vision/index.js';
 
 const MARKER = 'M80_NATIVE_SUBSTRATE_RESULT::';
@@ -85,12 +86,12 @@ export default function M80NativeSubstrateGateApp() {
           session.release?.();
         }
         const referenceModels = [
-          { name: 'u2netp', packageName: 'u2netp', asset: require('../assets/scientific/models/u2netp.onnx'), input: [1, 3, 320, 320], output: 'saliency' },
+          { name: 'u2netp', packageName: 'u2netp', asset: require('../assets/models/u2netp.onnx'), input: [1, 3, 320, 320], output: 'saliency' },
           {
             name: 'mobilenet-v3-large',
             packageName: 'mobilenetV3Large',
-            asset: require('../assets/scientific/models/mobilenet-v3-large-imagenet1k-v2.onnx'),
-            labels: require('../assets/scientific/models/imagenet-1k-labels.txt'),
+            asset: require('../assets/models/mobilenet-v3-large-imagenet1k-v2.onnx'),
+            labels: require('../assets/models/imagenet-1k-labels.txt'),
             input: [1, 3, 224, 224],
             output: 'logits',
           },
@@ -149,7 +150,7 @@ export default function M80NativeSubstrateGateApp() {
           width: 2,
           height: 2,
           mimeType: 'image/png',
-          sha256: sha256For(await readBytes(inputPath)),
+          sha256: digestBytes(await readBytes(inputPath)),
         });
         const executor = createModelExecutor({
           modelStore,
@@ -208,7 +209,7 @@ export default function M80NativeSubstrateGateApp() {
           path: fixtureMaskPath,
           width: 2,
           height: 2,
-          sha256: sha256For(await readBytes(fixtureMaskPath)),
+          sha256: digestBytes(await readBytes(fixtureMaskPath)),
           sourceImageAssetId: image.assetId,
         });
         const measurements = await createOpenCvMeasurementAdapter().maskMeasurements(fixtureMask);
@@ -223,7 +224,7 @@ export default function M80NativeSubstrateGateApp() {
         if (
           measurements.area.value !== 3 ||
           !Number.isFinite(imageMeasurements.sharpness.score) ||
-          acceptedResult.provenance.executionReceipts.segmentation?.capability !== 'vision.segment'
+          acceptedResult.provenance.executionReceipts.segmentation?.capability !== 'image.segment'
         ) {
           throw new Error('M80_MEASUREMENT_ADAPTER_FAILED');
         }

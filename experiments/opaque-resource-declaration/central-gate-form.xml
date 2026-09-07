@@ -5,7 +5,7 @@
   One question only: does a stock Central form version carry an opaque Gather
   composition resource declared through `gather_resources`? It decides nothing
   about binding, composition execution or XForms persistence — those are settled
-  (docs/composition-binding-reassessment.md).
+  (docs/reference/architecture/composition-binding-reassessment.md).
 
   Central accepts an XForm definition directly, so this needs no XLSForm and no
   pyxform. Whether pyxform passes the namespace and `body::gather:composition`
@@ -18,9 +18,18 @@
   <h:head>
     <h:title>Gather composition packaging gate</h:title>
     <model>
+      <itext>
+        <translation lang="en">
+          <text id="/data/gather_resources:label">
+            <value>Gather resources</value>
+            <value form="image">jr://images/flower_v1.gather</value>
+          </text>
+        </translation>
+      </itext>
       <instance>
         <data id="gather_packaging_gate" version="1">
           <site_name/>
+          <gather_resources/>
           <photo>
             <note/>
             <image/>
@@ -32,29 +41,25 @@
       <!--
         THE THING UNDER TEST.
 
-        An INLINE secondary instance: static model data. The engine never
-        resolves it (no @src), and it never reaches a submission — both verified
-        against the real engine, see ./README.md. It exists so Central's
-        attachment scanner has something to find.
+        Central derives a form's expected attachments by scanning the XForm,
+        and will not accept an attachment it did not expect. An itext media
+        value is one of the places it scans.
+
+        `/data/gather_resources` is `relevant="false()"`, so it is never
+        rendered and — verified — never appears in a submission. The engine
+        never fetches the URL either: label media is exposed to a renderer, not
+        loaded by the engine.
 
         The `jr://images/` prefix is a Central discovery shim, not part of
-        Gather's data model: Central's expectedFormAttachments matches instance
-        node defaults against `^jr://images/` only. Nothing in the form treats
-        this file as an image.
+        Gather's data model: Central's scanner only matches that scheme here.
+        Nothing in the form treats this file as an image.
 
         Replace this shim when Central supports a generic opaque form-resource
         declaration that can reference a bundle without false media semantics.
       -->
-      <instance id="gather_resources">
-        <root>
-          <item>
-            <kind>composition</kind>
-            <uri>jr://images/flower_v1.gather</uri>
-          </item>
-        </root>
-      </instance>
 
       <bind nodeset="/data/site_name" type="string"/>
+      <bind nodeset="/data/gather_resources" type="string" readonly="true()" relevant="false()"/>
       <bind nodeset="/data/photo/note" type="string"/>
       <bind nodeset="/data/photo/image" type="binary"/>
       <bind nodeset="/data/meta/instanceID" type="string" jr:preload="uid"/>
@@ -62,6 +67,7 @@
   </h:head>
   <h:body>
     <input ref="/data/site_name"><label>Site name</label></input>
+    <input ref="/data/gather_resources"><label ref="jr:itext('/data/gather_resources:label')"/></input>
 
     <!--
       An ordinary group with ordinary typed children. `appearance` says only

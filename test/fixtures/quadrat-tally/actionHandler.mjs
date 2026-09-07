@@ -2,7 +2,7 @@ import { GATHER_ACTION_IDS } from '../../../packages/gather-catalog/src/index.js
 
 import { QUADRAT_TALLY_ACTIONS, QUADRAT_TALLY_DEFINITION } from './definition.mjs';
 
-import { createExecutionReceipt } from '../../../src/scientific/provenance/receipt.js';
+import { createExecutionReceipt } from '../../../src/provenance/receipt.js';
 
 const DEFAULT_STATE_PATH = '/gather';
 

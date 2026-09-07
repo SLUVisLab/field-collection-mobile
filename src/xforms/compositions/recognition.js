@@ -29,7 +29,7 @@
  * That is all this module answers. Where the composition's outputs *go* is
  * `./compositionBinding.js`'s job — derived from the group's own children — and
  * what it means to run one is the handler registry's (`./handlers/`).
- * Conventions in docs/b-custom-composition-conventions.md §1.
+ * Conventions in docs/reference/conventions/b-custom-composition-conventions.md §1.
  *
  * Nothing here touches the engine, storage or React.
  */

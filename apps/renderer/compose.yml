@@ -1,0 +1,32 @@
+# Running the Gather renderer as a hosted service.
+#
+# The image is defined and built here because its build context is Gather
+# source — `packages/`, `src/a2ui/`, `src/provenance/`. The openfieldworks-web
+# repository routes public traffic to this container and does not build it;
+# a `../gather/` build context in the web repo would make one repo unbuildable
+# without the other checked out beside it.
+#
+# The network is created by the web repo's `ofw` script and is external here on
+# purpose: whichever project created it would own something the others depend
+# on, and the renderer must be restartable without touching the edge.
+name: ofw-renderer
+
+services:
+  renderer:
+    build:
+      context: ../..
+      dockerfile: apps/renderer/Dockerfile
+    image: gather/renderer:local
+    restart: unless-stopped
+    environment:
+      # Which Composer origins may frame the renderer, appended to the hosted
+      # A2UI Composer that the nginx template always allows. The filter confines
+      # envsubst to RENDERER_* so nginx's own `$$uri` survives.
+      RENDERER_FRAME_ANCESTORS: ${RENDERER_FRAME_ANCESTORS:-}
+      NGINX_ENVSUBST_FILTER: RENDERER_
+    networks:
+      - openfieldworks
+
+networks:
+  openfieldworks:
+    external: true

@@ -38,7 +38,7 @@ const SEED_FORM_ID = 'dev_seed_photo_collection';
 
 // The pyxform-canonical shape: appearance on <repeat>, wrapping <group> bare,
 // and an image child the author named something other than `photo`.
-// See docs/b-standard-field-conventions.md §1.
+// See docs/reference/conventions/b-standard-field-conventions.md §1.
 const FORM_XML = `<?xml version="1.0"?>
 <h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa">
   <h:head><h:title>Photo collection (dev seed)</h:title><model>

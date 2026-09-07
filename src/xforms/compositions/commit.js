@@ -19,7 +19,7 @@
  * each output binding declared — the last moment at which a working asset's
  * role is finally known — but it never deletes bytes. Acting on those records
  * is sweeping, and sweeping belongs to the instance lifecycle owner at its own
- * safe boundaries. See docs/b-custom-composition-conventions.md §4 and §7.
+ * safe boundaries. See docs/reference/conventions/b-custom-composition-conventions.md §4 and §7.
  */
 
 import {

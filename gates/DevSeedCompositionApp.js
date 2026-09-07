@@ -26,7 +26,7 @@ import { createQuadratTallyActionHandler } from '../test/fixtures/quadrat-tally/
  *
  * Going *through* `FormRunner` rather than mounting the control directly is the
  * point: testing around the screen is what let three earlier defects survive
- * (docs/components-capabilities-ownership.md §25), and the composition registry
+ * (docs/reference/architecture/components-capabilities-ownership.md §25), and the composition registry
  * is a registry rather than a frozen constant precisely so this is possible.
  *
  * Navigate to Forms → Quadrat tally (dev seed), tally a few, optionally flag it
@@ -40,7 +40,7 @@ const GROUP = '/data/quadrat';
 
 // The pyxform-canonical shape: the composition token on a plain group, with
 // ordinary writable backing fields so another ODK client can fill them by hand
-// (docs/b-custom-composition-conventions.md §1 and §2).
+// (docs/reference/conventions/b-custom-composition-conventions.md §1 and §2).
 const DEFINITION_FILENAME = `${QUADRAT_TALLY_DEFINITION.id}.a2ui.json`;
 
 const FORM_XML = `<?xml version="1.0"?>

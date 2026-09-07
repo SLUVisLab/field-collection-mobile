@@ -29,7 +29,7 @@ import { createInstanceLifecycleService } from '../src/instances/instanceLifecyc
 
 /**
  * Media identity gate — the on-device counterpart to
- * docs/repeat-media-identity-characterization.md.
+ * docs/reference/conventions/repeat-media-identity-characterization.md.
  *
  * Attachment identity must be minted at capture and must never derive from the
  * XForms binding reference, because repeat references reindex on deletion and a

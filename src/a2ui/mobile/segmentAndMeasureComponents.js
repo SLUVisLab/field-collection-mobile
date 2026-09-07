@@ -1,4 +1,4 @@
-import { SegmentAndMeasureCapture } from '../../components/scientific/SegmentAndMeasureViews.js';
+import { SegmentAndMeasureCapture } from './SegmentAndMeasureViews.js';
 import { GATHER_ACTION_IDS, GATHER_COMPONENT_IDS } from 'gather-catalog';
 
 import { bindInstrumentComponent } from './InstrumentSurface.js';

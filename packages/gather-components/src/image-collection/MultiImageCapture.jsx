@@ -30,7 +30,7 @@ import { canCapture, canComplete, captureCountLabel, removeItemAt } from './mult
  * **No `Flow`.** Switching between camera and gallery is ordinary component
  * state. `Flow` is the A2UI authoring primitive for selecting among *authored*
  * Views; these views are shipped behavior, so there is nothing to author. See
- * docs/components-capabilities-ownership.md §12.
+ * docs/reference/architecture/components-capabilities-ownership.md §12.
  *
  * The primitives stay independently available: an author who needs a
  * structurally different interaction composes `CameraView` + `MediaGallery` +

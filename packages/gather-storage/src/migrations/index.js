@@ -385,7 +385,7 @@ export const MIGRATIONS = Object.freeze([
       // Media identity must not derive from the XForms binding reference.
       // Repeat instance references are positional and reindex on deletion, so a
       // survivor inherits the deleted item's key — a silent wrong attachment.
-      // See docs/repeat-media-identity-characterization.md.
+      // See docs/reference/conventions/repeat-media-identity-characterization.md.
       //
       // SQLite cannot alter a primary key, so rebuild the table. The copy is
       // lossless: `filename` already exists and was already unique per
@@ -419,7 +419,7 @@ export const MIGRATIONS = Object.freeze([
       // client. That distinction is what B-custom principle 5 rests on, since
       // the backing fields stay ordinary writable XForms values rather than
       // being marked readonly.
-      // See docs/b-custom-composition-conventions.md.
+      // See docs/reference/conventions/b-custom-composition-conventions.md.
       //
       // One row per (instance, binding reference): a receipt describes how one
       // projected field's value was produced. Cascades with the instance, so a
@@ -448,16 +448,16 @@ export const MIGRATIONS = Object.freeze([
     statements: [
       // The ledger for assets that are NOT form attachments.
       //
-      // `persistScientificCapture` writes into the project media directory
+      // `persistWorkingAsset` writes into the project media directory
       // without an `instance_media` row, so those bytes are referenced by
       // nothing in the database. That made cleanup impossible to do safely:
       // "delete every file no `instance_media` row references" would delete
-      // every scientific capture — precisely the `projection: none,
+      // every working capture — precisely the `projection: none,
       // retention: keep` assets that B-custom §4 says to keep.
       //
       // So retention becomes explicit, per asset, and recorded. A sweep can
       // then tell a deliberately-kept local asset from an orphaned byte.
-      // See docs/b-custom-composition-conventions.md §4.
+      // See docs/reference/conventions/b-custom-composition-conventions.md §4.
       //
       // `released_at` is what makes "discard" safe: bytes stay until the
       // producer says they are no longer needed. `discard` must never mean
@@ -476,6 +476,51 @@ export const MIGRATIONS = Object.freeze([
        );`,
       `CREATE INDEX project_assets_by_project
          ON project_assets (project_key);`,
+    ],
+  },
+  {
+    version: 13,
+    name: 'content_addressed_form_resources',
+    statements: [
+      // A form revision REFERENCES bytes; it does not own them.
+      //
+      // Resources used to be stored under a path derived from the form version
+      // that happened to reference them, so one changed resource re-downloaded
+      // and re-stored every resource of that form. Observed on a real device:
+      // the same silphium-reference.jpg, md5:8112cfe2…, written under two cache
+      // revisions because plants.csv changed beside it.
+      //
+      // Entities make it routine. OpenRosa says a client re-fetches when the
+      // manifest hash differs, and Central derives a Dataset attachment's hash
+      // from the dataset's LAST-UPDATED TIMESTAMP rather than the CSV content —
+      // so any touch of an Entity List churns the manifest fingerprint even when
+      // the bytes are identical.
+      //
+      // The fix is to keep two different questions apart:
+      //
+      //   resource_hash  the server's validator — "should I fetch this again?"
+      //   blob_digest    our digest of the bytes — "do I already have these?"
+      //
+      // They cannot be the same field, precisely because a dataset attachment's
+      // validator changes when its content does not. The first can force a
+      // download that the second then proves was redundant, and we still avoid
+      // writing a second copy.
+      `CREATE TABLE resource_blobs (
+         digest      TEXT PRIMARY KEY NOT NULL,
+         byte_length INTEGER NOT NULL,
+         file_key    TEXT NOT NULL,
+         created_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+       );`,
+      // Existing rows keep working: they carry '' and resolve through file_key
+      // exactly as before, so no backfill is needed and nothing re-downloads on
+      // upgrade. New rows carry both.
+      `ALTER TABLE form_resources ADD COLUMN blob_digest TEXT NOT NULL DEFAULT '';`,
+      // The validator lookup the refresh does per resource: has THIS form
+      // already downloaded THIS filename under THIS server hash?
+      `CREATE INDEX form_resources_by_validator
+         ON form_resources (filename, resource_hash);`,
+      `CREATE INDEX form_resources_by_blob
+         ON form_resources (blob_digest);`,
     ],
   },
 ]);

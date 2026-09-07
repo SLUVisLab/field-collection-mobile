@@ -14,7 +14,7 @@ import { A2uiInstrumentSurface } from './InstrumentSurface.js';
  * `onAcceptedResult` is the completion seam: the host **delivers** the typed
  * result, and the embedder decides what completion means (persist to an XForms
  * field, show it in a preview inspector, …). See
- * docs/components-capabilities-ownership.md §10.
+ * docs/reference/architecture/components-capabilities-ownership.md §10.
  *
  * @param {{
  *   composition: { catalogId: string, surfaceId: string, messages: object[] },  // an A2UI definition

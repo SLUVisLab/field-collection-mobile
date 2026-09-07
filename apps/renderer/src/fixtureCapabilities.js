@@ -34,7 +34,7 @@ export const fixtureCapabilities = {
       height: 640,
     };
   },
-  async persistScientificCapture(capture) {
+  async persistWorkingAsset(capture) {
     // Echo a live web-camera frame when one was captured so the reviewed image
     // is the real photo; otherwise fall back to the deterministic fixture.
     if (capture?.uri && capture.uri.startsWith('data:')) {
@@ -42,10 +42,10 @@ export const fixtureCapabilities = {
     }
     return image;
   },
-  async segmentScientificImage({ image: input }) {
+  async runImageSegmentation({ image: input }) {
     return { image: input, model, mask, threshold: 0.5, receipt: { id: 'fixture-segmentation' }, performance: { elapsedMs: 1, phases: [] } };
   },
-  async classifyScientificImage({ image: input }) {
+  async runImageClassification({ image: input }) {
     return {
       image: input,
       model,
@@ -54,7 +54,7 @@ export const fixtureCapabilities = {
       performance: { elapsedMs: 1, phases: [] },
     };
   },
-  async measureScientificMask() {
+  async runMaskMeasurement() {
     return {
       area: { value: 3200, unit: 'px2' },
       perimeter: { value: 280, unit: 'px' },
@@ -62,7 +62,7 @@ export const fixtureCapabilities = {
       centroid: { x: 40, y: 20, unit: 'px' },
     };
   },
-  async measureScientificImage() {
+  async runImageMeasurement() {
     return {
       color: { colorSpace: 'sRGB', channels: { red: 90, green: 120, blue: 70 } },
       sharpness: { metric: 'variance-of-laplacian', score: 42 },

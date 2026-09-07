@@ -26,7 +26,7 @@
  * This is not a workaround. `state/surface-model.js` deliberately ignores
  * `{ functionCall }` and comments that local function calls are "handled by the
  * renderer or binder" — this is the renderer responsibility Gather's binding
- * layer previously omitted. See docs/a2ui-functioncall-gap.md.
+ * layer previously omitted. See docs/reference/architecture/a2ui-functioncall-gap.md.
  *
  * **`resultPath` is the one Gather wire extension.** Upstream defines no result
  * destination for a local action FunctionCall, so a user-triggered capability's

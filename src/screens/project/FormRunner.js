@@ -46,7 +46,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     saveInstanceDraft,
     finalizeInstance,
     attachImageMedia,
-    persistScientificCapture,
+    persistWorkingAsset,
     applyAssetDisposition,
     a2uiCapabilityFunctions,
     releaseInstanceMedia,
@@ -162,7 +162,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       // Cleanup must never fail a save, so this is best-effort and its outcome
       // is not surfaced. The composition-commit boundary is the other place
       // this belongs, and the composition adapter reaches it.
-      // docs/b-custom-composition-conventions.md §4.
+      // docs/reference/conventions/b-custom-composition-conventions.md §4.
       void Promise.resolve(sweepProjectMedia?.()).catch(() => {});
       // The saved instance, not a boolean: the composition adapter needs its
       // id to attach provenance, and an object is still truthy for callers
@@ -178,7 +178,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
 
   // Collection field adapter (storage half). The control owns the repeat APIs;
   // this owns persistence and orphan cleanup. See
-  // docs/b-standard-field-conventions.md §4.
+  // docs/reference/conventions/b-standard-field-conventions.md §4.
   const captureIntoCollection = useCallback(
     async (reference, capture) => {
       if (!version || typeof capture?.uri !== 'string') return false;
@@ -231,7 +231,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
   // Composition field adapter. Resolution is compositionBinding's — derived
   // from the XForm's own group, in two phases — and commit and provenance are
   // commit.js's; this only supplies them and the lifecycle boundary. See
-  // docs/composition-binding-reassessment.md.
+  // docs/reference/architecture/composition-binding-reassessment.md.
   const resolvedCompositions = useMemo(
     () => resolveCompositionFields({ renderModel: form.renderModel }),
     [form.renderModel]
@@ -356,7 +356,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       onAccepted: commitComposition,
       // The host media seam an authored composition reaches through
       // `gather_persistAsset`. Disposition is authored, never inferred.
-      persistAsset: (capture) => persistScientificCapture(capture),
+      persistAsset: (capture) => persistWorkingAsset(capture),
       // Capabilities this build can execute, already A2UI-registered.
       capabilityFunctions: a2uiCapabilityFunctions,
       problems: [
@@ -369,7 +369,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       a2uiCapabilityFunctions,
       boundFields,
       commitComposition,
-      persistScientificCapture,
+      persistWorkingAsset,
       resolvedCompositions,
       resolvedDefinitions,
     ]

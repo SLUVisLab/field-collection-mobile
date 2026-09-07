@@ -47,7 +47,7 @@
  * 6. `retention` defaults to `discard` only where the destination is a real
  *    media projection.
  *
- * Rationale in docs/composition-binding-reassessment.md.
+ * Rationale in docs/reference/architecture/composition-binding-reassessment.md.
  */
 
 import { CompositionFieldError, compositionConfigFrom, nonEmptyString } from './recognition.js';
@@ -96,7 +96,7 @@ const projectionFor = (node) => (node?.nodeType === 'upload' ? 'media' : 'none')
  * `keep` is the deliberate request to retain a project-local one. The default
  * does not generalise: with no durable XForms destination, keep versus discard
  * decides whether the bytes survive at all, so that case is refused rather than
- * guessed. docs/b-custom-composition-conventions.md §4b.
+ * guessed. docs/reference/conventions/b-custom-composition-conventions.md §4b.
  */
 const retentionFor = (node, projection) => {
   const declared = node?.gather?.retention ?? null;

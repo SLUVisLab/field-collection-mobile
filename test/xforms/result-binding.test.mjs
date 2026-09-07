@@ -7,7 +7,7 @@ import {
   readResultValue,
   toXFormsValue,
 } from '../../src/xforms/resultBinding.js';
-import { createSegmentAndMeasureResult } from '../../src/scientific/workflows/segmentAndMeasure.js';
+import { createSegmentAndMeasureResult } from '../../src/a2ui/legacy/segmentAndMeasureResult.js';
 
 const digest = (character) => `sha256:${character.repeat(64)}`;
 
@@ -25,7 +25,7 @@ const image = {
 const mask = { assetId: 'mask-1', uri: 'file:///m.png', path: 'm.png', width: 960, height: 640, sha256: digest('b') };
 
 /** A realistic computed result, built by the real workflow contract. */
-const scientificResult = () =>
+const capabilityResult = () =>
   createSegmentAndMeasureResult({
     image,
     segmentation: { image, model: { id: 'u2netp', version: '1' }, mask, threshold: 0.5, receipt: { id: 'seg' } },
@@ -48,7 +48,7 @@ const recordingForm = () => {
 };
 
 test('a dot path reads a nested measurement, and a missing path is absent not fatal', () => {
-  const result = scientificResult();
+  const result = capabilityResult();
   assert.equal(readResultValue(result, 'measurements.area.value'), 12.4);
   assert.equal(readResultValue(result, 'measurements.sharpness.score'), 8.5);
   assert.equal(readResultValue(result, 'classification.ranked.0.label'), undefined);
@@ -88,7 +88,7 @@ test('a computed result reaches form fields as values, with no attachment involv
     ],
   });
 
-  const written = await write(scientificResult());
+  const written = await write(capabilityResult());
 
   assert.deepEqual(form.calls, [
     ['/data/leaf_area', '12.4'],
@@ -105,7 +105,7 @@ test('an absent optional value clears its field and is reported as absent', asyn
     bindings: [{ reference: '/data/top_label', path: 'classification.ranked.0.label' }],
   });
 
-  const written = await write(scientificResult());
+  const written = await write(capabilityResult());
 
   assert.deepEqual(form.calls, [['/data/top_label', '']]);
   assert.equal(written[0].present, false);
@@ -121,7 +121,7 @@ test('a mis-authored binding writes nothing at all', async () => {
     ],
   });
 
-  await assert.rejects(() => write(scientificResult()), ResultBindingError);
+  await assert.rejects(() => write(capabilityResult()), ResultBindingError);
   // Coercion happens before any write, so the instance is never left partly
   // populated by a binding that was going to fail.
   assert.deepEqual(form.calls, []);

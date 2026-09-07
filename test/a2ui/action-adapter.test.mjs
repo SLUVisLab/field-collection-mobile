@@ -10,7 +10,7 @@ import {
 } from '../../src/a2ui/actionAdapter.js';
 
 // Slice 2: action-position FunctionCalls execute in Gather and their result is
-// pushed to an optional `resultPath`. See docs/a2ui-functioncall-gap.md.
+// pushed to an optional `resultPath`. See docs/reference/architecture/a2ui-functioncall-gap.md.
 
 const harness = ({ rawAction, invoke, model = {} } = {}) => {
   const writes = [];

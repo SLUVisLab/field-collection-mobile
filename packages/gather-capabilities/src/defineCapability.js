@@ -18,6 +18,7 @@ import { z } from 'zod';
  *   group?: string,          // Composer grouping, e.g. 'Image'
  *   subcategory?: string,    // e.g. 'Analysis' | 'Processing' | 'Acquisition'
  *   kind?: string,           // 'inference' | 'processing' | 'heuristic' | 'device'
+ *   acceptedModelProfiles?: string[], // ModelPackage task profiles this accepts
  *   input?: import('zod').ZodTypeAny,
  *   output?: import('zod').ZodTypeAny,
  *   platforms?: string[],    // e.g. ['android','ios','web']
@@ -44,6 +45,16 @@ export const defineCapability = (spec) => {
     group: spec.group ?? null,
     subcategory: spec.subcategory ?? null,
     kind: spec.kind ?? null,
+    // Which `ModelPackage` task profiles satisfy this capability's model
+    // contract. Empty means the capability takes no model at all.
+    //
+    // Declared rather than buried in the implementation, because four things
+    // need to read it and only one of them can call a function: input
+    // validation, Composer filtering, agent discovery, and default-model
+    // validation. The values are `TASK_PROFILES` from `gather-models`, quoted
+    // here as strings so this package stays free of that dependency — the
+    // pairing is asserted in the capability tests.
+    acceptedModelProfiles: Object.freeze([...(spec.acceptedModelProfiles ?? [])]),
     input,
     output,
     platforms: Object.freeze([...(spec.platforms ?? ['android', 'ios', 'web'])]),
@@ -61,6 +72,7 @@ export const defineCapability = (spec) => {
         group: this.group,
         subcategory: this.subcategory,
         kind: this.kind,
+        acceptedModelProfiles: this.acceptedModelProfiles,
         platforms: this.platforms,
         requiresUserActivation: this.requiresUserActivation,
         requiresContext: this.requiresContext,

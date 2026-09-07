@@ -1,0 +1,16 @@
+{
+  "name": "gather-hashing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./vectors": "./vectors.js"
+  },
+  "scripts": {
+    "test": "node --test $(find test -name '*.test.mjs')"
+  },
+  "peerDependencies": {
+    "js-sha256": "*"
+  }
+}

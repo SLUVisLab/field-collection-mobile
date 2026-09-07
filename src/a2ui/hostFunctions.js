@@ -40,7 +40,7 @@ export const HOST_FUNCTION_IDS = Object.freeze({
  * time nobody yet knows what role the asset will play — asking here made the
  * caller guess, and the guess (`keep`) duplicated every promoted capture
  * forever. The form's binding manifest states it per output; completion applies
- * it. One source of truth. See docs/b-custom-composition-conventions.md §4.
+ * it. One source of truth. See docs/reference/conventions/b-custom-composition-conventions.md §4.
  */
 const PersistAssetArgs = z
   .object({

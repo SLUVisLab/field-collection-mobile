@@ -32,9 +32,9 @@ import {
  *
  * Reorder is deliberately unavailable: repeat positions reindex, so reordering
  * instances is exactly the operation that made positional identity unsafe. See
- * docs/repeat-media-identity-characterization.md.
+ * docs/reference/conventions/repeat-media-identity-characterization.md.
  *
- * Conventions in docs/b-standard-field-conventions.md.
+ * Conventions in docs/reference/conventions/b-standard-field-conventions.md.
  */
 export function XFormsMultiImageControl({ node, indent, onLayout, collection }) {
   const theme = useTheme();

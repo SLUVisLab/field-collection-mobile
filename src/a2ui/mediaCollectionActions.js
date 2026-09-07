@@ -7,7 +7,7 @@ import { GATHER_ACTION_IDS } from 'gather-catalog';
  * A Component's action semantics are fixed and ship *with* the Component, so
  * these are written once here rather than reinvented per composition — the
  * handler gap that affects authored compositions does not apply. See
- * docs/components-capabilities-ownership.md §11.
+ * docs/reference/architecture/components-capabilities-ownership.md §11.
  *
  * Scope is deliberately mutation only: `mediaCaptured` (persist and append) and
  * `mediaChanged` (remove / reorder / set). Selection, `mediaBack` and

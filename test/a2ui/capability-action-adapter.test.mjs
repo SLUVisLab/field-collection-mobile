@@ -12,9 +12,9 @@ const mask = { assetId: 'mask-1', uri: 'file:///mask.png', path: 'projects/p/med
 const model = { id: 'model', version: '1' };
 
 const measurementCapabilities = {
-  measureScientificMask: async () => ({ area: { value: 3, unit: 'px2' }, perimeter: { value: 8, unit: 'px' }, boundingBox: { width: 2, height: 2, unit: 'px' }, centroid: { x: 1, y: 1, unit: 'px' } }),
-  measureScientificImage: async () => ({ color: { colorSpace: 'sRGB', channels: { red: 1, green: 2, blue: 3 } }, sharpness: { metric: 'variance-of-laplacian', score: 2 } }),
-  classifyScientificImage: async () => ({ image, model, ranked: [{ label: 'example', score: 1 }], receipt: { id: 'classify' }, performance: null }),
+  runMaskMeasurement: async () => ({ area: { value: 3, unit: 'px2' }, perimeter: { value: 8, unit: 'px' }, boundingBox: { width: 2, height: 2, unit: 'px' }, centroid: { x: 1, y: 1, unit: 'px' } }),
+  runImageMeasurement: async () => ({ color: { colorSpace: 'sRGB', channels: { red: 1, green: 2, blue: 3 } }, sharpness: { metric: 'variance-of-laplacian', score: 2 } }),
+  runImageClassification: async () => ({ image, model, ranked: [{ label: 'example', score: 1 }], receipt: { id: 'classify' }, performance: null }),
 };
 
 const createProcessor = (onAction) => {
@@ -41,11 +41,11 @@ test('capture persists, segments, and lands on the review view', async () => {
   const calls = [];
   const { dispatch, state } = harness({
     capabilities: {
-      persistScientificCapture: async (capture) => {
+      persistWorkingAsset: async (capture) => {
         calls.push(['persist', capture.path]);
         return image;
       },
-      segmentScientificImage: async ({ image: input }) => {
+      runImageSegmentation: async ({ image: input }) => {
         calls.push(['segment', input.assetId]);
         return { image: input, model, mask, threshold: 0.5, receipt: { id: 'segment' }, performance: null };
       },
@@ -66,11 +66,11 @@ test('the controller drives the working views in order during capture', async ()
   let harnessRef;
   harnessRef = harness({
     capabilities: {
-      persistScientificCapture: async () => {
+      persistWorkingAsset: async () => {
         observed.push(harnessRef.state().status);
         return image;
       },
-      segmentScientificImage: async ({ image: input }) => {
+      runImageSegmentation: async ({ image: input }) => {
         observed.push(harnessRef.state().status);
         return { image: input, model, mask, threshold: 0.5 };
       },
@@ -87,8 +87,8 @@ test('web previews can supply a deterministic fixture capture', async () => {
   const { dispatch, state } = harness({
     capabilities: {
       capture: async () => ({ path: 'fixtures/camera.jpg' }),
-      persistScientificCapture: async () => image,
-      segmentScientificImage: async ({ image: input }) => ({ image: input, model, mask, threshold: 0.5 }),
+      persistWorkingAsset: async () => image,
+      runImageSegmentation: async ({ image: input }) => ({ image: input, model, mask, threshold: 0.5 }),
     },
   });
 
@@ -145,9 +145,9 @@ test('submit is inert before a result exists', async () => {
 test('accept is idempotent once an output is already accepted', async () => {
   const { dispatch, state, seed } = harness({
     capabilities: {
-      measureScientificMask: async () => { throw new Error('should not re-measure'); },
-      measureScientificImage: async () => { throw new Error('should not re-measure'); },
-      classifyScientificImage: async () => { throw new Error('should not re-classify'); },
+      runMaskMeasurement: async () => { throw new Error('should not re-measure'); },
+      runImageMeasurement: async () => { throw new Error('should not re-measure'); },
+      runImageClassification: async () => { throw new Error('should not re-classify'); },
     },
   });
   const accepted = {
@@ -166,7 +166,7 @@ test('accept is idempotent once an output is already accepted', async () => {
 
 test('a failing capability writes an observable error view', async () => {
   const { dispatch, state } = harness({
-    capabilities: { persistScientificCapture: async () => { throw new Error('camera unavailable'); } },
+    capabilities: { persistWorkingAsset: async () => { throw new Error('camera unavailable'); } },
   });
 
   await dispatch(GATHER_ACTION_IDS.capture, { capture: { path: '/tmp/camera.jpg' } });

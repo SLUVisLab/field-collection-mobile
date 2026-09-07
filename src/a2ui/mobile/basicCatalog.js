@@ -21,7 +21,7 @@ export { mobileBasicApis } from './componentApis.js';
  * renderer gets the same components from `@a2ui/react`. Gather-defined
  * Composer primitives (`Flow`, `CameraView`, `MediaGallery`, …) are package-owned
  * in `gather-components` — see
- * docs/components-capabilities-ownership.md §10.
+ * docs/reference/architecture/components-capabilities-ownership.md §10.
  *
  * The corollary: when mobile lacks an upstream component, implement it here.
  * Do **not** invent a Gather component (an `ImagePreview`) to work around it.

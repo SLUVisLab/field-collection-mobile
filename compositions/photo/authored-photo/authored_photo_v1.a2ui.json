@@ -1,0 +1,136 @@
+{
+  "id": "authored_photo_v1",
+  "revision": "1.0.0",
+  "title": "Authored photo",
+  "description": "Capture a photo, make it durable, and submit it — no app code.",
+  "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json",
+  "surfaceId": "authored-photo",
+  "statePath": "/working",
+  "result": {
+    "kind": "object",
+    "outputs": [
+      {
+        "path": "image",
+        "type": "object",
+        "required": true
+      },
+      {
+        "path": "note",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "messages": [
+    {
+      "version": "v0.9",
+      "createSurface": {
+        "surfaceId": "authored-photo",
+        "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json",
+        "sendDataModel": true
+      }
+    },
+    {
+      "version": "v0.9",
+      "updateComponents": {
+        "surfaceId": "authored-photo",
+        "components": [
+          {
+            "id": "root",
+            "component": "Column",
+            "children": [
+              "title",
+              "camera",
+              "saveButton",
+              "savedText",
+              "acceptButton"
+            ]
+          },
+          {
+            "id": "title",
+            "component": "Text",
+            "text": "Authored photo",
+            "variant": "h3"
+          },
+          {
+            "id": "camera",
+            "component": "CameraView",
+            "capture": {
+              "path": "/working/capture"
+            }
+          },
+          {
+            "id": "saveButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "saveLabel",
+            "action": {
+              "functionCall": {
+                "call": "gather_persistAsset",
+                "args": {
+                  "capture": {
+                    "path": "/working/capture"
+                  }
+                }
+              },
+              "resultPath": "/working/image"
+            }
+          },
+          {
+            "id": "saveLabel",
+            "component": "Text",
+            "text": "Save photo",
+            "variant": "body"
+          },
+          {
+            "id": "savedText",
+            "component": "Text",
+            "text": {
+              "path": "/working/image/assetId"
+            },
+            "variant": "body"
+          },
+          {
+            "id": "acceptButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "acceptLabel",
+            "action": {
+              "functionCall": {
+                "call": "gather_completeComposition",
+                "args": {
+                  "outputs": {
+                    "image": {
+                      "path": "/working/image"
+                    },
+                    "note": {
+                      "path": "/working/note"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "id": "acceptLabel",
+            "component": "Text",
+            "text": "Accept and submit",
+            "variant": "body"
+          }
+        ]
+      }
+    },
+    {
+      "version": "v0.9",
+      "updateDataModel": {
+        "surfaceId": "authored-photo",
+        "path": "/working",
+        "value": {
+          "capture": null,
+          "image": null,
+          "note": "authored"
+        }
+      }
+    }
+  ]
+}

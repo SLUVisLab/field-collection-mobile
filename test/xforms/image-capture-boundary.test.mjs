@@ -14,7 +14,7 @@ import { localImageCaptureResult } from '../../packages/gather-components/src/ca
  * ```
  *
  * Scope note: this path deliberately does **not** produce an `ImageAsset`.
- * `ImageAsset` is the scientific/capability contract; the XForms path uses the
+ * `ImageAsset` is the media/capability contract; the XForms path uses the
  * M5 instance-media model (durable file + safe filename bound in XML), and
  * `gather-storage` is deliberately asset-agnostic. Introducing `ImageAsset` here
  * would add coupling the contract audit warned against, for no current need. A

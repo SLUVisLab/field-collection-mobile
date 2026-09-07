@@ -18,7 +18,7 @@ import { MessageProcessor } from '@a2ui/web_core/v0_9/processor';
  * ```
  *
  * Composition *structure* is data; composition *behavior* is still partly code
- * (see docs/components-capabilities-ownership.md §10). This module must not grow
+ * (see docs/reference/architecture/components-capabilities-ownership.md §10). This module must not grow
  * a declarative transition model until a second production composition shows
  * what the common model actually is.
  *
@@ -51,7 +51,7 @@ export const createA2uiRuntime = ({ composition, componentApis, functions = [] }
   // mechanism — registry, argument validation, loud failure on unknown names,
   // and lazy interaction-time execution of `action.functionCall`. Gather's only
   // omission was never passing this third argument.
-  // See docs/a2ui-functioncall-gap.md.
+  // See docs/reference/architecture/a2ui-functioncall-gap.md.
   const catalog = new Catalog(composition.catalogId, componentApis, functions);
   const processor = new MessageProcessor([catalog], (action) => actionHandler?.(action));
   processor.processMessages(composition.messages);

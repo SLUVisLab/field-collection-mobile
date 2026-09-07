@@ -7,7 +7,7 @@ import { aspectRatioFromLoad, resizeModeForFit } from '../../src/a2ui/mobile/bas
 
 // `Image`/`Video` are upstream A2UI vocabulary, not Gather Components: the mobile
 // renderer must implement them, and the web renderer gets them from @a2ui/react.
-// See docs/components-capabilities-ownership.md §10.
+// See docs/reference/architecture/components-capabilities-ownership.md §10.
 
 // `fit` is declared as enum().default().optional(), so unwrap the zod wrappers
 // rather than assuming a fixed nesting depth.

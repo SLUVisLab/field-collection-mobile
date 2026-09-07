@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:gather="http://gather.slu.edu/xforms">
+  <h:head><h:title>itext media probe</h:title><model>
+    <itext>
+      <translation lang="en">
+        <text id="/data/gather_resources:label">
+          <value>Gather resources</value>
+          <value form="image">jr://images/flower_v1.gather</value>
+        </text>
+      </translation>
+    </itext>
+    <instance><data id="itext_probe">
+      <site_name/>
+      <gather_resources/>
+      <meta><instanceID/></meta>
+    </data></instance>
+    <bind nodeset="/data/site_name" type="string"/>
+    <bind nodeset="/data/gather_resources" type="string" readonly="true()" relevant="false()"/>
+    <bind nodeset="/data/meta/instanceID" type="string" jr:preload="uid"/>
+  </model></h:head>
+  <h:body>
+    <input ref="/data/site_name"><label>Site name</label></input>
+    <input ref="/data/gather_resources"><label ref="jr:itext('/data/gather_resources:label')"/></input>
+  </h:body>
+</h:html>

@@ -13,7 +13,7 @@ import { capabilityFunctions } from '../../src/a2ui/capabilityFunctions.js';
 
 // Host functions enter the same Catalog.functions as capabilities, but their
 // implementations are bound to the live instance by the caller.
-// See docs/a2ui-functioncall-gap.md.
+// See docs/reference/architecture/a2ui-functioncall-gap.md.
 
 const capture = { uri: 'file:///tmp/shot.jpg', path: '/tmp/shot.jpg', contentType: 'image/jpeg' };
 

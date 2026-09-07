@@ -30,6 +30,15 @@ const fail = (message, code, details) => {
   throw new CompositionFieldError(message, { code, details });
 };
 
+/** UTF-8 text of a form resource, whether the catalog cached it as text or bytes. */
+export const compositionSourceText = (attachment) => {
+  if (typeof attachment?.text === 'string') return attachment.text;
+  if (typeof attachment?.base64 !== 'string' || attachment.base64.length === 0) return '';
+  const binary = globalThis.atob(attachment.base64);
+  const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+};
+
 /** Messages a composition definition must carry to be renderable at all. */
 const assertRenderable = (definition, { reference, filename }) => {
   const where = { reference, filename };
@@ -83,7 +92,14 @@ export const resolveCompositionDefinition = ({ field, attachments = [] } = {}) =
       { reference: field.reference, filename }
     );
   }
-  if (typeof found.text !== 'string' || found.text.length === 0) {
+  // A composition resource arrives as text or as bytes, and which one is not
+  // the form's choice: Central classifies anything declared through an itext
+  // media value as `image` and serves it `application/octet-stream`, so the
+  // catalog caches it as base64. An opaque bundle extension does the same.
+  // Decoding here is what makes the artifact's *name* free of the transport's
+  // opinion about it.
+  const source = compositionSourceText(found);
+  if (source.length === 0) {
     fail(
       `${filename} is present but empty.`,
       'GATHER_COMPOSITION_DEFINITION_EMPTY',
@@ -93,7 +109,7 @@ export const resolveCompositionDefinition = ({ field, attachments = [] } = {}) =
 
   let parsed;
   try {
-    parsed = JSON.parse(found.text);
+    parsed = JSON.parse(source);
   } catch (error) {
     fail(
       `${filename} is not valid JSON: ${error?.message ?? error}`,

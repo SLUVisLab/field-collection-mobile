@@ -2,7 +2,7 @@
  * Render-free logic for the Gather-enhanced **multi-image collection field**.
  *
  * The repeat *is* the data model; `ImageAsset[]` is a value view over it — see
- * docs/b-standard-field-conventions.md §4. Nothing here touches XPath, the
+ * docs/reference/conventions/b-standard-field-conventions.md §4. Nothing here touches XPath, the
  * engine, or storage; the control/adapter owns those.
  *
  * ```text
@@ -172,7 +172,7 @@ export const collectionItemsFrom = ({
  *
  * Computed from *referenced* filenames rather than from positions, because
  * repeat positions reindex on deletion and are never a durable identity. See
- * docs/repeat-media-identity-characterization.md.
+ * docs/reference/conventions/repeat-media-identity-characterization.md.
  */
 export const orphanedFilenames = ({ before = [], after = [] } = {}) => {
   const kept = new Set(after.map((item) => (typeof item === 'string' ? item : item?.filename)));

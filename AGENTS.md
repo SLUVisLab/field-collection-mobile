@@ -87,7 +87,7 @@ cd packages/<name> && node --test $(find test -name '*.test.mjs' -not -path '*/l
 ## Device gates (iOS Simulator / Android emulator)
 
 The definitive procedure — including why runs look like they hang and how to
-detect real completion — is in [docs/emulator-gate-runbook.md](docs/emulator-gate-runbook.md).
+detect real completion — is in [docs/reference/runbooks/emulator-gate-runbook.md](docs/reference/runbooks/emulator-gate-runbook.md).
 
 - Make the Android SDK/emulator tooling available: `source scripts/android-ios-env.sh`.
 - Android runs must be detected via **logcat** (`ReactNativeJS` tag), not expo

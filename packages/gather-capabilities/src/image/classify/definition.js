@@ -1,11 +1,15 @@
 import { z } from 'zod';
 
 import { defineCapability } from '../../defineCapability.js';
-import { ImageAssetSchema, ModelRefSchema } from '../../contracts.js';
+import { IMAGE_TASK_PROFILES, ImageAssetSchema, ModelRefSchema } from '../../contracts.js';
 
+// `modelRef` is optional: omitting it is how an author says "whatever model
+// this Gather build considers current for this capability". The app's default
+// policy supplies one before execution, so the result and its provenance carry
+// a concrete ref either way.
 export const ClassifyInputSchema = z.object({
   image: ImageAssetSchema,
-  modelRef: ModelRefSchema,
+  modelRef: ModelRefSchema.optional(),
 });
 
 export const ClassificationResultSchema = z.object({
@@ -22,6 +26,7 @@ export const classifyDefinition = defineCapability({
   group: 'Image',
   subcategory: 'Analysis',
   kind: 'inference',
+  acceptedModelProfiles: [IMAGE_TASK_PROFILES.classificationRanked],
   input: ClassifyInputSchema,
   output: ClassificationResultSchema,
   platforms: ['android', 'ios', 'web'],

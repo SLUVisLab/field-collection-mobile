@@ -10,13 +10,13 @@ export const controlKindFor = (node) => {
   // A group carrying the Gather appearance hosts an authored composition. The
   // backing fields stay ordinary writable XForms values, so other ODK clients
   // see a plain group they can fill by hand — see
-  // docs/b-custom-composition-conventions.md §1 and §2.
+  // docs/reference/conventions/b-custom-composition-conventions.md §1 and §2.
   if (type === 'group') {
     return compositionConfigFrom(node?.appearances).enabled ? 'composition' : 'group';
   }
   // A repeat carrying the Gather appearance is a collection field, not an
   // ordinary repeat. Other ODK clients still see the plain repeat — see
-  // docs/b-standard-field-conventions.md.
+  // docs/reference/conventions/b-standard-field-conventions.md.
   if (
     typeof type === 'string' &&
     type.startsWith('repeat-range:') &&
@@ -48,7 +48,7 @@ export const isNodeRelevant = (node, snapshot) =>
  * repeat's instances itself, so the generic repeat-instance and image-upload
  * controls must not render them a second time underneath it — which is exactly
  * what happened until the interactive camera gate showed the duplicate stack.
- * See docs/components-capabilities-ownership.md §21.
+ * See docs/reference/architecture/components-capabilities-ownership.md §21.
  */
 /**
  * The prefix that marks a control's own subtree, or `null` if it owns nothing.

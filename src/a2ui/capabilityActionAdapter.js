@@ -1,4 +1,4 @@
-import { createSegmentAndMeasureResult } from '../scientific/workflows/segmentAndMeasure.js';
+import { createSegmentAndMeasureResult } from './legacy/segmentAndMeasureResult.js';
 
 import { GATHER_ACTION_IDS, SEGMENT_AND_MEASURE_VIEWS } from 'gather-catalog';
 
@@ -62,10 +62,10 @@ const createSegmentAndMeasureFlow = ({ surface, statePath, surfaceId, capabiliti
         );
         setData({ image: null, segmentation: null, classification: null, result: null, error: null });
         flow.setView(SEGMENT_AND_MEASURE_VIEWS.persisting);
-        const image = await capabilities.persistScientificCapture(capture);
+        const image = await capabilities.persistWorkingAsset(capture);
         setData({ image });
         flow.setView(SEGMENT_AND_MEASURE_VIEWS.segmenting);
-        const segmentation = await capabilities.segmentScientificImage({ image });
+        const segmentation = await capabilities.runImageSegmentation({ image });
         setData({ segmentation });
         flow.setView(SEGMENT_AND_MEASURE_VIEWS.review);
         return state();
@@ -75,7 +75,7 @@ const createSegmentAndMeasureFlow = ({ surface, statePath, surfaceId, capabiliti
         const image = requireValue(context.image ?? state().image, 'Capture an image before segmenting.');
         setData({ error: null });
         flow.setView(SEGMENT_AND_MEASURE_VIEWS.segmenting);
-        const segmentation = await capabilities.segmentScientificImage({ image });
+        const segmentation = await capabilities.runImageSegmentation({ image });
         setData({ segmentation });
         flow.setView(SEGMENT_AND_MEASURE_VIEWS.review);
         return state();
@@ -85,7 +85,7 @@ const createSegmentAndMeasureFlow = ({ surface, statePath, surfaceId, capabiliti
         const image = requireValue(context.image ?? state().image, 'Capture an image before classifying.');
         setData({ error: null });
         flow.setView(SEGMENT_AND_MEASURE_VIEWS.classifying);
-        const classification = await capabilities.classifyScientificImage({ image });
+        const classification = await capabilities.runImageClassification({ image });
         setData({ classification });
         flow.setView(SEGMENT_AND_MEASURE_VIEWS.review);
         return state();
@@ -100,10 +100,10 @@ const createSegmentAndMeasureFlow = ({ surface, statePath, surfaceId, capabiliti
         flow.setView(SEGMENT_AND_MEASURE_VIEWS.measuring);
         const classificationPromise = current.classification
           ? Promise.resolve(current.classification)
-          : capabilities.classifyScientificImage({ image });
+          : capabilities.runImageClassification({ image });
         const [maskMeasurements, imageMeasurements, classification] = await Promise.all([
-          capabilities.measureScientificMask({ mask: segmentation.mask }),
-          capabilities.measureScientificImage({ image, mask: segmentation.mask }),
+          capabilities.runMaskMeasurement({ mask: segmentation.mask }),
+          capabilities.runImageMeasurement({ image, mask: segmentation.mask }),
           classificationPromise,
         ]);
         const result = createSegmentAndMeasureResult({

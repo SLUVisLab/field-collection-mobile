@@ -9,7 +9,7 @@ import { resolveCompositionFields } from '../../src/xforms/compositions/composit
 import { COMPOSITION_APPEARANCE_PREFIX } from '../../src/xforms/compositions/recognition.js';
 
 // Compositions are supplied by FORMS, never by app registration.
-// See docs/a2ui-functioncall-gap.md and b-custom §6.
+// See docs/reference/architecture/a2ui-functioncall-gap.md and b-custom §6.
 
 const definition = (overrides = {}) => ({
   id: 'authored_v1',
@@ -189,5 +189,31 @@ test('a group that DOES name an id must agree with the artifact', () => {
         attachments: attachment(definition()),
       }),
     /declares composition "authored_v1" but \/data\/authored names "something_else"/
+  );
+});
+
+test('a composition cached as bytes is decoded, not reported empty', () => {
+  // Central classifies anything declared through an itext media value as
+  // `image` and serves it application/octet-stream, so the form catalog caches
+  // it as base64 rather than text. Verified live against v2026.2.4 by the
+  // packaging gate; before this the artifact downloaded intact and then failed
+  // as "present but empty".
+  const artifact = definition();
+  const base64 = Buffer.from(JSON.stringify(artifact), 'utf8').toString('base64');
+  const resolved = resolveCompositionDefinition({
+    field: { reference: '/data/authored', compositionId: null, definitionResource: 'flower_v1.gather' },
+    attachments: [{ filename: 'flower_v1.gather', contentType: 'application/octet-stream', base64 }],
+  });
+  assert.equal(resolved.id, artifact.id);
+});
+
+test('a resource that is neither text nor bytes is still reported empty', () => {
+  assert.throws(
+    () =>
+      resolveCompositionDefinition({
+        field: { reference: '/data/authored', compositionId: null, definitionResource: 'flower_v1.gather' },
+        attachments: [{ filename: 'flower_v1.gather', contentType: 'application/octet-stream', base64: '' }],
+      }),
+    /present but empty/
   );
 });

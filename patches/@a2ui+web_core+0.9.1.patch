@@ -1,3 +1,29 @@
+diff --git a/node_modules/@a2ui/web_core/package.json b/node_modules/@a2ui/web_core/package.json
+index 5ae0abc..11293cc 100644
+--- a/node_modules/@a2ui/web_core/package.json
++++ b/node_modules/@a2ui/web_core/package.json
+@@ -49,6 +49,21 @@
+     "./styles/*": {
+       "types": "./src/v0_8/styles/*.d.ts",
+       "default": "./src/v0_8/styles/*.js"
++    },
++    "./v0_9/bindings": {
++      "default": "./src/v0_9/bindings.js"
++    },
++    "./v0_9/catalog": {
++      "default": "./src/v0_9/catalog.js"
++    },
++    "./v0_9/common-schemas": {
++      "default": "./src/v0_9/common-schemas.js"
++    },
++    "./v0_9/data-context": {
++      "default": "./src/v0_9/data-context.js"
++    },
++    "./v0_9/processor": {
++      "default": "./src/v0_9/processor.js"
+     }
+   },
+   "type": "module",
 diff --git a/node_modules/@a2ui/web_core/src/v0_9/bindings.js b/node_modules/@a2ui/web_core/src/v0_9/bindings.js
 new file mode 100644
 index 0000000..163e877

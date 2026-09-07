@@ -10,7 +10,7 @@ import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
 import { compositionConfigFrom } from './recognition.js';
 import { createHostFunctions, mergeFunctions } from '../../a2ui/hostFunctions.js';
-import { createExecutionReceipt } from '../../scientific/provenance/receipt.js';
+import { createExecutionReceipt } from '../../provenance/receipt.js';
 
 const COMPONENT_APIS = [...mobileBasicApis, ...gatherComponentApis];
 const IMPLEMENTATIONS = { ...mobileBasicImplementations, ...gatherComponentImplementations };
@@ -35,8 +35,8 @@ const IMPLEMENTATIONS = { ...mobileBasicImplementations, ...gatherComponentImple
  * **A missing composition is stated, not hidden.** A group can declare a
  * composition this build cannot run: the definition may travel as a form
  * attachment, but the handler is *code* and has to be registered — see the
- * known limitation in docs/components-capabilities-ownership.md §10 and the
- * publishing caveat in docs/b-custom-composition-conventions.md §6. Rendering
+ * known limitation in docs/reference/architecture/components-capabilities-ownership.md §10 and the
+ * publishing caveat in docs/reference/conventions/b-custom-composition-conventions.md §6. Rendering
  * nothing would be the worst outcome, since the group's backing fields are
  * suppressed (§5) and nothing else on screen would explain the gap.
  */

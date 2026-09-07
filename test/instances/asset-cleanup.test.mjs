@@ -8,7 +8,7 @@ import {
   sweepProjectAssets,
 } from '../../src/instances/assetCleanup.js';
 
-// Conventions in docs/b-custom-composition-conventions.md §4.
+// Conventions in docs/reference/conventions/b-custom-composition-conventions.md §4.
 
 const asset = (fileKey, retention, releasedAt = null) => ({ fileKey, retention, releasedAt });
 const reasonFor = (plan, list, fileKey) =>
@@ -60,7 +60,7 @@ test('discard only reclaims once the producer has released it', () => {
 });
 
 test('an unledgered file is kept by default — installs predate the ledger', () => {
-  // persistScientificCapture wrote into project media with no row for a long
+  // persistWorkingAsset wrote into project media with no row for a long
   // time. Treating unknown files as garbage by default would be data loss.
   const conservative = planAssetCleanup({ presentFileKeys: ['p/media/legacy.jpg'] });
   assert.deepEqual(conservative.deleteFiles, []);

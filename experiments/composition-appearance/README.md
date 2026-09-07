@@ -27,7 +27,7 @@ Subtree ownership cannot reuse the collection field's predicate as-is.
 `` `${reference}[` `` — the `[` of a repeat instance. A composition group's
 children are `/data/flower_analysis/petal_count`, with no index, so they need
 the prefix `` `${reference}/` `` instead. Findings recorded in
-[docs/b-custom-composition-conventions.md](../../docs/b-custom-composition-conventions.md).
+[docs/reference/conventions/b-custom-composition-conventions.md](../../docs/reference/conventions/b-custom-composition-conventions.md).
 
 ## Running it
 

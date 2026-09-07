@@ -8,7 +8,7 @@ import { createFunctionImplementation } from '@a2ui/web_core/v0_9/catalog';
  * whole mechanism — a catalog function registry, argument validation and
  * coercion, loud failure on unknown names, and lazy interaction-time execution
  * of `action.functionCall`. Gather simply never passed functions to
- * `new Catalog(...)`. See docs/a2ui-functioncall-gap.md.
+ * `new Catalog(...)`. See docs/reference/architecture/a2ui-functioncall-gap.md.
  *
  * ```text
  * capability definition (portable, native-free)   →  A2UI FunctionDefinition

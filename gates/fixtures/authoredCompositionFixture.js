@@ -22,95 +22,14 @@ export const AUTHORED_COMPOSITION_FILENAME = `${AUTHORED_COMPOSITION_ID}.a2ui.js
 
 const SURFACE_ID = 'authored-photo';
 
-export const AUTHORED_COMPOSITION_DEFINITION = {
-  id: AUTHORED_COMPOSITION_ID,
-  revision: '1.0.0',
-  title: 'Authored photo',
-  description: 'Capture a photo, make it durable, and submit it — no app code.',
-  catalogId: 'https://gather.slu.edu/a2ui/catalogs/v0.1.json',
-  surfaceId: SURFACE_ID,
-  statePath: '/working',
-  result: {
-    kind: 'object',
-    outputs: [
-      { path: 'image', type: 'object', required: true },
-      { path: 'note', type: 'string', required: false },
-    ],
-  },
-  messages: [
-    {
-      version: 'v0.9',
-      createSurface: {
-        surfaceId: SURFACE_ID,
-        catalogId: 'https://gather.slu.edu/a2ui/catalogs/v0.1.json',
-        sendDataModel: true,
-      },
-    },
-    {
-      version: 'v0.9',
-      updateComponents: {
-        surfaceId: SURFACE_ID,
-        components: [
-          {
-            id: 'root',
-            component: 'Column',
-            children: ['title', 'camera', 'saveButton', 'savedText', 'acceptButton'],
-          },
-          { id: 'title', component: 'Text', text: 'Authored photo', variant: 'h3' },
+/**
+ * The canonical first-party artifact, loaded rather than restated. Metro
+ * bundles `.json` natively, so the seed ships the exact bytes under
+ * `compositions/` — the composition proved on the device is the composition
+ * that publishes.
+ */
+export const AUTHORED_COMPOSITION_DEFINITION = require('../../compositions/photo/authored-photo/authored_photo_v1.a2ui.json');
 
-          // Component output → composition state, via the upstream binder
-          // setter. No handler receives an event.
-          { id: 'camera', component: 'CameraView', capture: { path: '/working/capture' } },
-
-          {
-            id: 'saveButton',
-            component: 'Button',
-            variant: 'primary',
-            child: 'saveLabel',
-            action: {
-              functionCall: {
-                call: 'gather_persistAsset',
-                args: { capture: { path: '/working/capture' } },
-              },
-              resultPath: '/working/image',
-            },
-          },
-          { id: 'saveLabel', component: 'Text', text: 'Save photo', variant: 'body' },
-
-          // Proves the persisted asset reached composition state.
-          { id: 'savedText', component: 'Text', text: { path: '/working/image/assetId' }, variant: 'body' },
-
-          {
-            id: 'acceptButton',
-            component: 'Button',
-            variant: 'primary',
-            child: 'acceptLabel',
-            action: {
-              functionCall: {
-                call: 'gather_completeComposition',
-                args: {
-                  outputs: {
-                    image: { path: '/working/image' },
-                    note: { path: '/working/note' },
-                  },
-                },
-              },
-            },
-          },
-          { id: 'acceptLabel', component: 'Text', text: 'Accept and submit', variant: 'body' },
-        ],
-      },
-    },
-    {
-      version: 'v0.9',
-      updateDataModel: {
-        surfaceId: SURFACE_ID,
-        path: '/working',
-        value: { capture: null, image: null, note: 'authored' },
-      },
-    },
-  ],
-};
 
 export const AUTHORED_FORM_ID = 'dev_seed_authored_photo';
 

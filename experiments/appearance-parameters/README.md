@@ -2,7 +2,7 @@
 
 Answers: **do `key=value` appearance tokens survive into the engine's
 `appearances`, and where must they be placed on a repeat?** Findings are in
-[docs/b-standard-field-conventions.md](../../docs/b-standard-field-conventions.md).
+[docs/reference/conventions/b-standard-field-conventions.md](../../docs/reference/conventions/b-standard-field-conventions.md).
 
 Short answers: tokens survive verbatim in source order; either the `<group>` or
 the `<repeat>` works alone, but the **group wins** when both carry appearances.

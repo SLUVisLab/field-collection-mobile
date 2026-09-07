@@ -13,7 +13,7 @@
  * derivation to show why it could never work.
  *
  * See experiments/repeat-media-identity/README.md for how to run it, and
- * docs/repeat-media-identity-characterization.md for the findings.
+ * docs/reference/conventions/repeat-media-identity-characterization.md for the findings.
  */
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';

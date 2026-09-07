@@ -17,7 +17,7 @@
  * against. Several tokens may map to one View, so a token is not necessarily a
  * View component id.
  *
- * See docs/components-capabilities-ownership.md §10 for why orchestration stays
+ * See docs/reference/architecture/components-capabilities-ownership.md §10 for why orchestration stays
  * deferred until a second production composition shows what to extract.
  */
 export const createFlowController = ({ initialView, startView, onViewChange, handlers = {} } = {}) => {

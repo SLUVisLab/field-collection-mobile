@@ -455,7 +455,7 @@ test('submission sanitizer redacts common credential forms without erasing usefu
   assert.match(sanitized, /<redacted>/);
 });
 
-// --- Repeat media identity (docs/repeat-media-identity-characterization.md) ---
+// --- Repeat media identity (docs/reference/conventions/repeat-media-identity-characterization.md) ---
 //
 // Attachment identity must never derive from the XForms binding reference:
 // repeat references are positional and reindex when an item is deleted, so a
@@ -538,7 +538,7 @@ test('a capture at a reused reference cannot inherit another item\'s attachment'
   assert.deepEqual(files.content.get(first.media.fileKey), new Uint8Array([1]), 'the other item keeps its bytes');
 });
 
-// --- Collection orphan cleanup (docs/b-standard-field-conventions.md §4) -----
+// --- Collection orphan cleanup (docs/reference/conventions/b-standard-field-conventions.md §4) -----
 
 test('releasing collection media retires named rows and bytes, keeping the rest', async () => {
   const { service, instances, files } = makeService();

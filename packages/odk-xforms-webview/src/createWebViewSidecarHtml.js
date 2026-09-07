@@ -185,7 +185,7 @@ export const createWebViewSidecarHtml = ({
       //
       // It has to be read HERE: the engine definition is a live object graph
       // and cannot cross the RPC seam, so the render model carries the resolved
-      // strings instead. See docs/composition-binding-reassessment.md.
+      // strings instead. See docs/reference/architecture/composition-binding-reassessment.md.
       const GATHER_NAMESPACE_URI = "http://gather.slu.edu/xforms";
 
       const attributeNS = (element, localName) => {

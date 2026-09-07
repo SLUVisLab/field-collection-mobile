@@ -2,7 +2,7 @@
 
 Answers: **are repeat-bound media identities unique *and stable* under repeat
 mutation?** Findings are in
-[docs/repeat-media-identity-characterization.md](../../docs/repeat-media-identity-characterization.md).
+[docs/reference/conventions/repeat-media-identity-characterization.md](../../docs/reference/conventions/repeat-media-identity-characterization.md).
 
 Short answer: unique yes, stable **no** — and the failure mode is a silent wrong
 attachment, not a collision.

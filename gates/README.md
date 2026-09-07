@@ -207,7 +207,7 @@ directory; the XML stores only its generated safe filename and SQLite stores
 only the relative key needed to resolve an Expo `File` at send time. Other
 upload media types remain explicitly unsupported. Camera, gallery/file picker,
 general media management, and background/retry upload work remain out of scope.
-See `docs/m5-final-runtime-report.md`.
+See `docs/archive/milestones/m5-final-runtime-report.md`.
 
 ## `ShellNavGateApp.js` — M5.1 shell boot + navigation gate
 
@@ -242,8 +242,8 @@ Then revert `index.js` to `import App from './App'`. (Android only — no iOS ru
 
 ## `CollectionFieldGateApp.js` — multi-image collection field gate
 
-The on-device counterpart to `docs/b-standard-field-conventions.md` and §19 of
-`docs/components-capabilities-ownership.md`. Drives the sequence
+The on-device counterpart to `docs/reference/conventions/b-standard-field-conventions.md` and §19 of
+`docs/reference/architecture/components-capabilities-ownership.md`. Drives the sequence
 `XFormsMultiImageControl` performs, but against the **real engine, real SQLite
 and real files**:
 
@@ -279,7 +279,7 @@ its composition adapter and the commit path all run for real.
 
 Going *through* `FormRunner` is the point: it found a duplicate-draft
 `UNIQUE` violation that no headless test or directly-mounted control could
-(see §7 of `docs/b-custom-composition-conventions.md`).
+(see §7 of `docs/reference/conventions/b-custom-composition-conventions.md`).
 
 Emits `COMPOSITION_SEED_READY::{…}`. Navigate to **Forms -> Quadrat tally (dev
 seed)**, tally a few, optionally flag uncertain, and Accept. The backing fields
@@ -327,7 +327,7 @@ The only **human-driven** gate. Mounts the real stack (`XFormsProvider` ->
 `CameraView`) over real storage and the real lifecycle service, so the camera
 interaction and the React binding seam are actually exercised. It found two
 defects the headless collection gate could not see -- see §21 of
-`docs/components-capabilities-ownership.md`.
+`docs/reference/architecture/components-capabilities-ownership.md`.
 
 The panel shows three independently counted numbers -- engine filled frames,
 media rows, and `<frame>` elements in the saved XML -- which must agree. The
@@ -351,7 +351,7 @@ device is selected. Revert `index.js` afterwards.
 
 Attachment identity must be minted at capture and never derived from the XForms
 binding reference, because repeat references reindex on deletion. See
-`docs/repeat-media-identity-characterization.md`. Emits
+`docs/reference/conventions/repeat-media-identity-characterization.md`. Emits
 `MEDIA_IDENTITY_RESULT::{…}`; Central transport stubbed.
 
 ```bash

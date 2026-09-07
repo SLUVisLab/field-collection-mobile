@@ -5,11 +5,11 @@
  * alongside it (`{ instance, media }`) and never nested inside it. Screens
  * therefore have to hold the list themselves, and `instance.media` silently
  * evaluating to `[]` is what emptied every collection field. See §22 of
- * docs/components-capabilities-ownership.md.
+ * docs/reference/architecture/components-capabilities-ownership.md.
  *
  * Identity is the **filename**, never a repeat position or binding reference —
  * positions reindex on deletion. See
- * docs/repeat-media-identity-characterization.md.
+ * docs/reference/conventions/repeat-media-identity-characterization.md.
  */
 
 /**

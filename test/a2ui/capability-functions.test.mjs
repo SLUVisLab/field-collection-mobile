@@ -18,7 +18,7 @@ import { createCapabilityRuntime } from '../../packages/gather-capabilities/src/
 
 // Slice 1 of the FunctionCall work: register Gather Capabilities as A2UI
 // renderer Functions. The mechanism is already upstream — see
-// docs/a2ui-functioncall-gap.md — so these tests pin the bridge, not the engine.
+// docs/reference/architecture/a2ui-functioncall-gap.md — so these tests pin the bridge, not the engine.
 
 // --- id mapping ---------------------------------------------------------
 

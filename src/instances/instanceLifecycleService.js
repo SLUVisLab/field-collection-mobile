@@ -79,7 +79,7 @@ const assertBindingReference = (reference) => {
  * reference-derived name makes a survivor inherit the deleted item's
  * attachment — a silent wrong image on the record. The filename is written into
  * the node value instead, so identity travels with the node.
- * See docs/repeat-media-identity-characterization.md.
+ * See docs/reference/conventions/repeat-media-identity-characterization.md.
  */
 export const imageFilenameForCapture = ({ contentType, suffix = randomMediaSuffix() } = {}) =>
   `image-${nonEmpty(suffix, 'suffix')}.${IMAGE_EXTENSIONS[assertImageContentType(contentType)]}`;
@@ -381,7 +381,7 @@ export const createInstanceLifecycleService = ({
         // Resume must hand back the same version-pinned resources a fresh fill
         // gets. Without them the binding manifest and composition definitions
         // are absent on resume only, and every composition field renders as
-        // unbound. See docs/composition-behaviour-audit.md.
+        // unbound. See docs/reference/architecture/composition-behaviour-audit.md.
         attachments: cached.attachments ?? [],
         media: await listInstanceMedia(instance.localInstanceId),
       };
@@ -404,7 +404,7 @@ export const createInstanceLifecycleService = ({
      * The engine has already removed the repeat instances, so the XML no longer
      * references these filenames. Identity is the **filename**, never a repeat
      * position — positions reindex on deletion. See
-     * docs/repeat-media-identity-characterization.md.
+     * docs/reference/conventions/repeat-media-identity-characterization.md.
      */
     async releaseInstanceMedia({
       localInstanceId,

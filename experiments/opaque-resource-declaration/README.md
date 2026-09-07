@@ -7,17 +7,27 @@ submissions, or forcing the bundle to become CSV/XML?
 This is problem **B** (distribution), deliberately kept from dictating problem
 **A** (what a Gather composition artifact *is*).
 
-## Result
+## Result — observed against a live Central (v2026.2.4, 2026-09-04)
 
-| route | Central slot | engine parses the bytes | submission pollution | false semantics |
+| route | Central slot | type | engine fetches? | submission |
 | --- | --- | --- | --- | --- |
-| `<instance src="jr://file/x.gather"/>` | yes, type `file` | **yes — refuses opaque JSON** | none | claims to be a loadable instance |
-| binary node default `jr://images/x.gather` | only via the `images/` filter | no | **yes — in every submission** | claims to be an image, *and* is form data |
-| **inline secondary instance node text** | only via the `images/` filter | **no** | **none** | the `images/` scheme prefix, nothing else |
-| itext `<value form="image">` | yes | no | none | claims to be a label image; may render |
+| inline secondary instance node text | **NO** | — | no | clean |
+| primary instance node default `jr://images/…` | yes | `image` | no | **polluted** |
+| external secondary `src="jr://file/…"` | yes | `file` | **yes — refuses opaque JSON** | clean |
+| **itext `<value form="image">jr://images/…`** | **yes** | `image` | **no** | **clean** |
 
-The third row is the only ODK-native route that survives every rejection
-criterion except the scheme prefix.
+**The itext route is the answer.** It is the only declaration that gets a
+Central slot without either polluting submissions or being fetched and parsed by
+the engine.
+
+`gather_resources` is a `relevant="false()"` node whose *label* carries the
+media reference. It is never rendered, the engine never resolves label media
+(that is a renderer's job, and ours does not render it), and a non-relevant node
+is omitted from the submission entirely — all three verified.
+
+The residual dishonesty is one word: Central's scanner only matches
+`jr://images/` in that position, so the bundle is announced as an image.
+Nothing in the form treats it as one.
 
 ## What Central actually scans
 
@@ -30,18 +40,14 @@ criterion except the scheme prefix.
 ^\s*(?:\w*\s+)?search\s*\(\s*("|')(.+)\)\s*$             ← select search() appearance
 ```
 
-Two things follow, and the second is the awkward one:
+**Corrected 2026-09-04 by the live run.** The source read said the default-value
+traversal visits every `<instance>` element. It does not — an inline secondary
+instance's node text is not scanned, which is why the first gate attempt got
+`[]` back. Reading the source was not a substitute for asking the server, and
+this is the second time that has been true in this file.
 
-- The default-value traversal visits **every `<instance>` element**, not just the
-  primary one, and applies no bind-type filter. Central's own comment concedes
-  the breadth: *"only binary-bound instance nodes … will do anything with a
-  default media file value, but we're cheating for now."*
-- That traversal matches **`jr://images/` only**. `jr://file/` is accepted for
-  `<instance src>` and itext, but *not* for instance defaults. So any
-  default-value route has to call the bundle an image.
-
-Read from source, **not observed against a running Central.** That is the one
-thing still needing a real draft.
+What the live instance actually honours is the table above. The `jr://images/`
+restriction on non-`<instance src>` positions did hold.
 
 ## Run 1 — binary node default
 
@@ -171,6 +177,44 @@ checksum.
 
 If step 1 fails, **the binding architecture is unaffected** — the remaining
 problem is only how to declare one opaque form attachment to Central.
+
+## Device-side sync — proved 2026-09-04
+
+`gates/CentralSyncGateApp.js` provisions against the live Central project with
+an App User token, refreshes, and then mounts the shipped `App` unmodified, so
+everything after the sync is the real shell and the real `FormRunner`.
+
+```text
+repo   compositions/photo/authored-photo/authored_photo_v1.a2ui.json
+   ↓   uploaded to the itext-declared slot
+Central flower_v1.gather   md5:3ecc247610df776b7480e78ad3ac2c4e
+   ↓   refreshForms, ordinary form-resource path
+device cached payload, 3347 bytes, sha256:bc35dc46e937d2ff…  IDENTICAL
+   ↓   FormRunner → compositionBinding
+XForm  <data id="gather_packaging_gate" version="gate-6a1366">
+         <site_name/><photo><note>authored</note>
+         <image>image-mtngn8m1h5v6ka.jpg</image></photo><meta>…</meta></data>
+```
+
+Receipts for `/data/photo/note` and `/data/photo/image` under
+`authored_photo_v1` rev `1.0.0`; `instance_media` holds the submission
+attachment; the working asset was released and swept; and **`gather_resources`
+appears nowhere in the submission**.
+
+The composition rendered as "Authored photo" with a live camera — from an
+opaque attachment the installed binary had never seen, with no registry entry
+and no binding manifest.
+
+### Two defects it found
+
+- **A broken import from the `scientific/` rename.**
+  `segmentAndMeasureComponents.js` pointed at `../../mobile/SegmentAndMeasureViews.js`;
+  no test imports that module, so only a bundle caught it.
+- **The composition loader could not read a cached resource.** Central serves
+  the attachment `application/octet-stream`, so the catalog caches it as bytes;
+  the loader required `.text` and reported "present but empty". It now decodes
+  base64 too — which is what makes the artifact's *name* free of the
+  transport's opinion about it.
 
 ## Running it
 

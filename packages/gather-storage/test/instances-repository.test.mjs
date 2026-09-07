@@ -224,7 +224,7 @@ test('instance media records only a safe filename, content type, and relative fi
   );
 });
 
-// Provenance for computed field values — docs/b-custom-composition-conventions.md.
+// Provenance for computed field values — docs/reference/conventions/b-custom-composition-conventions.md.
 // The presence or absence of a receipt is what tells a Gather-computed value
 // apart from one typed by hand in another ODK client, because the backing
 // fields stay ordinary writable XForms values rather than readonly (principle 5).

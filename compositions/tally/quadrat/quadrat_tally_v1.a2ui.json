@@ -1,0 +1,171 @@
+{
+  "id": "gather.tally.quadrat",
+  "revision": "0.1.0",
+  "title": "Quadrat Tally",
+  "description": "Count individuals in a quadrat and optionally flag the count as uncertain.",
+  "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json",
+  "surfaceId": "quadrat-tally",
+  "statePath": "/gather",
+  "result": {
+    "kind": "object",
+    "outputs": [
+      {
+        "path": "count",
+        "type": "int",
+        "required": true
+      },
+      {
+        "path": "note",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "messages": [
+    {
+      "version": "v0.9",
+      "createSurface": {
+        "surfaceId": "quadrat-tally",
+        "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json",
+        "sendDataModel": true
+      }
+    },
+    {
+      "version": "v0.9",
+      "updateComponents": {
+        "surfaceId": "quadrat-tally",
+        "components": [
+          {
+            "id": "root",
+            "component": "Column",
+            "children": [
+              "tallyView"
+            ]
+          },
+          {
+            "id": "tallyView",
+            "component": "Column",
+            "children": [
+              "title",
+              "countText",
+              "plusButton",
+              "minusButton",
+              "flagButton",
+              "acceptButton"
+            ]
+          },
+          {
+            "id": "title",
+            "component": "Text",
+            "text": "Quadrat tally",
+            "variant": "h3"
+          },
+          {
+            "id": "countText",
+            "component": "Text",
+            "text": {
+              "path": "/gather/count"
+            },
+            "variant": "body"
+          },
+          {
+            "id": "plusButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "plusLabel",
+            "action": {
+              "event": {
+                "name": "fixture.quadratTally.increment",
+                "context": {
+                  "statePath": "/gather"
+                }
+              }
+            }
+          },
+          {
+            "id": "plusLabel",
+            "component": "Text",
+            "text": "Add one",
+            "variant": "body"
+          },
+          {
+            "id": "minusButton",
+            "component": "Button",
+            "child": "minusLabel",
+            "action": {
+              "event": {
+                "name": "fixture.quadratTally.decrement",
+                "context": {
+                  "statePath": "/gather"
+                }
+              }
+            }
+          },
+          {
+            "id": "minusLabel",
+            "component": "Text",
+            "text": "Remove one",
+            "variant": "body"
+          },
+          {
+            "id": "flagButton",
+            "component": "Button",
+            "child": "flagLabel",
+            "action": {
+              "event": {
+                "name": "fixture.quadratTally.toggleUncertain",
+                "context": {
+                  "statePath": "/gather"
+                }
+              }
+            }
+          },
+          {
+            "id": "flagLabel",
+            "component": "Text",
+            "text": "Flag as uncertain",
+            "variant": "body"
+          },
+          {
+            "id": "acceptButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "acceptLabel",
+            "action": {
+              "event": {
+                "name": "gather.accept",
+                "context": {
+                  "statePath": "/gather"
+                }
+              }
+            }
+          },
+          {
+            "id": "acceptLabel",
+            "component": "Text",
+            "text": "Accept tally",
+            "variant": "body"
+          }
+        ]
+      }
+    },
+    {
+      "version": "v0.9",
+      "updateDataModel": {
+        "surfaceId": "quadrat-tally",
+        "path": "/gather",
+        "value": {
+          "status": "tally",
+          "count": 0,
+          "uncertain": false
+        }
+      }
+    }
+  ],
+  "hostActions": [
+    "fixture.quadratTally.increment",
+    "fixture.quadratTally.decrement",
+    "fixture.quadratTally.toggleUncertain",
+    "gather.accept"
+  ]
+}

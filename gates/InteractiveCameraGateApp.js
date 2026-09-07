@@ -51,7 +51,7 @@ import { XFormsRenderer } from '../src/xforms/XFormsRenderer.js';
  * `repeat.instanceReferences` while `useXFormsRepeat` returns `instances`, so a
  * rendered collection was unconditionally empty. Both automated layers missed
  * it — the unit tests never mount the hook, and the headless gate reads the
- * snapshot directly. See docs/components-capabilities-ownership.md §21.
+ * snapshot directly. See docs/reference/architecture/components-capabilities-ownership.md §21.
  *
  * The three **derived** rows below are machine-checked and must agree: tiles
  * projected == media rows == `<frame>` elements in the authoritative XML. The

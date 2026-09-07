@@ -6,6 +6,7 @@ import {
   createFormCatalogService,
   entityDatasetFromIntegrityUrl,
   sanitizeManifest,
+  isTextResource,
 } from '../../src/forms/formCatalogService.js';
 
 const project = {
@@ -14,8 +15,11 @@ const project = {
   centralProjectId: 1,
 };
 
+// A real filesystem stores bytes and decodes on readText; the fake used to hand
+// back whatever it was given, which hid the difference between the two writers.
 const makeFiles = () => {
   const content = new Map();
+  const decoder = new TextDecoder();
   return {
     content,
     async writeTextAtomic(key, value) {
@@ -27,16 +31,25 @@ const makeFiles = () => {
       return key;
     },
     async readText(key) {
-      return content.get(key);
+      const value = content.get(key);
+      return value instanceof Uint8Array ? decoder.decode(value) : value;
     },
     async readBytes(key) {
-      return content.get(key);
+      const value = content.get(key);
+      return typeof value === 'string' ? new TextEncoder().encode(value) : value;
+    },
+    fileForKey(key) {
+      return { exists: content.has(key) };
     },
   };
 };
 
 const makeForms = () => {
   const byIdentity = new Map();
+  // The content-addressed resource cache: blobs keyed by OUR digest of the
+  // bytes, and every (form, filename, server validator) we have already seen.
+  const blobs = new Map();
+  const byValidator = new Map();
   let current = null;
   const identity = ({ formKey, sourceVersion, sourceHash, manifestFingerprint }) =>
     JSON.stringify([formKey, sourceVersion, sourceHash, manifestFingerprint]);
@@ -46,8 +59,36 @@ const makeForms = () => {
     async listForms() {
       return [];
     },
+    blobs,
     async findVersion(input) {
       return byIdentity.get(identity(input)) ?? null;
+    },
+    async findResourceByValidator({ projectKey, formId, filename, resourceHash }) {
+      if (!resourceHash) return null;
+      return byValidator.get(JSON.stringify([projectKey, formId, filename, resourceHash])) ?? null;
+    },
+    async getResourceBlob(digest) {
+      return blobs.get(digest) ?? null;
+    },
+    async recordResourceBlob({ digest, byteLength, fileKey }) {
+      blobs.set(digest, { digest, byteLength, fileKey });
+      return blobs.get(digest);
+    },
+    async listReferencedBlobDigests() {
+      return [
+        ...new Set(
+          [...byIdentity.values()].flatMap((version) =>
+            (version.resources ?? []).map((resource) => resource.blobDigest).filter(Boolean)
+          )
+        ),
+      ];
+    },
+    async listResourceBlobs() {
+      return [...blobs.values()];
+    },
+    async deleteResourceBlob(digest) {
+      blobs.delete(digest);
+      return { digest };
     },
     async recordCachedVersion(input) {
       const formVersionId = identity({
@@ -66,6 +107,13 @@ const makeForms = () => {
         resources: input.resources,
       };
       byIdentity.set(formVersionId, version);
+      for (const resource of input.resources ?? []) {
+        if (!resource.hash || !resource.blobDigest) continue;
+        byValidator.set(
+          JSON.stringify([input.projectKey, input.formId, resource.filename, resource.hash]),
+          resource
+        );
+      }
       current = version;
       return version;
     },
@@ -235,7 +283,10 @@ test('loading a form synthesizes Entity CSV only in the host attachment, not the
     createClient: () => client,
   });
   await service.refresh(project);
-  const storedCsv = [...files.content.entries()].find(([key]) => key.includes('/resources/') && files.content.get(key).includes('__version'))[1];
+  // Resource payloads are stored as bytes under their content digest now, so
+  // the cached CSV has to be decoded to be inspected.
+  const csvKey = [...files.content.keys()].find((key) => key.includes('/resources/blobs/'));
+  const storedCsv = await files.readText(csvKey);
 
   const loaded = await service.loadCurrentForm(project.projectKey, 'silphium');
   assert.match(loaded.attachments.find((attachment) => attachment.filename === 'plants.csv').text, /local-overlay/);
@@ -256,15 +307,61 @@ test('a changed Entity List token creates a new immutable cache version', async 
   });
   await service.refresh(project);
   const firstKeys = [...files.content.keys()];
+  const firstBlobs = new Set(forms.blobs.keys());
+  client.calls.length = 0;
   client.entityListToken = 'dataset-token-2';
 
   const refreshed = await service.refresh(project);
   assert.equal(refreshed.refreshed[0].cached, false);
   assert.equal(forms.byIdentity.size, 2, 'the new resource token produces a new version identity');
-  assert.equal(files.content.size, firstKeys.length * 2, 'new files do not overwrite first-version keys');
   assert.ok(firstKeys.every((key) => files.content.has(key)), 'first version remains available for drafts');
+
+  // reference.jpg's validator did not change, so it is not fetched at all —
+  // the OpenRosa caching rule, applied per media file.
+  assert.ok(
+    !client.calls.includes('downloadFormAttachment:silphium:reference.jpg'),
+    'an unchanged validator means no download'
+  );
+  // plants.csv's validator DID change, so the spec requires a re-fetch. Central
+  // derives a Dataset attachment's hash from the dataset timestamp, so the
+  // bytes can be identical anyway — and then we decline to store a second copy.
+  assert.ok(
+    client.calls.includes('downloadFormAttachment:silphium:plants.csv'),
+    'a changed validator is honoured with a re-fetch'
+  );
+  assert.deepEqual(
+    new Set(forms.blobs.keys()),
+    firstBlobs,
+    'identical bytes produce no new blob, however much the validator churned'
+  );
+  // Only the version-specific files (form.xml, manifest.json) are new.
+  assert.equal(files.content.size, firstKeys.length + 2, 'no resource payload was duplicated');
 });
 
 test('binary attachment base64 encoding is runtime-neutral', () => {
   assert.equal(bytesToBase64(new Uint8Array([0, 1, 2, 255])), 'AAEC/w==');
+});
+
+test('a composition artifact Central serves as octet-stream is still cached as text', () => {
+  // Central classifies anything declared through an itext media value as
+  // `image` and serves it `application/octet-stream` — verified live against
+  // v2026.2.4 by the packaging gate. Trusting the content type alone let the
+  // artifact download intact, cache as bytes, and then reach the composition
+  // loader with no `text`, which reported it as "present but empty".
+  assert.equal(
+    isTextResource({ filename: 'authored_photo_v1.a2ui.json', contentType: 'application/octet-stream' }),
+    true
+  );
+  assert.equal(isTextResource({ filename: 'plants.csv', contentType: 'application/octet-stream' }), true);
+  assert.equal(isTextResource({ filename: 'notes.txt', contentType: 'application/octet-stream' }), true);
+
+  // A helpful content type still works on its own, filename or not.
+  assert.equal(isTextResource({ filename: 'blob', contentType: 'text/csv' }), true);
+  assert.equal(isTextResource({ filename: 'blob', contentType: 'application/json' }), true);
+
+  // Genuine binaries stay binary — including the opaque bundle format, which
+  // the composition loader decodes rather than the cache guessing.
+  assert.equal(isTextResource({ filename: 'logo.png', contentType: 'image/png' }), false);
+  assert.equal(isTextResource({ filename: 'u2netp.onnx', contentType: 'application/octet-stream' }), false);
+  assert.equal(isTextResource({ filename: 'flower_v1.gather', contentType: 'application/octet-stream' }), false);
 });

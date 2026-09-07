@@ -8,7 +8,7 @@ import {
 } from '../../src/xforms/compositions/commit.js';
 
 
-// docs/b-custom-composition-conventions.md §7: a missing required output is a
+// docs/reference/conventions/b-custom-composition-conventions.md §7: a missing required output is a
 // composition completion failure, not a partially finalized instance.
 
 const field = (bindings) => ({ reference: '/data/flower', compositionId: 'flower_v1', bindings });

@@ -28,7 +28,7 @@ const requireValue = (value, message) => {
  * It is also the concrete illustration of a known limitation: composition
  * *structure* is data, but composition *behavior* still needs a
  * composition-specific handler like this one. See
- * docs/components-capabilities-ownership.md §10.
+ * docs/reference/architecture/components-capabilities-ownership.md §10.
  *
  * `A2UIHost` owns hosting; this owns what `capture` / `accept` / `retake` mean
  * for this composition; `FlowController` owns only which View is active.

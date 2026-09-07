@@ -44,98 +44,15 @@ export const QUADRAT_TALLY_ACTIONS = Object.freeze({
 const STATE_PATH = '/gather';
 const SURFACE_ID = 'quadrat-tally';
 
-export const QUADRAT_TALLY_DEFINITION = Object.freeze({
-  id: 'gather.fixture.quadrat-tally',
-  revision: '0.1.0',
-  title: 'Quadrat Tally',
-  description: 'Count individuals in a quadrat and optionally flag the count as uncertain.',
-  catalogId: GATHER_CATALOG_ID,
-  surfaceId: SURFACE_ID,
-  statePath: STATE_PATH,
-  /**
-   * The declared outputs. Names only — **no XPaths**: the same composition has
-   * to be reusable across forms, so the destination is whichever question in
-   * the composition group carries the matching name
-   * (docs/composition-binding-reassessment.md).
-   */
-  result: Object.freeze({
-    kind: 'object',
-    outputs: Object.freeze([
-      Object.freeze({ path: 'count', type: 'int', required: true }),
-      Object.freeze({ path: 'note', type: 'string', required: false }),
-    ]),
-  }),
-  messages: Object.freeze([
-    {
-      version: 'v0.9',
-      createSurface: { surfaceId: SURFACE_ID, catalogId: GATHER_CATALOG_ID, sendDataModel: true },
-    },
-    {
-      version: 'v0.9',
-      updateComponents: {
-        surfaceId: SURFACE_ID,
-        components: [
-          { id: 'root', component: 'Column', children: ['tallyView'] },
+/**
+ * The canonical first-party artifact, loaded rather than restated.
+ *
+ * Keeping a parallel copy here is what made "the composition under test" and
+ * "the composition that ships" two different things. Everything else in this
+ * module is test scaffolding — view ids and action names the harness drives —
+ * and is not part of the artifact.
+ */
+export { default as QUADRAT_TALLY_DEFINITION } from '../../../compositions/tally/quadrat/quadrat_tally_v1.a2ui.json' with { type: 'json' };
 
-          {
-            id: 'tallyView',
-            component: 'Column',
-            children: ['title', 'countText', 'plusButton', 'minusButton', 'flagButton', 'acceptButton'],
-          },
-          { id: 'title', component: 'Text', text: 'Quadrat tally', variant: 'h3' },
-          // Upstream Basic Catalog vocabulary throughout: this fixture invents
-          // no Component, only its own actions.
-          { id: 'countText', component: 'Text', text: { path: '/gather/count' }, variant: 'body' },
-          {
-            id: 'plusButton',
-            component: 'Button',
-            variant: 'primary',
-            child: 'plusLabel',
-            action: { event: { name: QUADRAT_TALLY_ACTIONS.increment, context: { statePath: STATE_PATH } } },
-          },
-          { id: 'plusLabel', component: 'Text', text: 'Add one', variant: 'body' },
-          {
-            id: 'minusButton',
-            component: 'Button',
-            child: 'minusLabel',
-            action: { event: { name: QUADRAT_TALLY_ACTIONS.decrement, context: { statePath: STATE_PATH } } },
-          },
-          { id: 'minusLabel', component: 'Text', text: 'Remove one', variant: 'body' },
-          {
-            id: 'flagButton',
-            component: 'Button',
-            child: 'flagLabel',
-            action: {
-              event: { name: QUADRAT_TALLY_ACTIONS.toggleUncertain, context: { statePath: STATE_PATH } },
-            },
-          },
-          { id: 'flagLabel', component: 'Text', text: 'Flag as uncertain', variant: 'body' },
-          {
-            id: 'acceptButton',
-            component: 'Button',
-            variant: 'primary',
-            child: 'acceptLabel',
-            action: { event: { name: GATHER_ACTION_IDS.accept, context: { statePath: STATE_PATH } } },
-          },
-          { id: 'acceptLabel', component: 'Text', text: 'Accept tally', variant: 'body' },
-        ],
-      },
-    },
-    {
-      version: 'v0.9',
-      updateDataModel: {
-        surfaceId: SURFACE_ID,
-        path: STATE_PATH,
-        value: { status: QUADRAT_TALLY_VIEWS.tally, count: 0, uncertain: false },
-      },
-    },
-  ]),
-  hostActions: Object.freeze([
-    QUADRAT_TALLY_ACTIONS.increment,
-    QUADRAT_TALLY_ACTIONS.decrement,
-    QUADRAT_TALLY_ACTIONS.toggleUncertain,
-    GATHER_ACTION_IDS.accept,
-  ]),
-});
 
 /** The binding manifest a *form* hosting this composition would ship. */

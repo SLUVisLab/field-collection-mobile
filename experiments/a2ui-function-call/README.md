@@ -30,4 +30,4 @@ So the registry, argument validation and coercion, loud failure on unknown
 functions, and async execution are **already implemented upstream**.
 
 Findings are written up in
-[docs/a2ui-functioncall-gap.md](../../docs/a2ui-functioncall-gap.md).
+[docs/reference/architecture/a2ui-functioncall-gap.md](../../docs/reference/architecture/a2ui-functioncall-gap.md).

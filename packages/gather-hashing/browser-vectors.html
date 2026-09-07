@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>gather-hashing golden vectors</title>
+<!--
+  The same vectors as the Node test and the Hermes gate, run in a browser.
+
+  Open it directly from the repo (no server needed on most browsers; if the
+  file:// module load is blocked, serve the repo root with any static server and
+  open this path). It loads `src/index.js` UNMODIFIED — the import map only
+  points the bare `js-sha256` specifier at the UMD global the script tag sets,
+  so what runs here is the real module rather than a copy of it.
+-->
+<style>
+  body { font: 14px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; margin: 2rem; }
+  h1 { font-size: 1.1rem; }
+  .ok { color: #1a7f37; } .bad { color: #b3261e; }
+  li { margin-bottom: .2rem; }
+</style>
+<h1>gather-hashing golden vectors</h1>
+<div id="out">running…</div>
+
+<script src="../../node_modules/js-sha256/src/sha256.js"></script>
+<script type="importmap">
+  { "imports": { "js-sha256": "data:text/javascript,export const sha256 = globalThis.sha256;" } }
+</script>
+<script type="module">
+  import * as hashing from './src/index.js';
+  import { runHashingVectors } from './vectors.js';
+
+  const { runtime, passed, failures } = runHashingVectors(hashing);
+  const out = document.getElementById('out');
+  const total = passed + failures.length;
+
+  out.innerHTML = failures.length
+    ? `<p class="bad">${failures.length} of ${total} vectors FAILED on ${runtime}</p><ul>` +
+      failures.map((f) => `<li class="bad">${f.case} — ${f.detail}</li>`).join('') +
+      '</ul>'
+    : `<p class="ok">all ${total} vectors pass on ${runtime}</p>`;
+
+  console.log(`HASHING_VECTORS::${JSON.stringify({ runtime, passed, failures })}`);
+</script>

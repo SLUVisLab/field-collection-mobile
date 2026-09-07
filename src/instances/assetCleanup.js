@@ -6,7 +6,7 @@
  * needs, and what the ledger says — and returns a plan that explains itself.
  * Nothing here touches the filesystem or the database.
  *
- * Conventions in docs/b-custom-composition-conventions.md §4.
+ * Conventions in docs/reference/conventions/b-custom-composition-conventions.md §4.
  */
 
 export const CLEANUP_REASONS = Object.freeze({
@@ -160,7 +160,7 @@ export const runAssetCleanup = async ({ plan, files, assets } = {}) => {
  * above. Everything here is injected, so this is exercised without a device.
  *
  * `reclaimOrphans` defaults to **false**: a file with no ledger row is kept.
- * Installs predate the ledger, and `persistScientificCapture` wrote real
+ * Installs predate the ledger, and `persistWorkingAsset` wrote real
  * captures into project media for a long time without recording them, so
  * treating unknown files as garbage would be data loss. Pass `true` only for a
  * project whose assets are known to be fully ledgered.

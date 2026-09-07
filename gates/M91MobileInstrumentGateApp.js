@@ -15,11 +15,11 @@ const mask = { assetId: 'fixture-mask', uri: 'https://placehold.co/960x640/00000
 const model = { id: 'fixture-model', version: '0.1.0' };
 const capabilities = {
   capture: async () => ({ path: 'fixtures/camera.jpg' }),
-  persistScientificCapture: async () => image,
-  segmentScientificImage: async ({ image: input }) => ({ image: input, model, mask, threshold: 0.5, receipt: { id: 'fixture-segmentation' }, performance: null }),
-  classifyScientificImage: async ({ image: input }) => ({ image: input, model, ranked: [{ label: 'fixture specimen', score: 0.99 }], receipt: { id: 'fixture-classification' }, performance: null }),
-  measureScientificMask: async () => ({ area: { value: 3200, unit: 'px2' }, perimeter: { value: 280, unit: 'px' }, boundingBox: { width: 80, height: 40, unit: 'px' }, centroid: { x: 40, y: 20, unit: 'px' } }),
-  measureScientificImage: async () => ({ color: { colorSpace: 'sRGB', channels: { red: 90, green: 120, blue: 70 } }, sharpness: { metric: 'variance-of-laplacian', score: 42 } }),
+  persistWorkingAsset: async () => image,
+  runImageSegmentation: async ({ image: input }) => ({ image: input, model, mask, threshold: 0.5, receipt: { id: 'fixture-segmentation' }, performance: null }),
+  runImageClassification: async ({ image: input }) => ({ image: input, model, ranked: [{ label: 'fixture specimen', score: 0.99 }], receipt: { id: 'fixture-classification' }, performance: null }),
+  runMaskMeasurement: async () => ({ area: { value: 3200, unit: 'px2' }, perimeter: { value: 280, unit: 'px' }, boundingBox: { width: 80, height: 40, unit: 'px' }, centroid: { x: 40, y: 20, unit: 'px' } }),
+  runImageMeasurement: async () => ({ color: { colorSpace: 'sRGB', channels: { red: 90, green: 120, blue: 70 } }, sharpness: { metric: 'variance-of-laplacian', score: 42 } }),
 };
 
 const catalog = new Catalog(GATHER_CATALOG_ID, [ColumnApi, TextApi, gatherCaptureApi, maskReviewApi]);
