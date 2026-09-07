@@ -115,7 +115,7 @@ try {
   const rawComponents = catalog.components ?? catalog.catalog?.components ?? {};
   const declaredHere = new Set(
     Object.values(rawComponents)
-      .map((entry) => entry?.['x-gather-category'])
+      .map((entry) => entry?.['x-host-category'])
       .filter(Boolean)
   );
   const expected = new Set(Object.values(categorizedComponents()));
@@ -166,8 +166,28 @@ try {
     JSON.stringify(afterModel.slice(0, 60)));
 
   await setStatus('capture');
-  const button = await frame().$('button');
-  if (button) { await button.click(); await page.waitForTimeout(900); }
+  // Acquire through the sample-image input rather than the shutter.
+  //
+  // This gate is about the bridge protocol, not about cameras, and it used to
+  // press the shutter — which, with no camera present, dispatched an action
+  // carrying no capture at all. That is now refused at source: a shutter with
+  // nothing behind it is disabled. So the gate acquires the way anyone on a
+  // machine without a camera does, and the round trip it asserts is unchanged.
+  await frame().evaluate(async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#3f7d20';
+    context.fillRect(0, 0, 64, 64);
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+    const input = document.querySelector('input[type=file]');
+    const transfer = new DataTransfer();
+    transfer.items.add(new File([blob], 'bridge-sample.png', { type: 'image/png' }));
+    input.files = transfer.files;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await page.waitForTimeout(1200);
   const actions = await page.evaluate(() => window.__result.actions);
   check('SEND_TO_SERVER returns an action', actions.length > 0,
     actions.map((a) => a.action?.name).join(', '));

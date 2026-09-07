@@ -18,11 +18,11 @@
  */
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFileSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { CAPABILITY_DEFINITIONS } from 'gather-capabilities';
+import { CAPABILITY_DEFINITIONS, functionNameFor } from 'gather-capabilities';
 import { validateModelPackage } from 'gather-models';
 
 import { bundledModelForRef } from '../../../src/compute/models/modelPolicy.js';
@@ -86,7 +86,7 @@ const capabilities = {
   source: 'gather/packages/gather-capabilities',
   capabilities: CAPABILITY_DEFINITIONS.map((definition) => ({
     id: definition.id,
-    functionName: definition.id.replace(/\./g, '_'),
+    functionName: functionNameFor(definition.id),
     acceptedModelProfiles: definition.acceptedModelProfiles ?? [],
     takesModelRef: Boolean(definition.input?._def?.shape?.().modelRef),
   })),
@@ -171,6 +171,53 @@ for (const name of COMPOSITION_EXPORTS) {
  * only created here. One module, so a raw copy cannot drift from a bundled one.
  */
 mkdirSync(resolve(authoringOut, 'packaging'), { recursive: true });
+
+/**
+ * First-party Tools, served so the Composer has something to open.
+ *
+ * A Composer whose Library is empty on first run asks a researcher to author an
+ * A2UI document from nothing, which is not a thing anyone can do. These are the
+ * compositions this repository already ships — the same artifacts the device
+ * runs — so a starter Tool is a real Tool, not a tutorial fixture that drifts
+ * from the real ones.
+ *
+ * Whole compositions, not message lists: `result` is what makes a Tool's
+ * declared output types checkable, and a starter without it would seed a Library
+ * full of Tools that cannot be reviewed.
+ */
+const startersOut = resolve(authoringOut, 'starters');
+mkdirSync(startersOut, { recursive: true });
+const compositionsDir = resolve(here, '../../../compositions');
+const starters = [];
+const walk = (directory) => {
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const full = resolve(directory, entry.name);
+    if (entry.isDirectory()) walk(full);
+    else if (entry.name.endsWith('.a2ui.json')) starters.push(full);
+  }
+};
+walk(compositionsDir);
+
+const starterIndex = starters
+  .map((file) => {
+    const composition = JSON.parse(readFileSync(file, 'utf8'));
+    copyFileSync(file, resolve(startersOut, `${composition.id}.json`));
+    return {
+      id: composition.id,
+      title: composition.title ?? composition.id,
+      description: composition.description ?? null,
+      revision: composition.revision ?? null,
+      outputs: (composition.result?.outputs ?? []).length,
+      file: `${composition.id}.json`,
+    };
+  })
+  .sort((a, b) => (a.id < b.id ? -1 : 1));
+
+writeFileSync(
+  resolve(startersOut, 'index.json'),
+  `${JSON.stringify({ starters: starterIndex }, null, 2)}\n`
+);
+console.log(`authoring/starters/      ${starterIndex.map((s) => s.id).join(', ')}`);
 
 /**
  * The manifest makes this a **contract** rather than incidental static files.

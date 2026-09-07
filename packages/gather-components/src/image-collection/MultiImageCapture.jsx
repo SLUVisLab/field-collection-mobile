@@ -46,6 +46,7 @@ import { canCapture, canComplete, captureCountLabel, removeItemAt } from './mult
  *   maxItems?: number | null,
  *   allowRemove?: boolean,
  *   allowReorder?: boolean,
+ *   renderTrailing?: (publish: (capture: object) => Promise<unknown>) => import('react').ReactNode,
  *   testIDPrefix?: string,
  * }} props
  */
@@ -59,6 +60,20 @@ export function MultiImageCapture({
   maxItems = null,
   allowRemove = true,
   allowReorder = false,
+  /**
+   * An extra acquisition control beside the shutter, given this component's own
+   * capture handler.
+   *
+   * A function rather than a node because whatever it renders has to feed the
+   * *same* path the shutter does — appending to the collection, respecting
+   * `maxItems`, driving the busy state. Handing it the handler is what keeps a
+   * sample image and a photographed one indistinguishable from here on.
+   *
+   * It exists because sample data is the authoring affordance, not a fallback:
+   * a laptop webcam photographs a desk, and someone building a multi-photo
+   * specimen Tool needs specimens.
+   */
+  renderTrailing = null,
   testIDPrefix = 'multi-image-capture',
 }) {
   const theme = useTheme();
@@ -123,6 +138,7 @@ export function MultiImageCapture({
         onCapture={handleCapture}
         onCancel={onCancel}
         testIDPrefix={`${testIDPrefix}-camera`}
+        trailing={renderTrailing?.(handleCapture) ?? null}
         leading={
           latest ? (
             <Pressable
@@ -168,7 +184,11 @@ export function MultiImageCapture({
 }
 
 const styles = StyleSheet.create({
-  container: { gap: tokens.spacing.sm },
+  // Stretched for the same reason `CameraFrame.capture` is: a compound
+  // component that shrink-wraps hands its children a width nobody chose, and
+  // the camera inside then fills a container that is itself too small. Fixing
+  // the frame alone took this from 21% of the screen to 50%; the rest was here.
+  container: { gap: tokens.spacing.sm, alignSelf: 'stretch', width: '100%' },
   thumbnail: { borderWidth: 1, height: 48, overflow: 'hidden', width: 48 },
   thumbnailFill: { height: '100%', width: '100%' },
   count: { fontSize: tokens.typography.body, fontWeight: '700' },

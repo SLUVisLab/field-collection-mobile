@@ -128,7 +128,16 @@ export function CameraFrame({
 }
 
 const styles = StyleSheet.create({
-  capture: { gap: tokens.spacing.sm },
+  // `alignSelf`/`width` so the frame fills whatever contains it.
+  //
+  // Without them the frame shrink-wrapped to its content, and `viewportWrap`'s
+  // `width: '100%'` then meant 100% *of the widest sibling* — the shutter row,
+  // about 74px. So the camera rendered at a fifth of the screen in any parent
+  // that did not stretch it, and looked correct only where an accessory button
+  // happened to prop the row open. Measured in the Composer's component
+  // gallery: CameraView 62% of screen width (it has a sample-image button),
+  // MultiImageCapture and GatherCapture 21% (they do not).
+  capture: { gap: tokens.spacing.sm, alignSelf: 'stretch', width: '100%' },
   permission: { gap: tokens.spacing.sm, padding: tokens.spacing.md },
   permissionText: { lineHeight: tokens.typography.bodyLineHeight },
   inlineAction: { alignSelf: 'center' },

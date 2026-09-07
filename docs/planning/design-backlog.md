@@ -566,6 +566,61 @@ This keeps the library an authoring convenience while preserving a single reprod
 ---
 
 
+## 10a. Image library acquisition — a first-class capture source
+
+**Not scheduled. Do not build during the UI/demo pass.**
+
+Extend `CameraView` and the shared acquisition components so an image can come
+from **either** a live camera capture **or** the device's image library, both
+emitting the same downstream capture descriptor. From `gather_persistAsset`
+onward nothing should be able to tell them apart — which is already true of the
+renderer's preview-only sample input, and is the reason this is an extension
+rather than a redesign.
+
+The architecture anticipated it. Acquisition is Component-owned — there is no
+`camera.*` capability — and `SampleImageInput`'s own note says there is
+deliberately no SampleImage component and no authoring-only FunctionCall,
+because the Tool document is identical either way. What exists today is the web
+half, living in the renderer rather than in the shared component.
+
+### Why it is worth doing
+
+Not "the laptop has no camera". The real argument is that **the specimen is
+often not in front of you when you process it**: photograph the quadrat now and
+segment it in camp, re-run a bad segmentation on the same frame rather than on a
+plant that is now in a press, or work from images a phone never took at all —
+scope cameras, drones, a colleague's device. A Tool whose input can only be
+"the thing in front of me, right now" is narrower than the compute behind it.
+
+### What a design has to answer first
+
+```text
+acquisition source        camera | library, recorded on the descriptor
+provenance                that source carried into receipts
+EXIF                      read it, trust it, or record "unknown"
+allowLibrary policy       per component and/or per study — some protocols
+                          require in-situ capture, as ODK image questions do
+input normalization       format, orientation, dimensions; the web path
+                          downsizes to 960px and a library pick would not
+web/native parity         one contract, two implementations
+```
+
+Provenance is the one that cannot be retrofitted. A capture currently means
+"this device, this moment"; a picked image means unknown origin, unknown time,
+possibly edited. Gather's receipts exist so a reviewer can reconstruct what ran,
+and a reviewer who cannot tell how the input was acquired is the failure mode.
+`source` costs nothing to add now and is close to impossible to add once
+submissions exist without it.
+
+### Why it is not blocking anything
+
+All three first-party Tools use `CameraView`, where the sample-image path is
+proven end to end — `gate:rehearsal` runs real ORT-Web segmentation on a
+sample-chosen image. The unresolved `MultiImageCapture` sample-image rendering
+issue is therefore **non-blocking**: no composition uses that component. If this
+work is ever done, the `renderTrailing` seam it would replace disappears along
+with that bug.
+
 ## 11. Visual design direction — field instrument clarity without visual fatigue
 
 Gather should eventually develop a shared visual design language across:

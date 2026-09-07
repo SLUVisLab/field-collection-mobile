@@ -20,6 +20,7 @@
  * What it swaps is only the inference backend and the model resolver.
  */
 import {
+  assertRuntimeCovers,
   CAPABILITY_DEFINITIONS,
   createCapabilityRuntime,
 } from 'gather-capabilities';
@@ -28,7 +29,7 @@ import { createModelExecutor } from '../../../../src/compute/runtime/modelExecut
 import { capabilityFunctions } from '../../../../src/a2ui/capabilityFunctions.js';
 import { authoringInputSchemaFor } from './authoringSchema.js';
 import { recordPreviewExecution } from './previewLedger.js';
-import { measureMaskCoverage, setPreviewUriResolver } from './previewImaging.js';
+import { setPreviewUriResolver } from './previewImaging.js';
 import { previewModels, resolvePreviewModel } from './previewModels.js';
 import { createWebFiles } from './web/webFiles.js';
 import { createWebImageAdapter } from './web/webImageAdapter.js';
@@ -38,19 +39,26 @@ import {
   createWebModelStore,
 } from './web/webModelProvider.js';
 import { createInstalledFirstProvider, installPackage } from './web/packageInstall.js';
+import { createOpenCvWebMeasurementAdapter } from './web/openCvWebMeasurementAdapter.js';
 import { createWebOnnxRuntime, ONNX_RUNTIME_WEB } from './web/webOnnxRuntime.js';
 
 /**
- * The Capabilities this preview backs. Kept explicit rather than "whatever the
- * runtime map happens to contain", because advertising a Function to the
- * Composer that cannot execute is worse than not advertising it — the author
- * finds out by pressing a button that does nothing.
+ * The Capabilities this preview backs: **all of them**.
+ *
+ * This was an explicit three-item allowlist, which quietly made the authoring
+ * vocabulary "whatever the browser happened to support" — five of Gather's
+ * eight Capabilities executed on the device and could not be authored in the
+ * Composer, and nothing said so. The rule is the other way round now: a
+ * Capability is authorable only if both runtimes execute it, so the browser
+ * implements the contract rather than the catalog shrinking to fit.
+ *
+ * Derived from the definitions, so adding one to CAPABILITY_DEFINITIONS without
+ * a browser implementation fails the check below instead of silently vanishing
+ * from the Composer.
  */
-export const ADVERTISED_CAPABILITIES = Object.freeze([
-  'image.segment',
-  'image.classify',
-  'measure.area',
-]);
+export const ADVERTISED_CAPABILITIES = Object.freeze(
+  CAPABILITY_DEFINITIONS.map((definition) => definition.id)
+);
 
 /**
  * Real segmentation, in the browser.
@@ -115,30 +123,39 @@ const previewClassify = async ({ image, model }) => {
 };
 
 /**
- * Mask measurements are **real**: actual pixels of the actual mask image, the
- * same quantity the device reports. The mask it measures is simulated, which
- * the ledger records separately — two different claims, and collapsing them is
- * how a preview starts lying.
+ * Measurements are **real**, and are OpenCV's — the same library and the same
+ * version the device uses (4.12.0), through `@techstark/opencv-js` instead of
+ * `react-native-fast-opencv`. The mask being measured may have come from a
+ * sample image, which the ledger records separately: two different claims, and
+ * collapsing them is how a preview starts lying.
+ *
+ * This previously returned a null perimeter and threw for colour and sharpness,
+ * which is what kept five Capabilities out of the Composer.
  */
+const openCvAdapter = createOpenCvWebMeasurementAdapter({
+  resolveUri: (uri) => previewFiles.resolveUrl(uri),
+});
+
 const previewMeasurementAdapter = {
   maskMeasurements: async (mask) => {
-    const coverage = await measureMaskCoverage({ uri: mask.uri });
+    const measurements = await openCvAdapter.maskMeasurements(mask);
     recordPreviewExecution({
-      name: 'measure_area',
+      name: 'measure_mask',
       fidelity: 'real',
-      detail: `${coverage.covered.toLocaleString()} px of ${(coverage.width * coverage.height).toLocaleString()}`,
+      detail:
+        `${measurements.area.value.toLocaleString()} px² · ` +
+        `perimeter ${measurements.perimeter.value.toFixed(1)} px — opencv.js 4.12.0`,
     });
-    return {
-      area: { value: coverage.covered, unit: 'px2' },
-      perimeter: null,
-      boundingBox: coverage.boundingBox,
-      centroid: coverage.centroid,
-    };
+    return measurements;
   },
-  imageMeasurements: async () => {
-    throw new Error(
-      'measure.color and measure.sharpness have no preview implementation, so they are not advertised.'
-    );
+  imageMeasurements: async (image, mask) => {
+    const measurements = await openCvAdapter.imageMeasurements(image, mask);
+    recordPreviewExecution({
+      name: 'measure_image',
+      fidelity: 'real',
+      detail: `sharpness ${measurements.sharpness.score.toFixed(1)} — opencv.js 4.12.0`,
+    });
+    return measurements;
   },
 };
 
@@ -162,14 +179,10 @@ export const previewCapabilityFunctions = () => {
         : resolvePreviewModel(input),
   });
 
-  const missing = ADVERTISED_CAPABILITIES.filter((id) => typeof full[id] !== 'function');
-  if (missing.length > 0) {
-    throw new Error(
-      `The preview runtime cannot back ${missing.join(', ')}. ` +
-        'Either implement them or remove them from ADVERTISED_CAPABILITIES — ' +
-        'a Function the Composer can author but cannot run is the failure this check exists to prevent.'
-    );
-  }
+  // Parity, asserted where the runtime is built. The browser is the host that
+  // has historically lagged, so this is the check that would have caught five
+  // Capabilities being quietly unauthorable.
+  assertRuntimeCovers({ runtime: full, host: 'browser preview' });
 
   const runtime = Object.fromEntries(ADVERTISED_CAPABILITIES.map((id) => [id, full[id]]));
 

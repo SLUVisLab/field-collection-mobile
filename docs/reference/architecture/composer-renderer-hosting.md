@@ -180,14 +180,97 @@ with allow="camera"                camera OK
 
 So the answer to "can hosting configuration solve this?" is **no**, and not for
 want of trying: Permissions Policy is delegated by the embedding element, and
-nothing the renderer or its server sends can grant what the parent did not.
+nothing the renderer or its server sends can grant what the parent did not. The
+renderer sends no `Permissions-Policy` header, and one would not help — that
+header can only restrict further, never grant.
 
-If M11 ever needs a camera-backed preview, the fix is one attribute on that
-template, granting only what Gather uses. That is a device-capability
-enhancement, not a prerequisite — the integration is complete without it, and a
-patch there would not change the fact that Gather needs zero Composer patches
-to work.
+### It is two hops, not one — remeasured 2026-09-06
 
+The paragraph above was written before the wrapper existed, when the Composer
+framed the renderer directly. The chain is now three documents on three origins:
+
+```text
+wrapper (composer.…)  →  editor iframe (editor.…)  →  renderer iframe (renderer.…)
+```
+
+`camera`'s default allowlist is `self`, so **every cross-origin hop needs its own
+`allow`**. Measured with a fake capture device:
+
+```text
+A. as shipped                           top OK · editor denied   · renderer denied
+B. allow="camera" on our editor iframe  top OK · editor camera OK · renderer denied
+```
+
+The grant propagates exactly one hop per attribute. Two are needed: one on the
+wrapper's own `#editor` iframe, and one on upstream's
+`rendered-frame.ng.html`.
+
+### Why the second one cannot be set from JavaScript
+
+The obvious move is to select the renderer's iframe and set the attribute — the
+ordinary DOM pattern, and it works for the first hop. It cannot work for the
+second, and not because of anything about attributes:
+
+```text
+hop 1  set allow on our own <iframe id="editor">   → "camera"
+hop 2  editor.contentDocument                      → null (blocked)
+hop 2  editor.contentWindow.document               → SecurityError: Blocked a frame…
+```
+
+That iframe is created by the editor's Angular code, inside the editor's
+document, on another origin. There is no element to select.
+
+And the separate origin is **our own decision**, recorded in the web
+repository's `deploy/compose.wrapper.yml`: hosting the shell and upstream apart
+means the
+browser enforces the message-protocol boundary rather than a convention we
+maintain. Serving the editor same-origin would make the DOM reach-in work and
+would trade that guarantee away to save one attribute.
+
+### Why this is not being fixed — 2026-09-06
+
+Not blocked, and deliberately not scheduled. A laptop webcam at a desk
+photographs a desk. What a Tool author needs from a preview is whether *this
+model* handles *the kind of image they will actually capture*, so representative
+sample data is the right primary affordance and would be even with the camera
+fully enabled. `SampleImageInput` in `apps/renderer/src/gatherComponents.jsx` is
+that affordance, not a workaround.
+
+If a camera-backed preview is ever wanted, the cost is known and small: one
+attribute on our iframe plus a fourth upstream patch, granting `camera` only.
+The integration is complete without it.
+
+
+## The active renderer is not observable — audited 2026-09-06
+
+The wrapper imports its authoring modules from a configured renderer and hands
+the editor the same URL as `?renderer=`, so the two agree by construction on
+every document load. Upstream's renderer picker is preserved, which means a
+person can change it mid-session — and then the preview would run against one
+renderer while Review, Models and Publish analyse against another, both
+producing plausible output.
+
+Audited before building anything to detect it. The embedded-host protocol is:
+
+```text
+DOCUMENT_CHANGED   the editor announces an edit
+DOCUMENT_STATE     the editor answers with the document
+GET_DOCUMENT       the host asks for it
+```
+
+Nothing reports the active renderer, and `0002-embedded-host-document-seam.patch`
+does not mention one. **So the divergence is not observable from our side
+without an upstream change**, and no patch was added for it in Phase 1.
+
+Two things limit the exposure, which is why this is recorded rather than fixed:
+
+- `composerDocument.load()` sets `?renderer=` on **every** draft open, so a
+  manual change survives only until the next one.
+- The wrapper's own imports never move; only what the preview renders does.
+
+The obvious workaround — reach into the editor and operate the picker — is not
+available. That iframe's document is cross-origin, so there is no element to
+click; see the camera section above, which measures the same wall.
 
 ## `resultPath` is Gather's, and both hosts share one implementation
 

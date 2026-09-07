@@ -46,6 +46,7 @@ import { createModelExecutor } from '../compute/runtime/modelExecutor.js';
 import { createImageAssetService } from '../media/imageAssetService.js';
 import { capabilityDefinitionsById, classify, measureImage, measureMask, segment } from 'gather-capabilities';
 import { CAPABILITY_DEFINITIONS } from '../../packages/gather-capabilities/src/definitions.js';
+import { assertRuntimeCovers } from '../../packages/gather-capabilities/src/parity.js';
 import { createCapabilityRuntime } from '../../packages/gather-capabilities/src/runtime.js';
 import { capabilityFunctions } from '../a2ui/capabilityFunctions.js';
 
@@ -657,17 +658,19 @@ export function GatherProvider({ children, deps, onReady, onError }) {
    */
   const a2uiCapabilityFunctions = useMemo(() => {
     if (!computeRuntime || !activeProject) return [];
-    return capabilityFunctions({
-      definitions: CAPABILITY_DEFINITIONS,
-      runtime: createCapabilityRuntime({
-        segmentExecute: (input) =>
-          computeRuntime.executor.segment({ ...input, projectKey: activeProject.projectKey }),
-        classifyExecute: (input) =>
-          computeRuntime.executor.classify({ ...input, projectKey: activeProject.projectKey }),
-        measurementAdapter: computeRuntime.measurementAdapter,
-        resolveModel: resolveCapabilityModel,
-      }),
+    const runtime = createCapabilityRuntime({
+      segmentExecute: (input) =>
+        computeRuntime.executor.segment({ ...input, projectKey: activeProject.projectKey }),
+      classifyExecute: (input) =>
+        computeRuntime.executor.classify({ ...input, projectKey: activeProject.projectKey }),
+      measurementAdapter: computeRuntime.measurementAdapter,
+      resolveModel: resolveCapabilityModel,
     });
+    // The same parity check the browser makes, on the other side of it. A
+    // Capability defined without a device implementation fails here rather than
+    // reaching an author as a Function that does nothing.
+    assertRuntimeCovers({ runtime, host: 'device' });
+    return capabilityFunctions({ definitions: CAPABILITY_DEFINITIONS, runtime });
   }, [activeProject, computeRuntime, resolveCapabilityModel]);
 
   /**

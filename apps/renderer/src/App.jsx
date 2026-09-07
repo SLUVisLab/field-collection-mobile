@@ -20,8 +20,8 @@ import { fixtureCapabilities } from './fixtureCapabilities.js';
 import {
   Flow,
   GatherCameraView,
-  GatherButton,
   GatherCapture,
+  GatherButton,
   GatherImageOverlay,
   GatherInstrumentError,
   GatherMediaGallery,
@@ -64,6 +64,12 @@ const gatherCatalog = new Catalog(
   [
     ...[...basicCatalog.components.values()].filter((c) => c.name !== GatherButton.name),
     GatherButton,
+    // `GatherCapture` stays **renderable** and is not **advertised** — see
+    // UNADVERTISED_COMPONENTS in composerBridge.js. It predates `CameraView`
+    // and `gatherComponentApis`, the list documented as "registerable by any
+    // Tool", already excludes it; but `SEGMENT_AND_MEASURE_INSTRUMENT` in
+    // gather-catalog still renders it, so removing it here blanked that
+    // fixture's capture view and the bridge gate with it.
     Flow, GatherCameraView, GatherCapture, GatherMediaGallery, GatherMultiImageCapture,
     GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError,
   ],

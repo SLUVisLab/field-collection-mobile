@@ -45,3 +45,12 @@ export {
   capabilityIds,
 } from './definitions.js';
 export { createCapabilityRuntime } from './runtime.js';
+export { assertRuntimeCovers, CapabilityParityError } from './parity.js';
+export {
+  assertAuthoringMetadataMatches,
+  AuthoringMetadataError,
+  CAPABILITY_AUTHORING_METADATA,
+  functionNameFor,
+  HOST_FUNCTION_METADATA,
+  usageExampleFor,
+} from './authoringMetadata.js';

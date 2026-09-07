@@ -86,12 +86,23 @@ const DEFAULT_STATE_PATH = '/gather';
 /**
  * How an author supplies representative imagery while previewing a Tool.
  *
- * The Composer frames the renderer without `allow="camera"`, so `getUserMedia`
- * is refused and the shutter has nothing to grab. This is a **preview-host
- * acquisition detail**, not a new A2UI concept: it produces the same capture
- * descriptor the camera would, so from `gather_persistAsset` onward the Tool
- * cannot tell where the image came from — native camera, browser camera, or a
- * file chosen here.
+ * **This is the authoring affordance, not a fallback.** An earlier version of
+ * this comment explained it as a workaround for the Composer framing the
+ * renderer without `allow="camera"`. That is true and beside the point: what an
+ * author needs to see is whether *this model* handles *the kind of image they
+ * will actually capture*, and a laptop webcam at a desk photographs a desk.
+ * Someone authoring a flower-segmentation Tool needs a flower. So sample data
+ * would belong here even with the camera fully enabled, and the camera is the
+ * secondary source in this context rather than the missing one.
+ *
+ * (The policy limitation is real and is described in
+ * docs/reference/architecture/composer-renderer-hosting.md. It is
+ * not the reason this exists.)
+ *
+ * It stays a **preview-host acquisition detail**, not a new A2UI concept: it
+ * produces the same capture descriptor the camera would, so from
+ * `gather_persistAsset` onward the Tool cannot tell where the image came from —
+ * native camera, browser camera, or a file chosen here.
  *
  * That is why there is no SampleImage component and no authoring-only
  * FunctionCall: the Tool document is identical either way.
@@ -144,9 +155,23 @@ export const Flow = createComponentImplementation(flowApi, ({ props, buildChild 
 // and dispatches actions, then delegates all rendering to the shared components.
 export const GatherCapture = createComponentImplementation(gatherCaptureApi, ({ props, context }) => {
   const statePath = props.statePath || DEFAULT_STATE_PATH;
+  // Sample input here too. It is a legacy surface, but it is still the one
+  // SEGMENT_AND_MEASURE_INSTRUMENT renders, and a capture surface with no
+  // camera behind it and no other way to supply an image is a dead end — which
+  // is what it became once the shutter stopped emitting an empty capture.
+  const [sample, setSample] = useState(null);
+  const publish = (capture) => {
+    context.dispatchAction(action(GATHER_ACTION_IDS.capture, statePath, capture ? { capture } : undefined));
+  };
+  const chooseSample = (capture) => {
+    setSample(capture ?? null);
+    publish(capture);
+  };
   return (
     <CameraView
-      onCapture={(capture) => context.dispatchAction(action(GATHER_ACTION_IDS.capture, statePath, capture ? { capture } : undefined))}
+      onCapture={publish}
+      preview={sample}
+      trailing={<SampleImageInput onSample={chooseSample} />}
     />
   );
 });
@@ -159,11 +184,24 @@ export const GatherCameraView = createComponentImplementation(cameraViewApi, ({ 
   // Both paths, exactly as the device does: `setCapture` serves an authored
   // composition binding `capture` to a path, the action serves a registered
   // handler. A Tool that uses one must not be broken by the other's absence.
+  // Held so the viewfinder can show what was chosen. The Tool receives the
+  // capture either way; this is only what the author sees.
+  const [sample, setSample] = useState(null);
   const publish = (capture) => {
     if (capture) props.setCapture?.(capture);
     context.dispatchAction(action(GATHER_ACTION_IDS.capture, statePath, capture ? { capture } : undefined));
   };
-  return <CameraView onCapture={publish} trailing={<SampleImageInput onSample={publish} />} />;
+  const chooseSample = (capture) => {
+    setSample(capture ?? null);
+    publish(capture);
+  };
+  return (
+    <CameraView
+      onCapture={publish}
+      preview={sample}
+      trailing={<SampleImageInput onSample={chooseSample} />}
+    />
+  );
 });
 
 export const GatherMediaGallery = createComponentImplementation(mediaGalleryApi, ({ props, context }) => {
@@ -180,6 +218,10 @@ export const GatherMediaGallery = createComponentImplementation(mediaGalleryApi,
       onSelect={(_item, index) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaSelected, statePath, { index }))}
       onBack={() => context.dispatchAction(action(GATHER_ACTION_IDS.mediaBack, statePath))}
       onDone={() => context.dispatchAction(action(GATHER_ACTION_IDS.mediaDone, statePath))}
+      // Given the component's own handler, so a sample image joins the
+      // collection exactly as a photographed one does — same append, same
+      // maxItems, same busy state.
+      renderTrailing={(publish) => <SampleImageInput onSample={publish} />}
     />
   );
 });
@@ -196,6 +238,10 @@ export const GatherMultiImageCapture = createComponentImplementation(multiImageC
       onCapture={(capture) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaCaptured, statePath, capture ? { capture } : undefined))}
       onChange={(next) => context.dispatchAction(action(GATHER_ACTION_IDS.mediaChanged, statePath, { items: next, change: 'set' }))}
       onDone={() => context.dispatchAction(action(GATHER_ACTION_IDS.mediaDone, statePath))}
+      // Given the component's own handler, so a sample image joins the
+      // collection exactly as a photographed one does — same append, same
+      // maxItems, same busy state.
+      renderTrailing={(publish) => <SampleImageInput onSample={publish} />}
     />
   );
 });

@@ -18,6 +18,13 @@ export function CameraView({
   notice = null,
   leading = null,
   trailing = null,
+  /**
+   * An image to show instead of the viewfinder — a capture that already
+   * happened, from wherever. The component shows its own last capture without
+   * being told; this is for one supplied from outside, such as a sample image
+   * chosen in the Composer preview.
+   */
+  preview = null,
   testIDPrefix = 'camera',
 }) {
   const videoRef = useRef(null);
@@ -25,6 +32,10 @@ export function CameraView({
   const [live, setLive] = useState(true);
   const [error, setError] = useState(null);
   const [capturing, setCapturing] = useState(false);
+  // What this camera last produced. Until now nothing showed a capture at all:
+  // the viewport was live video or a placeholder, so pressing the shutter or
+  // choosing a sample looked like nothing had happened.
+  const [captured, setCaptured] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,7 +84,16 @@ export function CameraView({
     setCapturing(true);
     setError(null);
     try {
-      await onCapture?.(live ? grabFrame() : null);
+      // Only ever a real frame. This used to hand `onCapture` a `null` when no
+      // camera was running, so the shutter silently produced nothing; the
+      // shutter is disabled in that case now instead.
+      const frame = grabFrame();
+      if (!frame) {
+        setError('There is no camera to capture from.');
+        return;
+      }
+      setCaptured(frame);
+      await onCapture?.(frame);
     } catch {
       setError('Could not capture a frame. Try again.');
     } finally {
@@ -81,7 +101,18 @@ export function CameraView({
     }
   };
 
-  const viewport = live ? (
+  // Supplied beats captured: choosing a sample after taking a photo should show
+  // the sample, which is the thing just asked for.
+  const shown = preview ?? captured;
+
+  const viewport = shown ? (
+    <img
+      src={shown.uri}
+      alt="The image this Tool will work from"
+      data-testid={`${testIDPrefix}-preview`}
+      style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }}
+    />
+  ) : live ? (
     <video
       ref={videoRef}
       playsInline
@@ -97,8 +128,9 @@ export function CameraView({
       testIDPrefix={testIDPrefix}
       viewport={viewport}
       capturing={capturing}
-      captureDisabled={!canCapture}
-      notice={notice}
+      // A shutter with no camera behind it is not a shutter.
+      captureDisabled={!canCapture || !live}
+      notice={notice ?? (live ? null : 'No camera is available here.')}
       error={error}
       leading={leading}
       trailing={trailing}

@@ -58,6 +58,10 @@ COPY src/packaging src/packaging
 # published; see scripts/generate-model-catalog.mjs.
 COPY src/xforms src/xforms
 
+# First-party Tools, served as the Composer's starter Library. Whole
+# compositions, so a starter carries its declared result and can be reviewed.
+COPY compositions compositions
+
 # Canonical model bytes. Only the profiles the browser backend supports are
 # copied into the served image by scripts/copy-preview-models.mjs — 4.4MB of
 # the 25MB here — and this build stage is discarded.
