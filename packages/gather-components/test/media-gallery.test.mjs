@@ -8,7 +8,7 @@ import {
   moveItem,
   normalizeMediaItems,
   selectionKeySet,
-} from '../src/components/media/mediaModel.js';
+} from '../src/media/mediaModel.js';
 
 test('mediaItemKey prefers durable ids, falls back to location then index', () => {
   assert.equal(mediaItemKey({ assetId: 'a1', uri: 'x' }, 0), 'a1');

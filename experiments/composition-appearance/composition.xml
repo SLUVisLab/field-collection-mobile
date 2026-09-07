@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa">
+  <h:head><h:title>Composition appearance probe</h:title><model>
+    <instance><data id="composition_probe">
+      <flower_analysis>
+        <petal_count/>
+        <color/>
+      </flower_analysis>
+      <plain_group><note_a/></plain_group>
+      <meta><instanceID/></meta>
+    </data></instance>
+    <bind nodeset="/data/flower_analysis/petal_count" type="int"/>
+    <bind nodeset="/data/flower_analysis/color" type="string"/>
+    <bind nodeset="/data/plain_group/note_a" type="string"/>
+    <bind nodeset="/data/meta/instanceID" type="string" jr:preload="uid"/>
+  </model></h:head>
+  <h:body>
+    <!-- the shape B-custom §1 proposes: a colon-bearing id token on a PLAIN group -->
+    <group ref="/data/flower_analysis" appearance="gather-composition:flower_v1 field-list">
+      <label>Flower analysis</label>
+      <input ref="/data/flower_analysis/petal_count"><label>Petal count</label></input>
+      <input ref="/data/flower_analysis/color"><label>Colour</label></input>
+    </group>
+    <group ref="/data/plain_group">
+      <label>Plain group</label>
+      <input ref="/data/plain_group/note_a"><label>Note A</label></input>
+    </group>
+  </h:body>
+</h:html>

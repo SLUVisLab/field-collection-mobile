@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { ComponentContext, GenericBinder } from '@a2ui/web_core/v0_9/bindings';
 
+import { createFunctionCallHandler, isFunctionCallAction } from '../actionAdapter.js';
+
 // Surface + binding machinery only. The mobile implementations of the upstream
 // A2UI Basic Catalog live in `basicCatalog.js`.
 
@@ -46,9 +48,45 @@ function InstrumentNode({ surface, componentId, implementations, basePath = '/' 
   return <implementation.component context={context} buildChild={(id, path) => <InstrumentNode surface={surface} componentId={id} implementations={implementations} basePath={path ?? basePath} />} />;
 }
 
+/**
+ * Replaces action props that are **action-position FunctionCalls** with a
+ * Gather-owned callable.
+ *
+ * Deliberately narrow: anything that is not a `functionCall` — `event` actions
+ * above all — keeps whatever `GenericBinder` produced, so upstream still owns
+ * ordinary bindings, value-position FunctionCalls and event dispatch. See
+ * `src/a2ui/actionAdapter.js`.
+ */
+const useFunctionCallActions = (context, props) => {
+  // The authored properties, before binding — `resultPath` survives message
+  // processing because component properties are stored raw.
+  const raw = context?.componentModel?.properties ?? null;
+  return useMemo(() => {
+    if (!raw) return props;
+    let overrides = null;
+    for (const [key, value] of Object.entries(raw)) {
+      if (!isFunctionCallAction(value)) continue;
+      const handler = createFunctionCallHandler({
+        rawAction: value,
+        resolveDynamicValue: (input) => context.dataContext.resolveDynamicValue(input),
+        invoke: (name, args) =>
+          context.dataContext.functionInvoker(name, args, context.dataContext, undefined),
+        // The context's own setter, so path semantics match every other write.
+        writeResult: (path, result) => context.dataContext.set(path, result),
+        onError: (error) => context.dataContext.dispatchExpressionError(error, value.functionCall?.call),
+      });
+      overrides = { ...(overrides ?? {}), [key]: handler };
+    }
+    return overrides ? { ...props, ...overrides } : props;
+    // `raw` identity changes when the component model updates, which is the
+    // only time a handler needs rebuilding.
+  }, [context, props, raw]);
+};
+
 export function bindInstrumentComponent(schema, Component) {
   return function BoundInstrumentComponent({ context, buildChild }) {
-    const props = useBoundProps(context, schema);
+    const bound = useBoundProps(context, schema);
+    const props = useFunctionCallActions(context, bound);
     return <Component {...props} context={context} buildChild={buildChild} />;
   };
 }

@@ -34,7 +34,52 @@ export const flowApi = {
 // durable ImageAsset.
 export const cameraViewApi = {
   name: GATHER_COMPONENT_IDS.cameraView,
-  schema: z.object({ statePath: z.string() }).strict(),
+  schema: z
+    .object({
+      statePath: z.string().optional(),
+      /**
+       * Where the capture descriptor lands, e.g. `{ path: '/working/capture' }`.
+       *
+       * This is the upstream Component-output mechanism, not a Gather
+       * invention: the binder injects a `setCapture` writer for any
+       * `DynamicValue` prop bound to a path, exactly as it does for a
+       * `TextField`'s `value`. It is what lets an **authored** composition
+       * receive a capture with no registered handler — the event below needs
+       * one, so handler-free compositions could not use the camera at all.
+       */
+      capture: CommonSchemas.DynamicValue.optional(),
+    })
+    .strict(),
+};
+
+// MediaGallery: manages a collection of durable media. Composer-visible so an
+// author can compose CameraView + MediaGallery + Flow directly instead of
+// configuring MultiImageCapture — the escape hatch that keeps the convenience
+// Component from hiding its primitives.
+export const mediaGalleryApi = {
+  name: GATHER_COMPONENT_IDS.mediaGallery,
+  schema: z.object({
+    items: CommonSchemas.DynamicValue.optional(),
+    statePath: z.string(),
+    allowSelect: z.boolean().optional(),
+    allowRemove: z.boolean().optional(),
+    allowReorder: z.boolean().optional(),
+    columns: z.number().int().min(1).optional(),
+  }).strict(),
+};
+
+// MultiImageCapture: one control collecting a bounded ImageAsset[]. Cardinality
+// is a Component input because it affects interaction; the host owns the rule.
+export const multiImageCaptureApi = {
+  name: GATHER_COMPONENT_IDS.multiImageCapture,
+  schema: z.object({
+    value: CommonSchemas.DynamicValue.optional(),
+    statePath: z.string(),
+    minItems: z.number().int().min(0).optional(),
+    maxItems: z.number().int().min(1).optional(),
+    allowRemove: z.boolean().optional(),
+    allowReorder: z.boolean().optional(),
+  }).strict(),
 };
 
 export const imageOverlayApi = {
@@ -72,6 +117,8 @@ export const instrumentErrorApi = {
 export const gatherComponentApis = [
   flowApi,
   cameraViewApi,
+  mediaGalleryApi,
+  multiImageCaptureApi,
   imageOverlayApi,
   outputReviewApi,
   processingViewApi,

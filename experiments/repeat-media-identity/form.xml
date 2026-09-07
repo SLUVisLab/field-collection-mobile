@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa">
+  <h:head>
+    <h:title>Repeat media spike</h:title>
+    <model>
+      <instance>
+        <data id="repeat-media-spike">
+          <photos jr:template="">
+            <photo/>
+            <caption/>
+          </photos>
+          <meta><instanceID/></meta>
+        </data>
+      </instance>
+      <bind nodeset="/data/photos/photo" type="binary"/>
+      <bind nodeset="/data/photos/caption" type="string"/>
+      <bind nodeset="/data/meta/instanceID" type="string" jr:preload="uid"/>
+    </model>
+  </h:head>
+  <h:body>
+    <group ref="/data/photos">
+      <label>Photos</label>
+      <repeat nodeset="/data/photos">
+        <upload ref="/data/photos/photo" mediatype="image/*"><label>Photo</label></upload>
+        <input ref="/data/photos/caption"><label>Caption</label></input>
+      </repeat>
+    </group>
+  </h:body>
+</h:html>

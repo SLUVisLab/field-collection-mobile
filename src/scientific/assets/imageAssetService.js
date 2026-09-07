@@ -23,7 +23,14 @@ export const createImageAssetService = ({ readCaptureBytes, writeBytesAtomic, fi
   }
 
   return {
-    async persistCapture({ capture, fileKey, capturedAt = new Date().toISOString() } = {}) {
+    /**
+     * `assetId` is the caller's when supplied. A caller that has already minted
+     * one — because it derived the storage key from it, or recorded a ledger row
+     * under it — must not receive a *second* identity for the same bytes: one
+     * persisted working asset is one `ImageAsset`. Minting here is the fallback
+     * for callers that have no id of their own.
+     */
+    async persistCapture({ capture, fileKey, assetId: suppliedAssetId = null, capturedAt = new Date().toISOString() } = {}) {
       if (!capture || typeof capture !== 'object') {
         throw new ScientificContractError('A local camera capture is required.');
       }
@@ -44,7 +51,7 @@ export const createImageAssetService = ({ readCaptureBytes, writeBytesAtomic, fi
         throw new ScientificContractError('The captured image is empty.');
       }
       await writeBytesAtomic(target, bytes);
-      const assetId = nonEmpty(newAssetId(), 'assetId');
+      const assetId = nonEmpty(suppliedAssetId ?? newAssetId(), 'assetId');
       return createImageAsset({
         assetId,
         uri: fileUriForKey(target),

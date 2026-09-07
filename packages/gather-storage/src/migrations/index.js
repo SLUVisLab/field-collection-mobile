@@ -378,4 +378,104 @@ export const MIGRATIONS = Object.freeze([
          END;`,
     ],
   },
+  {
+    version: 10,
+    name: 'instance_media_identity',
+    statements: [
+      // Media identity must not derive from the XForms binding reference.
+      // Repeat instance references are positional and reindex on deletion, so a
+      // survivor inherits the deleted item's key — a silent wrong attachment.
+      // See docs/repeat-media-identity-characterization.md.
+      //
+      // SQLite cannot alter a primary key, so rebuild the table. The copy is
+      // lossless: `filename` already exists and was already unique per
+      // instance, so it simply becomes the key it should always have been.
+      `CREATE TABLE instance_media_next (
+         local_instance_id TEXT NOT NULL REFERENCES instances(local_instance_id) ON DELETE CASCADE,
+         binding_reference TEXT NOT NULL,
+         filename          TEXT NOT NULL,
+         content_type      TEXT NOT NULL,
+         file_key          TEXT NOT NULL,
+         PRIMARY KEY (local_instance_id, filename)
+       );`,
+      `INSERT INTO instance_media_next
+         (local_instance_id, binding_reference, filename, content_type, file_key)
+         SELECT local_instance_id, binding_reference, filename, content_type, file_key
+           FROM instance_media;`,
+      `DROP TABLE instance_media;`,
+      `ALTER TABLE instance_media_next RENAME TO instance_media;`,
+      `CREATE INDEX instance_media_by_instance
+         ON instance_media (local_instance_id);`,
+    ],
+  },
+  {
+    version: 11,
+    name: 'instance_receipts',
+    statements: [
+      // Provenance for computed field values. `createExecutionReceipt` has
+      // always produced receipts, but nothing persisted them — so provenance
+      // did not survive acceptance, and there was nowhere to look to tell a
+      // Gather-computed value apart from one typed in by hand in another ODK
+      // client. That distinction is what B-custom principle 5 rests on, since
+      // the backing fields stay ordinary writable XForms values rather than
+      // being marked readonly.
+      // See docs/b-custom-composition-conventions.md.
+      //
+      // One row per (instance, binding reference): a receipt describes how one
+      // projected field's value was produced. Cascades with the instance, so a
+      // discarded draft takes its provenance with it.
+      //
+      // `receipt_json` keeps the receipt verbatim for audit; the extracted
+      // columns exist so "is this value computed, and by what" is answerable
+      // without parsing every row.
+      `CREATE TABLE instance_receipts (
+         local_instance_id   TEXT NOT NULL REFERENCES instances(local_instance_id) ON DELETE CASCADE,
+         binding_reference   TEXT NOT NULL,
+         capability          TEXT NOT NULL,
+         capability_revision TEXT NOT NULL,
+         revision            TEXT NOT NULL,
+         recorded_at         TEXT NOT NULL,
+         receipt_json        TEXT NOT NULL,
+         PRIMARY KEY (local_instance_id, binding_reference)
+       );`,
+      `CREATE INDEX instance_receipts_by_instance
+         ON instance_receipts (local_instance_id);`,
+    ],
+  },
+  {
+    version: 12,
+    name: 'project_assets',
+    statements: [
+      // The ledger for assets that are NOT form attachments.
+      //
+      // `persistScientificCapture` writes into the project media directory
+      // without an `instance_media` row, so those bytes are referenced by
+      // nothing in the database. That made cleanup impossible to do safely:
+      // "delete every file no `instance_media` row references" would delete
+      // every scientific capture — precisely the `projection: none,
+      // retention: keep` assets that B-custom §4 says to keep.
+      //
+      // So retention becomes explicit, per asset, and recorded. A sweep can
+      // then tell a deliberately-kept local asset from an orphaned byte.
+      // See docs/b-custom-composition-conventions.md §4.
+      //
+      // `released_at` is what makes "discard" safe: bytes stay until the
+      // producer says they are no longer needed. `discard` must never mean
+      // "delete immediately after compute" — a submitted attachment has to
+      // survive the submission handoff.
+      `CREATE TABLE project_assets (
+         file_key          TEXT PRIMARY KEY NOT NULL,
+         project_key       TEXT NOT NULL REFERENCES projects(project_key) ON DELETE CASCADE,
+         asset_id          TEXT NOT NULL,
+         content_type      TEXT NOT NULL,
+         retention         TEXT NOT NULL,
+         local_instance_id TEXT,
+         created_at        TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+         released_at       TEXT,
+         CHECK (retention IN ('keep', 'discard'))
+       );`,
+      `CREATE INDEX project_assets_by_project
+         ON project_assets (project_key);`,
+    ],
+  },
 ]);

@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!--
+  The Central packaging gate, as an uploadable form definition.
+
+  One question only: does a stock Central form version carry an opaque Gather
+  composition resource declared through `gather_resources`? It decides nothing
+  about binding, composition execution or XForms persistence — those are settled
+  (docs/composition-binding-reassessment.md).
+
+  Central accepts an XForm definition directly, so this needs no XLSForm and no
+  pyxform. Whether pyxform passes the namespace and `body::gather:composition`
+  through is a separate, later question.
+-->
+<h:html xmlns="http://www.w3.org/2002/xforms"
+        xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns:jr="http://openrosa.org/javarosa"
+        xmlns:gather="http://gather.slu.edu/xforms">
+  <h:head>
+    <h:title>Gather composition packaging gate</h:title>
+    <model>
+      <instance>
+        <data id="gather_packaging_gate" version="1">
+          <site_name/>
+          <photo>
+            <note/>
+            <image/>
+          </photo>
+          <meta><instanceID/></meta>
+        </data>
+      </instance>
+
+      <!--
+        THE THING UNDER TEST.
+
+        An INLINE secondary instance: static model data. The engine never
+        resolves it (no @src), and it never reaches a submission — both verified
+        against the real engine, see ./README.md. It exists so Central's
+        attachment scanner has something to find.
+
+        The `jr://images/` prefix is a Central discovery shim, not part of
+        Gather's data model: Central's expectedFormAttachments matches instance
+        node defaults against `^jr://images/` only. Nothing in the form treats
+        this file as an image.
+
+        Replace this shim when Central supports a generic opaque form-resource
+        declaration that can reference a bundle without false media semantics.
+      -->
+      <instance id="gather_resources">
+        <root>
+          <item>
+            <kind>composition</kind>
+            <uri>jr://images/flower_v1.gather</uri>
+          </item>
+        </root>
+      </instance>
+
+      <bind nodeset="/data/site_name" type="string"/>
+      <bind nodeset="/data/photo/note" type="string"/>
+      <bind nodeset="/data/photo/image" type="binary"/>
+      <bind nodeset="/data/meta/instanceID" type="string" jr:preload="uid"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/data/site_name"><label>Site name</label></input>
+
+    <!--
+      An ordinary group with ordinary typed children. `appearance` says only
+      "render a composition here"; `gather:composition` names the resource.
+      Another ODK client sees a plain group it can fill by hand.
+    -->
+    <group ref="/data/photo" appearance="gather-composition" gather:composition="flower_v1.gather">
+      <label>Photo</label>
+      <input ref="/data/photo/note"><label>Note</label></input>
+      <upload ref="/data/photo/image" mediatype="image/*"><label>Image</label></upload>
+    </group>
+  </h:body>
+</h:html>

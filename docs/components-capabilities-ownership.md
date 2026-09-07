@@ -913,6 +913,18 @@ Component — the orchestration tripwire stays untouched.
 
 ### Build order (after the ODK gate)
 
+> **Unblocked 2026-09-02** — the storage fix has landed (migration 10 +
+> `imageFilenameForCapture` + regression tests); step 0 below is done. Original
+> finding: the repeat-media identity spike
+> found that media identity derived from the XForms binding reference is unique
+> but **not stable** under repeat mutation: deleting an item makes the survivor
+> inherit the deleted item's attachment filename and media row — a silent wrong
+> attachment, with no collision or error. `MultiImageCapture`'s design survives,
+> but the storage fix must land **first**. See
+> [repeat-media-identity-characterization.md](./repeat-media-identity-characterization.md).
+
+0. ~~**Media identity fix**~~ — **done**: the filename is minted at capture,
+   written into the node value, and `instance_media` is keyed on it.
 1. Catalog-register `MediaGallery` — required by the escape-hatch principle
    regardless, and the primitive `MultiImageCapture` sits on.
 2. Additive slot in `CameraFrame`; forward from `CameraView`.
@@ -920,7 +932,11 @@ Component — the orchestration tripwire stays untouched.
    render-free logic split for testing (`mediaModel.js` precedent).
 4. Catalog-register it with its shipped action handler.
 
-## 13. ODK image-capture gate — landed (2026-09-01); device run outstanding
+The §12 caution against implementing reorder by physically reordering repeat
+instances now generalises: **deletion alone breaks identity, so XPath position
+must never be treated as durable identity for anything.**
+
+## 13. ODK image-capture gate — landed (2026-09-01); device-verified 2026-09-02
 
 Proves the Phase 3 boundary directly, without routing an ODK field through an
 A2UI composition:
@@ -979,7 +995,833 @@ Vite build; Android Hermes export; `git diff --check`. **The submission path is
 provably untouched** — zero diff across `src/instances`, `src/sync`,
 `odk-central-client`, and `gather-storage`.
 
-**Not verified:** the device run. Changes are presentation-only and the M5 path
-is byte-identical, but the gate is not complete until an on-device capture →
-attach → submit regression passes per
-[emulator-gate-runbook.md](./emulator-gate-runbook.md).
+**Device-verified 2026-09-02.** The M5.5 live regression passed on both Hermes
+targets against the live Central instance — `M55_android_GATE::PASS` and
+`M55_ios_GATE::PASS`, each with `submissionStatus 201`, full host-side read-back
+(instance ID, entity ID, observation, form version) and self-cleanup
+(`deleteStatus 200`, `afterDeleteStatus 404`). Details in
+[repeat-media-identity-characterization.md](./repeat-media-identity-characterization.md).
+
+## 14. `gather-components` layout — flattened (2026-09-02)
+
+`src/camera/` sat as a sibling of `src/components/`, which was drift rather than
+a decision. Two conventions arrived separately and were never reconciled: the
+M9 shared-components work grouped by purpose *under* `components/`, and Phase 3
+created `src/camera/` by following the design doc §17 path sketch literally —
+even though §17 allowed "an equivalent purpose-oriented layout consistent with
+the current package".
+
+The inconsistency was real: `camera/` and `media/` are the same kind of thing —
+a domain with components, `.native`/`.web` seams, internal-only parts, and one
+render-free logic module — sitting at different depths. The giveaway was
+`CameraFrame.jsx` importing `'../components/actions/Button.jsx'`: the camera
+domain had to reach *down into* `components/` to use a sibling concept.
+
+Inside a package named `gather-components`, everything is a component, so the
+`components/` layer carried no information — and it is what made `camera/` look
+like it needed to escape. Removed:
+
+```text
+src/
+├── actions/  camera/  image/  media/  results/  status/
+├── primitives.jsx
+├── index.js
+└── theme/
+```
+
+**Pure move.** 17 files relocated, `../../theme` → `../theme` in 7 of them,
+`primitives.jsx`'s `../theme` → `./theme`, 11 `index.js` paths, 2 package-test
+paths, and the `CameraFrame` straggler. **The public API is byte-identical** —
+every consumer imports through the package index, verified by diffing the export
+list against the previous commit.
+
+Gates: `test:unit` 321/320 pass/0 fail (1 known skip), Expo config, renderer Vite
+build (react-native-web seams), Android Hermes export (`.native` seams),
+`git diff --check`.
+
+## 15. Derived values without image upload — confirmed possible; seam outstanding
+
+**The question:** can a composed workflow use the camera to *compute* a value —
+masked colour, petal count, mask area, a pose — and send only that value to the
+form, without uploading image bytes?
+
+**Yes, and nothing needs to be built for the no-upload half.** Verified from the
+submission path: attachments are derived entirely from instance-media rows.
+
+```js
+const media = await listInstanceMedia(instance.localInstanceId);
+const attachments = media.map(...);
+await client.submit({ xml, attachments });
+```
+
+Those rows are created by exactly one function — `attachImageMedia`, which
+writes bytes durably, binds a safe filename into the XML, *and* records the row.
+A derived-value workflow simply never calls it, and writes its scalar through
+the ordinary engine binding (`question.setValue`, the same path
+`XFormsInputControl` uses). The submission then carries **XML only, zero image
+bytes**.
+
+```text
+CameraView → descriptor → image.segment / measure.area
+                                ↓
+                     setValue(reference, 12.4)
+                                ↓
+                        XML only, no attachment
+```
+
+An ODK image slot is required only when the pixels themselves are the datum.
+This falls out of the Component/Capability split rather than needing support:
+acquisition is a Component, computation is a Capability, and a form value is
+just a value.
+
+### The one missing seam
+
+Nothing bridges a computed result into an XForms value. `onAcceptedResult` is
+still unwired, and Segment & Measure already produces a typed result with no
+path to `setValue`.
+
+Framed this way it is worth more than "persist Segment & Measure's output": it
+is **the general mechanism by which any computed value reaches a form field**. A
+`MaskArea` or `PetalCount` field then becomes a composition plus a binding, with
+no new machinery. This is the highest-value item in the composition→ODK gate.
+
+### Three decisions to make when building it
+
+**Does the image persist at all?** `persistScientificCapture` writes a durable
+`ImageAsset` today because models read from a file path and `ExecutionReceipt`
+hashes the input. A transient workflow could infer from the camera's temporary
+file instead — at the cost of the digest that makes the receipt verifiable.
+
+**"Don't upload" and "don't retain" are different.** Skipping `attachImageMedia`
+keeps bytes off the wire; it does not delete them. Scientific captures land in
+project media with no cleanup path outside project removal, so a high-volume
+derived-value workflow would grow local storage unboundedly. A retention policy
+is a prerequisite, not a follow-up.
+
+**Provenance is weakened deliberately.** "Petal count = 7" without the image
+cannot be re-audited. That may be exactly right for bandwidth-constrained
+fieldwork, but it should be an explicit authoring choice (keep image / discard
+after compute) rather than an accident of wiring — the same shape of decision as
+cardinality in §12: the host owns the rule, the Component does what it is told.
+
+## 16. Why `gather-components` has a `Button` when the Basic Catalog has one
+
+They are not duplicates; they are different layers.
+
+```text
+A2UI Basic Catalog `Button`     vocabulary — ButtonApi schema + binding
+        ↓ delegates to
+gather-components `Button`      the actual React Native presentation
+```
+
+The mobile implementation in `src/a2ui/mobile/basicCatalog.js` renders the
+package `Button` (imported as `SharedButton`). It is also used directly by three
+plain-React components that are not in any A2UI surface — `CameraFrame`,
+`MediaGallery`, `InstrumentError`. Removing it would leave the A2UI binding with
+nothing to render and break all three.
+
+It also carries two things the catalog needs but a naive button would not: a
+`children` slot, because A2UI Buttons take their label as a *child component*,
+and a `borderless` variant.
+
+**The genuine near-duplication is elsewhere:** `ActionButton` in
+`src/components/NavButton.js`, with 14 app call sites. It predates the shared
+component. It is not styling drift — both already consume the same
+`buttonPresentation` contract (`buttonAppearance` / `buttonHeightForVariant` /
+`resolveButtonVariant`) — so they are two `Pressable` wrappers over one
+presentation contract, differing only in that `ActionButton` adds `tone` and the
+package `Button` adds `children`/`borderless`. Consolidating is possible but is
+app-UI churn with no correctness gain today; revisit if the two drift.
+
+## 17. Computed-value → `setValue` seam — landed (2026-09-02)
+
+Implements the mechanism §15 identified as missing:
+[`src/xforms/resultBinding.js`](../src/xforms/resultBinding.js).
+
+```text
+composition → typed result → result binding → form.setValue(reference, "12.4")
+                                                    ↓
+                                            XML only, no attachment
+```
+
+`createResultFieldWriter({ form, bindings })` returns a function matching the
+host's `onAcceptedResult(result, context)` shape, so it can be handed straight to
+`A2UIHost`: the host **delivers** the typed result, and this decides that
+completion means writing XForms field values. `bindings` is a list of
+`{ reference, path }`, so one result populates several fields —
+`measurements.area.value` → `/data/leaf_area`, `measurements.area.unit` →
+`/data/leaf_area_unit`, and so on.
+
+### Three decisions worth knowing
+
+**Structured values are refused.** `toXFormsValue` accepts strings, finite
+numbers, and booleans; objects and arrays throw. This is the structural guard
+that makes "no bytes" hold: an `ImageAsset` cannot be stringified into a text
+field by a mis-authored binding. Bind a scalar path *within* a result, or use
+the attachment path.
+
+**Absent optional values clear the field rather than throwing.** A classification
+that was not run writes `''` and is reported `present: false` — an optional
+measurement is a legitimate outcome, not an error.
+
+**All bindings coerce before any write.** A binding that is going to fail cannot
+leave the instance half-populated; the writer resolves every value first and
+only then calls `setValue`. A failure surfaces in the composition's error View
+rather than reporting silent success.
+
+### Status
+
+The mechanism is complete and covered end-to-end through the real A2UI runtime
+(composition completion → binding → `setValue`), including the failure path.
+
+**It has no production consumer yet, by design.** The consumer is an XForms
+control that hosts a composition, which is the composition→ODK gate. This lands
+the mechanism so that gate is a wiring exercise rather than a design exercise.
+
+Still open from §15 before a derived-value workflow ships at volume: the
+**retention policy** for scientific captures (project media has no cleanup path
+outside project removal), and making "keep image / discard after compute" an
+explicit authoring choice.
+
+## 18. Track A — `MultiImageCapture` landed (2026-09-02)
+
+The §12 build order, implemented. Steps 1–4 done; step 5 reassigned (below).
+
+### What landed
+
+**Camera slots.** `CameraFrame` gains additive `leading` / `trailing` slots
+beside the shutter — `control` still *replaces* it, which is how `VideoView`
+swaps in `RecordButton`. Both `CameraView.native` and `CameraView.web` forward
+them, so the semantic contract is identical on both platforms. The shutter stays
+centred with or without accessories (equal-weight side cells).
+
+**`MultiImageCapture`** (`gather-components/src/image-collection/`) — a compound
+Component composing `CameraView` + `MediaGallery`, presenting as one field
+control producing `ImageAsset[]`:
+
+- **controlled** — the collection lives with the host, because drafts reload
+  mid-instance; only `view` / `busy` / `error` are internal;
+- **it never persists** — `onCapture(descriptor)` hands the plain descriptor over
+  and the host materializes and appends the asset; awaiting it drives the busy
+  state, so per-photo progress is visible without the Component knowing about
+  storage;
+- **no `Flow`** — camera↔gallery is ordinary component state, because those views
+  are shipped behavior rather than authored structure;
+- the camera accessory shows the latest thumbnail (tap → gallery) and a progress
+  count; `Done` appears only once `minItems` is met.
+
+Render-free rules live in `multiImageModel.js` (`canCapture`, `canComplete`,
+`removeItemAt`, `appendItem`, `captureCountLabel`), mirroring `mediaModel.js`.
+An exact-count field is expressible as `minItems === maxItems`.
+
+**Catalog registration.** `MediaGallery` and `MultiImageCapture` are both
+Composer-visible now, in the catalog source, the regenerated artifact, and both
+renderers. Registering `MediaGallery` independently is the escape hatch: an
+author needing a structurally different interaction composes
+`CameraView` + `MediaGallery` + `Flow` directly instead of configuring the
+convenience Component.
+
+**Shipped collection handler** (`src/a2ui/mediaCollectionActions.js`). A
+Component's action semantics ship *with* the Component, so these are written
+once rather than reinvented per composition — the authored-composition handler
+gap does not apply. Scope is mutation only: `gather.mediaCaptured` (persist and
+append) and `gather.mediaChanged` (remove / reorder / set). Selection, `back`
+and `done` are navigation and completion, which belong to the embedding
+composition.
+
+### Two decisions worth noting
+
+**A collection capture got its own action id.** `gather.capture` already means
+"capture, then advance the instrument view". Overloading it with "persist and
+append" would give one action two meanings, distinguishable only by state path,
+so `gather.mediaCaptured` was added instead.
+
+**Removal carries an index, not an array.** `reorder`/`set` carry the
+already-computed array, but `remove` sends only the index so a stale client list
+cannot silently replace newer state.
+
+### Step 5 reassigned — the orphan sweep has no owner here
+
+§12 listed an orphan-media sweep with this work. On implementation that turned
+out to be misplaced: `MultiImageCapture` is a Component over a controlled array
+and owns neither repeats nor `instance_media`. Which store an orphan lives in
+depends on the host — the scientific asset service (project media) for an A2UI
+composition, `attachImageMedia` (instance media) for an XForms field. Building a
+sweep now would be inventing an owner. It belongs with the **XForms collection
+binding**, where the repeat-backed representation is decided.
+
+### Also corrected
+
+`catalog.test.mjs` asserted Segment & Measure's `hostActions` deep-equals *every*
+catalog action id. That was always the wrong invariant — an instrument declares
+the actions it uses — and the collection actions made it false. It now asserts
+subset membership plus the specific actions S&M needs.
+
+**Verified:** `test:unit` 348 tests / 347 pass / 0 fail (1 known skip); Expo
+config; renderer Vite build; Android Hermes export; `git diff --check`; and a
+parity check that all nine Gather component ids resolve in catalog + mobile +
+web. **Not verified:** on-device behaviour — the camera accessories, gallery
+navigation, and capture loop need a device pass.
+
+## 19. A — collection binding landed (2026-09-02)
+
+`MultiImageCapture` now has a host. A repeat carrying `gather-multi-image`
+renders as one collection field, per
+[b-standard-field-conventions.md](./b-standard-field-conventions.md).
+
+### The layers
+
+| Layer | Owns |
+| --- | --- |
+| `src/xforms/collectionField.js` | render-free: appearance config, repeat↔`ImageAsset[]` projection, orphan detection |
+| `src/xforms/controls/XFormsMultiImageControl.js` | the adapter — XPath and repeat APIs |
+| `FormRunner` | persistence and orphan cleanup |
+| `MultiImageCapture` | interaction only; knows no XPath |
+
+`controlKindFor` returns `multi-image` only when the appearance is present, so a
+plain repeat — or one with just `field-list` — still renders as an ordinary
+repeat. The extension is additive.
+
+### Flows
+
+**Capture** adds the repeat instance first, then resolves the new instance's
+binary child from a **fresh snapshot** rather than assuming the child's name —
+that name belongs to the form author. The host then mints the filename and
+writes it as the node value.
+
+**Remove** diffs *filenames* to find what a gallery edit orphaned, removes those
+instances **highest-position-first** so earlier removals cannot shift later
+indices, then calls the new
+`releaseInstanceMedia({ localInstanceId, form, version, filenames })`. That
+persists the engine's current XML *before* deleting rows and bytes, so a failure
+can never leave rows pointing at deleted files.
+
+**Reorder is deliberately unavailable** (`allowReorder={false}`). Reordering
+repeat instances is precisely the operation that made positional identity
+unsafe.
+
+### Two things worth noting
+
+**Orphans are computed from filenames, never positions.** Positions reindex on
+deletion, so they are useless as identity — the whole lesson of
+[repeat-media-identity-characterization.md](./repeat-media-identity-characterization.md).
+
+**A half-written instance is not a collection item.** An instance whose image
+node is empty, or whose filename has no media row, is skipped — so an added-but-
+not-yet-captured slot never appears as a broken tile.
+
+**Cardinality degrades safely:** a `max` below `min` would be unsatisfiable, so
+it is treated as absent rather than trapping the researcher in a control they
+can never complete.
+
+### Verified
+
+`test:unit` 367 tests / 366 pass / 0 fail (1 known skip) — 16 collection-field
+tests plus 3 for `releaseInstanceMedia`; Expo config; renderer Vite build;
+Android Hermes export; `git diff --check`.
+
+**Since device-verified** by the collection field gate — see §20. The
+interactive camera still wants a physical device.
+
+### Also removed
+
+A dead guard in `releaseInstanceMedia`: `owned()` already fails for a missing
+instance or another project's, so the extra check was unreachable. A test
+asserting the wrong message is what surfaced it.
+
+## 20. Collection field gate — device-verified (2026-09-02)
+
+[`gates/CollectionFieldGateApp.js`](../gates/CollectionFieldGateApp.js) drives
+the sequence `XFormsMultiImageControl` performs, against the **real engine, real
+SQLite and real files**:
+
+```text
+appearance recognition -> capture x3 into repeat instances -> remove the middle
+one with orphan cleanup -> storage restart + draft resume -> finalize + submit
+both surviving attachments
+```
+
+**Result: 24/24 green on Android.** `schemaVersion: 10`. (23/23 on the first
+run; the 24th check arrived with the `childName` fix below, which that first
+fixture could not have caught.)
+
+### What the fixture form settles
+
+The fixture is the **pyxform-canonical** shape — appearance on the `<repeat>`,
+wrapping `<group>` bare — so the gate exercises what real authoring produces
+rather than a hand-tuned variant. It also carries an ordinary appearance-free
+repeat, which proves recognition is *additive*: that repeat still renders as
+`'repeat'`.
+
+The repeat is named `photos` but its image child is named **`frame`**. That is
+deliberate — see the defect below.
+
+Two engine facts came back as data rather than inference:
+
+| Observed | Consequence |
+| --- | --- |
+| `photosNodeType: "repeat-range:uncontrolled"` | confirms the uncontrolled-repeat choice in b-standard §2 — `0..N` add/remove, no `jr:count` |
+| `nodesAtPhotosReference: ["repeat-range:uncontrolled"]` | **the wrapping group collapses onto a single repeat-range node** |
+| `appearances: ["gather-multi-image","min=2","max=3"]` | `key=value` tokens survive from the `<repeat>` placement, in source order |
+
+The collapse is the missing explanation for the earlier precedence spike: group
+appearances "win" because there is only ever *one* node, and the group's
+attribute is what lands on it. It also means node selection is unambiguous —
+there is no second node at that reference for a renderer to pick by mistake.
+
+### The invariants it holds that unit tests cannot
+
+- **Identity is minted, not derived.** Three captures at three fresh instances
+  produced three distinct `image-<random>.jpg` filenames.
+- **One filename per repeat instance in the authoritative XML** — exactly three
+  `<photo>` elements, no array serialized into a hidden node (b-standard §4).
+- **Removal is precise.** Removing the middle item orphaned exactly one
+  filename; one row and one file went, the two survivors kept both. The
+  survivors **reindexed to positions 1,2 without being re-identified** — the
+  original defect, now held on device.
+- **Resume reconstructs the collection from the instance XML.** A fresh
+  `loadForm` projects an empty collection; after `closeGatherStorage()`, a
+  re-init, and `lifecycle.resume`, both survivors come back at positions 1,2
+  with their filenames intact. This is the requirement that made
+  `MultiImageCapture` a *controlled* Component.
+- **Submission carries one attachment per surviving item**, and the submitted
+  XML references exactly those two filenames.
+
+### The defect the first fixture hid — `childName` (fixed 2026-09-02)
+
+`collectionItemsFrom` defaulted the image child's name to `'photo'`, and nothing
+ever supplied it: `FormRunner`'s collection adapter passes `media`, `uriFor`,
+`onCapture` and `onRemove`, but never a child name. So:
+
+- **capture** resolved the new instance's binary child from a fresh snapshot —
+  correct, and author-agnostic
+- **projection** assumed the child was literally named `photo`
+
+A form whose image child was named `image` or `frame` would therefore capture
+and persist correctly and then project **zero items** — captures disappearing
+from the UI while the XML quietly filled up. Silent, and directly contrary to
+b-standard §1's "the child name belongs to the form author."
+
+The first version of this gate passed 24 checks' worth of behaviour while that
+bug was live, because its fixture named the child `photo` — the same string as
+the fallback. **A fixture that matches a hardcoded default cannot constrain it.**
+
+Fixed by deleting the guess. `binaryChildrenOf({ repeatReference,
+nodesByReference })` reads the binary child of each repeat instance from the
+engine, and `collectionItemsFrom` now **requires** `binaryChildOf` and throws
+without it — a silent `[]` is exactly how this hid, so the failure mode is now
+loud. `newestBinaryChild` resolves the newest slot from the same lookup, which
+also removed the control's private near-duplicate of that scan: capture and
+projection can no longer disagree about which node holds an instance's image.
+
+`FormRunner` needed no change — the control now derives what the adapter was
+never supplying.
+
+### Scope and what it deliberately does not cover
+
+The Central transport is stubbed (the multipart parts are captured), so the gate
+needs no server and creates no remote artifacts. The live submission path is
+unchanged and remains covered by the M5.5 runner and the media-identity live
+regression.
+
+The gate does **not** render React, so it verifies the *pipeline*, not the
+control's presentation. Still outstanding, and still wanting a physical device:
+the interactive camera — shutter, thumbnail accessory, gallery navigation, and
+the capture -> remove -> replace cycle through the UI.
+
+Cardinality remains **UI-level by design**: `min`/`max` are Component
+configuration, not XForms constraints, so nothing in this gate expects
+`finalize` to enforce them.
+
+The full XLSX -> Central -> device round trip is **deferred**. Its one real
+payoff was answered offline instead: converting the XLSForm row with pyxform
+showed the appearance lands on the `<repeat>`, which is now the canonical
+placement in b-standard §1 and the shape this gate uses.
+
+## 21. Interactive camera gate — and the two defects it found (2026-09-02)
+
+[`gates/InteractiveCameraGateApp.js`](../gates/InteractiveCameraGateApp.js)
+mounts the **real** stack — `XFormsProvider` + `XFormsRenderer` +
+`XFormsMultiImageControl` + `MultiImageCapture` + `CameraView` — over real
+storage and the real lifecycle service, and asks a human to drive it.
+
+It exists because §20's headless gate, at 24/24 green, could not see the React
+binding seam or the camera interaction. Both were broken.
+
+### Defect 1 — the rendered collection was always empty
+
+The control read `repeat.instanceReferences`; `useXFormsRepeat` returns
+`instances`. With `?? []` absorbing the `undefined`, a rendered collection was
+**unconditionally empty**. Captures persisted to the XML and the media table
+correctly, and no tile ever appeared.
+
+Nothing caught it: the unit tests never mount the hook, the headless gate reads
+the snapshot directly, and `XFormsRepeatControl` — the only other consumer —
+uses just `add`/`remove`, so the name had never been exercised. `instanceReferences`
+was a local variable inside the hook that never made it into the return.
+
+### Defect 2 — the collection field did not own its subtree
+
+`visibleRenderNodes` returned the repeat-*instance* nodes and their upload
+children alongside the repeat-range, so beneath `MultiImageCapture` the generic
+`XFormsRepeatControl` and `XFormsImageControl` rendered the same photos again as
+a stack of "Remove" / "Take photo" rows. Fixed by suppressing any node under a
+repeat rendered as a collection field, scoped by the `[` in the instance prefix
+so a sibling like `/data/photos_notes` is untouched.
+
+### Verified on the emulator
+
+Driven by `adb` taps against the virtual camera: the harness reports **engine
+filled frames == media rows == `<frame>` in saved XML**, counted from three
+independent sources, and they agree at each capture (0 → 1 → 2). The count label
+tracks `min=2 max=4` from the appearance, the thumbnail accessory shows the
+latest capture, the gallery opens with per-tile remove, and nothing renders
+below the field.
+
+That equality is the harness's whole point: what the engine holds, what is
+durable, and what would be submitted are computed separately so they *can*
+disagree visibly. Defect 1 was exactly the case where the engine and the media
+table both said 2 while the UI showed nothing.
+
+### Still for a physical device
+
+The emulator's virtual camera validates the pipeline and the wiring, not the
+optics or the feel. The `OBSERVATIONS` checklist in the harness is the human's
+half — live preview, shutter responsiveness, gallery navigation, and the
+capture → remove → capture cycle — and it emits
+`INTERACTIVE_CAMERA_RESULT::{…}` when tapped through.
+
+Run it with `ANDROID_SERIAL=<serial> scripts/run-android-gate.sh
+'INTERACTIVE_CAMERA_RESULT::' .gate-logs/interactive.log 1500`, which sets up
+`adb reverse` and the `localhost` packager host for USB.
+
+### The pattern across §20 and §21
+
+Three defects in this field, all the same shape: **a seam no test crossed, with
+a silent empty result rather than a failure.** The `childName` default, the
+`instanceReferences` rename, and the unsuppressed subtree were each invisible to
+every layer above and below them. The lesson is not "add more tests" but that a
+default which fabricates a plausible empty answer will hide a broken seam
+indefinitely — `collectionItemsFrom` now throws instead.
+
+## 22. Defect 3 of the same shape — `instance.media` (fixed 2026-09-02)
+
+Auditing for more of §21's pattern found one, and it was the worst placed: in
+`FormRunner`, the **real app's** screen.
+
+```js
+media: instance?.media ?? [],   // always []
+```
+
+An instance **row** carries no media. The repository mapper emits
+`localInstanceId … sendError` and nothing else, and the lifecycle service
+returns media as a *sibling* of the instance, never nested:
+
+| call | returns |
+| --- | --- |
+| `attachImageMedia` | `{ instance, media }` — `media` is the **single** upserted row |
+| `resume` | `{ instance, version, media }` — `media` is the **full list** |
+| `releaseInstanceMedia` | `{ instance, released }` — `released` is filenames |
+
+Every `setInstance(...)` in `FormRunner` stores a bare row, so
+`instance.media` was always `undefined` and `?? []` turned that into an empty
+collection. The collection field in the shipped app would have rendered nothing,
+for every form, no matter how many photos were captured.
+
+The interactive gate did not catch this one either: it supplies its **own**
+collection adapter, so it exercised the control, not `FormRunner`'s wiring.
+
+### Fix
+
+`FormRunner` now holds the list and maintains it from what the lifecycle already
+hands back — no new provider method, no extra read:
+
+- **resume** → `setMedia(resumed.media ?? [])` (the full list)
+- **capture** → `mergeMedia(prev, bound.media)` appends the returned row
+- **replace** (single-image control) → `mergeMedia(prev, bound.media, previousFilename)`
+- **release** → drop exactly `saved.released`
+
+[`src/instances/mediaState.js`](../src/instances/mediaState.js) holds the merge,
+render-free and unit-tested. It keeps the list in `filename ASC` order because
+that is `instances.listMedia`'s order — so the in-memory list matches what a
+reload would produce, and re-upserting the same filename replaces in place
+rather than duplicating.
+
+### Verified
+
+`test:unit` — 6 new `mediaState` tests, plus the contract checked in both
+directions (§21's audit found no remaining hook mismatches across 13 call
+sites).
+
+**Device-verified for the capture branch.** `gates/DevSeedCollectionFormApp.js`
+(§25) seeds a `gather-multi-image` form straight into the cache and mounts the
+real `App`, so `FormRunner`'s own collection adapter was driven on a Pixel 10:
+capture appends, tiles render, the counter tracks cardinality, and the shutter
+goes inert at the maximum.
+
+**The resume branch is deliberately unverified.** Reopening a saved draft goes
+through `resumeInstance` → `setMedia(resumed.media ?? [])`, a different
+assignment from capture's `mergeMedia`. The user's call (2026-09-02) was to skip
+it rather than extend the session: it should have been folded into the same
+device run, and if it is wrong it will surface as an empty collection on
+reopening a draft — loud and easy to recognise. Reinstate the seed and reopen a
+draft from **Drafts & submissions** to close it.
+
+### Scoreboard for this field
+
+| # | Defect | Silent symptom | Caught by |
+| --- | --- | --- | --- |
+| 1 | `childName` defaulted to `'photo'` | empty collection for other child names | device gate with a renamed child |
+| 2 | `repeat.instanceReferences` vs `instances` | empty collection, always | interactive gate |
+| 3 | duplicate repeat subtree | photos rendered twice | interactive gate |
+| 4 | `instance.media` | empty collection in the real app | contract audit |
+
+Four defects, one shape: **a seam no test crossed, returning a plausible empty
+value instead of failing.** Three of the four were a `?? []` or a default
+standing in for something the other side never supplied. That is the actual
+lesson — not "write more tests", but that a fallback which manufactures a valid-
+looking empty answer converts a wiring break into invisible data loss.
+`collectionItemsFrom` now throws instead of guessing, which is the pattern to
+follow at the remaining seams.
+
+## 23. Shutter flash on Android — parked, with the findings (2026-09-02)
+
+The shutter flash does not appear on a physical device. **Parked for a UI pass**
+at the user's direction. Recording what was established so it is not
+re-derived — most of the cost here was diagnostic, not fixing.
+
+### What was ruled out
+
+| Hypothesis | Verdict |
+| --- | --- |
+| The animation never fires | **Ruled out.** `handleCapture` sets the flash *before* calling `onCapture`, and photos are captured, so the line runs. |
+| `elevation`/`zIndex` missing | **Ruled out as the fix.** Adding them changed nothing. |
+| Overlays cannot cover a `SurfaceView` preview | **Ruled out.** A static-opacity View placed one level *out* (a sibling of `viewportWrap`, inside `styles.capture`) renders solidly over the preview. Verified with a pinned red bar. |
+| Native driver only | **Ruled out as the whole story.** `useNativeDriver: false` did not make it visible either. |
+
+### What remains suspect
+
+Two things, both still unproven:
+
+1. **Position.** The flash is a *child* of `viewportWrap`, alongside the native
+   surface. The overlay that demonstrably worked was one level out. So a child
+   of the surface's own parent may be composited under it while a sibling of
+   that parent is not.
+2. **`Animated` opacity on this node.** A *static* opacity in that position is
+   visible; an `Animated.Value`-driven one never was, under either driver. The
+   original code also had a real latent bug — `setValue(0.9)` immediately
+   followed by `timing(toValue: 0)` races with the native driver and can
+   animate `0 → 0` — but fixing that to an up-then-down sequence did not make
+   it appear, so it was not the only cause.
+
+The most promising fix, untried on device: move the overlay out of
+`viewportWrap` into a wrapping stack **and** drop `Animated` for a plain View
+mounted for a fixed duration (`useState` + `setTimeout`), since static opacity
+in that position is the one thing verified to render. A fixed-duration flash is
+also closer to what a shutter looks like than a fade.
+
+`react-native-vision-camera@5.2.3` renders the preview as a raw `SurfaceView`
+(`HybridFrameRendererView.kt`) with no `setZOrderOnTop` and no prop to request a
+`TextureView`, so switching the preview's backing view is not available.
+
+### Potential directions for a fix, ranked
+
+**First, control the variables.** Between the overlay that demonstrably worked
+and the flash that did not, *three* things differed at once — that was the
+methodological mistake, and it is why the cause is still open:
+
+| | proven-visible red bar | non-working flash |
+| --- | --- | --- |
+| element | plain `View` | `Animated.View` |
+| opacity | static `0.6` | `Animated.Value` |
+| elevation / zIndex | **99** | **8** |
+
+So the disciplined next step is to reproduce the *working* configuration
+verbatim on the real flash, then relax one variable at a time until it breaks.
+The elevation gap is the single most suspicious difference and the cheapest to
+test — the SurfaceView may sit at an elevation above 8, in which case nothing
+about `Animated` matters.
+
+1. **Match the proven config, then bisect.** `elevation`/`zIndex` 99, sibling of
+   `viewportWrap`, plain `View`, static opacity. Then re-introduce `Animated`,
+   then lower the elevation. Cheapest path to the actual cause.
+2. **`collapsable={false}` and/or `renderToHardwareTextureAndroid`** on the
+   overlay. Android view flattening can drop a view that carries no native
+   props, and hardware-texture promotion is a standard workaround for animated
+   views over native surfaces. One line each.
+3. **Fixed-duration mounted View instead of a fade** (`useState` +
+   `setTimeout`). Sidesteps `Animated` entirely; static opacity is the one thing
+   verified to render in that position. A hard on/off is also closer to a real
+   shutter than a fade. This was written and reverted unverified — see the
+   commit history for `ac2dc629`'s parent if reinstating.
+4. **Drive the flash from the camera's own shutter signal** rather than the tap,
+   if `react-native-vision-camera@5` exposes `onShutter`. Does not address
+   visibility, but fixes *timing*: the flash currently fires on press, not on
+   exposure. Worth folding in whichever fix wins.
+5. **Flash the chrome instead of the preview** — animate a border/ring on the
+   parent, outside the surface's rect. Immune to any compositing question, at
+   the cost of looking less like a shutter.
+6. **Pulse the shutter button** (scale/opacity on the `Pressable`, an ordinary
+   view that definitely animates). Not a substitute for preview feedback, but
+   cheap, reliable, and a reasonable complement — or the fallback if 1-3 all
+   fail.
+7. **Last resort: briefly unmount the preview** and render a white View in its
+   place. Guaranteed visible because no native surface is present, but it tears
+   down and restarts the camera session — likely stutter, and a real risk of
+   dropping frames or the session. Only if everything above fails.
+
+Directions 5-7 change the design rather than fix the bug, so they need a UI
+decision, not just an implementation.
+
+### The workflow finding that cost the most
+
+**Fast Refresh does not apply changes to these workspace-package files on
+device.** Edits to `packages/gather-components/**` only take effect after a cold
+`am force-stop` + relaunch, even though Metro reports a rebundle. Two rounds of
+"still not showing" were the *previous* bundle. Any future device debugging must
+force-stop and relaunch between edits, and must not trust a Metro
+"Bundled … (1 module)" line as evidence the device received anything.
+
+Corollary for gates: a screenshot is weak evidence of a short animation —
+`adb exec-out screencap` takes long enough to miss a 220 ms fade. Hold the state
+(a multi-second duration) before concluding anything from a still.
+
+### Test protocol for whoever picks this up
+
+1. **Force-stop and relaunch between every edit.** Fast Refresh does not reach
+   these files on device (below). A Metro "Bundled … (1 module)" line is not
+   evidence the device received anything.
+2. **Hold the visual state for seconds** before screenshotting. A 220 ms fade is
+   invisible to `adb exec-out screencap`.
+3. **Change one variable per run**, against the table above.
+4. Confirm the tap actually landed (the capture count must increment) before
+   reading anything into a frame — one run here proved nothing because the tap
+   missed and the count stayed at 0.
+5. **Truncate your own logcat capture file, not just the device buffer.**
+   `adb logcat -c` clears the *device* ring buffer; a long-running
+   `adb logcat > file` keeps appending, so the file still holds every earlier
+   run. Grepping it returns stale hits that look like current failures. Use
+   `: > file` before each run, or slice from the last `Running "main"` line.
+   This produced a false "still broken" verdict on a fix that was already
+   working — see §24.
+
+## 24. Red flash on form open — a real error surfaced during normal startup (2026-09-02)
+
+Opening a form flashed red text at the top of the screen, too briefly to read.
+It was **`Form engine error: getSnapshot failed: Error: No form loaded`** — an
+engine error shown to the researcher during an entirely successful startup.
+
+### Cause
+
+The WebView sidecar emits a **lifecycle** event as soon as it is ready, which is
+*before* any form has been loaded. `XFormsStore.handleHostEvent` answered every
+lifecycle event with `refreshSnapshot()`, the host correctly threw `No form
+loaded`, and both that call's own `catch` and the caller's `catch` promoted it to
+`phase: ERROR` with a user-visible message. `loadForm` then completed and
+cleared it — hence a flash rather than a stuck error.
+
+### Fix
+
+The store now tracks `formLoaded` (set by `loadForm`/`loadInstance`, cleared on
+dispose) and `handleHostEvent` returns early when no form is loaded. The event
+is still recorded in `lastEvent`; only the pointless refresh is skipped.
+Explicit, caller-initiated refreshes still surface their errors — it is only the
+*event-driven* refresh that had no business failing loudly.
+
+Covered by a regression test in `packages/odk-xforms-react/test/`, verified to
+fail without the guard.
+
+### The diagnostic lesson, which cost far more than the fix
+
+Chasing this burned several cycles on a **measurement error, not a code error**.
+`adb logcat -c` clears the device's ring buffer, but the long-running
+`adb logcat > capture.log` process keeps appending — so the capture file still
+held every previous run. Grepping it kept returning hits from *earlier* app
+launches, which read exactly like "the fix didn't work". The fix had been working
+for several iterations before that was noticed; the user spotted it from the
+device before the logs did.
+
+Two habits follow, now in §23's protocol: truncate the capture file (`: > file`)
+before every run rather than trusting `logcat -c`, and when a log line seems to
+contradict the screen, **check its timestamp against the app's last
+`Running "main"`** before believing it.
+
+The same session also produced the inverse error — trusting a screenshot that
+was too early to show a fast animation. Both are the same mistake: treating an
+observation as current without establishing that it is.
+
+## 25. Dev seed — the collection field in the real app (2026-09-02)
+
+[`gates/DevSeedCollectionFormApp.js`](../gates/DevSeedCollectionFormApp.js)
+writes a project, an active selection and one cached form version carrying
+`gather-multi-image`, then mounts `App` **unmodified**. Everything after boot is
+the shipped shell, the shipped `FormRunner` and the shipped collection adapter.
+
+It exists because §20's headless gate and §21's interactive gate both supply
+their *own* collection adapter, so neither crosses `FormRunner`'s wiring — which
+is precisely how §22's defect survived them.
+
+`recordCachedVersion` is the same call the Central download path ends in, and it
+sets the version current (what `loadCurrentForm` requires), so the cached state
+is identical to a real download without a server. Confirming Central's
+*download* remains the deferred round trip's job.
+
+### What it found immediately
+
+Two bugs in shipped code, on the first run:
+
+| Bug | Cause |
+| --- | --- |
+| The form rendered in the top third of the screen | `FormRunner` rendered the engine's `WebView` sidecar as a bare sibling of the `flex: 1` `Screen`; `react-native-webview`'s container style is `flex: 1`, so the invisible sidecar claimed a share of the height |
+| Back from Forms dropped back into the form, making Drafts unreachable | both exit paths used `navigate('/project/forms')` — a push — leaving the form on the stack |
+
+The layout bug is the same shape as §21 and §22: **every gate wrapped that
+WebView in a hidden view and the real screen did not**, so no harness could
+have shown it. A harness that does not share the code path it is testing cannot
+test it — that is now three defects from this one cause.
+
+Also found through the seed, and fixed in §24: the red error flash on form open.
+
+## 26. State of this arc (2026-09-02)
+
+Where the Components / Capabilities / compositions work actually stands, so the
+next session does not have to reconstruct it.
+
+### Landed and device-verified
+
+| Piece | Evidence |
+| --- | --- |
+| Collection field (`gather-multi-image`) | §20 headless gate 24/24, §21 interactive gate, §25 dev seed through the real `FormRunner` |
+| Composition field (`gather-composition:`) | b-custom §"Verified — device": commit, provenance, and the clear path, checked in SQLite and the authoritative XML |
+| Receipt store (migration 11) | unit tests + executed against real SQLite |
+| Asset ledger + sweep (migration 12) | unit tests + executed against real SQLite; host trigger at the save boundary |
+| Binding manifest + recognition | unit tests; appearance syntax spiked against the engine |
+| Subtree ownership for both owning kinds | unit tests, and visible on device |
+
+### Open, in rough priority order
+
+1. **UI pass.** The shutter flash (§23 has ranked directions *and* a test
+   protocol — start there, not from scratch), the duplicated save-draft
+   affordances, and `/data/meta` / `instanceID` rendering as visible readonly
+   rows.
+2. **Sweep trigger points.** Wired at draft save and post-commit. Discard and
+   successful-send are identified but unchosen, because purging submitted
+   attachments is irreversible local data loss and belongs to a policy decision.
+3. **§22's resume branch on device** — deliberately skipped; it fails loudly
+   (empty collection on reopening a draft) if wrong.
+4. **Video Capture** — `VideoAsset` producer + mobile Basic `Video`, mirroring
+   the now-proven image path.
+5. **Composer fixture re-authoring** — the one skipped test.
+6. **§16 export tiering**, and the retention policy specifics behind b-custom §4.
+
+### The one strategic unknown
+
+**Corrected 2026-09-02.** The behaviour audit claimed
+`@a2ui/web_core@0.9.1` implements no function-call mechanism. It does —
+[a2ui-functioncall-gap.md](./a2ui-functioncall-gap.md). So the gate on authored
+capability invocation is **not** "adopt a different runtime". It is two small
+Gather-side changes (register capabilities as catalog functions; defer
+`action.functionCall` to interaction time) plus one genuine design question:
+whether a function result reaches composition state by *reactive pull* — binding
+a value to a function call, which upstream already supports — or by an
+imperative result destination we would have to add.

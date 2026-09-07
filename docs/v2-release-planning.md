@@ -1,5 +1,12 @@
 # Version Two — Release Planning
 
+> **⚠️ DEPRECATED (2026-09-02).** This plan predates the decision to build
+> Gather on top of ODK and XForms, so its phases, data-model overhaul and
+> build-vs-adopt analysis describe a product direction we did not take. Kept for
+> the strategic reasoning in §0, which still records *why* the pivot happened.
+>
+> **The canonical roadmap is [milestone-roadmap.md](./milestone-roadmap.md).**
+
 > **Purpose:** Working document to walk through and resolve the open design questions
 > around modernizing and hardening the Gather field-collection app for its second major
 > version. This is a living doc — we capture questions, options, and tradeoffs here,

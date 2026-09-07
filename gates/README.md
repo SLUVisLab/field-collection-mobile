@@ -240,6 +240,124 @@ registerRootComponent(ShellNavGateApp);
 
 Then revert `index.js` to `import App from './App'`. (Android only — no iOS run.)
 
+## `CollectionFieldGateApp.js` — multi-image collection field gate
+
+The on-device counterpart to `docs/b-standard-field-conventions.md` and §19 of
+`docs/components-capabilities-ownership.md`. Drives the sequence
+`XFormsMultiImageControl` performs, but against the **real engine, real SQLite
+and real files**:
+
+```text
+appearance recognition -> capture x3 into repeat instances -> remove the middle
+one with orphan cleanup -> storage restart + draft resume -> finalize + submit
+both surviving attachments
+```
+
+The fixture form is the **pyxform-canonical** shape (appearance on the
+`<repeat>`, wrapping `<group>` bare) and also carries an ordinary
+appearance-free repeat, so recognition is proven *additive*. The Central
+transport is stubbed, so no server is touched and no remote artifacts are
+created. It emits exactly one `COLLECTION_FIELD_RESULT::{…}`.
+
+Point `index.js` at `./gates/CollectionFieldGateApp`, then:
+
+```bash
+scripts/run-android-gate.sh 'COLLECTION_FIELD_RESULT::' .gate-logs/collection-field.log 1200
+```
+
+Revert `index.js` afterwards. It does **not** render React, so it verifies the
+pipeline rather than the control's presentation — the interactive camera
+(shutter, thumbnail accessory, capture -> remove -> replace) still needs a
+physical device.
+
+## `DevSeedCompositionApp.js` — an authored composition in the REAL app
+
+A **dev seed**, not a gate. Registers the Quadrat Tally fixture, seeds a form
+whose group carries `gather-composition:<id>` plus a `gather-bindings.json`
+attachment, then mounts `App` unmodified -- so the shipped shell, `FormRunner`,
+its composition adapter and the commit path all run for real.
+
+Going *through* `FormRunner` is the point: it found a duplicate-draft
+`UNIQUE` violation that no headless test or directly-mounted control could
+(see §7 of `docs/b-custom-composition-conventions.md`).
+
+Emits `COMPOSITION_SEED_READY::{…}`. Navigate to **Forms -> Quadrat tally (dev
+seed)**, tally a few, optionally flag uncertain, and Accept. The backing fields
+are hidden because the composition owns its subtree, so verify the commit in the
+data rather than on screen:
+
+```bash
+PKG=com.sluvislab.BIIManualPhenotyper
+adb exec-out "run-as $PKG cat files/SQLite/gather.db" > /tmp/gather.db
+NEW=$(sqlite3 /tmp/gather.db "SELECT local_instance_id FROM instances \
+  WHERE project_key='dev-seed-composition' ORDER BY updated_at DESC LIMIT 1;")
+adb shell "run-as $PKG cat files/gather/projects/dev-seed-composition/instances/$NEW/instance.xml"
+sqlite3 /tmp/gather.db "SELECT binding_reference FROM instance_receipts WHERE local_instance_id='$NEW';"
+```
+
+**Always key that check to the newest draft.** The seed re-seeds each launch, so
+older drafts accumulate, and reading the wrong one shows empty fields that look
+exactly like a failed commit. Revert `index.js` afterwards.
+
+## `DevSeedCollectionFormApp.js` — a collection form in the REAL app
+
+Not a gate: a **dev seed**. It writes a project, an active selection, and one
+cached form version carrying `gather-multi-image`, then mounts `App`
+**unmodified**. Everything after boot is the shipped shell, the shipped
+`FormRunner`, and the shipped collection adapter.
+
+It exists because the other two gates supply their *own* collection adapter, so
+neither exercises `FormRunner`'s wiring -- which is exactly how the §22 defect
+survived (`instance.media` is always `undefined`, so the shipped app would have
+rendered an empty collection for every form).
+
+`recordCachedVersion` is the same call the Central download path ends in, so the
+cached state is identical without a server; confirming Central's *download* is
+still the deferred round trip's job. Emits `DEV_SEED_READY::{…}` once seeded.
+
+Point `index.js` at `./gates/DevSeedCollectionFormApp`, start Metro, then
+navigate: **Forms -> Photo collection (dev seed)**. Capture two photos and
+confirm tiles appear and the counter tracks `min=2 max=4`. Re-seeds on every
+launch; drafts from prior runs remain in Drafts. Revert `index.js` afterwards.
+
+## `InteractiveCameraGateApp.js` — interactive camera + collection field
+
+The only **human-driven** gate. Mounts the real stack (`XFormsProvider` ->
+`XFormsRenderer` -> `XFormsMultiImageControl` -> `MultiImageCapture` ->
+`CameraView`) over real storage and the real lifecycle service, so the camera
+interaction and the React binding seam are actually exercised. It found two
+defects the headless collection gate could not see -- see §21 of
+`docs/components-capabilities-ownership.md`.
+
+The panel shows three independently counted numbers -- engine filled frames,
+media rows, and `<frame>` elements in the saved XML -- which must agree. The
+checklist below is the human's half; tapping **Emit result** logs
+`INTERACTIVE_CAMERA_RESULT::{...}` once. Central is never contacted.
+
+Point `index.js` at `./gates/InteractiveCameraGateApp`, then for a USB device:
+
+```bash
+ANDROID_SERIAL=<serial> scripts/run-android-gate.sh \
+  'INTERACTIVE_CAMERA_RESULT::' .gate-logs/interactive.log 1500
+```
+
+`ANDROID_SERIAL` makes the runner use that device and set up `adb reverse` plus
+the `localhost` packager host. The device must be **authorized** for USB
+debugging first (`adb devices` must show `device`, not `unauthorized`) --
+otherwise `expo run:android` fails on device enumeration even when another
+device is selected. Revert `index.js` afterwards.
+
+## `MediaIdentityGateApp.js` — attachment identity gate
+
+Attachment identity must be minted at capture and never derived from the XForms
+binding reference, because repeat references reindex on deletion. See
+`docs/repeat-media-identity-characterization.md`. Emits
+`MEDIA_IDENTITY_RESULT::{…}`; Central transport stubbed.
+
+```bash
+scripts/run-android-gate.sh 'MEDIA_IDENTITY_RESULT::' .gate-logs/media-identity.log 1200
+```
+
 ## `ShellSmokeApp.js` — first-party package smoke (pre-shell)
 
 The original Expo-57 package smoke that exercised a call into every workspace

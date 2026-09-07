@@ -2,12 +2,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   initializeGatherStorage,
   createFormsRepository,
+  ASSET_RETENTION,
+  createAssetsRepository,
   createEntitiesRepository,
   createInstancesRepository,
   createProjectsRepository,
   createSyncRepository,
   createFieldworkRepository,
   deleteFile,
+  listDirectory,
   ensureProjectDirectories,
   deleteProjectDirectory,
   fileForKey,
@@ -28,6 +31,7 @@ import { createProvisioningService } from '../provisioning/provisioningService.j
 import { createFormCatalogService } from '../forms/formCatalogService.js';
 import { createEntityService } from '../entities/entityService.js';
 import { createInstanceLifecycleService } from '../instances/instanceLifecycleService.js';
+import { sweepProjectAssets } from '../instances/assetCleanup.js';
 import { createSyncService } from '../sync/syncService.js';
 import { createFieldworkService } from '../fieldwork/fieldworkService.js';
 import { createModelStore } from '../scientific/models/modelStore.js';
@@ -36,9 +40,13 @@ import { BUNDLED_MODEL_PACKAGES } from '../scientific/models/bundledModelPackage
 import { createReactNativeOnnxRuntime } from '../scientific/runtime/onnxReactNativeAdapter.js';
 import { createOpenCvImageAdapter } from '../scientific/runtime/openCvImageAdapter.js';
 import { createOpenCvMeasurementAdapter } from '../scientific/runtime/openCvMeasurementAdapter.js';
+import { workingAssetIdentity } from '../scientific/assets/workingAssetIdentity.js';
 import { createModelExecutor } from '../scientific/runtime/modelExecutor.js';
 import { createImageAssetService } from '../scientific/assets/imageAssetService.js';
 import { segment, classify, measureImage, measureMask } from 'gather-capabilities';
+import { CAPABILITY_DEFINITIONS } from '../../packages/gather-capabilities/src/definitions.js';
+import { createCapabilityRuntime } from '../../packages/gather-capabilities/src/runtime.js';
+import { capabilityFunctions } from '../a2ui/capabilityFunctions.js';
 import { createScientificModelRef } from '../scientific/models/modelPackage.js';
 
 /**
@@ -105,6 +113,10 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     () => (entityRepository ? createEntityService({ entities: entityRepository }) : null),
     [entityRepository]
   );
+  const assets = useMemo(() => {
+    const database = state.boot?.storage?.database ?? null;
+    return database ? createAssetsRepository(database) : null;
+  }, [state.boot?.storage]);
   const sync = useMemo(() => {
     const database = state.boot?.storage?.database;
     return database ? createSyncRepository(database) : null;
@@ -362,6 +374,20 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     [activeProject, instanceLifecycle]
   );
 
+  const releaseInstanceMedia = useCallback(
+    async ({ localInstanceId, form, version, filenames }) => {
+      if (!instanceLifecycle || !activeProject) throw new Error('instance lifecycle not ready');
+      return instanceLifecycle.releaseInstanceMedia({
+        localInstanceId,
+        project: activeProject,
+        form,
+        version,
+        filenames,
+      });
+    },
+    [activeProject, instanceLifecycle]
+  );
+
   const discardInstance = useCallback(
     async (localInstanceId) => {
       if (!instanceLifecycle || !activeProject) throw new Error('instance lifecycle not ready');
@@ -471,25 +497,136 @@ export function GatherProvider({ children, deps, onReady, onError }) {
     async ({ image, mask }) => measureImage({ image, mask, adapter: scientificRuntime?.measurementAdapter }),
     [scientificRuntime]
   );
+  /**
+   * Makes a capture durable as a **working** asset.
+   *
+   * It deliberately takes no disposition. At capture time nothing knows what
+   * role these bytes will play — that is a property of the *output* they end up
+   * being, which only the binding manifest states and only completion resolves.
+   * Asking here would be asking the wrong moment, and it is what produced a
+   * permanently duplicated 257 KB per capture: `keep` was recorded before
+   * anyone knew the submission would own a copy.
+   *
+   * So the ledger row is `discard` and **unreleased**, which the cleanup
+   * planner reads as "still in use" (rule 4). Nothing reclaims it until a
+   * producer releases it, and completion is the producer.
+   */
   const persistScientificCapture = useCallback(
     async (capture) => {
       if (!imageAssetService || !activeProject) throw new Error('scientific image storage is not ready');
-      const assetId = `image-${globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`}`;
-      return imageAssetService.persistCapture({
+      // One mint for the ledger row, the file on disk and the ImageAsset the
+      // composition receives — they were three, and they disagreed. The ODK
+      // attachment a promotion may later create is a separate record with its
+      // own filename, not a second asset identity.
+      const { assetId, fileKey } = workingAssetIdentity({
+        projectKey: activeProject.projectKey,
+        media: GatherPaths.media,
+      });
+      const asset = await imageAssetService.persistCapture({
         capture,
-        fileKey: GatherPaths.media(activeProject.projectKey, `${assetId}.jpg`),
+        fileKey,
+        assetId,
         capturedAt: new Date().toISOString(),
       });
+      // Without a row these bytes are referenced by nothing in the database,
+      // which is what made project cleanup unsafe: a sweep could not tell a
+      // deliberately-kept capture from an orphan.
+      if (assets) {
+        try {
+          await assets.recordAsset({
+            fileKey,
+            projectKey: activeProject.projectKey,
+            assetId,
+            contentType: asset?.mimeType ?? capture?.contentType ?? 'image/jpeg',
+            retention: ASSET_RETENTION.DISCARD,
+          });
+        } catch {
+          // The bytes are already durable and usable. A missing ledger row
+          // only makes this asset un-reclaimable, which the sweep's
+          // conservative default already treats as "keep" — so never fail a
+          // capture over bookkeeping.
+        }
+      }
+      return asset;
     },
-    [activeProject, imageAssetService]
+    [activeProject, assets, imageAssetService]
   );
+
+  /**
+   * Settles a working asset's disposition once an output binding has declared
+   * one. This is the other half of `persistScientificCapture`: capture makes
+   * bytes durable, completion says what they were for.
+   *
+   * ```text
+   * keep    → the canonical Gather asset survives the sweep
+   * discard → released, so the sweep reclaims it; after a media projection
+   *           that means only the submission-owned copy remains
+   * ```
+   *
+   * Releasing is a *record*, never a delete. The bytes go at the next sweep, at
+   * a lifecycle boundary this module does not choose.
+   */
+  const applyAssetDisposition = useCallback(
+    async ({ fileKey, retention } = {}) => {
+      if (!assets || !fileKey) return { fileKey: fileKey ?? null, retention: retention ?? null };
+      await assets.setRetention({ fileKey, retention });
+      if (retention === ASSET_RETENTION.DISCARD) {
+        await assets.releaseAsset(fileKey);
+      }
+      return { fileKey, retention };
+    },
+    [assets]
+  );
+
+  /**
+   * Reclaims local-only assets this project no longer needs.
+   *
+   * Lives here rather than in any composition runtime: a composition declares
+   * disposition, it does not know cleanup mechanics. Callers invoke this at
+   * their own safe lifecycle boundaries.
+   *
+   * `reclaimOrphans` stays false, so a file with no ledger row is kept — see
+   * docs/b-custom-composition-conventions.md §4.
+   */
+  const sweepProjectMedia = useCallback(async () => {
+    if (!activeProject || !instances || !assets) return null;
+    return sweepProjectAssets({
+      projectKey: activeProject.projectKey,
+      mediaDirectoryKey: GatherPaths.media(activeProject.projectKey),
+      files: { listDirectory, deleteFile },
+      instances,
+      assets,
+    });
+  }, [activeProject, assets, instances]);
+
+  /**
+   * Capabilities, registered as A2UI renderer Functions so an **authored**
+   * composition can call them without composition-specific JS.
+   *
+   * Built from the same portable definitions the Composer agent reads and the
+   * same engines the app already wires, so there is no second capability
+   * surface to keep in step. Only capabilities with a runtime entry register.
+   */
+  const a2uiCapabilityFunctions = useMemo(() => {
+    if (!scientificRuntime || !activeProject) return [];
+    return capabilityFunctions({
+      definitions: CAPABILITY_DEFINITIONS,
+      runtime: createCapabilityRuntime({
+        segmentExecute: (input) =>
+          scientificRuntime.executor.segment({ ...input, projectKey: activeProject.projectKey }),
+        classifyExecute: (input) =>
+          scientificRuntime.executor.classify({ ...input, projectKey: activeProject.projectKey }),
+        measurementAdapter: scientificRuntime.measurementAdapter,
+      }),
+    });
+  }, [activeProject, scientificRuntime]);
 
   const value = useMemo(
     () => ({
       status: state.status,
       error: state.error,
       storage: state.boot?.storage ?? null,
-      repositories: { projects, forms, entities: entityRepository, instances, sync, fieldwork, modelStore },
+      repositories: { projects, forms, entities: entityRepository, instances, assets, sync, fieldwork, modelStore },
       projectCount,
       activeProject,
       shell: shellForActiveProject(activeProject),
@@ -511,6 +648,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
         saveInstanceDraft,
         finalizeInstance,
         attachImageMedia,
+        releaseInstanceMedia,
         discardInstance,
         sendInstance,
         sendAllReadyInstances,
@@ -527,6 +665,9 @@ export function GatherProvider({ children, deps, onReady, onError }) {
         measureScientificMask,
         measureScientificImage,
         persistScientificCapture,
+        applyAssetDisposition,
+        sweepProjectMedia,
+        a2uiCapabilityFunctions,
       },
     }),
     [
@@ -542,6 +683,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       forms,
       entityRepository,
       instances,
+      assets,
       sync,
       fieldwork,
       modelStore,
@@ -556,6 +698,7 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       saveInstanceDraft,
       finalizeInstance,
       attachImageMedia,
+      releaseInstanceMedia,
       discardInstance,
       sendInstance,
       sendAllReadyInstances,
@@ -572,6 +715,8 @@ export function GatherProvider({ children, deps, onReady, onError }) {
       measureScientificMask,
       measureScientificImage,
       persistScientificCapture,
+      applyAssetDisposition,
+      sweepProjectMedia,
     ]
   );
 

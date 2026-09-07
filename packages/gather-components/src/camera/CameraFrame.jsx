@@ -3,7 +3,7 @@ import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-nat
 
 import { tokens } from '../theme/tokens.js';
 import { useTheme } from '../theme/useTheme.js';
-import { Button } from '../components/actions/Button.jsx';
+import { Button } from '../actions/Button.jsx';
 
 /**
  * Shared, presentational camera surface: a full-width viewport frame, a control
@@ -19,21 +19,28 @@ export function CameraFrame({
   viewport,
   onCapture,
   capturing = false,
+  captureDisabled = false,
+  notice = null,
   error = null,
   permission = null,
   onCancel = null,
   control = null,
+  leading = null,
+  trailing = null,
   testIDPrefix = 'camera',
 }) {
   const theme = useTheme();
   const flash = useRef(new Animated.Value(0)).current;
 
   const handleCapture = useCallback(() => {
-    if (capturing) return;
+    // A shutter that cannot append must not capture either: the caller's
+    // `onCapture` being absent used to leave the shutter live, so a tap at the
+    // maximum still ran the device capture and silently dropped the result.
+    if (capturing || captureDisabled) return;
     flash.setValue(0.9);
     Animated.timing(flash, { toValue: 0, duration: 220, useNativeDriver: Platform.OS !== 'web' }).start();
     onCapture?.();
-  }, [capturing, flash, onCapture]);
+  }, [captureDisabled, capturing, flash, onCapture]);
 
   if (permission) {
     return (
@@ -79,19 +86,39 @@ export function CameraFrame({
           {error}
         </Text>
       ) : null}
+      {notice ? (
+        // Beside the shutter, not below the frame: a limit message under the
+        // whole camera is off-screen on a phone, which is where it was.
+        <Text
+          accessibilityRole="alert"
+          style={[styles.error, { color: theme.colors.textMuted }]}
+          testID={`${testIDPrefix}-notice`}
+        >
+          {notice}
+        </Text>
+      ) : null}
       <View style={styles.shutterRow}>
+        <View style={styles.shutterSide}>{leading}</View>
         {control ?? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={capturing ? 'Taking photo' : 'Take photo'}
-            disabled={capturing}
+            accessibilityLabel={
+              captureDisabled ? 'Photo limit reached' : capturing ? 'Taking photo' : 'Take photo'
+            }
+            accessibilityState={{ disabled: capturing || captureDisabled }}
+            disabled={capturing || captureDisabled}
             onPress={handleCapture}
             testID={`${testIDPrefix}-capture`}
-            style={({ pressed }) => [styles.shutterOuter, pressed && styles.shutterPressed, capturing && styles.shutterDisabled]}
+            style={({ pressed }) => [
+              styles.shutterOuter,
+              pressed && styles.shutterPressed,
+              (capturing || captureDisabled) && styles.shutterDisabled,
+            ]}
           >
             <View style={styles.shutterInner} />
           </Pressable>
         )}
+        <View style={[styles.shutterSide, styles.shutterSideEnd]}>{trailing}</View>
       </View>
       {onCancel ? (
         <Button label="Cancel" onPress={onCancel} variant="secondary" style={styles.inlineAction} testID={`${testIDPrefix}-cancel`} />
@@ -107,8 +134,28 @@ const styles = StyleSheet.create({
   inlineAction: { alignSelf: 'center' },
   error: { lineHeight: tokens.typography.bodyLineHeight },
   viewportWrap: { position: 'relative', width: '100%', aspectRatio: 3 / 4, overflow: 'hidden' },
-  flash: { ...StyleSheet.absoluteFillObject, backgroundColor: '#ffffff' },
-  shutterRow: { alignItems: 'center', paddingVertical: tokens.spacing.sm },
+  // KNOWN NOT WORKING on Android — parked for a UI pass, see §23 of
+  // docs/components-capabilities-ownership.md. The elevation/zIndex here was a
+  // hypothesis the device disproved: an overlay *outside* this wrap renders
+  // above the preview fine, so the remaining suspect is that this overlay is a
+  // sibling of the native surface inside the same parent, plus an `Animated`
+  // opacity that never rendered under either driver. Do not re-derive that;
+  // read the section first.
+  flash: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#ffffff',
+    elevation: 8,
+    zIndex: 8,
+  },
+  shutterRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: tokens.spacing.sm,
+  },
+  // Equal-weight sides keep the shutter centred with or without accessories.
+  shutterSide: { alignItems: 'flex-start', flex: 1 },
+  shutterSideEnd: { alignItems: 'flex-end' },
   shutterOuter: {
     width: 74,
     height: 74,

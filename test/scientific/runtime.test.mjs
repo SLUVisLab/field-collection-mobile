@@ -31,6 +31,32 @@ test('image asset service persists immutable bytes and returns only serializable
   assert.equal(asset.sha256, 'sha256:039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81');
 });
 
+test('one persisted working asset has one Gather identity', async () => {
+  // A caller that derived the storage key from an id, and recorded a ledger row
+  // under it, must not get a second id back for the same bytes: the ledger row
+  // and the ImageAsset would then disagree about what this asset is called.
+  const service = createImageAssetService({
+    readCaptureBytes: async () => new Uint8Array([1]),
+    writeBytesAtomic: async () => {},
+    fileUriForKey: (key) => `file:///${key}`,
+    newAssetId: () => 'minted-here',
+  });
+
+  const supplied = await service.persistCapture({
+    capture: { path: '/cache/camera.jpg', contentType: 'image/jpeg', width: 2, height: 3 },
+    fileKey: 'projects/p/media/image-caller.jpg',
+    assetId: 'image-caller',
+  });
+  assert.equal(supplied.assetId, 'image-caller');
+
+  // Minting stays the fallback for callers with no id of their own.
+  const minted = await service.persistCapture({
+    capture: { path: '/cache/camera.jpg', contentType: 'image/jpeg', width: 2, height: 3 },
+    fileKey: 'projects/p/media/image-minted.jpg',
+  });
+  assert.equal(minted.assetId, 'minted-here');
+});
+
 test('image asset service surfaces a native temporary capture read failure', async () => {
   const service = createImageAssetService({
     readCaptureBytes: async () => {

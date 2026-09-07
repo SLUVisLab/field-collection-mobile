@@ -13,7 +13,15 @@ import { capturePhoto } from './capturePhoto.js';
  * returning). The durable `ImageAsset` is materialized by the storage layer, not
  * by this component.
  */
-export function CameraView({ onCapture, onCancel, testIDPrefix = 'camera' }) {
+export function CameraView({
+  onCapture,
+  onCancel,
+  canCapture = true,
+  notice = null,
+  leading = null,
+  trailing = null,
+  testIDPrefix = 'camera',
+}) {
   const { hasPermission, canRequestPermission, requestPermission } = useCameraPermission();
   const photoOutput = usePhotoOutput({ containerFormat: 'jpeg', quality: 0.9 });
   const [capturing, setCapturing] = useState(false);
@@ -29,7 +37,7 @@ export function CameraView({ onCapture, onCancel, testIDPrefix = 'camera' }) {
   }, [requestPermission]);
 
   const takePhoto = useCallback(async () => {
-    if (capturing) return;
+    if (capturing || !canCapture) return;
     setCapturing(true);
     setError(null);
     try {
@@ -40,7 +48,7 @@ export function CameraView({ onCapture, onCancel, testIDPrefix = 'camera' }) {
     } finally {
       setCapturing(false);
     }
-  }, [capturing, onCapture, photoOutput]);
+  }, [canCapture, capturing, onCapture, photoOutput]);
 
   if (!hasPermission) {
     return (
@@ -61,8 +69,12 @@ export function CameraView({ onCapture, onCancel, testIDPrefix = 'camera' }) {
     <CameraFrame
       testIDPrefix={testIDPrefix}
       capturing={capturing}
+      captureDisabled={!canCapture}
+      notice={notice}
       error={error}
       onCancel={onCancel}
+      leading={leading}
+      trailing={trailing}
       onCapture={() => void takePhoto()}
       viewport={
         <CameraDevicePreview

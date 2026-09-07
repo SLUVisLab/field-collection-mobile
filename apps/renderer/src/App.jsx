@@ -19,6 +19,8 @@ import {
   GatherCapture,
   GatherImageOverlay,
   GatherInstrumentError,
+  GatherMediaGallery,
+  GatherMultiImageCapture,
   GatherOutputReview,
   GatherProcessingView,
 } from './gatherComponents.jsx';
@@ -27,7 +29,7 @@ import './app.css';
 
 const gatherCatalog = new Catalog(
   GATHER_CATALOG_ID,
-  [...basicCatalog.components.values(), Flow, GatherCameraView, GatherCapture, GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError],
+  [...basicCatalog.components.values(), Flow, GatherCameraView, GatherCapture, GatherMediaGallery, GatherMultiImageCapture, GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError],
   [...basicCatalog.functions.values()]
 );
 

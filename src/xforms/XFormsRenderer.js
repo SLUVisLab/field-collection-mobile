@@ -5,7 +5,10 @@ import { XFormsImageControl } from './controls/XFormsImageControl.js';
 import { XFormsInputControl } from './controls/XFormsInputControl.js';
 import { XFormsReadonlyControl } from './controls/XFormsReadonlyControl.js';
 import { XFormsRepeatControl } from './controls/XFormsRepeatControl.js';
+import { XFormsCompositionControl } from './compositions/XFormsCompositionControl.js';
+import { XFormsMultiImageControl } from './controls/XFormsMultiImageControl.js';
 import { XFormsSelectControl } from './controls/XFormsSelectControl.js';
+import { compositionConfigFrom } from './compositions/recognition.js';
 import { controlKindFor, visibleRenderNodes } from './renderModel.js';
 import { tokens } from '../theme/tokens.js';
 import { useTheme } from '../theme/useTheme.js';
@@ -13,7 +16,7 @@ import { useTheme } from '../theme/useTheme.js';
 const selectSnapshot = (state) => state.snapshot;
 const indentFor = (depth) => Math.min(Math.max(depth ?? 0, 0), 4) * 8;
 
-function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy }) {
+function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy, collection, composition }) {
   const kind = controlKindFor(node);
   const indent = indentFor(node.depth);
   const question = useXFormsQuestion(node.reference);
@@ -30,6 +33,43 @@ function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy }) {
             {node.hint}
           </Text>
         ) : null}
+      </View>
+    );
+  }
+
+  if (kind === 'multi-image') {
+    return <XFormsMultiImageControl node={node} indent={indent} onLayout={onLayout} collection={collection} />;
+  }
+
+  if (kind === 'composition') {
+    if (composition) {
+      return (
+        <XFormsCompositionControl
+          node={node}
+          indent={indent}
+          onLayout={onLayout}
+          composition={composition}
+        />
+      );
+    }
+    // With no adapter there is no runtime to host. This says so plainly
+    // rather than falling through to "Unsupported XForms control: group",
+    // which would be both wrong and quiet about the consequence — the group's
+    // backing fields are suppressed because the composition owns its subtree
+    // (docs/b-custom-composition-conventions.md §5), so there is nothing else
+    // on screen to explain the gap.
+    return (
+      <View
+        onLayout={onLayout}
+        style={[styles.unsupported, { backgroundColor: theme.colors.surfaceWarning, borderRadius: tokens.radii.sm, gap: tokens.spacing.xs, marginLeft: indent, padding: tokens.spacing.md }]}
+        testID={`composition-placeholder-${node.reference}`}
+      >
+        <Text style={[styles.label, { color: theme.colors.text, fontSize: tokens.typography.label }]}>
+          {node.label ?? node.reference}
+        </Text>
+        <Text style={[styles.unsupportedText, { color: theme.colors.textMuted, lineHeight: tokens.typography.helperLineHeight }]}>
+          {`Collected by composition "${compositionConfigFrom(node.appearances).compositionId}", which this build cannot run. Its fields are hidden here; another ODK client can fill them directly.`}
+        </Text>
       </View>
     );
   }
@@ -104,7 +144,13 @@ function XFormsRenderNode({ node, onLayout, onAttachImage, attachBusy }) {
   );
 }
 
-export function XFormsRenderer({ onNodeLayout, onAttachImage, attachBusy = false }) {
+export function XFormsRenderer({
+  onNodeLayout,
+  onAttachImage,
+  attachBusy = false,
+  collection = null,
+  composition = null,
+}) {
   const renderModel = useXFormsRenderModel();
   const snapshot = useXFormSelector(selectSnapshot);
   const nodes = visibleRenderNodes(renderModel, snapshot);
@@ -116,6 +162,8 @@ export function XFormsRenderer({ onNodeLayout, onAttachImage, attachBusy = false
       onLayout={(event) => onNodeLayout?.(node.reference, event)}
       onAttachImage={onAttachImage}
       attachBusy={attachBusy}
+      collection={collection}
+      composition={composition}
     />
   ));
 }

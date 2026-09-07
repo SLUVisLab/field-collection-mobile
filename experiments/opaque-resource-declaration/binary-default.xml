@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa">
+  <h:head><h:title>Binary default resource declaration</h:title><model>
+    <instance><data id="binary_default">
+      <site_name/>
+      <gather_composition_bundle>jr://images/flower_v1.gather</gather_composition_bundle>
+      <meta><instanceID/></meta>
+    </data></instance>
+    <bind nodeset="/data/site_name" type="string"/>
+    <bind nodeset="/data/gather_composition_bundle" type="binary" readonly="true()"/>
+    <bind nodeset="/data/meta/instanceID" type="string" jr:preload="uid"/>
+  </model></h:head>
+  <h:body>
+    <input ref="/data/site_name"><label>Site name</label></input>
+  </h:body>
+</h:html>

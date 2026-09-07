@@ -383,3 +383,42 @@ test('XFormsStore surfaces host errors and moves to error phase', async () => {
   await store.dispose();
   await assert.rejects(store.loadForm('<xml />'), /disposed/i);
 });
+
+test('a host event before any form is loaded is not a user-visible error', async () => {
+  // Regression: the WebView sidecar emits a lifecycle event as soon as it is
+  // ready, i.e. before loadForm. handleHostEvent answered it with a snapshot
+  // refresh, the host threw "No form loaded", and that was promoted to
+  // phase ERROR with an engine-error message -- so opening a form flashed red
+  // text during an entirely normal startup. Found on a physical device.
+  class NoFormHost extends FakeHost {
+    async getSnapshot() {
+      if (!this.loaded) throw new Error('No form loaded');
+      return super.getSnapshot();
+    }
+    async loadForm(xml, attachments = null) {
+      const result = await super.loadForm(xml, attachments);
+      this.loaded = true;
+      return result;
+    }
+  }
+
+  const host = new NoFormHost();
+  const store = new XFormsStore({ host });
+  store.start();
+
+  host.emit({ type: 'lifecycle', payload: { phase: 'ready' } });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.equal(store.getState().error, null, 'a pre-load lifecycle event must not set an error');
+  assert.notEqual(store.getState().phase, XFORMS_REACT_PHASES.ERROR);
+  // The event itself is still recorded — it is only the refresh that is skipped.
+  assert.equal(store.getState().lastEvent?.payload?.phase, 'ready');
+
+  // Once a form is loaded, events resume driving snapshot refreshes.
+  await store.loadForm('<xml />');
+  assert.equal(store.getState().phase, XFORMS_REACT_PHASES.READY);
+  host.emit({ type: 'lifecycle', payload: { phase: 'after-load' } });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(store.getState().error, null);
+  assert.ok(store.getState().snapshot, 'snapshot refresh should work after load');
+});

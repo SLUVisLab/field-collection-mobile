@@ -10,6 +10,7 @@ import {
 import { useNavigate, useParams, useSearchParams } from 'react-router-native';
 import { WebView } from 'react-native-webview';
 import { File } from 'expo-file-system';
+import { fileForKey } from 'gather-storage';
 
 import {
   WebViewXFormsHost,
@@ -26,11 +27,16 @@ import { tokens } from '../../theme/tokens.js';
 import { useTheme } from '../../theme/useTheme.js';
 import { XFormsRenderer } from '../../xforms/XFormsRenderer.js';
 import { outlineFor } from '../../xforms/renderModel.js';
+import { bindCompositionOutputs, resolveCompositionFields } from '../../xforms/compositions/compositionBinding.js';
+import { commitCompositionResult } from '../../xforms/compositions/commit.js';
+import { compositionHandlerFor } from '../../xforms/compositions/handlers/registry.js';
+import { resolveCompositionDefinitions } from '../../xforms/compositions/definitionLoader.js';
+import { mergeMedia } from '../../instances/mediaState.js';
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId = null, fieldworkEntityId = null }) {
-  const { actions, activeProject } = useGather();
+  const { actions, activeProject, repositories } = useGather();
   const form = useXForm();
   const navigate = useNavigate();
   const backGuards = useBackGuardRegistry();
@@ -40,7 +46,12 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     saveInstanceDraft,
     finalizeInstance,
     attachImageMedia,
+    persistScientificCapture,
+    applyAssetDisposition,
+    a2uiCapabilityFunctions,
+    releaseInstanceMedia,
     discardInstance,
+    sweepProjectMedia,
     associateFieldworkInstance,
   } = actions;
   const { loadForm, loadInstance } = form;
@@ -50,6 +61,11 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
   const [loadError, setLoadError] = useState(null);
   const [version, setVersion] = useState(null);
   const [instance, setInstance] = useState(null);
+  // The instance ROW carries no media — the lifecycle returns media alongside
+  // it (`{ instance, media }`), never nested. Reading `instance.media` silently
+  // yielded [] and emptied every collection field; see §22.
+  const [media, setMedia] = useState([]);
+  const [formAttachments, setFormAttachments] = useState([]);
   const [message, setMessage] = useState(null);
   const [busy, setBusy] = useState(false);
   const [showExitChoices, setShowExitChoices] = useState(false);
@@ -66,11 +82,17 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
           const resumed = await resumeInstance({ localInstanceId, form: { loadInstance } });
           if (!cancelled) {
             setInstance(resumed.instance);
+            setMedia(resumed.media ?? []);
             setVersion(resumed.version);
+            // Same form-owned resources a fresh fill reads. Resuming without
+            // them left every composition unresolvable on resume only.
+            setFormAttachments(resumed.attachments ?? []);
           }
         } else {
           const cached = await loadCachedForm(formId);
           await loadForm(cached.xml, cached.attachments);
+          // Composition definitions ride the form's version-pinned resources.
+          if (!cancelled) setFormAttachments(cached.attachments ?? []);
           if (fieldworkEntityId) {
             const snapshot = await form.refreshSnapshot('fieldwork-preselect');
             const matchingReference = Object.entries(snapshot?.nodesByReference ?? {}).find(
@@ -108,13 +130,21 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     resumeInstance,
   ]);
 
-  const saveDraft = useCallback(async () => {
+  /**
+   * @param {string|null} explicitLocalInstanceId the draft to save into.
+   *   Needed because `instance` is React state: a caller that has just created
+   *   a draft still sees `null` here in the same tick, and saving again without
+   *   an id creates a SECOND draft — which collides on
+   *   `UNIQUE (project_key, odk_instance_id)`, since the engine's preloaded
+   *   instanceID has not changed. Found on device by the composition seed.
+   */
+  const saveDraft = useCallback(async (explicitLocalInstanceId = null) => {
     if (!version || busy) return false;
     setBusy(true);
     setMessage(null);
     try {
       const saved = await saveInstanceDraft({
-        localInstanceId: instance?.localInstanceId ?? null,
+        localInstanceId: explicitLocalInstanceId ?? instance?.localInstanceId ?? null,
         form: { serialize: form.serialize, getEntityEffects: () => host.getEntityEffects() },
         version,
       });
@@ -127,17 +157,236 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
         });
       }
       setMessage('Draft saved on this device.');
-      return true;
+      // A safe lifecycle boundary: the draft's XML is durable, so the
+      // referenced set is settled and a sweep can tell what is still needed.
+      // Cleanup must never fail a save, so this is best-effort and its outcome
+      // is not surfaced. The composition-commit boundary is the other place
+      // this belongs, and the composition adapter reaches it.
+      // docs/b-custom-composition-conventions.md §4.
+      void Promise.resolve(sweepProjectMedia?.()).catch(() => {});
+      // The saved instance, not a boolean: the composition adapter needs its
+      // id to attach provenance, and an object is still truthy for callers
+      // that only check success.
+      return saved;
     } catch (error) {
       setMessage(error?.message ?? 'Could not save this draft.');
       return false;
     } finally {
       setBusy(false);
     }
-  }, [associateFieldworkInstance, busy, fieldworkEntityId, fieldworkSessionId, form.serialize, instance?.localInstanceId, saveInstanceDraft, version]);
+  }, [associateFieldworkInstance, busy, fieldworkEntityId, fieldworkSessionId, form.serialize, instance?.localInstanceId, saveInstanceDraft, sweepProjectMedia, version]);
+
+  // Collection field adapter (storage half). The control owns the repeat APIs;
+  // this owns persistence and orphan cleanup. See
+  // docs/b-standard-field-conventions.md §4.
+  const captureIntoCollection = useCallback(
+    async (reference, capture) => {
+      if (!version || typeof capture?.uri !== 'string') return false;
+      setBusy(true);
+      setMessage(null);
+      try {
+        const sourceFile = new File(capture.uri);
+        if (!sourceFile.exists) throw new Error('The captured image is unavailable.');
+        const bound = await attachImageMedia({
+          localInstanceId: instance?.localInstanceId ?? null,
+          form: { setValue: form.setValue, serialize: form.serialize },
+          version,
+          reference,
+          sourceFile,
+          contentType: capture.contentType,
+        });
+        setInstance(bound.instance);
+        setMedia((prev) => mergeMedia(prev, bound.media));
+        return true;
+      } finally {
+        setBusy(false);
+      }
+    },
+    [attachImageMedia, form.serialize, form.setValue, instance?.localInstanceId, version]
+  );
+
+  const removeFromCollection = useCallback(
+    async (filenames) => {
+      if (!version || !instance?.localInstanceId || !Array.isArray(filenames) || filenames.length === 0) return false;
+      setBusy(true);
+      setMessage(null);
+      try {
+        const saved = await releaseInstanceMedia({
+          localInstanceId: instance.localInstanceId,
+          form: { serialize: form.serialize },
+          version,
+          filenames,
+        });
+        setInstance(saved.instance);
+        const released = new Set(saved.released ?? filenames);
+        setMedia((prev) => prev.filter((row) => !released.has(row.filename)));
+        return true;
+      } finally {
+        setBusy(false);
+      }
+    },
+    [form.serialize, instance?.localInstanceId, releaseInstanceMedia, version]
+  );
+
+  // Composition field adapter. Resolution is compositionBinding's — derived
+  // from the XForm's own group, in two phases — and commit and provenance are
+  // commit.js's; this only supplies them and the lifecycle boundary. See
+  // docs/composition-binding-reassessment.md.
+  const resolvedCompositions = useMemo(
+    () => resolveCompositionFields({ renderModel: form.renderModel }),
+    [form.renderModel]
+  );
+
+  const commitComposition = useCallback(
+    async ({ field, result, receipt }) => {
+      // Provenance attaches to an instance, so a draft has to exist before the
+      // commit — otherwise the very first composition run in a fresh form
+      // would be refused for want of somewhere to record it. Creating the
+      // draft first is better than skipping provenance, which would silently
+      // break principle 5.
+      let localInstanceId = instance?.localInstanceId ?? null;
+      if (!localInstanceId) {
+        const created = await saveDraft();
+        localInstanceId = created?.localInstanceId ?? null;
+        if (!localInstanceId) {
+          throw new Error('This result could not be saved: the draft could not be created.');
+        }
+      }
+      const outcome = await commitCompositionResult({
+        result,
+        field,
+        form: { setValue: form.setValue },
+        receipts: repositories?.instances ?? null,
+        receipt,
+        localInstanceId,
+        // Media projection reuses the existing attachment machinery rather than
+        // inventing a second media path: it copies bytes, mints the submission
+        // filename, records the instance_media row and binds the node. The
+        // composition never learns any of that.
+        attachMedia: async ({ reference, asset }) => {
+          const sourceFile = fileForKey(asset?.fileKey ?? asset?.path);
+          if (!sourceFile?.exists) {
+            throw new Error('The asset for this output is no longer available.');
+          }
+          const bound = await attachImageMedia({
+            localInstanceId,
+            form: { setValue: form.setValue, serialize: form.serialize },
+            version,
+            reference,
+            sourceFile,
+            contentType: asset?.mimeType ?? asset?.contentType ?? 'image/jpeg',
+          });
+          setInstance(bound.instance);
+          setMedia((prev) => mergeMedia(prev, bound.media));
+          return { filename: bound.media.filename };
+        },
+        // Settles the working asset once the submission owns its copy: `keep`
+        // makes it canonical, `discard` releases it for the next sweep. The
+        // composition declared which; nothing here infers it.
+        applyDisposition: async ({ asset, retention }) =>
+          applyAssetDisposition({ fileKey: asset?.fileKey ?? asset?.path, retention }),
+      });
+      // Then persist the values the composition just wrote. saveDraft sweeps at
+      // its own boundary, which is the post-commit boundary too. It can decline
+      // (another operation holds `busy`), and the values would then live only
+      // in engine state until the next save — so report it rather than letting
+      // "Recorded 3 values" stand for something not yet on disk.
+      // Save into the draft we know about, not the one React state remembers.
+      const persisted = Boolean(await saveDraft(localInstanceId));
+      return { ...outcome, persisted };
+    },
+    [
+      applyAssetDisposition,
+      attachImageMedia,
+      form.serialize,
+      form.setValue,
+      instance?.localInstanceId,
+      repositories?.instances,
+      saveDraft,
+      version,
+    ]
+  );
+
+  // Definitions come from the form's own resources, pinned to its version.
+  const resolvedDefinitions = useMemo(
+    () =>
+      resolveCompositionDefinitions({
+        fields: resolvedCompositions.fields,
+        attachments: formAttachments,
+      }),
+    [formAttachments, resolvedCompositions.fields]
+  );
+
+  /**
+   * Phase two of binding. Which children a composition writes depends on what
+   * it declares, so bindings cannot be derived until the definition loads —
+   * and deriving them from the children alone would *clear* every question the
+   * composition does not produce, on every Accept.
+   */
+  const boundFields = useMemo(() => {
+    const fields = new Map();
+    const problems = [];
+    for (const field of resolvedCompositions.fields) {
+      const definition = resolvedDefinitions.definitions.get(field.reference) ?? null;
+      // No definition is already reported by the loader; adding "nothing bound"
+      // on top would bury the reason under its own consequence.
+      if (!definition) continue;
+      const bound = bindCompositionOutputs({ field, definition });
+      problems.push(...bound.problems);
+      fields.set(field.reference, {
+        reference: field.reference,
+        // The artifact is the authority on its own identity; the appearance's
+        // id, when present, names a composition this build registered.
+        compositionId: definition.id ?? field.compositionId,
+        definitionResource: field.definitionResource,
+        bindings: bound.bindings,
+      });
+    }
+    return { fields, problems };
+  }, [resolvedCompositions.fields, resolvedDefinitions.definitions]);
+
+  const compositionAdapter = useMemo(
+    () => ({
+      fieldFor: (reference) => boundFields.fields.get(reference) ?? null,
+      definitionFor: (reference) => resolvedDefinitions.definitions.get(reference) ?? null,
+      definitionProblemFor: (reference) =>
+        resolvedDefinitions.problems.find((problem) => problem.reference === reference)?.message ?? null,
+      // Optional app-shipped behaviour only — never the source of definitions.
+      handlerFor: (compositionId) => compositionHandlerFor(compositionId),
+      onAccepted: commitComposition,
+      // The host media seam an authored composition reaches through
+      // `gather_persistAsset`. Disposition is authored, never inferred.
+      persistAsset: (capture) => persistScientificCapture(capture),
+      // Capabilities this build can execute, already A2UI-registered.
+      capabilityFunctions: a2uiCapabilityFunctions,
+      problems: [
+        ...resolvedCompositions.problems,
+        ...resolvedDefinitions.problems,
+        ...boundFields.problems,
+      ],
+    }),
+    [
+      a2uiCapabilityFunctions,
+      boundFields,
+      commitComposition,
+      persistScientificCapture,
+      resolvedCompositions,
+      resolvedDefinitions,
+    ]
+  );
+
+  const collectionAdapter = useMemo(
+    () => ({
+      media,
+      uriFor: (fileKey) => fileForKey(fileKey)?.uri ?? null,
+      onCapture: captureIntoCollection,
+      onRemove: removeFromCollection,
+    }),
+    [captureIntoCollection, media, removeFromCollection]
+  );
 
   const attachCapturedImage = useCallback(
-    async (node, capture) => {
+    async (node, capture, previousFilename = null) => {
       if (!version || busy || !node?.reference || typeof capture?.uri !== 'string') return false;
       setBusy(true);
       setMessage(null);
@@ -151,8 +400,12 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
           reference: node.reference,
           sourceFile,
           contentType: capture.contentType,
+          // The node's current value identifies the attachment being replaced;
+          // its reference does not (positional inside a repeat).
+          previousFilename,
         });
         setInstance(bound.instance);
+        setMedia((prev) => mergeMedia(prev, bound.media, previousFilename));
         setMessage('Captured image attached and saved in this draft.');
         return true;
       } catch (error) {
@@ -207,7 +460,9 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     const saved = await saveDraft();
     if (saved) {
       setShowExitChoices(false);
-      navigate('/project/forms');
+      // `replace`, not push: otherwise the form stays on the stack and Back
+      // from Forms drops straight back into it instead of going up.
+      navigate('/project/forms', { replace: true });
     }
   };
 
@@ -218,7 +473,7 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
     try {
       if (instance?.localInstanceId) await discardInstance(instance.localInstanceId);
       setShowExitChoices(false);
-      navigate('/project/forms');
+      navigate('/project/forms', { replace: true });
     } catch (error) {
       setMessage(error?.message ?? 'Could not discard this draft.');
     } finally {
@@ -295,6 +550,8 @@ function RunnerBody({ formId, localInstanceId = null, host, fieldworkSessionId =
       ) : null}
       {form.ready ? (
         <XFormsRenderer
+          collection={collectionAdapter}
+          composition={compositionAdapter}
           onAttachImage={attachCapturedImage}
           attachBusy={busy}
           onNodeLayout={(reference, event) => layouts.current.set(reference, event.nativeEvent.layout.y)}
@@ -391,12 +648,22 @@ export function FormRunner() {
         fieldworkSessionId={search.get('fieldworkSession')}
         fieldworkEntityId={search.get('entityId')}
       />
-      <WebView ref={webViewRef} {...webViewProps} />
+      {/*
+        The engine sidecar. `react-native-webview`'s own container style is
+        `flex: 1`, so rendered bare it becomes a sibling competing with the
+        flex:1 `Screen` and the form gets only a fraction of the height. It has
+        to run (it hosts the XForms engine) but must never take part in layout:
+        absolutely positioned, 1x1, transparent and untouchable.
+      */}
+      <View style={styles.engineHost} pointerEvents="none">
+        <WebView ref={webViewRef} {...webViewProps} />
+      </View>
     </XFormsProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  engineHost: { height: 1, opacity: 0, position: 'absolute', top: 0, left: 0, width: 1 },
   outline: {},
   outlineTitle: { fontWeight: '700' },
   outlineItem: { justifyContent: 'center', paddingHorizontal: 4, paddingVertical: 5 },

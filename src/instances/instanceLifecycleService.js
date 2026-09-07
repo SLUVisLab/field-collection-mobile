@@ -53,13 +53,6 @@ const IMAGE_EXTENSIONS = Object.freeze({
   'image/webp': 'webp',
 });
 
-const hashReference = (reference) => {
-  let hash = 0x811c9dc5;
-  for (let index = 0; index < reference.length; index += 1) {
-    hash = Math.imul(hash ^ reference.charCodeAt(index), 0x01000193);
-  }
-  return (hash >>> 0).toString(36);
-};
 
 const assertImageContentType = (contentType) => {
   if (typeof contentType !== 'string' || !Object.hasOwn(IMAGE_EXTENSIONS, contentType)) {
@@ -78,11 +71,24 @@ const assertBindingReference = (reference) => {
   return reference;
 };
 
-export const imageFilenameForReference = ({ reference, contentType }) =>
-  `image-${hashReference(assertBindingReference(reference))}.${IMAGE_EXTENSIONS[assertImageContentType(contentType)]}`;
+/**
+ * Mints an attachment filename **once, at capture**.
+ *
+ * Deliberately not derived from the XForms binding reference. Repeat instance
+ * references are positional and reindex when an item is deleted, so a
+ * reference-derived name makes a survivor inherit the deleted item's
+ * attachment — a silent wrong image on the record. The filename is written into
+ * the node value instead, so identity travels with the node.
+ * See docs/repeat-media-identity-characterization.md.
+ */
+export const imageFilenameForCapture = ({ contentType, suffix = randomMediaSuffix() } = {}) =>
+  `image-${nonEmpty(suffix, 'suffix')}.${IMAGE_EXTENSIONS[assertImageContentType(contentType)]}`;
 
 export const instanceMediaKeyFor = ({ projectKey, localInstanceId, filename }) =>
   GatherPaths.media(projectKey, nonEmpty(localInstanceId, 'localInstanceId'), nonEmpty(filename, 'filename'));
+
+const randomMediaSuffix = () =>
+  `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
 const assertProject = (project) => {
   const projectKey = nonEmpty(project?.projectKey, 'projectKey');
@@ -372,6 +378,11 @@ export const createInstanceLifecycleService = ({
       return {
         instance,
         version: cached.version,
+        // Resume must hand back the same version-pinned resources a fresh fill
+        // gets. Without them the binding manifest and composition definitions
+        // are absent on resume only, and every composition field renders as
+        // unbound. See docs/composition-behaviour-audit.md.
+        attachments: cached.attachments ?? [],
         media: await listInstanceMedia(instance.localInstanceId),
       };
     },
@@ -387,6 +398,60 @@ export const createInstanceLifecycleService = ({
      * generated safe filename through the engine, then persists authoritative
      * XML and relative media metadata.
      */
+    /**
+     * Retires media a collection edit orphaned, then persists the draft.
+     *
+     * The engine has already removed the repeat instances, so the XML no longer
+     * references these filenames. Identity is the **filename**, never a repeat
+     * position — positions reindex on deletion. See
+     * docs/repeat-media-identity-characterization.md.
+     */
+    async releaseInstanceMedia({
+      localInstanceId,
+      project: projectInput,
+      form,
+      version,
+      filenames = [],
+    } = {}) {
+      const project = assertProject(projectInput);
+      const identity = assertVersionForProject(version, project);
+      assertMediaDependencies();
+      if (!Array.isArray(filenames) || filenames.length === 0) {
+        fail('No media was named for release.', INSTANCE_LIFECYCLE_ERROR_CODES.INVALID);
+      }
+      // `owned` already fails for a missing instance or another project's.
+      const existing = await owned(nonEmpty(localInstanceId, 'localInstanceId'), project);
+      if (existing.state !== 'draft') {
+        fail('Only drafts can release media.', INSTANCE_LIFECYCLE_ERROR_CODES.INVALID_STATE);
+      }
+      if (existing.formVersionId !== identity.formVersionId) {
+        fail('A draft must keep its original form version.', INSTANCE_LIFECYCLE_ERROR_CODES.INVALID);
+      }
+
+      const named = new Set(filenames);
+      const doomed = (await listInstanceMedia(existing.localInstanceId)).filter((entry) =>
+        named.has(entry.filename)
+      );
+
+      // Persist the engine's current XML first: it is authoritative, and a
+      // failure here must not leave rows pointing at deleted bytes.
+      const serialized = await serializeFrom(form);
+      await files.writeTextAtomic(existing.xmlFileKey, serialized.xml);
+      const saved = await instances.saveDraft({
+        localInstanceId: existing.localInstanceId,
+        odkInstanceId: serialized.odkInstanceId,
+      });
+
+      for (const entry of doomed) {
+        await instances.deleteMedia({
+          localInstanceId: existing.localInstanceId,
+          filename: entry.filename,
+        });
+        await files.deleteFile(entry.fileKey);
+      }
+      return { instance: saved, released: doomed.map((entry) => entry.filename) };
+    },
+
     async attachImageMedia({
       localInstanceId = null,
       project: projectInput,
@@ -395,6 +460,7 @@ export const createInstanceLifecycleService = ({
       reference,
       sourceFile,
       contentType,
+      previousFilename = null,
     } = {}) {
       const project = assertProject(projectInput);
       const identity = assertVersionForProject(version, project);
@@ -417,14 +483,14 @@ export const createInstanceLifecycleService = ({
       }
 
       const id = existing?.localInstanceId ?? nonEmpty(newLocalInstanceId(), 'localInstanceId');
-      const filename = imageFilenameForReference({ reference: bindingReference, contentType: imageType });
+      const filename = imageFilenameForCapture({ contentType: imageType });
       const fileKey = instanceMediaKeyFor({
         projectKey: project.projectKey,
         localInstanceId: id,
         filename,
       });
-      const priorMedia = existing
-        ? (await listInstanceMedia(id)).find((entry) => entry.bindingReference === bindingReference) ?? null
+      const priorMedia = existing && typeof previousFilename === 'string' && previousFilename.length > 0
+        ? (await listInstanceMedia(id)).find((entry) => entry.filename === previousFilename) ?? null
         : null;
       let bytes;
       try {
@@ -465,12 +531,15 @@ export const createInstanceLifecycleService = ({
           contentType: imageType,
           fileKey,
         });
-        if (priorMedia && priorMedia.fileKey !== fileKey) {
+        if (priorMedia && priorMedia.filename !== filename) {
+          // The new capture has its own filename, so the prior row is not
+          // overwritten by the upsert above — remove it, then its bytes.
+          await instances.deleteMedia({ localInstanceId: id, filename: priorMedia.filename });
           await files.deleteFile(priorMedia.fileKey);
         }
         return { instance: saved, media };
       } catch (error) {
-        if (!priorMedia || priorMedia.fileKey !== fileKey) {
+        if (!priorMedia || priorMedia.filename !== filename) {
           try {
             await files.deleteFile(fileKey);
           } catch {
