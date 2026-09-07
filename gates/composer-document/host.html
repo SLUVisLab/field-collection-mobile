@@ -1,0 +1,45 @@
+<!doctype html><meta charset="utf-8"><title>document seam gate</title>
+<body><pre id="log"></pre><script>
+// Reproduces an embedding host: frames the Composer from a *different* origin,
+// declares itself with ?hostOrigin=, and speaks only the declared protocol.
+const out = [];
+const say = (m) => { out.push(m); document.getElementById('log').textContent = out.join('\n'); };
+const R = { changed: 0, states: [], log: out };
+window.__result = R;
+
+const params = new URLSearchParams(location.search);
+const editor = params.get('editor');
+const renderer = params.get('renderer');
+const editorOrigin = new URL(editor).origin;
+
+const frame = document.createElement('iframe');
+frame.style.cssText = 'width:1200px;height:800px;border:1px solid #ccc';
+document.body.appendChild(frame);
+
+window.addEventListener('message', (event) => {
+  if (event.origin !== editorOrigin || event.source !== frame.contentWindow) return;
+  const m = event.data;
+  if (!m || typeof m !== 'object') return;
+  if (m.type === 'DOCUMENT_CHANGED') { R.changed += 1; say('<- DOCUMENT_CHANGED'); }
+  if (m.type === 'DOCUMENT_STATE') { R.states.push(m); say('<- DOCUMENT_STATE valid=' + m.valid + ' id=' + m.requestId); }
+});
+
+window.__load = async (doc) => {
+  const bytes = new TextEncoder().encode(JSON.stringify(doc));
+  const cs = new CompressionStream('deflate-raw');
+  const w = cs.writable.getWriter(); w.write(bytes); w.close();
+  const z = new Uint8Array(await new Response(cs.readable).arrayBuffer());
+  let s = ''; for (const b of z) s += String.fromCharCode(b);
+  const enc = 'd1.' + btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  const url = new URL(editor);
+  url.searchParams.set('renderer', renderer);
+  url.searchParams.set('hostOrigin', location.origin);
+  url.hash = 'a2ui=' + enc;
+  say('-> loading via #a2ui= (' + enc.length + ' chars)');
+  frame.src = url.toString();
+};
+window.__get = (requestId) => {
+  frame.contentWindow.postMessage({ type: 'GET_DOCUMENT', requestId }, editorOrigin);
+  say('-> GET_DOCUMENT ' + requestId);
+};
+</script></body>

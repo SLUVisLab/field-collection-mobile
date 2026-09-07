@@ -18,6 +18,9 @@
     "test:app": "node --test $(find test -name '*.test.mjs' -not -path '*/live/*')",
     "test:unit": "npm run test:packages && npm run test:app",
     "gate:composer-bridge": "node gates/composer-bridge/run.mjs",
+    "gate:gather-package": "node gates/gather-package/run.mjs",
+    "gate:model-lab": "node gates/model-lab/run.mjs",
+    "gate:tool-preview": "node gates/tool-preview/run.mjs",
     "postinstall": "patch-package"
   },
   "dependencies": {

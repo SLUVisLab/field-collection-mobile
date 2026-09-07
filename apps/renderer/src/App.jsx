@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { A2uiSurface, basicCatalog, MarkdownContext } from '@a2ui/react/v0_9';
 import { Catalog, MessageProcessor } from '@a2ui/web_core/v0_9';
 import { MockFrame } from 'react-mockframe';
@@ -11,11 +11,16 @@ import {
 import { GATHER_LAYOUT_TOKENS, GATHER_PALETTE } from 'gather-components';
 
 import { sendComposerAction, useComposerBridge } from './composerBridge.js';
+import { createGatherFunctions } from './preview/gatherFunctions.js';
+import { installPackage, previewFiles, webProvider } from './preview/previewRuntime.js';
+import { useDeviceFrameZoom } from './useDeviceFrameZoom.js';
+import { PreviewFidelity } from './preview/PreviewFidelity.jsx';
 import { createCapabilityActionHandler } from '../../../src/a2ui/capabilityActionAdapter.js';
 import { fixtureCapabilities } from './fixtureCapabilities.js';
 import {
   Flow,
   GatherCameraView,
+  GatherButton,
   GatherCapture,
   GatherImageOverlay,
   GatherInstrumentError,
@@ -27,10 +32,42 @@ import {
 import { renderMarkdown } from './markdownRenderer.js';
 import './app.css';
 
+/**
+ * The Gather Functions the Composer can author with.
+ *
+ * Without these the catalog handshake returned 27 Components and 25 upstream
+ * Basic functions, so the Composer's agent could not author `image_segment`:
+ * it did not know the function existed, and the handler-free Tool Gather runs
+ * on hardware was unauthorable in the tool built to author it.
+ */
+const gatherFunctions = createGatherFunctions();
+
+// A gate hook. The preview's own execution path, reachable without driving a
+// camera the Composer's iframe cannot grant anyway.
+if (typeof window !== 'undefined') {
+  window.__gatherPreview = {
+    functions: gatherFunctions,
+    files: previewFiles,
+    // Opening a `.gather` and installing what it carries. The composition it
+    // returns is then rendered through the ordinary bridge path — there is no
+    // package execution runtime, and this hook deliberately does not offer one.
+    installPackage,
+    installedModels: () => webProvider.installed(),
+  };
+}
+
 const gatherCatalog = new Catalog(
   GATHER_CATALOG_ID,
-  [...basicCatalog.components.values(), Flow, GatherCameraView, GatherCapture, GatherMediaGallery, GatherMultiImageCapture, GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError],
-  [...basicCatalog.functions.values()]
+  // Gather's Button replaces upstream's: an authored Tool's whole chain hangs
+  // off action-position functionCalls, and only a Gather-bound Button carries
+  // `resultPath`. Same reason src/a2ui/mobile/basicCatalog.js rebinds it.
+  [
+    ...[...basicCatalog.components.values()].filter((c) => c.name !== GatherButton.name),
+    GatherButton,
+    Flow, GatherCameraView, GatherCapture, GatherMediaGallery, GatherMultiImageCapture,
+    GatherImageOverlay, GatherOutputReview, GatherProcessingView, GatherInstrumentError,
+  ],
+  [...basicCatalog.functions.values(), ...gatherFunctions]
 );
 
 const { field, neutral, primary } = GATHER_PALETTE;
@@ -77,8 +114,13 @@ const presentationVariables = Object.freeze({
   '--a2ui-font-scale': '1',
 });
 
+const DEVICE_FRAME = Object.freeze({ width: 360, height: 760 });
+
 export function App() {
   const [lastAction, setLastAction] = useState(null);
+  // The host's pane decides how big the phone can be; see useDeviceFrameZoom.
+  const stageRef = useRef(null);
+  const zoom = useDeviceFrameZoom({ stageRef, ...DEVICE_FRAME });
   let handleAction;
   const [processor] = useState(() => {
     const next = new MessageProcessor([gatherCatalog], (action) => {
@@ -99,16 +141,25 @@ export function App() {
 
   return (
     <main className="renderer-shell">
-      <MockFrame device="Pixel 10" color="mint" width={360} height={760} zoom={0.72}>
+      <div className="renderer-stage" ref={stageRef}>
+      <MockFrame
+        device="Pixel 10"
+        color="mint"
+        width={DEVICE_FRAME.width}
+        height={DEVICE_FRAME.height}
+        zoom={zoom}
+      >
         <MarkdownContext.Provider value={renderMarkdown}>
           <div className="gather-screen" style={presentationVariables}>
             <section className="gather-instrument-content">
               {surfaces.map((surface) => <A2uiSurface key={surface.id} surface={surface} />)}
             </section>
             {lastAction ? <output className="gather-action-status" data-testid="last-action">{lastAction.name}</output> : null}
+            <PreviewFidelity />
           </div>
         </MarkdownContext.Provider>
       </MockFrame>
+      </div>
     </main>
   );
 }

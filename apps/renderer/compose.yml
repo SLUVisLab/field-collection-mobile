@@ -16,6 +16,8 @@ services:
     build:
       context: ../..
       dockerfile: apps/renderer/Dockerfile
+      args:
+        GATHER_REVISION: ${GATHER_REVISION:-}
     image: gather/renderer:local
     restart: unless-stopped
     environment:
@@ -23,6 +25,10 @@ services:
       # A2UI Composer that the nginx template always allows. The filter confines
       # envsubst to RENDERER_* so nginx's own `$$uri` survives.
       RENDERER_FRAME_ANCESTORS: ${RENDERER_FRAME_ANCESTORS:-}
+      # Which origins may import Gather's authoring analysis and catalogs — a
+      # space-separated list, because the deployed wrapper and a developer's
+      # local dev server both do. Defaults to the Composer host alone.
+      RENDERER_AUTHORING_ORIGIN: ${RENDERER_AUTHORING_ORIGINS:-${COMPOSER_HOST:-}}
       NGINX_ENVSUBST_FILTER: RENDERER_
     networks:
       - openfieldworks

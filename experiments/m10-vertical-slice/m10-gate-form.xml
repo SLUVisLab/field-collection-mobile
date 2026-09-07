@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<!--
+  The M10 vertical-slice gate, as an uploadable form definition.
+
+  One uninterrupted execution has to cross every boundary:
+
+    Central → form resource → .gather Tool → A2UI FunctionCall →
+    capability runtime → ModelRef resolution → native inference →
+    measurement → XForms/media projection → provenance → submission → Central
+
+  Every one of those has been proven; no two adjacent ones have been proven
+  together at the model-backed end (docs/m10-acceptance-audit.md). This form
+  exists so that they are.
+
+  It carries the canonical authored Tool
+  `compositions/segment-and-measure/gather-image-segment-and-measure/segment_and_measure_v1.a2ui.json`
+  and duplicates none of it: the group names the resource, and the children are
+  ordinary typed questions another ODK client could fill by hand.
+
+  Central accepts an XForm definition directly, so this needs no XLSForm.
+-->
+<h:html xmlns="http://www.w3.org/2002/xforms"
+        xmlns:h="http://www.w3.org/1999/xhtml"
+        xmlns:jr="http://openrosa.org/javarosa"
+        xmlns:gather="http://gather.slu.edu/xforms">
+  <h:head>
+    <h:title>Gather M10 vertical slice</h:title>
+    <model>
+      <itext>
+        <translation lang="en">
+          <text id="/data/gather_resources:label">
+            <value>Gather resources</value>
+            <value form="image">jr://images/segment_and_measure_v1.gather</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <data id="gather_m10_vertical_slice" version="1">
+          <site_name/>
+          <gather_resources/>
+          <specimen>
+            <image/>
+            <area/>
+            <area_unit/>
+            <model_id/>
+            <model_revision/>
+          </specimen>
+          <meta><instanceID/></meta>
+        </data>
+      </instance>
+
+      <!--
+        The Central attachment-discovery shim, unchanged from the packaging
+        gate: `/data/gather_resources` is never rendered and never submitted,
+        and the `jr://images/` prefix is the only scheme Central's scanner
+        matches. Nothing in this form treats the bundle as an image.
+        See docs/reference/architecture/composition-binding-reassessment.md.
+      -->
+
+      <bind nodeset="/data/site_name" type="string"/>
+      <bind nodeset="/data/gather_resources" type="string" readonly="true()" relevant="false()"/>
+
+      <!--
+        The Tool's declared outputs, as ordinary typed questions. Names match
+        the composition's output names, which is the whole binding contract
+        (b-custom §1a). `area` is decimal because a measurement is a number,
+        and the model identity is plain string so it lands in CSV, OData and
+        every downstream tool without special handling.
+      -->
+      <bind nodeset="/data/specimen/image" type="binary"/>
+      <bind nodeset="/data/specimen/area" type="decimal"/>
+      <bind nodeset="/data/specimen/area_unit" type="string"/>
+      <bind nodeset="/data/specimen/model_id" type="string"/>
+      <bind nodeset="/data/specimen/model_revision" type="string"/>
+
+      <bind nodeset="/data/meta/instanceID" type="string" jr:preload="uid"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/data/site_name"><label>Site name</label></input>
+    <input ref="/data/gather_resources"><label ref="jr:itext('/data/gather_resources:label')"/></input>
+
+    <group ref="/data/specimen" appearance="gather-composition"
+           gather:composition="segment_and_measure_v1.gather">
+      <label>Specimen</label>
+      <upload ref="/data/specimen/image" mediatype="image/*"><label>Image</label></upload>
+      <input ref="/data/specimen/area"><label>Area</label></input>
+      <input ref="/data/specimen/area_unit"><label>Area unit</label></input>
+      <input ref="/data/specimen/model_id"><label>Model</label></input>
+      <input ref="/data/specimen/model_revision"><label>Model revision</label></input>
+    </group>
+  </h:body>
+</h:html>

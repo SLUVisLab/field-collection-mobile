@@ -1,0 +1,167 @@
+{
+  "id": "gather.image.segment-and-measure",
+  "revision": "1.0.0",
+  "title": "Segment and measure",
+  "description": "Capture a specimen, segment it with an explicitly named model, measure the mask area, and submit — no app code.",
+  "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json",
+  "surfaceId": "segment-and-measure-authored",
+  "statePath": "/working",
+  "result": {
+    "kind": "object",
+    "outputs": [
+      { "path": "image", "type": "object", "required": true },
+      { "path": "area", "type": "decimal", "required": true },
+      { "path": "area_unit", "type": "string", "required": false },
+      { "path": "model_id", "type": "string", "required": true },
+      { "path": "model_revision", "type": "string", "required": true }
+    ]
+  },
+  "messages": [
+    {
+      "version": "v0.9",
+      "createSurface": {
+        "surfaceId": "segment-and-measure-authored",
+        "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json",
+        "sendDataModel": true
+      }
+    },
+    {
+      "version": "v0.9",
+      "updateComponents": {
+        "surfaceId": "segment-and-measure-authored",
+        "components": [
+          {
+            "id": "root",
+            "component": "Column",
+            "children": [
+              "title",
+              "camera",
+              "saveButton",
+              "segmentButton",
+              "overlay",
+              "measureButton",
+              "areaText",
+              "modelText",
+              "acceptButton"
+            ]
+          },
+          {
+            "id": "title",
+            "component": "Text",
+            "text": "Segment and measure",
+            "variant": "h3"
+          },
+          {
+            "id": "camera",
+            "component": "CameraView",
+            "capture": { "path": "/working/capture" }
+          },
+          {
+            "id": "saveButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "saveLabel",
+            "action": {
+              "functionCall": {
+                "call": "gather_persistAsset",
+                "args": { "capture": { "path": "/working/capture" } }
+              },
+              "resultPath": "/working/image"
+            }
+          },
+          { "id": "saveLabel", "component": "Text", "text": "Save photo", "variant": "body" },
+          {
+            "id": "segmentButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "segmentLabel",
+            "action": {
+              "functionCall": {
+                "call": "image_segment",
+                "args": {
+                  "image": { "path": "/working/image" },
+                  "modelRef": { "path": "/working/modelRef" }
+                }
+              },
+              "resultPath": "/working/segmentation"
+            }
+          },
+          { "id": "segmentLabel", "component": "Text", "text": "Segment", "variant": "body" },
+          {
+            "id": "overlay",
+            "component": "ImageOverlay",
+            "image": { "path": "/working/image" },
+            "segmentation": { "path": "/working/segmentation" }
+          },
+          {
+            "id": "measureButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "measureLabel",
+            "action": {
+              "functionCall": {
+                "call": "measure_area",
+                "args": { "mask": { "path": "/working/segmentation/mask" } }
+              },
+              "resultPath": "/working/area"
+            }
+          },
+          { "id": "measureLabel", "component": "Text", "text": "Measure area", "variant": "body" },
+          {
+            "id": "areaText",
+            "component": "Text",
+            "text": { "path": "/working/area/value" },
+            "variant": "body"
+          },
+          {
+            "id": "modelText",
+            "component": "Text",
+            "text": { "path": "/working/segmentation/model/revision" },
+            "variant": "caption"
+          },
+          {
+            "id": "acceptButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "acceptLabel",
+            "action": {
+              "functionCall": {
+                "call": "gather_completeComposition",
+                "args": {
+                  "outputs": {
+                    "image": { "path": "/working/image" },
+                    "area": { "path": "/working/area/value" },
+                    "area_unit": { "path": "/working/area/unit" },
+                    "model_id": { "path": "/working/segmentation/model/id" },
+                    "model_revision": { "path": "/working/segmentation/model/revision" }
+                  }
+                }
+              }
+            }
+          },
+          { "id": "acceptLabel", "component": "Text", "text": "Accept and submit", "variant": "body" }
+        ]
+      }
+    },
+    {
+      "version": "v0.9",
+      "updateDataModel": {
+        "surfaceId": "segment-and-measure-authored",
+        "path": "/working",
+        "value": {
+          "capture": null,
+          "image": null,
+          "segmentation": null,
+          "area": null,
+          "modelRef": {
+            "id": "u2netp-salient-segmentation",
+            "version": "1.0.0",
+            "revision": "sha256:dcbe0ccd840f1290c3d4d9cc6e3071af0c3480751ef36fb861a9c757124cd55b",
+            "artifactSha256": "sha256:571926ae339d435a039712e7a0cf15798ae29a078cae4a56d090693b47d9c31e",
+            "taskProfile": "segmentation.binary.v1"
+          }
+        }
+      }
+    }
+  ]
+}

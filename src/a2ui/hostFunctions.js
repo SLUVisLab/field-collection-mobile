@@ -48,7 +48,12 @@ const PersistAssetArgs = z
     // descriptor's shape belongs to the Component, not to this seam.
     capture: z.object({ uri: z.string().min(1) }).passthrough(),
   })
-  .strict();
+  .strict()
+  .describe(
+    'Persist a capture — Make a camera or file capture durable, returning an ImageAsset with a ' +
+      'stable id, dimensions and content digest. Every later operation on an image takes that ' +
+      'asset, so this runs first.'
+  );
 
 /**
  * `gather_completeComposition` — the terminal lifecycle seam.
@@ -63,7 +68,12 @@ const CompleteCompositionArgs = z
   .object({
     outputs: z.record(z.unknown()),
   })
-  .strict();
+  .strict()
+  .describe(
+    'Finish the Tool — Hand the Tool\'s declared output values to the form. The keys of "outputs" ' +
+      'are the output names the form binds; each value is normally a data-model binding such as ' +
+      '{ "path": "/working/image" }. Call this last.'
+  );
 
 /**
  * Builds the host function implementations.

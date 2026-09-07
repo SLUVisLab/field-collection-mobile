@@ -212,6 +212,48 @@ The ODK `instance_media` row a promotion creates is a **different record with
 its own filename**, and deliberately so: one working asset, one Gather identity,
 one submission attachment.
 
+### `result` is Gather metadata around the A2UI document — 2026-09-06
+
+A Gather composition is an object. The A2UI document is one field inside it:
+
+```text
+Gather composition
+├── id / catalogId / surfaceId       identity and rendering metadata
+├── messages                         the A2UI document — structure and behaviour
+└── result                           Gather's output contract
+    ├── path        the output name the form binds
+    ├── type        string | int | decimal | boolean | object
+    └── required    the producer's half of requiredness
+```
+
+Three things this is deliberately **not**:
+
+- **Not an A2UI feature.** A2UI v0.9's entire server-to-client vocabulary is
+  `createSurface`, `updateComponents`, `updateDataModel` and `deleteSurface`,
+  all `.strict()`. There is no result or data-model schema upstream to adopt,
+  and `result` is not an attempt to add one — it never enters a message.
+- **Not part of `gather_completeComposition`.** That call's `outputs` argument
+  holds a data-model *binding* (`{ path: '/working/area/value' }`) while the
+  document is authored, and the *resolved value* by the time the function runs.
+  One field cannot carry both meanings plus a type.
+- **Not a Gather DSL.** It is the contract `bindCompositionOutputs` has always
+  consumed; the canonical Tool has declared it since M10.
+
+**`messages` is not the composition.** Everything that handles one refuses the
+other by name — the Library draft, `inspectComposition`, `packTool`, and
+`definitionLoader` on the device. Two silent defects came from the confusion: a
+draft that discarded its declared output types, and a `.gather` whose
+`composition.a2ui.json` was an array that the device would have rejected after
+it was staged.
+
+What Review then does is a straight intersection:
+
+```text
+result contract   ×   XForm field declarations   →   projectability
+area:decimal          /data/specimen/area:decimal    ✓ bound, type compatible
+area_unit:string      /data/specimen/area_unit:int   ✗ type mismatch — BLOCKED
+```
+
 ### The compatibility contract
 
 | # | rule | why it is that way |

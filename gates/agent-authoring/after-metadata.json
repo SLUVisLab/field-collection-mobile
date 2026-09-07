@@ -1,0 +1,199 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "sample-surface",
+      "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "sample-surface",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "children": [
+            "header_text",
+            "main_flow"
+          ],
+          "align": "stretch"
+        },
+        {
+          "id": "header_text",
+          "component": "Text",
+          "text": "Subject Segmentation & Area Measurement",
+          "variant": "h2"
+        },
+        {
+          "id": "main_flow",
+          "component": "Flow",
+          "current": {
+            "path": "/step"
+          },
+          "views": [
+            {
+              "when": "capture",
+              "view": "capture_step"
+            },
+            {
+              "when": "review",
+              "view": "review_step"
+            }
+          ]
+        },
+        {
+          "id": "capture_step",
+          "component": "Column",
+          "children": [
+            "capture_instruction",
+            "capture_input",
+            "btn_persist"
+          ],
+          "align": "stretch"
+        },
+        {
+          "id": "capture_instruction",
+          "component": "Text",
+          "text": "Please upload or capture an image of the subject to measure.",
+          "variant": "body"
+        },
+        {
+          "id": "capture_input",
+          "component": "GatherCapture",
+          "statePath": "/capture"
+        },
+        {
+          "id": "btn_persist",
+          "component": "Button",
+          "child": "btn_persist_text",
+          "variant": "primary",
+          "action": {
+            "event": {
+              "name": "process_image",
+              "context": {
+                "capture": {
+                  "path": "/capture"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "btn_persist_text",
+          "component": "Text",
+          "text": "Analyze & Segment"
+        },
+        {
+          "id": "review_step",
+          "component": "Column",
+          "children": [
+            "review_instruction",
+            "overlay_card",
+            "results_card",
+            "btn_submit"
+          ],
+          "align": "stretch"
+        },
+        {
+          "id": "review_instruction",
+          "component": "Text",
+          "text": "Review the segmentation mask overlay and measured area below.",
+          "variant": "body"
+        },
+        {
+          "id": "overlay_card",
+          "component": "Card",
+          "child": "image_overlay"
+        },
+        {
+          "id": "image_overlay",
+          "component": "ImageOverlay",
+          "image": {
+            "path": "/asset"
+          },
+          "segmentation": {
+            "path": "/segmentation"
+          }
+        },
+        {
+          "id": "results_card",
+          "component": "Card",
+          "child": "results_layout"
+        },
+        {
+          "id": "results_layout",
+          "component": "Column",
+          "children": [
+            "area_label",
+            "area_display"
+          ],
+          "align": "center"
+        },
+        {
+          "id": "area_label",
+          "component": "Text",
+          "text": "Measured Area",
+          "variant": "caption"
+        },
+        {
+          "id": "area_display",
+          "component": "Text",
+          "text": {
+            "call": "formatString",
+            "args": {
+              "value": "Selected Area"
+            }
+          },
+          "variant": "h3"
+        },
+        {
+          "id": "btn_submit",
+          "component": "Button",
+          "child": "btn_submit_text",
+          "variant": "primary",
+          "action": {
+            "functionCall": {
+              "call": "gather_completeComposition",
+              "args": {
+                "outputs": {
+                  "image": {
+                    "path": "/asset"
+                  },
+                  "area": {
+                    "path": "/area_result/area"
+                  },
+                  "unit": {
+                    "path": "/unit"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "btn_submit_text",
+          "component": "Text",
+          "text": "Submit Results"
+        }
+      ]
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "sample-surface",
+      "value": {
+        "step": "capture",
+        "capture": null,
+        "asset": null,
+        "segmentation": null,
+        "area_result": {
+          "area": 0
+        },
+        "unit": "pixels"
+      }
+    }
+  }
+]

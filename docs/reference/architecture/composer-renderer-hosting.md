@@ -64,6 +64,69 @@ how a day was lost to it on 2026-09-05.
 hosted Composer stays hard-coded in the template so an image run with no
 configuration still works where the integration was first proven.
 
+### `frame-ancestors` is checked against the whole chain — 2026-09-06
+
+The renderer sits two levels deep:
+
+```text
+wrapper  frames  editor  frames  renderer
+```
+
+CSP `frame-ancestors` is evaluated against **every ancestor**, not the immediate
+parent. So the renderer listing only `editor.…` is not enough — the outermost
+host has to appear in its list too, and a local dev server therefore needs
+adding to *both* `EDITOR_FRAME_ANCESTORS` and `RENDERER_FRAME_ANCESTORS`.
+
+Found by the demo rehearsal: the editor framed fine and the renderer inside it
+was blocked, which reads exactly like a renderer fault and is not one.
+
+An environment change to either list needs the container **recreated**, not
+rebuilt — `ofw deploy editor` rebuilds the whole pinned upstream Composer for
+what is a one-line env change.
+
+### The tooling enforces this, because documenting it was not enough — 2026-09-06
+
+It happened a second time. A renderer rebuilt with a bare
+`docker compose -f apps/renderer/compose.yml up -d --build` came up with no
+`RENDERER_FRAME_ANCESTORS` at all, and **all four** browser gates then failed
+identically with a 20-second timeout — including gates that had nothing to do
+with the change being tested. The symptom points at the code under test and
+never at the deployment.
+
+Three things now prevent it, in order of how hard they are to bypass:
+
+```text
+image      docker-entrypoint.d/05-require-renderer-config.envsh
+           refuses to start without RENDERER_FRAME_ANCESTORS or
+           RENDERER_AUTHORING_ORIGIN — whatever command was used
+
+ofw        `ofw deploy renderer` checks the env file first, so the
+           error names the file to edit rather than a container log
+
+env file    deploy/env/<environment>.env, passed with --env-file
+```
+
+Consequences worth knowing:
+
+- **Never `source` the env file.** `RENDERER_FRAME_ANCESTORS` is a
+  space-separated origin list, so `set -a; . local.env` tries to execute the
+  second origin as a command and the variable ends up truncated or unset. Use
+  `docker compose --env-file`, which parses it properly. `ofw` reads the file
+  with `grep` for the same reason.
+- **An unconfigured renderer is a legitimate deployment, but must be asked
+  for.** `RENDERER_FRAME_ANCESTORS=upstream-only` means "only the hosted A2UI
+  Composer may embed this", and is the one way to get the old empty-value
+  behaviour. An empty string is now treated as a mistake, because it always was
+  one.
+- `RENDERER_AUTHORING_ORIGIN` is gated for the same reason: empty means
+  `Access-Control-Allow-Origin: ""`, and the wrapper's catalog imports fail
+  CORS with the renderer still serving `200`.
+
+The sentinel has to be handled in a **sourced** `.envsh`, not a `.sh`. nginx
+runs `.sh` entrypoint scripts as subprocesses, so rewriting the variable there
+is lost before `20-envsubst-on-templates.sh` reads it — the first version of
+this check put the literal string `upstream-only` into the CSP header.
+
 **Every new Composer hostname is a change to this list.** A Composer that
 cannot embed the renderer is not a degraded integration — it is a blank preview
 panel and nothing else.
@@ -124,3 +187,52 @@ template, granting only what Gather uses. That is a device-capability
 enhancement, not a prerequisite — the integration is complete without it, and a
 patch there would not change the fact that Gather needs zero Composer patches
 to work.
+
+
+## `resultPath` is Gather's, and both hosts share one implementation
+
+Upstream A2UI resolves a **value-position** `functionCall` reactively — an
+expression, re-evaluated when its inputs change. An **action-position** one is a
+different thing: user-triggered, awaited, and its result usually has somewhere
+to go. Upstream has no notion of that destination, so `resultPath` is ours
+(`src/a2ui/actionAdapter.js`).
+
+```text
+value-position    upstream reactive evaluation
+action-position   lazy · user-triggered · awaited · optional resultPath write
+```
+
+`src/a2ui/functionCallProps.js` holds the behaviour once; the mobile binder and
+the web renderer both compose it. Before that the renderer had no `resultPath`
+at all, and the failure was silent in the worst way: every call in an authored
+Tool *executed successfully* and no result reached the next one.
+`gather_persistAsset` ran, `/working/image` stayed null, `image_segment` had
+nothing to segment, and nothing errored.
+
+### Why the renderer rebinds `Button`
+
+Every action-position call in an authored Tool hangs off a Basic Catalog
+`Button`, and upstream's implementation binds internally — there is no seam to
+give it `resultPath` from outside. So the renderer binds `ButtonApi` itself and
+renders Gather's Button, exactly as `src/a2ui/mobile/basicCatalog.js` does and
+for exactly the same reason. `Button` remains upstream vocabulary; only the
+binding is ours.
+
+### Candidate upstream proposal
+
+"Call a function and put the result somewhere" is not a Gather-specific idea,
+and `resultPath` beside `functionCall` is a small, general addition. Worth
+proposing upstream. **M11 does not depend on it** — nothing here is blocked on
+acceptance, and no Composer patch is involved.
+
+## The renderer is a temporary web host
+
+Worth stating plainly, because the direction affects how much is worth building
+here. The renderer exists to project shared Gather contracts onto the web while
+React Native Web coverage matures. Two implementations of a Component or of
+action semantics is a cost, not a design — this pass removed one such
+duplication (the component API registry) and shared another (`resultPath`).
+
+As RN-Web coverage improves, prefer making the shared Gather application *be*
+the web renderer over maintaining parallel implementations. Anything added here
+should be chosen with that ending in mind.

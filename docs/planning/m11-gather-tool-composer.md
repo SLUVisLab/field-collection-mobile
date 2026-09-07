@@ -428,6 +428,7 @@ Useful, and none of it on the critical path:
 
 ```text
 direct Central publishing            package signing
+custom model import (see below)      model provenance / trust policy
 authentication / SSO                 general model conversion
 remote model registry                WebGPU optimization
 Hugging Face discovery               browser-vs-native numerical parity studies
@@ -448,8 +449,8 @@ M11 is GREEN when a researcher can:
 2. Select the Gather renderer and receive the real Gather Catalog.
 3. Author or open a Gather Tool using shared Components and Capabilities.
 4. For a model-backed Capability: use the Gather default model, **or**
-   explicitly select another Gather-available model, **or** import and package a
-   supported custom model.
+   explicitly select another Gather-available model. *(Importing a custom model
+   moved out of GREEN on 2026-09-06 — see below.)*
 5. Inspect model identity, task profile, revision and compatibility.
 6. Run the model against sample data in the browser and inspect useful output.
 7. Receive a clear compatibility report.
@@ -467,7 +468,112 @@ M11 is GREEN when a researcher can:
 > **Design the Tool, choose and test its computation, validate compatibility,
 > freeze the dependencies, and ship it through ordinary ODK.**
 
+### Custom model import moved to the next increment — 2026-09-06
+
+Criterion 4 required importing and packaging a custom model. It no longer does,
+and this is a decision rather than a deferral of something unfinished.
+
+**Why it does not belong here.** Every other criterion is about the *Composer
+workflow*: what a Tool is, what it runs, where its outputs go, what gets frozen.
+Model import is not that. It crosses a different boundary — provenance and trust
+— and the questions it raises have no answers yet:
+
+```text
+where did this model come from?        no Gather-signed provenance
+what is its task profile, really?      declared by whom, checked how?
+does compatibilityFor trust it?        it currently reasons over declared models
+does .gather carry it?                 an artifact with an unvetted dependency
+```
+
+Answering those inside M11 would mean either designing a provenance policy under
+milestone pressure, or shipping an import path that quietly trusts whatever it
+is handed. Both are worse than saying it is a separate increment.
+
+**Why the milestone is still complete without it.** The workflow that had to be
+proven is proven, end to end, through the real UI:
+
+```text
+connect to Central → choose project and form → open a Tool
+→ inspect and change its model → run it in the Composer preview
+→ real ONNX segmentation and measurement → Review: typed output mappings,
+  package and form readiness → build .gather → stage to the Central form draft
+```
+
+`gate:rehearsal` runs exactly that. Nothing in it is waiting on model import,
+and nothing about model import would change any of it — a Tool selecting an
+imported model works through the same selection, packaging and resolution paths
+already gated here.
+
+**The next increment**, in the order the dependencies actually fall:
+
+```text
+import a ModelPackage
+→ provenance / source policy      ← the real question
+→ validate the actual package
+→ execute it in the browser
+→ give it a Model Catalog entry
+→ include it in .gather
+```
+
+Leaving criterion 4 as written would have kept M11 permanently yellow while
+everyone informally agreed the vertical slice was done, which is the failure
+mode this note exists to prevent.
+
 ---
+
+## The Tool Composer sidebar
+
+The wrapper's shape, settled. **Models and preview execution are the current
+work; Review and Publish are architecture placeholders and are not built yet.**
+
+```text
+Context     Project / Form / Tool slot
+Library     editable Tool drafts
+Models      model selection · model details · (import model, later)
+Review      Tool flow · inputs and outputs · models used · form mappings
+            package readiness · deployment readiness
+Publish     build .gather · download · attach to form
+```
+
+The product rule that keeps these apart:
+
+> **Models** configures what computation the Tool uses.
+> **The existing Composer preview** shows what the Tool actually does.
+> **Review** explains the Tool as a whole and whether it is ready.
+
+There is deliberately no standalone Model Lab. A researcher tests a model by
+running the Tool that uses it, in the preview they are already looking at —
+which tests the Tool as well as the model, and is the stronger evidence.
+
+`Review` replaces what earlier drafts called `Validate`: the panel's job is to
+explain a Tool, and readiness is one of the things it explains rather than the
+whole of it.
+
+## Agent authoring is investigated, and is not a gate
+
+One-shot generation from a sentence is **not** an M11 criterion. Three runs of
+the same request — baseline, with catalog metadata, and with upstream's prompt
+taught about `functionCall` — all produced a Tool that dispatches an event
+instead of calling a Capability, with everything needed measurably present in
+the 109KB prompt sent to the model
+([gates/agent-authoring](../../gates/agent-authoring/README.md)).
+
+Recorded as a **known v0.9 authoring limitation**, to be re-run unchanged after
+the A2UI v1 migration. What M11 needs is the substrate underneath it, and that
+works today.
+
+## The A2UI v1 migration, and the patches
+
+The three Composer patches are carried against the pinned v0.9 build and
+**re-audited at v1** rather than upstreamed now:
+
+```text
+carry against the pin → migrate to v1 → re-audit all three
+                      → delete what v1 solves → then consider contributing
+```
+
+Proposing a patch against a version about to change is work spent twice. The
+agent-authoring artifacts are kept as the migration's regression test.
 
 ## Development order
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
 import { ComponentContext, GenericBinder } from '@a2ui/web_core/v0_9/bindings';
 
-import { createFunctionCallHandler, isFunctionCallAction } from '../actionAdapter.js';
+import { withFunctionCallActions } from '../functionCallProps.js';
 
 // Surface + binding machinery only. The mobile implementations of the upstream
 // A2UI Basic Catalog live in `basicCatalog.js`.
@@ -58,29 +58,11 @@ function InstrumentNode({ surface, componentId, implementations, basePath = '/' 
  * `src/a2ui/actionAdapter.js`.
  */
 const useFunctionCallActions = (context, props) => {
-  // The authored properties, before binding — `resultPath` survives message
-  // processing because component properties are stored raw.
+  // The behaviour is shared with the web renderer — see functionCallProps.js.
+  // Memoized here because `raw`'s identity changes exactly when a component
+  // model updates, which is the only time a handler needs rebuilding.
   const raw = context?.componentModel?.properties ?? null;
-  return useMemo(() => {
-    if (!raw) return props;
-    let overrides = null;
-    for (const [key, value] of Object.entries(raw)) {
-      if (!isFunctionCallAction(value)) continue;
-      const handler = createFunctionCallHandler({
-        rawAction: value,
-        resolveDynamicValue: (input) => context.dataContext.resolveDynamicValue(input),
-        invoke: (name, args) =>
-          context.dataContext.functionInvoker(name, args, context.dataContext, undefined),
-        // The context's own setter, so path semantics match every other write.
-        writeResult: (path, result) => context.dataContext.set(path, result),
-        onError: (error) => context.dataContext.dispatchExpressionError(error, value.functionCall?.call),
-      });
-      overrides = { ...(overrides ?? {}), [key]: handler };
-    }
-    return overrides ? { ...props, ...overrides } : props;
-    // `raw` identity changes when the component model updates, which is the
-    // only time a handler needs rebuilding.
-  }, [context, props, raw]);
+  return useMemo(() => withFunctionCallActions({ context, props }), [context, props, raw]);
 };
 
 export function bindInstrumentComponent(schema, Component) {

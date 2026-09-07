@@ -4,16 +4,21 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "node scripts/generate-model-catalog.mjs && node scripts/copy-preview-models.mjs && vite build --config vite.pack.config.js",
     "dev": "vite",
+    "prebuild": "node scripts/generate-model-catalog.mjs && node scripts/copy-preview-models.mjs && vite build --config vite.pack.config.js",
     "build": "vite build"
   },
   "dependencies": {
     "@a2ui/react": "0.9.1",
     "@a2ui/web_core": "0.9.1",
     "dompurify": "^3.3.1",
+    "gather-capabilities": "*",
     "gather-catalog": "*",
     "gather-components": "*",
+    "gather-hashing": "*",
     "markdown-it": "^14.1.0",
+    "onnxruntime-web": "^1.29.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-mockframe": "^1.1.0",

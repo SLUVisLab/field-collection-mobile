@@ -2,6 +2,21 @@
 # startup. `NGINX_ENVSUBST_FILTER=RENDERER_` in compose.yml is what keeps
 # nginx's own `$uri` from being substituted into nothing.
 #
+# Running models in the browser needs two CSP grants, both narrow and both
+# discovered by the preview failing rather than by reading a spec:
+#
+#   script-src 'wasm-unsafe-eval'   ORT-Web compiles its WASM backend
+#   img-src blob:                   a mask produced here is a blob, not a file
+#   connect-src data: blob:         gather_persistAsset fetches the capture's
+#                                   own bytes to hash them, and a sample chosen
+#                                   in the preview arrives as a data: URI
+#
+# `'wasm-unsafe-eval'` is what lets ONNX Runtime Web compile its WASM backend.
+# It is the narrow directive for exactly that: WebAssembly compilation is
+# permitted, JavaScript `eval` is not. Without it the browser refuses to
+# instantiate the runtime and model execution fails with a CSP error rather
+# than an inference one, which is a confusing way to learn this.
+#
 # `frame-ancestors` is the reason this file is a template. The renderer is
 # meant to be embedded by an A2UI Composer, and which Composer that is depends
 # on the deployment. Hard-coding the Google-hosted one meant a self-hosted
@@ -11,6 +26,12 @@
 # The hosted Composer stays in the literal list rather than moving into the
 # variable, so an image run without configuration still supports the
 # integration that has been verified end to end.
+#
+# An *empty* ${RENDERER_FRAME_ANCESTORS} is no longer reachable by accident:
+# docker-entrypoint.d/05-require-renderer-config.envsh refuses to start the
+# container without it, because a renderer no Composer can embed serves 200 to
+# everything and fails only in someone else's browser console. Set it to
+# `upstream-only` to deliberately allow just the hosted Composer.
 
 server {
   listen 8080;
@@ -19,9 +40,28 @@ server {
   root /usr/share/nginx/html;
   index index.html;
 
-  add_header Content-Security-Policy "default-src 'self'; img-src 'self' https://placehold.co data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors https://a2ui-project.github.io ${RENDERER_FRAME_ANCESTORS}" always;
+  add_header Content-Security-Policy "default-src 'self'; img-src 'self' https://placehold.co data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' data: blob:; frame-ancestors https://a2ui-project.github.io ${RENDERER_FRAME_ANCESTORS}" always;
   add_header X-Content-Type-Options nosniff always;
   add_header Referrer-Policy no-referrer always;
+
+  # Gather's web-facing authoring surface: the catalog projections and the
+  # analysis modules the wrapper imports. CORS is scoped to the origins that may
+  # import it rather than open, for the same reason frame-ancestors is.
+  #
+  # `$gather_authoring_origin` is a map written at container start from
+  # RENDERER_AUTHORING_ORIGIN, which is a space-separated list: the deployed
+  # wrapper and a developer's local dev server both import this surface, and
+  # Access-Control-Allow-Origin can only name one at a time. `Vary: Origin` is
+  # not optional with a map — without it a cache would serve one origin's
+  # response to another and the second would fail with no way to see why.
+  # `models/` is here as well as `models.json`: building a `.gather` in the
+  # Composer means fetching the model bytes it depends on, and those are served
+  # content-addressed from this origin like everything else.
+  location ~ ^/(models\.json|capabilities\.json|authoring/|models/) {
+    add_header Access-Control-Allow-Origin $gather_authoring_origin always;
+    add_header Vary Origin always;
+    add_header Cache-Control "no-store" always;
+  }
 
   location / {
     try_files $uri $uri/ /index.html;

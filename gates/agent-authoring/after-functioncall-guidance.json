@@ -1,0 +1,191 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "sample-surface",
+      "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "sample-surface",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "children": [
+            "header",
+            "main_content",
+            "footer"
+          ]
+        },
+        {
+          "id": "header",
+          "component": "Column",
+          "children": [
+            "title",
+            "subtitle"
+          ]
+        },
+        {
+          "id": "title",
+          "component": "Text",
+          "text": "Image Area Measurement Tool",
+          "variant": "h1"
+        },
+        {
+          "id": "subtitle",
+          "component": "Text",
+          "text": "Capture an image, segment the subject, and measure its area automatically.",
+          "variant": "body"
+        },
+        {
+          "id": "main_content",
+          "component": "Column",
+          "children": [
+            "capture_section",
+            "review_section"
+          ]
+        },
+        {
+          "id": "capture_section",
+          "component": "Card",
+          "child": "capture_layout"
+        },
+        {
+          "id": "capture_layout",
+          "component": "Column",
+          "children": [
+            "capture_input",
+            "analyze_btn"
+          ]
+        },
+        {
+          "id": "capture_input",
+          "component": "GatherCapture",
+          "statePath": "/capture"
+        },
+        {
+          "id": "analyze_btn",
+          "component": "Button",
+          "child": "analyze_btn_label",
+          "variant": "primary",
+          "action": {
+            "event": {
+              "name": "analyze_image",
+              "context": {
+                "capture": {
+                  "path": "/capture"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "analyze_btn_label",
+          "component": "Text",
+          "text": "Analyze Image"
+        },
+        {
+          "id": "review_section",
+          "component": "Card",
+          "child": "review_layout"
+        },
+        {
+          "id": "review_layout",
+          "component": "Column",
+          "children": [
+            "overlay_display",
+            "results_row"
+          ]
+        },
+        {
+          "id": "overlay_display",
+          "component": "ImageOverlay",
+          "image": {
+            "path": "/asset"
+          },
+          "segmentation": {
+            "path": "/segmentation"
+          }
+        },
+        {
+          "id": "results_row",
+          "component": "Row",
+          "justify": "spaceBetween",
+          "align": "center",
+          "children": [
+            "area_label",
+            "area_value"
+          ]
+        },
+        {
+          "id": "area_label",
+          "component": "Text",
+          "text": "Measured Area:",
+          "variant": "h3"
+        },
+        {
+          "id": "area_value",
+          "component": "Text",
+          "text": {
+            "path": "/measurement_text"
+          },
+          "variant": "h3"
+        },
+        {
+          "id": "footer",
+          "component": "Row",
+          "justify": "end",
+          "children": [
+            "submit_btn"
+          ]
+        },
+        {
+          "id": "submit_btn",
+          "component": "Button",
+          "child": "submit_btn_label",
+          "variant": "primary",
+          "action": {
+            "functionCall": {
+              "call": "gather_completeComposition",
+              "args": {
+                "outputs": {
+                  "image": {
+                    "path": "/asset"
+                  },
+                  "area": {
+                    "path": "/measurement"
+                  },
+                  "unit": {
+                    "path": "/unit"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "submit_btn_label",
+          "component": "Text",
+          "text": "Submit Results"
+        }
+      ]
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "sample-surface",
+      "value": {
+        "capture": null,
+        "asset": null,
+        "segmentation": null,
+        "measurement": 0,
+        "measurement_text": "0 pixels",
+        "unit": "pixels"
+      }
+    }
+  }
+]

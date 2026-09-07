@@ -41,6 +41,23 @@
 export const RESULT_PATH_KEY = 'resultPath';
 
 /**
+ * The action-position FunctionCall contract, in the words an author reads.
+ *
+ * Stated **once**, here, beside the key it describes. Repeating it in every
+ * function's description would teach the same thing five times and let the five
+ * copies drift — and it is not a property of any one function anyway. It
+ * belongs to the action.
+ */
+export const ACTION_FUNCTION_CALL_DOC = [
+  'A FunctionCall used as a user-triggered action runs when the control is activated, and is awaited.',
+  `Add "${RESULT_PATH_KEY}" beside "functionCall" to name the data-model path where the resolved`,
+  'return value is written, e.g. { "functionCall": { "call": "image_segment", "args": { … } },',
+  `"${RESULT_PATH_KEY}": "/working/segmentation" }. That is how one operation feeds the next:`,
+  'later Components and FunctionCalls read the value from that path. Without it the call still runs',
+  'and its result is discarded.',
+].join(' ');
+
+/**
  * Validates the Gather extension itself.
  *
  * Upstream deliberately preserves unknown action properties rather than

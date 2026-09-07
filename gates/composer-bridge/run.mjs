@@ -4,14 +4,39 @@
  */
 import { chromium } from 'playwright-core';
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { SEGMENT_AND_MEASURE_INSTRUMENT } from 'gather-catalog';
+import { categorizedComponents, SEGMENT_AND_MEASURE_INSTRUMENT } from 'gather-catalog';
 
-const COMPOSER = process.env.COMPOSER_ORIGIN ?? 'http://composer.openfieldworks.localhost';
+// The pinned upstream editor, which is a different origin from the Gather
+// shell — see openfieldworks-web/deploy/README.md.
+const COMPOSER = process.env.EDITOR_ORIGIN ?? 'http://editor.openfieldworks.localhost';
 const RENDERER = process.env.RENDERER_ORIGIN ?? 'http://renderer.openfieldworks.localhost';
-const CONTAINER = process.env.COMPOSER_CONTAINER ?? 'ofw-composer-composer-1';
+const CONTAINER = process.env.EDITOR_CONTAINER ?? 'ofw-editor-editor-1';
 const SURFACE = SEGMENT_AND_MEASURE_INSTRUMENT.messages[0].createSurface.surfaceId;
+
+// Derived from the canonical Tool rather than restated, so this cannot pass
+// while the renderer advertises functions the shipped Tool does not use.
+const CANONICAL_TOOL = JSON.parse(
+  readFileSync(
+    fileURLToPath(
+      new URL(
+        '../../compositions/segment-and-measure/gather-image-segment-and-measure/segment_and_measure_v1.a2ui.json',
+        import.meta.url
+      )
+    ),
+    'utf8'
+  )
+);
+const SEGMENT_AND_MEASURE_CALLS = [
+  ...new Set(
+    CANONICAL_TOOL.messages
+      .flatMap((message) => message.updateComponents?.components ?? [])
+      .map((component) => component.action?.functionCall?.call)
+      .filter(Boolean)
+  ),
+];
 
 const failures = [];
 const check = (label, ok, detail) => {
@@ -61,6 +86,43 @@ try {
   check('Gather components advertised', names.some((n) => /^Gather|^Flow$/.test(n)),
     names.filter((n) => /^Gather|^Flow$/.test(n)).join(', '));
 
+  // The functions are what make Capabilities authorable. The renderer advertised
+  // only upstream's Basic Catalog until 2026-09-05, so the Composer could not
+  // author the Tool the device was already running.
+  const rawFns = catalog.functions ?? catalog.catalog?.functions ?? {};
+  const fnNames = new Set(
+    (Array.isArray(rawFns) ? rawFns.map((f) => f.name ?? f) : Object.keys(rawFns)).filter(Boolean)
+  );
+  const toolCalls = SEGMENT_AND_MEASURE_CALLS.filter((call) => !fnNames.has(call));
+  check('Gather functions advertised', toolCalls.length === 0,
+    toolCalls.length ? `missing ${toolCalls.join(', ')}` : `${fnNames.size} functions`);
+
+  // Can the agent author the canonical Tool's *explicit* ModelRef from what the
+  // handshake gave it? The Tool pins a revision; the advertised schema must
+  // offer that same revision, or the agent can only guess.
+  const authoredRevision =
+    CANONICAL_TOOL.messages.find((m) => m.updateDataModel)?.updateDataModel.value.modelRef.revision;
+  const segmentFn = (Array.isArray(rawFns) ? rawFns : Object.values(rawFns)).find(
+    (f) => f?.name === 'image_segment'
+  );
+  const offered = segmentFn?.parameters?.properties?.modelRef?.properties?.revision?.enum ?? [];
+  check('explicit ModelRef is discoverable', offered.includes(authoredRevision),
+    offered.length ? `${offered.length} revision(s) offered` : 'no revisions offered');
+
+  // Gather's own taxonomy, declared in gather-catalog and attached by the
+  // bridge. Derived from the catalog rather than restated, so a category added
+  // there is asserted here without editing this file.
+  const rawComponents = catalog.components ?? catalog.catalog?.components ?? {};
+  const declaredHere = new Set(
+    Object.values(rawComponents)
+      .map((entry) => entry?.['x-gather-category'])
+      .filter(Boolean)
+  );
+  const expected = new Set(Object.values(categorizedComponents()));
+  check('Gather categories declared in the payload',
+    declaredHere.size === expected.size && [...expected].every((c) => declaredHere.has(c)),
+    [...declaredHere].sort().join(', ') || 'none');
+
   const frame = () => page.frames().find((f) => f !== page.mainFrame() && f.url().startsWith(RENDERER));
   const text = () => frame().evaluate(() =>
     document.querySelector('.gather-instrument-content')?.innerText.trim().replace(/\s+/g, ' ') ?? '');
@@ -73,6 +135,22 @@ try {
   await page.waitForTimeout(500);
   const rendered = await text();
   check('RENDER_A2UI renders the instrument', rendered.length > 0, JSON.stringify(rendered.slice(0, 60)));
+
+  // The device frame must fit the pane the host gave it. It was drawn at a
+  // fixed zoom and clipped by 186px in a 1600x1000 Composer window, hiding the
+  // bottom of the phone — which is where a Tool's Accept button lives.
+  const fit = await frame().evaluate(() => {
+    const stage = document.querySelector('.renderer-stage');
+    const el = stage?.firstElementChild;
+    if (!el) return null;
+    const rect = el.getBoundingClientRect();
+    return {
+      clipped: Math.max(0, Math.round(rect.bottom - document.documentElement.clientHeight)),
+      height: Math.round(rect.height),
+    };
+  });
+  check('device frame fits its pane', fit != null && fit.clipped === 0,
+    fit ? `${fit.height}px tall, ${fit.clipped}px clipped` : 'no stage found');
 
   const setStatus = async (value) => {
     await page.evaluate(([surfaceId, v]) => window.__send({

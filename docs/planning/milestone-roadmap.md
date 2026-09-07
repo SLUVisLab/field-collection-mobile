@@ -21,7 +21,7 @@ Status columns added.
 | 3 | **M7 — Survey / assignment workflow** | My Work · target Entity sets · progress/navigation · batch upload UX | ✅ [final summary](../archive/milestones/m7-final-summary.md) |
 | 4 | **M8 — Computational capability** | one real native scientific operation · writes into ordinary XForms values | ✅ GREEN, [report](../archive/milestones/m8-scientific-capability-report.md) |
 | 5 | **M9 — Declarative instruments / A2UI** | component catalog · capability catalog · instrument packaging/runtime | 🟡 **in progress — where we are** |
-| 6 | **M10 — Full scientific fieldwork demo** | — | ⚪ not started |
+| 6 | **M10 — Full scientific fieldwork demo** | Central → `.gather` Tool → capability → real model → XForms/media → submission, in one run | ✅ GREEN 2026-09-05, [criteria and evidence](../m10-acceptance-audit.md) |
 | 7 | **M11 — Gather Tool Composer** | host upstream Composer · Model Browser/Lab · compatibility report · Tool dependency locking · `.gather` v2 · Central distribution | 🟡 [plan](./m11-gather-tool-composer.md) — Phase 0 (hosting + integration) done 2026-09-05, rest not started |
 
 ## M9 in detail

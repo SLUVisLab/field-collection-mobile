@@ -3,8 +3,15 @@
 **Question asked:** is M10 demonstrably GREEN by its current criteria, and if
 not, what concretely is missing?
 
-**Answer: no — and the first finding is that M10 has no criteria to audit
-against.**
+**Answer at the time of writing: no — and the first finding was that M10 had no
+criteria to audit against.**
+
+> **Resolved 2026-09-05. The chain in §2 was run end to end on a Pixel 10 and
+> verified from Central.** Submission
+> `uuid:d1fc2aee-b0e0-411b-8050-a9c9b88c4c2d` carries the image, an area of
+> 2,911,897 px², and the revision of the model that actually executed. See
+> [experiments/m10-vertical-slice/README.md](../experiments/m10-vertical-slice/README.md).
+> The chain below is now the M10 GREEN definition, and §5's five steps are done.
 
 ## 1. There are two roadmaps, and only one of them is real
 
@@ -35,6 +42,10 @@ Each link, with the evidence rather than an impression of it.
 | 7 | Ordinary XForms fields + media | ✅ | device proof — but for a **photo** Tool with no model |
 | 8 | Provenance records the actual model revision | ⚠️ | `createExecutionReceipt` carries `model`; never observed end to end in a submission |
 | 9 | Submission → Central | ⚠️ | proven for ordinary forms; never for composition + model output |
+
+**All nine now hold in one execution** — see the banner above. The table is kept
+as written because the shape of the gap is the reason the run was worth doing:
+every link was proven, no two adjacent ones were.
 
 **Everything is proven. No two adjacent things are proven together at the
 model-backed end of the chain.** That is precisely the hidden-seam risk this

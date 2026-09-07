@@ -1,0 +1,278 @@
+[
+  {
+    "version": "v0.9",
+    "createSurface": {
+      "surfaceId": "sample-surface",
+      "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json"
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateComponents": {
+      "surfaceId": "sample-surface",
+      "components": [
+        {
+          "id": "root",
+          "component": "Column",
+          "children": [
+            "flow_router"
+          ]
+        },
+        {
+          "id": "flow_router",
+          "component": "Flow",
+          "current": {
+            "path": "/current_step"
+          },
+          "views": [
+            {
+              "when": "capture",
+              "view": "capture_view"
+            },
+            {
+              "when": "processing",
+              "view": "processing_view"
+            },
+            {
+              "when": "review",
+              "view": "review_view"
+            }
+          ],
+          "fallback": "capture_view"
+        },
+        {
+          "id": "capture_view",
+          "component": "Column",
+          "children": [
+            "capture_title",
+            "capture_instruction",
+            "image_picker",
+            "capture_submit_btn"
+          ]
+        },
+        {
+          "id": "capture_title",
+          "component": "Text",
+          "text": {
+            "path": "/text/capture_title"
+          },
+          "variant": "h2"
+        },
+        {
+          "id": "capture_instruction",
+          "component": "Text",
+          "text": {
+            "path": "/text/capture_instruction"
+          },
+          "variant": "body"
+        },
+        {
+          "id": "image_picker",
+          "component": "MultiImageCapture",
+          "statePath": "/form/image_list",
+          "minItems": 1,
+          "maxItems": 1,
+          "allowRemove": true
+        },
+        {
+          "id": "capture_submit_btn",
+          "component": "Button",
+          "child": "submit_btn_text",
+          "variant": "primary",
+          "action": {
+            "event": {
+              "name": "start_processing",
+              "context": {
+                "images": {
+                  "path": "/form/image_list"
+                }
+              }
+            }
+          },
+          "checks": [
+            {
+              "condition": {
+                "call": "required",
+                "args": {
+                  "value": {
+                    "path": "/form/image_list"
+                  }
+                }
+              },
+              "message": "Please capture or select an image to continue."
+            }
+          ]
+        },
+        {
+          "id": "submit_btn_text",
+          "component": "Text",
+          "text": {
+            "path": "/text/btn_submit"
+          }
+        },
+        {
+          "id": "processing_view",
+          "component": "ProcessingView",
+          "image": {
+            "path": "/form/selected_image"
+          }
+        },
+        {
+          "id": "review_view",
+          "component": "Column",
+          "children": [
+            "review_title",
+            "review_card",
+            "divider_line",
+            "metrics_row",
+            "review_submit_btn"
+          ]
+        },
+        {
+          "id": "review_title",
+          "component": "Text",
+          "text": {
+            "path": "/text/review_title"
+          },
+          "variant": "h2"
+        },
+        {
+          "id": "review_card",
+          "component": "Card",
+          "child": "overlay_display"
+        },
+        {
+          "id": "overlay_display",
+          "component": "ImageOverlay",
+          "image": {
+            "path": "/form/selected_image"
+          },
+          "segmentation": {
+            "path": "/results/segmentation"
+          }
+        },
+        {
+          "id": "divider_line",
+          "component": "Divider"
+        },
+        {
+          "id": "metrics_row",
+          "component": "Row",
+          "justify": "spaceAround",
+          "children": [
+            "metric_area_col",
+            "metric_unit_col"
+          ]
+        },
+        {
+          "id": "metric_area_col",
+          "component": "Column",
+          "children": [
+            "metric_area_label",
+            "metric_area_val"
+          ]
+        },
+        {
+          "id": "metric_area_label",
+          "component": "Text",
+          "text": {
+            "path": "/text/metric_area_label"
+          },
+          "variant": "caption"
+        },
+        {
+          "id": "metric_area_val",
+          "component": "Text",
+          "text": {
+            "path": "/results/area_formatted"
+          },
+          "variant": "h3"
+        },
+        {
+          "id": "metric_unit_col",
+          "component": "Column",
+          "children": [
+            "metric_unit_label",
+            "metric_unit_val"
+          ]
+        },
+        {
+          "id": "metric_unit_label",
+          "component": "Text",
+          "text": {
+            "path": "/text/metric_unit_label"
+          },
+          "variant": "caption"
+        },
+        {
+          "id": "metric_unit_val",
+          "component": "Text",
+          "text": {
+            "path": "/results/unit_val"
+          },
+          "variant": "h3"
+        },
+        {
+          "id": "review_submit_btn",
+          "component": "Button",
+          "child": "btn_finish_text",
+          "variant": "primary",
+          "action": {
+            "functionCall": {
+              "call": "gather_completeComposition",
+              "args": {
+                "outputs": {
+                  "image": {
+                    "path": "/results/persisted_image"
+                  },
+                  "area": {
+                    "path": "/results/measured_area"
+                  },
+                  "unit": {
+                    "path": "/results/unit_val"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "btn_finish_text",
+          "component": "Text",
+          "text": {
+            "path": "/text/btn_finish"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "version": "v0.9",
+    "updateDataModel": {
+      "surfaceId": "sample-surface",
+      "value": {
+        "current_step": "capture",
+        "form": {
+          "image_list": [],
+          "selected_image": null
+        },
+        "results": {
+          "segmentation": null,
+          "persisted_image": null,
+          "measured_area": 0,
+          "area_formatted": "0.00",
+          "unit_val": "pixels"
+        },
+        "text": {
+          "capture_title": "Subject Area Assessment",
+          "capture_instruction": "Take or select a photo of the subject against a contrasting background to segment and measure its area.",
+          "btn_submit": "Segment & Measure",
+          "review_title": "Segmentation Results",
+          "metric_area_label": "Measured Area",
+          "metric_unit_label": "Measurement Unit",
+          "btn_finish": "Save & Return Output"
+        }
+      }
+    }
+  }
+]

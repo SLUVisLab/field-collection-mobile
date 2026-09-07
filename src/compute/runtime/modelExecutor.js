@@ -23,7 +23,16 @@ const centerCrop = ({ pixels, width, height, targetWidth, targetHeight }) => {
   return { pixels: cropped, width: targetWidth, height: targetHeight };
 };
 
-export const createModelExecutor = ({ modelStore, onnxRuntime, imageAdapter, files, newAssetId }) => {
+export const createModelExecutor = ({
+  modelStore,
+  onnxRuntime,
+  imageAdapter,
+  files,
+  newAssetId,
+  // Named by the caller because the same executor now runs on two runtimes, and
+  // a receipt that claimed the wrong one would be provenance that lies.
+  runtimeAdapter = 'onnxruntime-react-native',
+}) => {
   if (!modelStore || !onnxRuntime || !imageAdapter || !files || typeof newAssetId !== 'function') {
     throw new ComputeError('Model executor dependencies are unavailable.');
   }
@@ -127,7 +136,7 @@ export const createModelExecutor = ({ modelStore, onnxRuntime, imageAdapter, fil
           inputs: { imageAssetId: image.assetId, imageSha256: image.sha256 },
           parameters: { threshold },
           outputs: { maskAssetId: mask.assetId, maskSha256: mask.sha256 },
-          runtime: { adapter: 'onnxruntime-react-native' },
+          runtime: { adapter: runtimeAdapter },
           timestamp: new Date().toISOString(),
         })),
         performance: trace.finish(),
@@ -173,7 +182,7 @@ export const createModelExecutor = ({ modelStore, onnxRuntime, imageAdapter, fil
           inputs: { imageAssetId: image.assetId, imageSha256: image.sha256 },
           parameters: { topK: count },
           outputs: { ranked },
-          runtime: { adapter: 'onnxruntime-react-native' },
+          runtime: { adapter: runtimeAdapter },
           timestamp: new Date().toISOString(),
         })),
         performance: trace.finish(),

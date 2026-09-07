@@ -34,6 +34,7 @@ GoogleService-Info.plist
 .env
 .env*.local
 central-live.env
+gemini.env
 liveConfig.local.js
 **/liveConfig.local.js
 *.local.js
@@ -57,3 +58,9 @@ experiments/m8-model-export/artifacts/
 experiments/m8-model-export/u2net-source/
 experiments/m8-model-export/torchvision-source/
 gates/fixtures/centralLive.js
+
+# Generated at build time from the app's own Model Catalog.
+apps/renderer/public/models.json
+apps/renderer/public/capabilities.json
+apps/renderer/public/authoring/
+apps/renderer/public/models/

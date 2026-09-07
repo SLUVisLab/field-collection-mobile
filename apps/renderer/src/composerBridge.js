@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { categoryForComponent } from 'gather-catalog';
+
 import { applyRenderBatch } from './renderBatch.js';
 
 const rendererReady = 'RENDERER_READY';
@@ -8,6 +10,28 @@ const getCatalog = 'GET_CATALOG';
 const catalog = 'A2UI_CATALOG';
 const dataModelChange = 'DATA_MODEL_CHANGE';
 const sendToServer = 'SEND_TO_SERVER';
+
+/**
+ * Adds Gather's own component taxonomy to the catalog payload.
+ *
+ * `generateInlineCatalog` builds each component entry from its Zod schema alone
+ * and carries no metadata, so the category is attached here — in Gather's own
+ * bridge adapter — rather than by patching `@a2ui/web_core`. An authoring host
+ * that does not understand the annotation ignores it and keeps whatever
+ * grouping it already did; nothing about rendering depends on it.
+ *
+ * `x-` prefixed keys are the JSON Schema convention for exactly this: an
+ * annotation a validator must not treat as a constraint.
+ */
+function withGatherCategories(payload) {
+  const components = payload?.components;
+  if (!components || typeof components !== 'object') return payload;
+  for (const [name, entry] of Object.entries(components)) {
+    const category = categoryForComponent(name);
+    if (category && entry && typeof entry === 'object') entry['x-gather-category'] = category;
+  }
+  return payload;
+}
 
 function composerOrigin() {
   const candidate = new URLSearchParams(window.location.search).get('origin');
@@ -65,7 +89,7 @@ export function useComposerBridge(processor, gatherCatalog) {
       } else if (message.type === getCatalog) {
         postToComposer({
           type: catalog,
-          payload: processor.generateInlineCatalog(gatherCatalog),
+          payload: withGatherCategories(processor.generateInlineCatalog(gatherCatalog)),
         });
       }
     };

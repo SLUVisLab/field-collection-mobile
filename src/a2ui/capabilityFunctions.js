@@ -88,6 +88,16 @@ export const returnTypeFor = (output) => {
  * }} input
  * @returns {Array<{ name: string, returnType: string, schema: object, execute: Function }>}
  */
+/** The prose an agent sees for a capability, taken from its definition. */
+const describeFunctionSchema = (definition) => {
+  const schema = definition.input ?? z.unknown();
+  const sentences = [definition.title, definition.description].filter(Boolean);
+  if (definition.acceptedModelProfiles?.length) {
+    sentences.push(`Runs a model of profile ${definition.acceptedModelProfiles.join(' or ')}.`);
+  }
+  return sentences.length > 0 ? schema.describe(sentences.join(' — ')) : schema;
+};
+
 export const capabilityFunctions = ({ definitions = [], runtime = {} } = {}) =>
   definitions
     .filter((definition) => typeof runtime?.[definition?.id] === 'function')
@@ -99,7 +109,12 @@ export const capabilityFunctions = ({ definitions = [], runtime = {} } = {}) =>
           // `catalog.invoker` calls `schema.parse(rawArgs)` before execute, so
           // the capability's own input contract becomes the wire validation —
           // no second schema to drift.
-          schema: definition.input ?? z.unknown(),
+          // Derived from the Capability's own `title`/`description`, never
+          // restated here: the definition is what a Capability means, and an
+          // authoring host that paraphrased it would be a second answer.
+          // `generateInlineCatalog` emits `schema.description`, so this is what
+          // an agent actually reads about the function.
+          schema: describeFunctionSchema(definition),
         },
         (args) => runtime[definition.id](args)
       )

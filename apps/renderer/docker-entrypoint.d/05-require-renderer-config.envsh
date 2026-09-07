@@ -1,0 +1,72 @@
+#!/bin/sh
+# Refuse to start a renderer nobody can use.
+#
+# Both settings below fail *in the browser* and nowhere else. The renderer
+# serves 200, nginx logs nothing unusual, and the only symptom is an iframe that
+# stays blank or an import that never resolves. That failure mode has now cost
+# real time twice, so it is checked here — at startup, in the image — rather
+# than trusted to whoever ran the deploy command:
+#
+#   RENDERER_FRAME_ANCESTORS   empty → every Composer origin is blocked by CSP
+#                              and all four bridge gates time out identically
+#   RENDERER_AUTHORING_ORIGIN  empty → Access-Control-Allow-Origin "" and the
+#                              wrapper's catalog imports fail CORS
+#
+# `ofw deploy renderer` supplies both from deploy/env/<environment>.env. This
+# check exists because a raw `docker compose -f apps/renderer/compose.yml up`
+# does not, and that command is too easy to reach for.
+#
+# `.envsh` rather than `.sh`: nginx *sources* the former and runs the latter as
+# a subprocess. Sourcing is required because the `upstream-only` sentinel is
+# rewritten below and has to reach `20-envsubst-on-templates.sh`, which runs
+# after this in the same shell. As a `.sh` the export was silently lost and the
+# sentinel appeared verbatim in the CSP header.
+#
+# No `set -e` here for the same reason: this file's settings persist into the
+# scripts nginx runs afterwards. Every failure below exits explicitly.
+
+die() {
+  echo "renderer: $1" >&2
+  echo "renderer: deploy with \`ofw deploy renderer\`, which passes --env-file." >&2
+  echo "renderer: do not source the env file in a shell — RENDERER_FRAME_ANCESTORS" >&2
+  echo "renderer: contains spaces and will not survive it." >&2
+  exit 1
+}
+
+# A renderer that only the Google-hosted Composer may frame is a legitimate
+# deployment, but it has to be asked for. The sentinel keeps "I want upstream
+# only" distinguishable from "I forgot", which an empty string cannot be.
+if [ "${RENDERER_FRAME_ANCESTORS:-}" = "upstream-only" ]; then
+  RENDERER_FRAME_ANCESTORS=""
+  export RENDERER_FRAME_ANCESTORS
+elif [ -z "${RENDERER_FRAME_ANCESTORS:-}" ]; then
+  die "RENDERER_FRAME_ANCESTORS is not set, so no Composer could embed this renderer.
+renderer: set it to the Composer origins that may frame this deployment, or to
+renderer: the literal 'upstream-only' to allow just the hosted A2UI Composer."
+fi
+
+if [ -z "${RENDERER_AUTHORING_ORIGIN:-}" ]; then
+  die "RENDERER_AUTHORING_ORIGIN is not set, so the wrapper could not import
+renderer: this renderer's catalogs or authoring analysis (CORS would deny it)."
+fi
+
+# `Access-Control-Allow-Origin` carries exactly one origin, but more than one
+# origin legitimately imports the authoring surface — the deployed wrapper and
+# a developer's local dev server, at least. So the allowed set becomes an nginx
+# `map` that echoes the request's Origin when it is on the list, which is the
+# standard way to do this and the only one that does not require choosing.
+#
+# conf.d/*.conf is included in nginx's http{} block, which is where `map` has
+# to live. Written here rather than templated because the list is variable.
+origins_conf=/etc/nginx/conf.d/00-authoring-origins.conf
+{
+  echo 'map $http_origin $gather_authoring_origin {'
+  echo '    default "";'
+  for origin in $RENDERER_AUTHORING_ORIGIN; do
+    echo "    \"$origin\" \"$origin\";"
+  done
+  echo '}'
+} > "$origins_conf"
+
+echo "renderer: frame-ancestors ${RENDERER_FRAME_ANCESTORS:-<upstream only>}"
+echo "renderer: authoring origins ${RENDERER_AUTHORING_ORIGIN}"
