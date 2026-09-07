@@ -1,0 +1,28 @@
+{
+  "name": "gather-storage",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./paths": "./src/paths.js",
+    "./credentials": "./src/credentials.js",
+    "./migrations": "./src/migrations/index.js",
+    "./repositories/projects": "./src/repositories/projects.js",
+    "./repositories/forms": "./src/repositories/forms.js",
+    "./repositories/instances": "./src/repositories/instances.js",
+    "./repositories/sync": "./src/repositories/sync.js",
+    "./repositories/entities": "./src/repositories/entities.js",
+    "./csv": "./src/csv.js",
+    "./sanitize": "./src/sanitize.js"
+  },
+  "scripts": {
+    "test": "node --test $(find test -name '*.test.mjs' -not -path '*/live/*')"
+  },
+  "peerDependencies": {
+    "expo-file-system": ">=57",
+    "expo-secure-store": ">=57",
+    "expo-sqlite": ">=57"
+  }
+}

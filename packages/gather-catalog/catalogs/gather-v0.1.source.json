@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gather.slu.edu/a2ui/catalogs/v0.1.source.json",
+  "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json",
+  "title": "Gather Instrument Catalog",
+  "description": "Gather-specific components for field measurement instruments.",
+  "components": {
+    "GatherCapture": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "GatherCapture"
+            },
+            "statePath": {
+              "type": "string"
+            }
+          },
+          "required": ["component", "statePath"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "CameraView": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "CameraView"
+            },
+            "statePath": {
+              "type": "string"
+            }
+          },
+          "required": ["component", "statePath"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "Flow": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "Flow"
+            },
+            "current": {
+              "$ref": "common_types.json#/$defs/DynamicString"
+            },
+            "views": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "when": { "type": "string" },
+                  "view": { "type": "string" }
+                },
+                "required": ["when", "view"]
+              }
+            },
+            "fallback": {
+              "type": "string"
+            }
+          },
+          "required": ["component", "current", "views"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "ImageOverlay": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "ImageOverlay"
+            },
+            "image": {
+              "$ref": "common_types.json#/$defs/DynamicValue"
+            },
+            "segmentation": {
+              "$ref": "common_types.json#/$defs/DynamicValue"
+            }
+          },
+          "required": ["component"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "OutputReview": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "OutputReview"
+            },
+            "data": {
+              "$ref": "common_types.json#/$defs/DynamicValue"
+            },
+            "display": {
+              "$ref": "common_types.json#/$defs/DynamicValue"
+            }
+          },
+          "required": ["component"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "ProcessingView": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "ProcessingView"
+            },
+            "image": {
+              "$ref": "common_types.json#/$defs/DynamicValue"
+            }
+          },
+          "required": ["component"]
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "InstrumentError": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "common_types.json#/$defs/ComponentCommon"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "component": {
+              "const": "InstrumentError"
+            },
+            "error": {
+              "$ref": "common_types.json#/$defs/DynamicString"
+            },
+            "statePath": {
+              "type": "string"
+            }
+          },
+          "required": ["component", "statePath"]
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  },
+  "$defs": {
+    "anyComponent": {
+      "oneOf": [
+        {
+          "$ref": "#/components/GatherCapture"
+        },
+        {
+          "$ref": "#/components/CameraView"
+        },
+        {
+          "$ref": "#/components/Flow"
+        },
+        {
+          "$ref": "#/components/ImageOverlay"
+        },
+        {
+          "$ref": "#/components/OutputReview"
+        },
+        {
+          "$ref": "#/components/ProcessingView"
+        },
+        {
+          "$ref": "#/components/InstrumentError"
+        }
+      ]
+    }
+  }
+}

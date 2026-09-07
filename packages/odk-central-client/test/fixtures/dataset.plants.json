@@ -1,0 +1,132 @@
+{
+    "name": "plants",
+    "createdAt": "2026-08-28T04:58:29.374Z",
+    "projectId": 1,
+    "approvalRequired": false,
+    "ownerOnly": false,
+    "deletedAt": null,
+    "lastUpdate": "2026-08-28T05:26:29.091Z",
+    "linkedForms": [
+        {
+            "name": "Silphium Flower Survey With Entities",
+            "xmlFormId": "silphium_flower_survey_entities"
+        }
+    ],
+    "sourceForms": [
+        {
+            "name": "Silphium Flower Survey With Entities",
+            "xmlFormId": "silphium_flower_survey_entities"
+        },
+        {
+            "name": "Silphium Plant Registration",
+            "xmlFormId": "silphium_plant_registration"
+        }
+    ],
+    "draftLinkedForms": [],
+    "draftSourceForms": [],
+    "properties": [
+        {
+            "name": "site",
+            "publishedAt": "2026-08-28T04:58:42.106Z",
+            "odataName": "site",
+            "forms": [
+                {
+                    "xmlFormId": "silphium_plant_registration",
+                    "name": "Silphium Plant Registration"
+                }
+            ]
+        },
+        {
+            "name": "block",
+            "publishedAt": "2026-08-28T04:58:42.106Z",
+            "odataName": "block",
+            "forms": [
+                {
+                    "xmlFormId": "silphium_plant_registration",
+                    "name": "Silphium Plant Registration"
+                }
+            ]
+        },
+        {
+            "name": "column",
+            "publishedAt": "2026-08-28T04:58:42.106Z",
+            "odataName": "column",
+            "forms": [
+                {
+                    "xmlFormId": "silphium_plant_registration",
+                    "name": "Silphium Plant Registration"
+                }
+            ]
+        },
+        {
+            "name": "row",
+            "publishedAt": "2026-08-28T04:58:42.106Z",
+            "odataName": "row",
+            "forms": [
+                {
+                    "xmlFormId": "silphium_plant_registration",
+                    "name": "Silphium Plant Registration"
+                }
+            ]
+        },
+        {
+            "name": "plant_code",
+            "publishedAt": "2026-08-28T04:58:42.106Z",
+            "odataName": "plant_code",
+            "forms": [
+                {
+                    "xmlFormId": "silphium_plant_registration",
+                    "name": "Silphium Plant Registration"
+                }
+            ]
+        },
+        {
+            "name": "geometry",
+            "publishedAt": "2026-08-28T04:58:42.106Z",
+            "odataName": "geometry",
+            "forms": [
+                {
+                    "xmlFormId": "silphium_plant_registration",
+                    "name": "Silphium Plant Registration"
+                }
+            ]
+        },
+        {
+            "name": "status",
+            "publishedAt": "2026-08-28T04:58:42.106Z",
+            "odataName": "status",
+            "forms": [
+                {
+                    "xmlFormId": "silphium_plant_registration",
+                    "name": "Silphium Plant Registration"
+                },
+                {
+                    "xmlFormId": "silphium_flower_survey_entities",
+                    "name": "Silphium Flower Survey With Entities"
+                }
+            ]
+        },
+        {
+            "name": "registered_on",
+            "publishedAt": "2026-08-28T04:58:42.106Z",
+            "odataName": "registered_on",
+            "forms": [
+                {
+                    "xmlFormId": "silphium_plant_registration",
+                    "name": "Silphium Plant Registration"
+                }
+            ]
+        },
+        {
+            "name": "last_observed",
+            "publishedAt": "2026-08-28T05:26:29.075Z",
+            "odataName": "last_observed",
+            "forms": [
+                {
+                    "xmlFormId": "silphium_flower_survey_entities",
+                    "name": "Silphium Flower Survey With Entities"
+                }
+            ]
+        }
+    ]
+}

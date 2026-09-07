@@ -1,0 +1,8 @@
+285:CommandError: Failed to build iOS project. "xcodebuild" exited with error code 65.
+288:xcodebuild: error: Could not resolve package dependencies:
+291:    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -workspace /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.4-webview-xforms-sidecar/ios/m24webviewxformssidecar.xcworkspace -configuration Debug -scheme m24webviewxformssidecar -destination id=C8B75D4C-E7FA-4838-A569-A197E7F73D09 COCOAPODS_PARALLEL_CODE_SIGN=true COMPILER_INDEX_STORE_ENABLE=NO
+6276:2026-08-26 13:08:14.478 xcodebuild[30788:11020799] Writing error result bundle to /var/folders/9p/0grpfz396yv41k43jzlwh5w80000gp/T/ResultBundle_2026-26-08_13-08-0014.xcresult
+6277:xcodebuild: error: Could not resolve package dependencies:
+6278:  package 'apple' is using Swift tools version 6.2.0 but the installed version is 6.1.0
+7981:--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+7991:Build logs written to /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2.4-webview-xforms-sidecar/.expo/xcodebuild.log

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<h:html
+  xmlns="http://www.w3.org/2002/xforms"
+  xmlns:h="http://www.w3.org/1999/xhtml"
+  xmlns:jr="http://openrosa.org/javarosa">
+  <h:head>
+    <model>
+      <instance>
+        <data id="selector_fixture"/>
+      </instance>
+    </model>
+  </h:head>
+  <h:body>
+    <group ref="/data/group">
+      <hint id="hint-node"/>
+      <item id="item-node"/>
+      <itemset nodeset="/data/itemset" id="itemset-nodeset-node"/>
+      <label id="label-node"/>
+      <label form-definition-source="repeat-group" id="repeat-group-label-node"/>
+      <repeat nodeset="/data/repeat" id="repeat-nodeset-node"/>
+      <value id="value-node"/>
+      <submission id="submission-node"/>
+
+      <itemset ref="/data/itemset-ref" id="itemset-ref-node"/>
+      <repeat ref="/data/repeat-ref" id="repeat-ref-node"/>
+      <input nodeset="/data/legacy-input" id="legacy-nodeset-input"/>
+      <jr:special nodeset="/data/jr-special" id="jr-special-node"/>
+    </group>
+  </h:body>
+</h:html>

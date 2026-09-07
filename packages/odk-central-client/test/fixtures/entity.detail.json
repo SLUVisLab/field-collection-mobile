@@ -1,0 +1,42 @@
+{
+    "uuid": "0ede576e-04a4-4266-8450-6d9a8cd24164",
+    "creatorId": 6,
+    "conflict": null,
+    "createdAt": "2026-08-28T05:09:06.432Z",
+    "updatedAt": null,
+    "deletedAt": null,
+    "currentVersion": {
+        "current": true,
+        "label": "Tyson-A-C1-R2",
+        "creatorId": 6,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+        "data": {
+            "site": "Tyson",
+            "block": "A",
+            "column": "1",
+            "row": "2",
+            "plant_code": "Tyson-A-C1-R2",
+            "geometry": "38.5242 -90.5582 0 5",
+            "status": "dead",
+            "registered_on": "2026-08-28"
+        },
+        "version": 1,
+        "baseVersion": null,
+        "dataReceived": {
+            "row": "2",
+            "site": "Tyson",
+            "block": "A",
+            "label": "Tyson-A-C1-R2",
+            "column": "1",
+            "status": "dead",
+            "geometry": "38.5242 -90.5582 0 5",
+            "plant_code": "Tyson-A-C1-R2",
+            "registered_on": "2026-08-28"
+        },
+        "conflictingProperties": null,
+        "createdAt": "2026-08-28T05:09:06.435Z",
+        "branchId": null,
+        "trunkVersion": null,
+        "branchBaseVersion": null
+    }
+}

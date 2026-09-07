@@ -1,0 +1,14 @@
+{
+  "scope": "characterization only (no offline store implementation)",
+  "registrationFormId": "silphium_plant_registration",
+  "observationFormId": "silphium_flower_survey_entities",
+  "cachedRowCount": "N",
+  "offlineChoiceCount": "N",
+  "offlineCreatedEntity": {
+    "uuid": "<local-entity-uuid>",
+    "label": "<local-entity-label>",
+    "dataset": "plants"
+  },
+  "appearsInObservationChoicesWithoutSync": false,
+  "conclusion": "No cross-form propagation without a host-managed offline Entity overlay/sync path."
+}

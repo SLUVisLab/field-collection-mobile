@@ -1,0 +1,53 @@
+import { XPathNodeKindKey } from '@getodk/xpath';
+import { Accessor } from 'solid-js';
+import { AttributeNode } from '../client/AttributeNode.ts';
+import { InstanceState, NullValidationState } from '../client/index.ts';
+import { XFormsXPathAttribute } from '../integration/xpath/adapter/XFormsXPathNode.ts';
+import { StaticAttribute } from '../integration/xpath/static-dom/StaticAttribute.ts';
+import { RuntimeInputValue, RuntimeValue } from '../lib/codecs/getSharedValueCodec.ts';
+import { RuntimeValueSetter, RuntimeValueState } from '../lib/codecs/ValueCodec.ts';
+import { AttributeState } from '../lib/reactivity/createAttributeState.ts';
+import { CurrentState } from '../lib/reactivity/node-state/createCurrentState.ts';
+import { EngineState } from '../lib/reactivity/node-state/createEngineState.ts';
+import { SharedNodeState } from '../lib/reactivity/node-state/createSharedNodeState.ts';
+import { SimpleAtomicState } from '../lib/reactivity/types.ts';
+import { AttributeDefinition } from '../parse/model/AttributeDefinition.ts';
+import { DescendantNode, DescendantNodeStateSpec } from './abstract/DescendantNode.ts';
+import { AnyNode } from './hierarchy.ts';
+import { AttributeContext } from './internal-api/AttributeContext.ts';
+import { DecodeInstanceValue } from './internal-api/InstanceValueContext.ts';
+import { ClientReactiveSerializableAttributeNode } from './internal-api/serialization/ClientReactiveSerializableAttributeNode.ts';
+import { Root } from './Root.ts';
+export interface AttributeStateSpec extends DescendantNodeStateSpec<string> {
+    readonly children: null;
+    readonly attributes: Accessor<Attribute[]>;
+    readonly value: SimpleAtomicState<string>;
+    readonly instanceValue: Accessor<string>;
+    readonly relevant: Accessor<boolean>;
+}
+export declare class Attribute extends DescendantNode<AttributeDefinition, AttributeStateSpec, AnyNode, null> implements AttributeNode, ClientReactiveSerializableAttributeNode, AttributeContext, XFormsXPathAttribute {
+    readonly owner: AnyNode;
+    readonly instanceNode: StaticAttribute;
+    readonly [XPathNodeKindKey] = "attribute";
+    protected readonly state: SharedNodeState<AttributeStateSpec>;
+    protected readonly engineState: EngineState<AttributeStateSpec>;
+    readonly validationState: NullValidationState;
+    readonly nodeType = "attribute";
+    readonly currentState: CurrentState<AttributeStateSpec>;
+    readonly instanceState: InstanceState;
+    readonly appearances: null;
+    readonly nodeOptions: null;
+    readonly valueType: string;
+    readonly decodeInstanceValue: DecodeInstanceValue;
+    protected readonly getInstanceValue: Accessor<string>;
+    protected readonly valueState: RuntimeValueState<RuntimeValue<'string'>>;
+    protected readonly setValueState: RuntimeValueSetter<RuntimeInputValue<'string'>>;
+    readonly attributeState: AttributeState;
+    readonly isAttached: Accessor<boolean>;
+    readonly getXPathValue: () => string;
+    readonly setEncodedValue: (value: string, bypassReadonly?: boolean) => void;
+    constructor(owner: AnyNode, definition: AttributeDefinition, instanceNode: StaticAttribute);
+    setValue(value: string): Root;
+    getAttributes(): readonly Attribute[];
+    getChildren(): readonly [];
+}

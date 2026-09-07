@@ -1,0 +1,83 @@
+{
+  "summary": {
+    "platform": "ios",
+    "hermes": true,
+    "durationMs": 2156,
+    "form": {
+      "formId": "silphium_flower_survey_entities",
+      "version": "20260827222256"
+    },
+    "manifest": {
+      "entityList": "plants.csv",
+      "entityListType": "entityList",
+      "staticMedia": "silphium-reference.jpg"
+    },
+    "choiceCount": 8,
+    "csvRowCount": 8,
+    "selectedUuid": "0ede576e-04a4-4266-8450-6d9a8cd24164",
+    "selectedValue": "0ede576e-04a4-4266-8450-6d9a8cd24164",
+    "expectedFromCsv": {
+      "site": "Tyson",
+      "block": "A",
+      "column": "1",
+      "row": "2",
+      "plant_code": "Tyson-A-C1-R2",
+      "__version": "1"
+    },
+    "derived": {
+      "/data/field_site": "Tyson",
+      "/data/block": "A",
+      "/data/column": "1",
+      "/data/row": "2",
+      "/data/plant_code": "Tyson-A-C1-R2",
+      "/data/entity_version": "1"
+    },
+    "checks": {
+      "formLoaded": true,
+      "csvDelivered": true,
+      "choicesMaterialized": true,
+      "selectedValueIsUuid": true,
+      "derivedSite": true,
+      "derivedBlock": true,
+      "derivedColumn": true,
+      "derivedRow": true,
+      "derivedPlantCode": true,
+      "derivedVersion": true
+    },
+    "stepOutcomes": [
+      {
+        "name": "listForms",
+        "ok": true
+      },
+      {
+        "name": "getFormManifest",
+        "ok": true
+      },
+      {
+        "name": "downloadPlantsCsv",
+        "ok": true
+      },
+      {
+        "name": "downloadStaticMedia",
+        "ok": true
+      },
+      {
+        "name": "downloadForm",
+        "ok": true
+      },
+      {
+        "name": "loadFormWithResources",
+        "ok": true
+      },
+      {
+        "name": "selectEntity",
+        "ok": true
+      },
+      {
+        "name": "refreshSnapshot",
+        "ok": true
+      }
+    ],
+    "ok": true
+  }
+}

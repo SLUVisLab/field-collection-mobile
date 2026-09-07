@@ -1,76 +1,72 @@
-import 'expo-dev-client';
-import React, { useEffect } from 'react';
+import { useRef } from 'react';
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { NativeRouter } from 'react-router-native';
 
-import RealmWrapper from './contexts/RealmWrapper';
-import Toast from 'react-native-toast-message';
+import { GatherProvider } from './src/context/GatherProvider.js';
+import { useGather } from './src/context/GatherContext.js';
+import { AppNavigator } from './src/navigation/AppNavigator.js';
+import { initialEntryForShell } from './src/navigation/routes.js';
+import { tokens } from './src/theme/tokens.js';
+import { useTheme } from './src/theme/useTheme.js';
 
-import 'react-native-get-random-values'
-
-import { SurveyDesignProvider } from "./contexts/SurveyDesignContext";
-import { SurveyDataProvider } from "./contexts/SurveyDataContext";
-
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from './screens/HomeScreen';
-import SurveyDesignList from './screens/SurveyDesignList';
-import SurveyList from './screens/SurveyList';
-import NewSurvey from './screens/NewSurvey';
-import SurveyBuilder from './screens/SurveyBuilder';
-import TaskSelector from './screens/TaskSelector';
-import CollectionDesignList from './screens/CollectionDesignList';
-import CollectionList from './screens/CollectionList';
-import CollectionName from './screens/CollectionName';
-import NewItem from './screens/NewItem';
-import TaskSetup from './screens/TaskSetup';
-import TaskAction from './screens/TaskAction';
-import SaveSurvey from './screens/SaveSurvey';
-import UploadSurveys from './screens/UploadSurveys';
-import SurveyExplorer from './screens/SurveyExplorer';
-
-const Stack = createNativeStackNavigator();
-
-class App extends React.Component {
-
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <RealmWrapper>
-        <NavigationContainer>
-          <SurveyDesignProvider>
-            <SurveyDataProvider>
-              <Stack.Navigator 
-                initialRouteName="Home"
-                screenOptions={{
-                  headerShown: false
-                }}
-              >
-                <Stack.Screen name="Home" component={HomeScreen} />
-                <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyDesignList" component={SurveyDesignList} />
-                <Stack.Screen options={{headerShown: true, title: 'Surveys',}} name="SurveyList" component={SurveyList} />
-                <Stack.Screen options={{headerShown: true, title: 'New Survey',}} name="NewSurvey" component={NewSurvey} />
-                <Stack.Screen options={{headerShown: true, title: 'Survey',}} name="SurveyBuilder" component={SurveyBuilder} />
-                <Stack.Screen options={{headerShown: true, title: 'Summary',}} name="SaveSurvey" component={SaveSurvey} />
-                <Stack.Screen options={{headerShown: true, title: 'Upload',}} name="UploadSurveys" component={UploadSurveys} />
-                <Stack.Screen options={{headerShown: true, title: 'Tasks',}} name="TaskSelector" component={TaskSelector} />
-                <Stack.Screen options={{headerShown: true, title: 'Task Action',}} name="TaskAction" component={TaskAction} />
-                <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionDesignList" component={CollectionDesignList} />
-                <Stack.Screen options={{headerShown: true, title: 'Collections',}} name="CollectionList" component={CollectionList} />
-                <Stack.Screen options={{headerShown: true, title: 'New Collection',}} name="CollectionName" component={CollectionName} />
-                <Stack.Screen options={{headerShown: true, title: 'New Item',}} name="NewItem" component={NewItem} />
-                <Stack.Screen options={{headerShown: true}} name="TaskSetup" component={TaskSetup} />
-                <Stack.Screen options={{headerShown: true, title: 'Survey Explorer',}} name="SurveyExplorer" component={SurveyExplorer} />
-                
-              </Stack.Navigator>
-            </SurveyDataProvider>
-          </SurveyDesignProvider>
-        </NavigationContainer>
-        <Toast />
-      </RealmWrapper>
-    );
-  }
+export default function App() {
+  return (
+    <GatherProvider>
+      <GatherApplication />
+    </GatherProvider>
+  );
 }
 
-export default App;
+function GatherApplication() {
+  const { status, error, shell } = useGather();
+  const initialEntryRef = useRef(null);
+  const theme = useTheme();
+  const statusBarStyle = theme.mode === 'dark' ? 'light' : 'dark';
+
+  if (status === 'loading') {
+    return (
+      <View style={[styles.centered, { backgroundColor: theme.colors.background }]} testID="app-loading">
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <Text style={[styles.muted, { color: theme.colors.textMuted, fontSize: tokens.typography.helper }]}>Starting Gather…</Text>
+        <StatusBar style={statusBarStyle} />
+      </View>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <View style={[styles.centered, { backgroundColor: theme.colors.background }]} testID="app-error">
+        <Text style={[styles.errorTitle, { color: theme.colors.danger, fontSize: tokens.typography.heading }]}>Gather couldn’t start</Text>
+        <Text style={[styles.muted, { color: theme.colors.textMuted, fontSize: tokens.typography.helper }]}>{error?.message ?? 'Unknown error'}</Text>
+        <StatusBar style={statusBarStyle} />
+      </View>
+    );
+  }
+
+  if (initialEntryRef.current === null) {
+    initialEntryRef.current = initialEntryForShell(shell);
+  }
+
+  return (
+    <View style={[styles.root, { backgroundColor: theme.colors.background }]} testID={`app-ready-${Platform.OS}`}>
+      <NativeRouter initialEntries={[initialEntryRef.current]}>
+        <AppNavigator shell={shell} />
+      </NativeRouter>
+      <StatusBar style={statusBarStyle} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    padding: 24,
+  },
+  muted: { textAlign: 'center' },
+  errorTitle: { fontWeight: '700' },
+});

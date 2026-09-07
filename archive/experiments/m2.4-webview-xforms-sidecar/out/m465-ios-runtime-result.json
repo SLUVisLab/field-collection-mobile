@@ -1,0 +1,91 @@
+{
+  "summary": {
+    "platform": "ios",
+    "hermes": true,
+    "durationMs": 7746,
+    "form": {
+      "formId": "silphium_plant_registration",
+      "version": "20260827215806"
+    },
+    "expected": {
+      "field_site": "M46-be804f",
+      "block": 9,
+      "column": 9,
+      "row": 9,
+      "plant_location": "38.5242 -90.5582 0 5",
+      "status": "active",
+      "plant_code": "M46-be804f-B9-C9-R9"
+    },
+    "derivedPlantCode": "M46-be804f-B9-C9-R9",
+    "entity": {
+      "id": "5b9b3132-8120-458a-bbea-36995e54d61f",
+      "dataset": "plants",
+      "create": "1",
+      "label": "M46-be804f-B9-C9-R9"
+    },
+    "submitResult": {
+      "status": 201,
+      "message": "full submission upload was successful!",
+      "instanceId": "uuid:2902be1f-9504-4e27-aa6f-1fb82be4d55d"
+    },
+    "checks": {
+      "formLoaded": true,
+      "plantCodeCalculated": true,
+      "serializedEntityCreateBlock": true,
+      "entityHasGeneratedUuid": true,
+      "entityLabelIsPlantCode": true,
+      "submitSucceeded": true
+    },
+    "stepOutcomes": [
+      {
+        "name": "listForms",
+        "ok": true
+      },
+      {
+        "name": "downloadForm",
+        "ok": true
+      },
+      {
+        "name": "loadForm",
+        "ok": true
+      },
+      {
+        "name": "setValue:field_site",
+        "ok": true
+      },
+      {
+        "name": "setValue:block",
+        "ok": true
+      },
+      {
+        "name": "setValue:column",
+        "ok": true
+      },
+      {
+        "name": "setValue:row",
+        "ok": true
+      },
+      {
+        "name": "setValue:plant_location",
+        "ok": true
+      },
+      {
+        "name": "setValue:status",
+        "ok": true
+      },
+      {
+        "name": "refreshSnapshot",
+        "ok": true
+      },
+      {
+        "name": "serialize",
+        "ok": true
+      },
+      {
+        "name": "submitRegistration",
+        "ok": true
+      }
+    ],
+    "ok": true
+  }
+}

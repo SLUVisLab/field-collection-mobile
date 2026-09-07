@@ -1,0 +1,3 @@
+import { TokenListParser, ParsedTokenList } from '../../../lib/TokenListParser.ts';
+export declare const inputAppearanceParser: TokenListParser<"year" | "multiline" | "numbers" | "url" | "thousands-sep" | "no-calendar" | "month-year" | "ethiopian" | "coptic" | "islamic" | "bikram-sambat" | "myanmar" | "persian" | "placement-map" | "maps" | "hidden-answer" | "new-front" | "new" | "front" | "printer" | "masked", "year" | "multiline" | "numbers" | "url" | "thousands-sep" | "no-calendar" | "month-year" | "ethiopian" | "coptic" | "islamic" | "bikram-sambat" | "myanmar" | "persian" | "placement-map" | "maps" | "hidden-answer" | "new-front" | "new" | "front" | "printer" | "masked">;
+export type InputAppearanceDefinition = ParsedTokenList<typeof inputAppearanceParser>;

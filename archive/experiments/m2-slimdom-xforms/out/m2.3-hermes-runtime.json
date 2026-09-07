@@ -1,0 +1,108 @@
+{
+  "generatedAt": "2026-08-26T02:57:24.799Z",
+  "runtimeTargets": {
+    "ios": {
+      "checkStatus": 0,
+      "availableCount": 11,
+      "note": "Simulators detected (not launched in this automated gate)."
+    },
+    "android": {
+      "checkStatus": 1,
+      "availableCount": 0,
+      "note": "emulator command unavailable: "
+    }
+  },
+  "defaultImportCheck": {
+    "ok": false,
+    "status": 1,
+    "stdout": "warning: the transform cache was reset.\n                Welcome to Metro v0.80.9\n              Fast - Scalable - Integrated\n\n\nError: While trying to resolve module `@getodk/xforms-engine` from file `/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-xforms/metroEntryDefaultImport.js`, the package `/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/@getodk/xforms-engine/package.json` was successfully found. However, this package itself specifies a `main` module field that could not be resolved (`/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/@getodk/xforms-engine/index`. Indeed, none of these files exist:\n\n  * /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/@getodk/xforms-engine/index(.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx|.android.mjs|.native.mjs|.mjs|.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.cjs|.native.cjs|.cjs|.android.scss|.native.scss|.scss|.android.sass|.native.sass|.sass|.android.css|.native.css|.css)\n  * /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/@getodk/xforms-engine/index/index(.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx|.android.mjs|.native.mjs|.mjs|.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.cjs|.native.cjs|.cjs|.android.scss|.native.scss|.scss|.android.sass|.native.sass|.sass|.android.css|.native.css|.css)\n    at DependencyGraph.resolveDependency (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/metro/src/node-haste/DependencyGraph.js:243:17)\n    at /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/metro/src/lib/transformHelpers.js:156:21\n    at resolveDependencies (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/metro/src/DeltaBundler/buildSubgraph.js:42:25)\n    at visit (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/metro/src/DeltaBundler/buildSubgraph.js:83:30)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Promise.all (index 0)\n    at async buildSubgraph (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/metro/src/DeltaBundler/buildSubgraph.js:103:3)\n    at async Graph._buildDelta (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/metro/src/DeltaBundler/Graph.js:157:22)\n    at async Graph.initialTraverseDependencies (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/metro/src/DeltaBundler/Graph.js:140:19)\n    at async DeltaCalculator._getChangedDependencies (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/metro/src/DeltaBundler/DeltaCalculator.js:151:25)\ninfo Run CLI with --verbose flag for more details.\n",
+    "stderr": "warn =================================================================================================\nwarn From React Native 0.73, your project's Metro config should extend '@react-native/metro-config'\nwarn or it will fail to build. Please copy the template at:\nwarn https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js\nwarn This warning will be removed in future (https://github.com/facebook/metro/issues/1018).\nwarn =================================================================================================\nerror While trying to resolve module `@getodk/xforms-engine` from file `/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-xforms/metroEntryDefaultImport.js`, the package `/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/@getodk/xforms-engine/package.json` was successfully found. However, this package itself specifies a `main` module field that could not be resolved (`/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/@getodk/xforms-engine/index`. Indeed, none of these files exist:\n\n  * /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/@getodk/xforms-engine/index(.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx|.android.mjs|.native.mjs|.mjs|.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.cjs|.native.cjs|.cjs|.android.scss|.native.scss|.scss|.android.sass|.native.sass|.sass|.android.css|.native.css|.css)\n  * /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/@getodk/xforms-engine/index/index(.android.ts|.native.ts|.ts|.android.tsx|.native.tsx|.tsx|.android.mjs|.native.mjs|.mjs|.android.js|.native.js|.js|.android.jsx|.native.jsx|.jsx|.android.json|.native.json|.json|.android.cjs|.native.cjs|.cjs|.android.scss|.native.scss|.scss|.android.sass|.native.sass|.sass|.android.css|.native.css|.css).\n"
+  },
+  "matrix": {
+    "android-debug": {
+      "platform": "android",
+      "mode": "debug",
+      "dev": true,
+      "minify": false,
+      "metroResolution": "ok",
+      "bundle": {
+        "ok": true,
+        "status": 0,
+        "outputPath": "experiments/m2-slimdom-xforms/out/android-debug.bundle.js",
+        "stdout": "warning: the transform cache was reset.\n                Welcome to Metro v0.80.9\n              Fast - Scalable - Integrated\n\n\ninfo Writing bundle output to:, experiments/m2-slimdom-xforms/out/android-debug.bundle.js\ninfo Done writing bundle output\n",
+        "stderr": "warn =================================================================================================\nwarn From React Native 0.73, your project's Metro config should extend '@react-native/metro-config'\nwarn or it will fail to build. Please copy the template at:\nwarn https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js\nwarn This warning will be removed in future (https://github.com/facebook/metro/issues/1018).\nwarn =================================================================================================\n"
+      },
+      "hermes": {
+        "ok": false,
+        "status": 2,
+        "gatePayload": null,
+        "stdout": "",
+        "stderr": "/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-xforms/out/android-debug.bundle.js:5907:29: error: ';' expected\n  var BLOB_BEHAVIOR = await detectBlobBehavior();\n                            ^\n"
+      }
+    },
+    "ios-debug": {
+      "platform": "ios",
+      "mode": "debug",
+      "dev": true,
+      "minify": false,
+      "metroResolution": "ok",
+      "bundle": {
+        "ok": true,
+        "status": 0,
+        "outputPath": "experiments/m2-slimdom-xforms/out/ios-debug.bundle.js",
+        "stdout": "warning: the transform cache was reset.\n                Welcome to Metro v0.80.9\n              Fast - Scalable - Integrated\n\n\ninfo Writing bundle output to:, experiments/m2-slimdom-xforms/out/ios-debug.bundle.js\ninfo Done writing bundle output\n",
+        "stderr": "warn =================================================================================================\nwarn From React Native 0.73, your project's Metro config should extend '@react-native/metro-config'\nwarn or it will fail to build. Please copy the template at:\nwarn https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js\nwarn This warning will be removed in future (https://github.com/facebook/metro/issues/1018).\nwarn =================================================================================================\n"
+      },
+      "hermes": {
+        "ok": false,
+        "status": 2,
+        "gatePayload": null,
+        "stdout": "",
+        "stderr": "/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-xforms/out/ios-debug.bundle.js:5907:29: error: ';' expected\n  var BLOB_BEHAVIOR = await detectBlobBehavior();\n                            ^\n"
+      }
+    },
+    "android-release": {
+      "platform": "android",
+      "mode": "release",
+      "dev": false,
+      "minify": true,
+      "metroResolution": "fail",
+      "bundle": {
+        "ok": false,
+        "status": 1,
+        "stdout": "warning: the transform cache was reset.\n                Welcome to Metro v0.80.9\n              Fast - Scalable - Integrated\n\n\nError: Unexpected token: name (detectBlobBehavior) in file node_modules/@getodk/xforms-engine/dist/index.js at 153:28\n    at minifyCode (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/expo/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:100:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async transformJS (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/expo/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:293:26)\n    at async transformJSWithBabel (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/expo/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:352:12)\ninfo Run CLI with --verbose flag for more details.\n",
+        "stderr": "warn =================================================================================================\nwarn From React Native 0.73, your project's Metro config should extend '@react-native/metro-config'\nwarn or it will fail to build. Please copy the template at:\nwarn https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js\nwarn This warning will be removed in future (https://github.com/facebook/metro/issues/1018).\nwarn =================================================================================================\nerror node_modules/@getodk/xforms-engine/dist/index.js: Unexpected token: name (detectBlobBehavior) in file node_modules/@getodk/xforms-engine/dist/index.js at 153:28.\n"
+      },
+      "hermes": {
+        "ok": false,
+        "skipped": true
+      }
+    },
+    "ios-release": {
+      "platform": "ios",
+      "mode": "release",
+      "dev": false,
+      "minify": true,
+      "metroResolution": "fail",
+      "bundle": {
+        "ok": false,
+        "status": 1,
+        "stdout": "warning: the transform cache was reset.\n                Welcome to Metro v0.80.9\n              Fast - Scalable - Integrated\n\n\nError: Unexpected token: name (detectBlobBehavior) in file node_modules/@getodk/xforms-engine/dist/index.js at 153:28\n    at minifyCode (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/expo/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:100:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async transformJS (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/expo/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:293:26)\n    at async transformJSWithBabel (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/node_modules/expo/node_modules/@expo/metro-config/build/transform-worker/metro-transform-worker.js:352:12)\ninfo Run CLI with --verbose flag for more details.\n",
+        "stderr": "warn =================================================================================================\nwarn From React Native 0.73, your project's Metro config should extend '@react-native/metro-config'\nwarn or it will fail to build. Please copy the template at:\nwarn https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js\nwarn This warning will be removed in future (https://github.com/facebook/metro/issues/1018).\nwarn =================================================================================================\nerror node_modules/@getodk/xforms-engine/dist/index.js: Unexpected token: name (detectBlobBehavior) in file node_modules/@getodk/xforms-engine/dist/index.js at 153:28.\n"
+      },
+      "hermes": {
+        "ok": false,
+        "skipped": true
+      }
+    }
+  },
+  "verdict": "RED",
+  "reasons": [
+    "Metro bundling failed for one or more matrix entries.",
+    "Hermes execution failed for one or more matrix entries.",
+    "First Metro failure (android-release): error node_modules/@getodk/xforms-engine/dist/index.js: Unexpected token: name (detectBlobBehavior) in file node_modules/@getodk/xforms-engine/dist/index.js at 153:28.",
+    "First Hermes failure (android-debug): /Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m2-slimdom-xforms/out/android-debug.bundle.js:5907:29: error: ';' expected",
+    "Default package import (`@getodk/xforms-engine`) failed Metro resolution in this environment."
+  ],
+  "recommendation": "Stop and investigate Hermes/runtime incompatibilities before M3."
+}

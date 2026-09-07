@@ -1,0 +1,246 @@
+{
+  "phases": [
+    {
+      "phase": "initial",
+      "platform": "ios",
+      "hermes": true,
+      "ok": true,
+      "checks": {
+        "webAssemblyAvailable": true,
+        "loadFormOk": true,
+        "calculateUpdated": true,
+        "relevantUpdated": true,
+        "constraintApplied": true,
+        "serializationHasFixture": true,
+        "mediaSeamLogicalReference": true
+      },
+      "stepOutcomes": [
+        {
+          "name": "initialize",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "loadForm",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "getSnapshot initial",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "setValue age=19",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "setValue height=2.5",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "setValue show_extra=1",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "setValue choice=apple",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "setValue age=17 (constraint)",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "getSnapshot after updates",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "serialize",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "inspectMediaSeam",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "addRepeat(/data/rep)",
+          "ok": true,
+          "error": null
+        }
+      ],
+      "latencySummary": {
+        "initialize": {
+          "minMs": 14057,
+          "maxMs": 14057,
+          "avgMs": 14057,
+          "samples": 1
+        },
+        "loadForm": {
+          "minMs": 91,
+          "maxMs": 91,
+          "avgMs": 91,
+          "samples": 1
+        },
+        "getSnapshot": {
+          "minMs": 2,
+          "maxMs": 4,
+          "avgMs": 3,
+          "samples": 2
+        },
+        "setValue": {
+          "minMs": 3,
+          "maxMs": 302,
+          "avgMs": 64,
+          "samples": 5
+        },
+        "serialize": {
+          "minMs": 6,
+          "maxMs": 6,
+          "avgMs": 6,
+          "samples": 1
+        },
+        "inspectMediaSeam": {
+          "minMs": 1,
+          "maxMs": 1,
+          "avgMs": 1,
+          "samples": 1
+        },
+        "addRepeat": {
+          "minMs": 11,
+          "maxMs": 11,
+          "avgMs": 11,
+          "samples": 1
+        }
+      }
+    },
+    {
+      "phase": "remount",
+      "platform": "ios",
+      "hermes": true,
+      "ok": true,
+      "checks": {
+        "webAssemblyAvailable": true,
+        "loadFormOk": true,
+        "calculateUpdated": true,
+        "relevantUpdated": true,
+        "constraintApplied": true,
+        "serializationHasFixture": true,
+        "mediaSeamLogicalReference": true
+      },
+      "stepOutcomes": [
+        {
+          "name": "initialize",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "loadForm",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "getSnapshot initial",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "setValue age=19",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "setValue height=2.5",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "setValue show_extra=1",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "setValue choice=apple",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "setValue age=17 (constraint)",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "getSnapshot after updates",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "serialize",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "inspectMediaSeam",
+          "ok": true,
+          "error": null
+        },
+        {
+          "name": "addRepeat(/data/rep)",
+          "ok": true,
+          "error": null
+        }
+      ],
+      "latencySummary": {
+        "initialize": {
+          "minMs": 3677,
+          "maxMs": 3677,
+          "avgMs": 3677,
+          "samples": 1
+        },
+        "loadForm": {
+          "minMs": 193,
+          "maxMs": 193,
+          "avgMs": 193,
+          "samples": 1
+        },
+        "getSnapshot": {
+          "minMs": 2,
+          "maxMs": 68,
+          "avgMs": 35,
+          "samples": 2
+        },
+        "setValue": {
+          "minMs": 6,
+          "maxMs": 135,
+          "avgMs": 51,
+          "samples": 5
+        },
+        "serialize": {
+          "minMs": 18,
+          "maxMs": 18,
+          "avgMs": 18,
+          "samples": 1
+        },
+        "inspectMediaSeam": {
+          "minMs": 7,
+          "maxMs": 7,
+          "avgMs": 7,
+          "samples": 1
+        },
+        "addRepeat": {
+          "minMs": 4,
+          "maxMs": 4,
+          "avgMs": 4,
+          "samples": 1
+        }
+      }
+    }
+  ]
+}

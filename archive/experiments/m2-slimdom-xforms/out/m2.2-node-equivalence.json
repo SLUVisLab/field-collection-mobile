@@ -1,0 +1,1064 @@
+{
+  "generatedAt": "2026-08-26T02:56:16.551Z",
+  "runs": [
+    {
+      "env": "jsdom",
+      "status": 0,
+      "stdout": "M2_XFORMS_ENV_RESULT::{\"env\":\"jsdom\",\"scenarioResult\":{\"loadStatus\":\"success\",\"loadError\":null,\"snapshots\":{\"initial\":{\"nodes\":{\"/data/name\":{\"nodeType\":\"input\",\"reference\":\"/data/name\",\"value\":\"\",\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":false,\"violationCondition\":\"required\",\"valueOptions\":null},\"/data/age\":{\"nodeType\":\"input\",\"reference\":\"/data/age\",\"value\":null,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/height\":{\"nodeType\":\"input\",\"reference\":\"/data/height\",\"value\":null,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/calc\":{\"nodeType\":\"input\",\"reference\":\"/data/calc\",\"value\":null,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/show_extra\":{\"nodeType\":\"input\",\"reference\":\"/data/show_extra\",\"value\":\"0n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/extra\":{\"nodeType\":\"input\",\"reference\":\"/data/extra\",\"value\":\"\",\"relevant\":false,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/choice\":{\"nodeType\":\"select\",\"reference\":\"/data/choice\",\"value\":[],\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":[{\"label\":\"Apple\",\"value\":\"apple\"}]},\"/data/rep[1]/note\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/note\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/rep[1]/qty\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/qty\",\"value\":null,\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":false,\"violationCondition\":\"required\",\"valueOptions\":null},\"/data/rep[2]/note\":null,\"/data/rep[2]/qty\":null},\"repeatRange\":{\"nodeType\":\"repeat-range:uncontrolled\",\"reference\":\"/data/rep\",\"count\":1},\"rootViolationsCount\":2},\"afterPrimaryUpdates\":{\"nodes\":{\"/data/name\":{\"nodeType\":\"input\",\"reference\":\"/data/name\",\"value\":\"Alice\",\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/age\":{\"nodeType\":\"input\",\"reference\":\"/data/age\",\"value\":\"19n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/height\":{\"nodeType\":\"input\",\"reference\":\"/data/height\",\"value\":2.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/calc\":{\"nodeType\":\"input\",\"reference\":\"/data/calc\",\"value\":21.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/show_extra\":{\"nodeType\":\"input\",\"reference\":\"/data/show_extra\",\"value\":\"1n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/extra\":{\"nodeType\":\"input\",\"reference\":\"/data/extra\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/choice\":{\"nodeType\":\"select\",\"reference\":\"/data/choice\",\"value\":[\"apple\"],\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":[{\"label\":\"Apple\",\"value\":\"apple\"}]},\"/data/rep[1]/note\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/note\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/rep[1]/qty\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/qty\",\"value\":null,\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":false,\"violationCondition\":\"required\",\"valueOptions\":null},\"/data/rep[2]/note\":null,\"/data/rep[2]/qty\":null},\"repeatRange\":{\"nodeType\":\"repeat-range:uncontrolled\",\"reference\":\"/data/rep\",\"count\":1},\"rootViolationsCount\":1},\"afterConstraintChange\":{\"nodes\":{\"/data/name\":{\"nodeType\":\"input\",\"reference\":\"/data/name\",\"value\":\"Alice\",\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/age\":{\"nodeType\":\"input\",\"reference\":\"/data/age\",\"value\":\"17n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":false,\"requiredValid\":true,\"violationCondition\":\"constraint\",\"valueOptions\":null},\"/data/height\":{\"nodeType\":\"input\",\"reference\":\"/data/height\",\"value\":2.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/calc\":{\"nodeType\":\"input\",\"reference\":\"/data/calc\",\"value\":19.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/show_extra\":{\"nodeType\":\"input\",\"reference\":\"/data/show_extra\",\"value\":\"1n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/extra\":{\"nodeType\":\"input\",\"reference\":\"/data/extra\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/choice\":{\"nodeType\":\"select\",\"reference\":\"/data/choice\",\"value\":[\"apple\"],\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":[{\"label\":\"Apple\",\"value\":\"apple\"}]},\"/data/rep[1]/note\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/note\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/rep[1]/qty\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/qty\",\"value\":null,\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":false,\"violationCondition\":\"required\",\"valueOptions\":null},\"/data/rep[2]/note\":null,\"/data/rep[2]/qty\":null},\"repeatRange\":{\"nodeType\":\"repeat-range:uncontrolled\",\"reference\":\"/data/rep\",\"count\":1},\"rootViolationsCount\":2},\"afterRepeatMutation\":{\"nodes\":{\"/data/name\":{\"nodeType\":\"input\",\"reference\":\"/data/name\",\"value\":\"Alice\",\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/age\":{\"nodeType\":\"input\",\"reference\":\"/data/age\",\"value\":\"17n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":false,\"requiredValid\":true,\"violationCondition\":\"constraint\",\"valueOptions\":null},\"/data/height\":{\"nodeType\":\"input\",\"reference\":\"/data/height\",\"value\":2.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/calc\":{\"nodeType\":\"input\",\"reference\":\"/data/calc\",\"value\":19.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/show_extra\":{\"nodeType\":\"input\",\"reference\":\"/data/show_extra\",\"value\":\"1n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/extra\":{\"nodeType\":\"input\",\"reference\":\"/data/extra\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/choice\":{\"nodeType\":\"select\",\"reference\":\"/data/choice\",\"value\":[\"apple\"],\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":[{\"label\":\"Apple\",\"value\":\"apple\"}]},\"/data/rep[1]/note\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/note\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/rep[1]/qty\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/qty\",\"value\":null,\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":false,\"violationCondition\":\"required\",\"valueOptions\":null},\"/data/rep[2]/note\":null,\"/data/rep[2]/qty\":null},\"repeatRange\":{\"nodeType\":\"repeat-range:uncontrolled\",\"reference\":\"/data/rep\",\"count\":1},\"rootViolationsCount\":2}},\"payload\":{\"status\":\"pending\",\"violationCount\":2,\"instanceXml\":\"<data id=\\\"m2_slimdom_fixture\\\"><name>Alice</name><age>17</age><height>2.5</height><calc>19.5</calc><show_extra>1</show_extra><extra/><choice>apple</choice><fruit><item><name>Apple</name><value>apple</value></item></fruit><rep><note/><qty/></rep><meta><instanceID>uuid:ed872eb1-1a26-415a-af3a-8ca591a14f91</instanceID></meta></data>\",\"normalizedInstanceXml\":\"<data id=\\\"m2_slimdom_fixture\\\"><name>Alice</name><age>17</age><height>2.5</height><calc>19.5</calc><show_extra>1</show_extra><extra/><choice>apple</choice><fruit><item><name>Apple</name><value>apple</value></item></fruit><rep><note/><qty/></rep><meta><instanceID>uuid:__INSTANCE_ID__</instanceID></meta></data>\"}}}\n",
+      "stderr": "",
+      "payload": {
+        "env": "jsdom",
+        "scenarioResult": {
+          "loadStatus": "success",
+          "loadError": null,
+          "snapshots": {
+            "initial": {
+              "nodes": {
+                "/data/name": {
+                  "nodeType": "input",
+                  "reference": "/data/name",
+                  "value": "",
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": false,
+                  "violationCondition": "required",
+                  "valueOptions": null
+                },
+                "/data/age": {
+                  "nodeType": "input",
+                  "reference": "/data/age",
+                  "value": null,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/height": {
+                  "nodeType": "input",
+                  "reference": "/data/height",
+                  "value": null,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/calc": {
+                  "nodeType": "input",
+                  "reference": "/data/calc",
+                  "value": null,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/show_extra": {
+                  "nodeType": "input",
+                  "reference": "/data/show_extra",
+                  "value": "0n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/extra": {
+                  "nodeType": "input",
+                  "reference": "/data/extra",
+                  "value": "",
+                  "relevant": false,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/choice": {
+                  "nodeType": "select",
+                  "reference": "/data/choice",
+                  "value": [],
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": [
+                    {
+                      "label": "Apple",
+                      "value": "apple"
+                    }
+                  ]
+                },
+                "/data/rep[1]/note": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/note",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/rep[1]/qty": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/qty",
+                  "value": null,
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": false,
+                  "violationCondition": "required",
+                  "valueOptions": null
+                },
+                "/data/rep[2]/note": null,
+                "/data/rep[2]/qty": null
+              },
+              "repeatRange": {
+                "nodeType": "repeat-range:uncontrolled",
+                "reference": "/data/rep",
+                "count": 1
+              },
+              "rootViolationsCount": 2
+            },
+            "afterPrimaryUpdates": {
+              "nodes": {
+                "/data/name": {
+                  "nodeType": "input",
+                  "reference": "/data/name",
+                  "value": "Alice",
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/age": {
+                  "nodeType": "input",
+                  "reference": "/data/age",
+                  "value": "19n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/height": {
+                  "nodeType": "input",
+                  "reference": "/data/height",
+                  "value": 2.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/calc": {
+                  "nodeType": "input",
+                  "reference": "/data/calc",
+                  "value": 21.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/show_extra": {
+                  "nodeType": "input",
+                  "reference": "/data/show_extra",
+                  "value": "1n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/extra": {
+                  "nodeType": "input",
+                  "reference": "/data/extra",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/choice": {
+                  "nodeType": "select",
+                  "reference": "/data/choice",
+                  "value": [
+                    "apple"
+                  ],
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": [
+                    {
+                      "label": "Apple",
+                      "value": "apple"
+                    }
+                  ]
+                },
+                "/data/rep[1]/note": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/note",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/rep[1]/qty": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/qty",
+                  "value": null,
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": false,
+                  "violationCondition": "required",
+                  "valueOptions": null
+                },
+                "/data/rep[2]/note": null,
+                "/data/rep[2]/qty": null
+              },
+              "repeatRange": {
+                "nodeType": "repeat-range:uncontrolled",
+                "reference": "/data/rep",
+                "count": 1
+              },
+              "rootViolationsCount": 1
+            },
+            "afterConstraintChange": {
+              "nodes": {
+                "/data/name": {
+                  "nodeType": "input",
+                  "reference": "/data/name",
+                  "value": "Alice",
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/age": {
+                  "nodeType": "input",
+                  "reference": "/data/age",
+                  "value": "17n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": false,
+                  "requiredValid": true,
+                  "violationCondition": "constraint",
+                  "valueOptions": null
+                },
+                "/data/height": {
+                  "nodeType": "input",
+                  "reference": "/data/height",
+                  "value": 2.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/calc": {
+                  "nodeType": "input",
+                  "reference": "/data/calc",
+                  "value": 19.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/show_extra": {
+                  "nodeType": "input",
+                  "reference": "/data/show_extra",
+                  "value": "1n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/extra": {
+                  "nodeType": "input",
+                  "reference": "/data/extra",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/choice": {
+                  "nodeType": "select",
+                  "reference": "/data/choice",
+                  "value": [
+                    "apple"
+                  ],
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": [
+                    {
+                      "label": "Apple",
+                      "value": "apple"
+                    }
+                  ]
+                },
+                "/data/rep[1]/note": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/note",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/rep[1]/qty": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/qty",
+                  "value": null,
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": false,
+                  "violationCondition": "required",
+                  "valueOptions": null
+                },
+                "/data/rep[2]/note": null,
+                "/data/rep[2]/qty": null
+              },
+              "repeatRange": {
+                "nodeType": "repeat-range:uncontrolled",
+                "reference": "/data/rep",
+                "count": 1
+              },
+              "rootViolationsCount": 2
+            },
+            "afterRepeatMutation": {
+              "nodes": {
+                "/data/name": {
+                  "nodeType": "input",
+                  "reference": "/data/name",
+                  "value": "Alice",
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/age": {
+                  "nodeType": "input",
+                  "reference": "/data/age",
+                  "value": "17n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": false,
+                  "requiredValid": true,
+                  "violationCondition": "constraint",
+                  "valueOptions": null
+                },
+                "/data/height": {
+                  "nodeType": "input",
+                  "reference": "/data/height",
+                  "value": 2.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/calc": {
+                  "nodeType": "input",
+                  "reference": "/data/calc",
+                  "value": 19.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/show_extra": {
+                  "nodeType": "input",
+                  "reference": "/data/show_extra",
+                  "value": "1n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/extra": {
+                  "nodeType": "input",
+                  "reference": "/data/extra",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/choice": {
+                  "nodeType": "select",
+                  "reference": "/data/choice",
+                  "value": [
+                    "apple"
+                  ],
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": [
+                    {
+                      "label": "Apple",
+                      "value": "apple"
+                    }
+                  ]
+                },
+                "/data/rep[1]/note": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/note",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/rep[1]/qty": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/qty",
+                  "value": null,
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": false,
+                  "violationCondition": "required",
+                  "valueOptions": null
+                },
+                "/data/rep[2]/note": null,
+                "/data/rep[2]/qty": null
+              },
+              "repeatRange": {
+                "nodeType": "repeat-range:uncontrolled",
+                "reference": "/data/rep",
+                "count": 1
+              },
+              "rootViolationsCount": 2
+            }
+          },
+          "payload": {
+            "status": "pending",
+            "violationCount": 2,
+            "instanceXml": "<data id=\"m2_slimdom_fixture\"><name>Alice</name><age>17</age><height>2.5</height><calc>19.5</calc><show_extra>1</show_extra><extra/><choice>apple</choice><fruit><item><name>Apple</name><value>apple</value></item></fruit><rep><note/><qty/></rep><meta><instanceID>uuid:ed872eb1-1a26-415a-af3a-8ca591a14f91</instanceID></meta></data>",
+            "normalizedInstanceXml": "<data id=\"m2_slimdom_fixture\"><name>Alice</name><age>17</age><height>2.5</height><calc>19.5</calc><show_extra>1</show_extra><extra/><choice>apple</choice><fruit><item><name>Apple</name><value>apple</value></item></fruit><rep><note/><qty/></rep><meta><instanceID>uuid:__INSTANCE_ID__</instanceID></meta></data>"
+          }
+        }
+      }
+    },
+    {
+      "env": "slimdom",
+      "status": 0,
+      "stdout": "M2_XFORMS_ENV_RESULT::{\"env\":\"slimdom\",\"scenarioResult\":{\"loadStatus\":\"success\",\"loadError\":null,\"snapshots\":{\"initial\":{\"nodes\":{\"/data/name\":{\"nodeType\":\"input\",\"reference\":\"/data/name\",\"value\":\"\",\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":false,\"violationCondition\":\"required\",\"valueOptions\":null},\"/data/age\":{\"nodeType\":\"input\",\"reference\":\"/data/age\",\"value\":null,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/height\":{\"nodeType\":\"input\",\"reference\":\"/data/height\",\"value\":null,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/calc\":{\"nodeType\":\"input\",\"reference\":\"/data/calc\",\"value\":null,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/show_extra\":{\"nodeType\":\"input\",\"reference\":\"/data/show_extra\",\"value\":\"0n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/extra\":{\"nodeType\":\"input\",\"reference\":\"/data/extra\",\"value\":\"\",\"relevant\":false,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/choice\":{\"nodeType\":\"select\",\"reference\":\"/data/choice\",\"value\":[],\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":[{\"label\":\"Apple\",\"value\":\"apple\"}]},\"/data/rep[1]/note\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/note\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/rep[1]/qty\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/qty\",\"value\":null,\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":false,\"violationCondition\":\"required\",\"valueOptions\":null},\"/data/rep[2]/note\":null,\"/data/rep[2]/qty\":null},\"repeatRange\":{\"nodeType\":\"repeat-range:uncontrolled\",\"reference\":\"/data/rep\",\"count\":1},\"rootViolationsCount\":2},\"afterPrimaryUpdates\":{\"nodes\":{\"/data/name\":{\"nodeType\":\"input\",\"reference\":\"/data/name\",\"value\":\"Alice\",\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/age\":{\"nodeType\":\"input\",\"reference\":\"/data/age\",\"value\":\"19n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/height\":{\"nodeType\":\"input\",\"reference\":\"/data/height\",\"value\":2.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/calc\":{\"nodeType\":\"input\",\"reference\":\"/data/calc\",\"value\":21.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/show_extra\":{\"nodeType\":\"input\",\"reference\":\"/data/show_extra\",\"value\":\"1n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/extra\":{\"nodeType\":\"input\",\"reference\":\"/data/extra\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/choice\":{\"nodeType\":\"select\",\"reference\":\"/data/choice\",\"value\":[\"apple\"],\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":[{\"label\":\"Apple\",\"value\":\"apple\"}]},\"/data/rep[1]/note\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/note\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/rep[1]/qty\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/qty\",\"value\":null,\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":false,\"violationCondition\":\"required\",\"valueOptions\":null},\"/data/rep[2]/note\":null,\"/data/rep[2]/qty\":null},\"repeatRange\":{\"nodeType\":\"repeat-range:uncontrolled\",\"reference\":\"/data/rep\",\"count\":1},\"rootViolationsCount\":1},\"afterConstraintChange\":{\"nodes\":{\"/data/name\":{\"nodeType\":\"input\",\"reference\":\"/data/name\",\"value\":\"Alice\",\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/age\":{\"nodeType\":\"input\",\"reference\":\"/data/age\",\"value\":\"17n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":false,\"requiredValid\":true,\"violationCondition\":\"constraint\",\"valueOptions\":null},\"/data/height\":{\"nodeType\":\"input\",\"reference\":\"/data/height\",\"value\":2.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/calc\":{\"nodeType\":\"input\",\"reference\":\"/data/calc\",\"value\":19.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/show_extra\":{\"nodeType\":\"input\",\"reference\":\"/data/show_extra\",\"value\":\"1n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/extra\":{\"nodeType\":\"input\",\"reference\":\"/data/extra\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/choice\":{\"nodeType\":\"select\",\"reference\":\"/data/choice\",\"value\":[\"apple\"],\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":[{\"label\":\"Apple\",\"value\":\"apple\"}]},\"/data/rep[1]/note\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/note\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/rep[1]/qty\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/qty\",\"value\":null,\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":false,\"violationCondition\":\"required\",\"valueOptions\":null},\"/data/rep[2]/note\":null,\"/data/rep[2]/qty\":null},\"repeatRange\":{\"nodeType\":\"repeat-range:uncontrolled\",\"reference\":\"/data/rep\",\"count\":1},\"rootViolationsCount\":2},\"afterRepeatMutation\":{\"nodes\":{\"/data/name\":{\"nodeType\":\"input\",\"reference\":\"/data/name\",\"value\":\"Alice\",\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/age\":{\"nodeType\":\"input\",\"reference\":\"/data/age\",\"value\":\"17n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":false,\"requiredValid\":true,\"violationCondition\":\"constraint\",\"valueOptions\":null},\"/data/height\":{\"nodeType\":\"input\",\"reference\":\"/data/height\",\"value\":2.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/calc\":{\"nodeType\":\"input\",\"reference\":\"/data/calc\",\"value\":19.5,\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/show_extra\":{\"nodeType\":\"input\",\"reference\":\"/data/show_extra\",\"value\":\"1n\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/extra\":{\"nodeType\":\"input\",\"reference\":\"/data/extra\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/choice\":{\"nodeType\":\"select\",\"reference\":\"/data/choice\",\"value\":[\"apple\"],\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":[{\"label\":\"Apple\",\"value\":\"apple\"}]},\"/data/rep[1]/note\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/note\",\"value\":\"\",\"relevant\":true,\"required\":false,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":true,\"violationCondition\":null,\"valueOptions\":null},\"/data/rep[1]/qty\":{\"nodeType\":\"input\",\"reference\":\"/data/rep[1]/qty\",\"value\":null,\"relevant\":true,\"required\":true,\"readonly\":false,\"constraintValid\":true,\"requiredValid\":false,\"violationCondition\":\"required\",\"valueOptions\":null},\"/data/rep[2]/note\":null,\"/data/rep[2]/qty\":null},\"repeatRange\":{\"nodeType\":\"repeat-range:uncontrolled\",\"reference\":\"/data/rep\",\"count\":1},\"rootViolationsCount\":2}},\"payload\":{\"status\":\"pending\",\"violationCount\":2,\"instanceXml\":\"<data id=\\\"m2_slimdom_fixture\\\"><name>Alice</name><age>17</age><height>2.5</height><calc>19.5</calc><show_extra>1</show_extra><extra/><choice>apple</choice><fruit><item><name>Apple</name><value>apple</value></item></fruit><rep><note/><qty/></rep><meta><instanceID>uuid:b8a19c18-e5b1-4f86-8840-005b35fe219d</instanceID></meta></data>\",\"normalizedInstanceXml\":\"<data id=\\\"m2_slimdom_fixture\\\"><name>Alice</name><age>17</age><height>2.5</height><calc>19.5</calc><show_extra>1</show_extra><extra/><choice>apple</choice><fruit><item><name>Apple</name><value>apple</value></item></fruit><rep><note/><qty/></rep><meta><instanceID>uuid:__INSTANCE_ID__</instanceID></meta></data>\"}}}\n",
+      "stderr": "",
+      "payload": {
+        "env": "slimdom",
+        "scenarioResult": {
+          "loadStatus": "success",
+          "loadError": null,
+          "snapshots": {
+            "initial": {
+              "nodes": {
+                "/data/name": {
+                  "nodeType": "input",
+                  "reference": "/data/name",
+                  "value": "",
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": false,
+                  "violationCondition": "required",
+                  "valueOptions": null
+                },
+                "/data/age": {
+                  "nodeType": "input",
+                  "reference": "/data/age",
+                  "value": null,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/height": {
+                  "nodeType": "input",
+                  "reference": "/data/height",
+                  "value": null,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/calc": {
+                  "nodeType": "input",
+                  "reference": "/data/calc",
+                  "value": null,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/show_extra": {
+                  "nodeType": "input",
+                  "reference": "/data/show_extra",
+                  "value": "0n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/extra": {
+                  "nodeType": "input",
+                  "reference": "/data/extra",
+                  "value": "",
+                  "relevant": false,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/choice": {
+                  "nodeType": "select",
+                  "reference": "/data/choice",
+                  "value": [],
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": [
+                    {
+                      "label": "Apple",
+                      "value": "apple"
+                    }
+                  ]
+                },
+                "/data/rep[1]/note": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/note",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/rep[1]/qty": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/qty",
+                  "value": null,
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": false,
+                  "violationCondition": "required",
+                  "valueOptions": null
+                },
+                "/data/rep[2]/note": null,
+                "/data/rep[2]/qty": null
+              },
+              "repeatRange": {
+                "nodeType": "repeat-range:uncontrolled",
+                "reference": "/data/rep",
+                "count": 1
+              },
+              "rootViolationsCount": 2
+            },
+            "afterPrimaryUpdates": {
+              "nodes": {
+                "/data/name": {
+                  "nodeType": "input",
+                  "reference": "/data/name",
+                  "value": "Alice",
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/age": {
+                  "nodeType": "input",
+                  "reference": "/data/age",
+                  "value": "19n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/height": {
+                  "nodeType": "input",
+                  "reference": "/data/height",
+                  "value": 2.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/calc": {
+                  "nodeType": "input",
+                  "reference": "/data/calc",
+                  "value": 21.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/show_extra": {
+                  "nodeType": "input",
+                  "reference": "/data/show_extra",
+                  "value": "1n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/extra": {
+                  "nodeType": "input",
+                  "reference": "/data/extra",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/choice": {
+                  "nodeType": "select",
+                  "reference": "/data/choice",
+                  "value": [
+                    "apple"
+                  ],
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": [
+                    {
+                      "label": "Apple",
+                      "value": "apple"
+                    }
+                  ]
+                },
+                "/data/rep[1]/note": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/note",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/rep[1]/qty": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/qty",
+                  "value": null,
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": false,
+                  "violationCondition": "required",
+                  "valueOptions": null
+                },
+                "/data/rep[2]/note": null,
+                "/data/rep[2]/qty": null
+              },
+              "repeatRange": {
+                "nodeType": "repeat-range:uncontrolled",
+                "reference": "/data/rep",
+                "count": 1
+              },
+              "rootViolationsCount": 1
+            },
+            "afterConstraintChange": {
+              "nodes": {
+                "/data/name": {
+                  "nodeType": "input",
+                  "reference": "/data/name",
+                  "value": "Alice",
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/age": {
+                  "nodeType": "input",
+                  "reference": "/data/age",
+                  "value": "17n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": false,
+                  "requiredValid": true,
+                  "violationCondition": "constraint",
+                  "valueOptions": null
+                },
+                "/data/height": {
+                  "nodeType": "input",
+                  "reference": "/data/height",
+                  "value": 2.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/calc": {
+                  "nodeType": "input",
+                  "reference": "/data/calc",
+                  "value": 19.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/show_extra": {
+                  "nodeType": "input",
+                  "reference": "/data/show_extra",
+                  "value": "1n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/extra": {
+                  "nodeType": "input",
+                  "reference": "/data/extra",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/choice": {
+                  "nodeType": "select",
+                  "reference": "/data/choice",
+                  "value": [
+                    "apple"
+                  ],
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": [
+                    {
+                      "label": "Apple",
+                      "value": "apple"
+                    }
+                  ]
+                },
+                "/data/rep[1]/note": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/note",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/rep[1]/qty": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/qty",
+                  "value": null,
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": false,
+                  "violationCondition": "required",
+                  "valueOptions": null
+                },
+                "/data/rep[2]/note": null,
+                "/data/rep[2]/qty": null
+              },
+              "repeatRange": {
+                "nodeType": "repeat-range:uncontrolled",
+                "reference": "/data/rep",
+                "count": 1
+              },
+              "rootViolationsCount": 2
+            },
+            "afterRepeatMutation": {
+              "nodes": {
+                "/data/name": {
+                  "nodeType": "input",
+                  "reference": "/data/name",
+                  "value": "Alice",
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/age": {
+                  "nodeType": "input",
+                  "reference": "/data/age",
+                  "value": "17n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": false,
+                  "requiredValid": true,
+                  "violationCondition": "constraint",
+                  "valueOptions": null
+                },
+                "/data/height": {
+                  "nodeType": "input",
+                  "reference": "/data/height",
+                  "value": 2.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/calc": {
+                  "nodeType": "input",
+                  "reference": "/data/calc",
+                  "value": 19.5,
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/show_extra": {
+                  "nodeType": "input",
+                  "reference": "/data/show_extra",
+                  "value": "1n",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/extra": {
+                  "nodeType": "input",
+                  "reference": "/data/extra",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/choice": {
+                  "nodeType": "select",
+                  "reference": "/data/choice",
+                  "value": [
+                    "apple"
+                  ],
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": [
+                    {
+                      "label": "Apple",
+                      "value": "apple"
+                    }
+                  ]
+                },
+                "/data/rep[1]/note": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/note",
+                  "value": "",
+                  "relevant": true,
+                  "required": false,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": true,
+                  "violationCondition": null,
+                  "valueOptions": null
+                },
+                "/data/rep[1]/qty": {
+                  "nodeType": "input",
+                  "reference": "/data/rep[1]/qty",
+                  "value": null,
+                  "relevant": true,
+                  "required": true,
+                  "readonly": false,
+                  "constraintValid": true,
+                  "requiredValid": false,
+                  "violationCondition": "required",
+                  "valueOptions": null
+                },
+                "/data/rep[2]/note": null,
+                "/data/rep[2]/qty": null
+              },
+              "repeatRange": {
+                "nodeType": "repeat-range:uncontrolled",
+                "reference": "/data/rep",
+                "count": 1
+              },
+              "rootViolationsCount": 2
+            }
+          },
+          "payload": {
+            "status": "pending",
+            "violationCount": 2,
+            "instanceXml": "<data id=\"m2_slimdom_fixture\"><name>Alice</name><age>17</age><height>2.5</height><calc>19.5</calc><show_extra>1</show_extra><extra/><choice>apple</choice><fruit><item><name>Apple</name><value>apple</value></item></fruit><rep><note/><qty/></rep><meta><instanceID>uuid:b8a19c18-e5b1-4f86-8840-005b35fe219d</instanceID></meta></data>",
+            "normalizedInstanceXml": "<data id=\"m2_slimdom_fixture\"><name>Alice</name><age>17</age><height>2.5</height><calc>19.5</calc><show_extra>1</show_extra><extra/><choice>apple</choice><fruit><item><name>Apple</name><value>apple</value></item></fruit><rep><note/><qty/></rep><meta><instanceID>uuid:__INSTANCE_ID__</instanceID></meta></data>"
+          }
+        }
+      }
+    }
+  ],
+  "comparison": {
+    "equivalent": true,
+    "differences": []
+  },
+  "verdict": "GREEN"
+}

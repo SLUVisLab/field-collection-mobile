@@ -1,0 +1,3 @@
+name,label,__version,site,block,column,row,plant_code,geometry,status,registered_on,last_observed
+e0c90aef-d892-416c-9145-695c3dc2b0c6,Shaw-B-C1-R2,1,Shaw,B,1,2,Shaw-B-C1-R2,38.4732 -90.2752 0 5,active,2026-08-28,
+b9e83bfe-97d6-4b9f-ac1c-f04b83c0ffaa,Shaw-B-C1-R1,1,Shaw,B,1,1,Shaw-B-C1-R1,38.4731 -90.2751 0 5,active,2026-08-28,

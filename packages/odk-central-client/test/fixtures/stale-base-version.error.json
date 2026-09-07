@@ -1,0 +1,8 @@
+{
+  "message": "Current version of the Entity is '3' and you provided '2'. Please correct the version number or pass '?force=true' in the URL to forcefully update the Entity.",
+  "code": 409.15,
+  "details": {
+    "current": "3",
+    "provided": "2"
+  }
+}

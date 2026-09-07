@@ -1,0 +1,52 @@
+import { XPathNodeKindKey } from '@getodk/xpath';
+import { Accessor } from 'solid-js';
+import { BaseValueNode } from '../../client/BaseValueNode.ts';
+import { LeafNodeType as ValueNodeType } from '../../client/node-types.ts';
+import { InstanceState } from '../../client/serialization/InstanceState.ts';
+import { AnyViolation, LeafNodeValidationState } from '../../client/validation.ts';
+import { ValueType } from '../../client/ValueType.ts';
+import { XFormsXPathElement } from '../../integration/xpath/adapter/XFormsXPathNode.ts';
+import { StaticLeafElement } from '../../integration/xpath/static-dom/StaticElement.ts';
+import { RuntimeValueSetter, RuntimeValueState, ValueCodec } from '../../lib/codecs/ValueCodec.ts';
+import { CurrentState } from '../../lib/reactivity/node-state/createCurrentState.ts';
+import { EngineState } from '../../lib/reactivity/node-state/createEngineState.ts';
+import { SharedNodeState } from '../../lib/reactivity/node-state/createSharedNodeState.ts';
+import { SimpleAtomicState } from '../../lib/reactivity/types.ts';
+import { SharedValidationState } from '../../lib/reactivity/validation/createValidation.ts';
+import { LeafNodeDefinition } from '../../parse/model/LeafNodeDefinition.ts';
+import { Attribute } from '../Attribute.ts';
+import { GeneralParentNode } from '../hierarchy.ts';
+import { EvaluationContext } from '../internal-api/EvaluationContext.ts';
+import { DecodeInstanceValue, InstanceValueContext } from '../internal-api/InstanceValueContext.ts';
+import { ClientReactiveSerializableValueNode } from '../internal-api/serialization/ClientReactiveSerializableValueNode.ts';
+import { ValidationContext } from '../internal-api/ValidationContext.ts';
+import { DescendantNodeStateSpec, DescendantNode } from './DescendantNode.ts';
+export type ValueNodeDefinition<V extends ValueType> = LeafNodeDefinition<V>;
+export interface ValueNodeStateSpec<RuntimeValue> extends DescendantNodeStateSpec<RuntimeValue> {
+    readonly children: null;
+    readonly attributes: Accessor<readonly Attribute[]>;
+    readonly value: SimpleAtomicState<RuntimeValue>;
+    readonly instanceValue: Accessor<string>;
+}
+export declare abstract class ValueNode<V extends ValueType, Definition extends ValueNodeDefinition<V>, RuntimeValue extends RuntimeInputValue, RuntimeInputValue = RuntimeValue> extends DescendantNode<Definition, ValueNodeStateSpec<RuntimeValue>, GeneralParentNode, null> implements BaseValueNode<V, RuntimeValue>, XFormsXPathElement, EvaluationContext, InstanceValueContext, ValidationContext, ClientReactiveSerializableValueNode {
+    readonly instanceNode: StaticLeafElement | null;
+    protected readonly validation: SharedValidationState;
+    protected readonly getInstanceValue: Accessor<string>;
+    protected readonly valueState: RuntimeValueState<RuntimeValue>;
+    protected readonly setValueState: RuntimeValueSetter<RuntimeInputValue>;
+    readonly [XPathNodeKindKey] = "element";
+    readonly getXPathValue: () => string;
+    protected abstract readonly state: SharedNodeState<ValueNodeStateSpec<RuntimeValue>>;
+    protected abstract readonly engineState: EngineState<ValueNodeStateSpec<RuntimeValue>>;
+    readonly decodeInstanceValue: DecodeInstanceValue;
+    abstract readonly nodeType: ValueNodeType;
+    readonly valueType: V;
+    abstract readonly currentState: CurrentState<ValueNodeStateSpec<RuntimeValue>>;
+    get validationState(): LeafNodeValidationState;
+    readonly instanceState: InstanceState;
+    readonly setEncodedValue: (value: string, bypassReadonly?: boolean) => void;
+    constructor(parent: GeneralParentNode, instanceNode: StaticLeafElement | null, definition: Definition, codec: ValueCodec<V, RuntimeValue, RuntimeInputValue>);
+    getViolation(): AnyViolation | null;
+    isBlank(): boolean;
+    getChildren(): readonly [];
+}

@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-08-26T00:49:39.518Z",
+  "candidate": "@oozcitak/dom",
+  "engineVersion": "1.0.3",
+  "fixturePath": "fixtures/minimal-xform.xml",
+  "status": "error",
+  "error": {
+    "name": "NotSupportedError",
+    "message": "The operation is not supported. ",
+    "stack": "NotSupportedError: The operation is not supported. \n    at selectors_scopeMatchASelectorsString (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@oozcitak/dom/src/algorithm/SelectorsAlgorithm.ts:20:9)\n    at ElementImpl.querySelector (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@oozcitak/dom/src/dom/ParentNodeImpl.ts:110:20)\n    at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:10:12)\n    at <anonymous> (/Users/dev/Code/field-collection-mobile.worktrees/milestone-m1-planning-xforms-engine/experiments/m1-dom-contract/node_modules/@getodk/common/src/lib/dom/compatibility.ts:13:1)"
+  }
+}

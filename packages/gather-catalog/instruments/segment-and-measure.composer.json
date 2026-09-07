@@ -1,0 +1,365 @@
+{
+  "_provenance": {
+    "note": "Checked-in mirror of packages/gather-catalog/src/segmentAndMeasure.js (SEGMENT_AND_MEASURE_INSTRUMENT), differing only by surfaceId. It is NOT yet a hosted-Composer authoring capture for the Flow-based tree; the equivalence test stays skipped until a real Composer session re-authors it against the advertised catalog.",
+    "mirrors": "SEGMENT_AND_MEASURE_INSTRUMENT",
+    "capturedAt": "2026-09-01"
+  },
+  "messages": [
+    {
+      "version": "v0.9",
+      "createSurface": {
+        "surfaceId": "sample-surface",
+        "catalogId": "https://gather.slu.edu/a2ui/catalogs/v0.1.json",
+        "sendDataModel": true
+      }
+    },
+    {
+      "version": "v0.9",
+      "updateComponents": {
+        "surfaceId": "sample-surface",
+        "components": [
+          {
+            "id": "root",
+            "component": "Column",
+            "children": [
+              "flow"
+            ]
+          },
+          {
+            "id": "flow",
+            "component": "Flow",
+            "current": {
+              "path": "/gather/status"
+            },
+            "fallback": "captureView",
+            "views": [
+              {
+                "when": "capture",
+                "view": "captureView"
+              },
+              {
+                "when": "persisting-capture",
+                "view": "processingView"
+              },
+              {
+                "when": "segmenting",
+                "view": "processingView"
+              },
+              {
+                "when": "classifying",
+                "view": "processingView"
+              },
+              {
+                "when": "measuring",
+                "view": "processingView"
+              },
+              {
+                "when": "review-mask",
+                "view": "reviewView"
+              },
+              {
+                "when": "accepted",
+                "view": "summaryView"
+              },
+              {
+                "when": "error",
+                "view": "errorView"
+              }
+            ]
+          },
+          {
+            "id": "captureView",
+            "component": "Column",
+            "children": [
+              "capture"
+            ]
+          },
+          {
+            "id": "capture",
+            "component": "GatherCapture",
+            "statePath": "/gather"
+          },
+          {
+            "id": "processingView",
+            "component": "Column",
+            "children": [
+              "processing"
+            ]
+          },
+          {
+            "id": "processing",
+            "component": "ProcessingView",
+            "image": {
+              "path": "/gather/image"
+            }
+          },
+          {
+            "id": "reviewView",
+            "component": "Column",
+            "children": [
+              "reviewTitle",
+              "reviewBody",
+              "imageOverlay",
+              "acceptMaskButton",
+              "reviewRetakeButton"
+            ]
+          },
+          {
+            "id": "reviewTitle",
+            "component": "Text",
+            "text": "Review segmentation",
+            "variant": "h3"
+          },
+          {
+            "id": "reviewBody",
+            "component": "Text",
+            "text": "Confirm the overlay follows the specimen edge.",
+            "variant": "caption"
+          },
+          {
+            "id": "imageOverlay",
+            "component": "ImageOverlay",
+            "image": {
+              "path": "/gather/image"
+            },
+            "segmentation": {
+              "path": "/gather/segmentation"
+            }
+          },
+          {
+            "id": "acceptMaskButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "acceptMaskLabel",
+            "action": {
+              "event": {
+                "name": "gather.accept",
+                "context": {
+                  "statePath": "/gather"
+                }
+              }
+            }
+          },
+          {
+            "id": "acceptMaskLabel",
+            "component": "Text",
+            "text": "Accept Mask",
+            "variant": "body"
+          },
+          {
+            "id": "reviewRetakeButton",
+            "component": "Button",
+            "child": "reviewRetakeLabel",
+            "action": {
+              "event": {
+                "name": "gather.retake",
+                "context": {
+                  "statePath": "/gather"
+                }
+              }
+            }
+          },
+          {
+            "id": "reviewRetakeLabel",
+            "component": "Text",
+            "text": "Retake",
+            "variant": "body"
+          },
+          {
+            "id": "summaryView",
+            "component": "Column",
+            "children": [
+              "outputReview",
+              "submitButton",
+              "summaryRetakeButton"
+            ]
+          },
+          {
+            "id": "outputReview",
+            "component": "OutputReview",
+            "data": {
+              "path": "/gather/result"
+            },
+            "display": {
+              "path": "/gather/outputReview"
+            }
+          },
+          {
+            "id": "submitButton",
+            "component": "Button",
+            "variant": "primary",
+            "child": "submitLabel",
+            "action": {
+              "event": {
+                "name": "gather.submit",
+                "context": {
+                  "statePath": "/gather"
+                }
+              }
+            }
+          },
+          {
+            "id": "submitLabel",
+            "component": "Text",
+            "text": "Done",
+            "variant": "body"
+          },
+          {
+            "id": "summaryRetakeButton",
+            "component": "Button",
+            "child": "summaryRetakeLabel",
+            "action": {
+              "event": {
+                "name": "gather.retake",
+                "context": {
+                  "statePath": "/gather"
+                }
+              }
+            }
+          },
+          {
+            "id": "summaryRetakeLabel",
+            "component": "Text",
+            "text": "Retake",
+            "variant": "body"
+          },
+          {
+            "id": "errorView",
+            "component": "Column",
+            "children": [
+              "error"
+            ]
+          },
+          {
+            "id": "error",
+            "component": "InstrumentError",
+            "error": {
+              "path": "/gather/error"
+            },
+            "statePath": "/gather"
+          }
+        ]
+      }
+    },
+    {
+      "version": "v0.9",
+      "updateDataModel": {
+        "surfaceId": "sample-surface",
+        "path": "/gather",
+        "value": {
+          "status": "capture",
+          "image": null,
+          "segmentation": null,
+          "classification": null,
+          "result": null,
+          "outputReview": {
+            "title": "Result accepted",
+            "description": "Analysis is ready to include in this observation.",
+            "sections": [
+              {
+                "id": "measurements",
+                "label": "Measurements",
+                "order": 1
+              },
+              {
+                "id": "classification",
+                "label": "Classification",
+                "order": 2
+              },
+              {
+                "id": "assets",
+                "label": "Assets",
+                "order": 3
+              }
+            ],
+            "fields": [
+              {
+                "path": "measurements.area.value",
+                "label": "Area",
+                "format": "quantity",
+                "unitPath": "measurements.area.unit",
+                "section": "measurements",
+                "decimals": 2,
+                "order": 1
+              },
+              {
+                "path": "measurements.perimeter.value",
+                "label": "Perimeter",
+                "format": "quantity",
+                "unitPath": "measurements.perimeter.unit",
+                "section": "measurements",
+                "decimals": 2,
+                "order": 2
+              },
+              {
+                "path": "measurements.boundingBox.width",
+                "label": "Bounds width",
+                "format": "quantity",
+                "unitPath": "measurements.boundingBox.unit",
+                "section": "measurements",
+                "decimals": 2,
+                "order": 3
+              },
+              {
+                "path": "measurements.boundingBox.height",
+                "label": "Bounds height",
+                "format": "quantity",
+                "unitPath": "measurements.boundingBox.unit",
+                "section": "measurements",
+                "decimals": 2,
+                "order": 4
+              },
+              {
+                "path": "measurements.sharpness.score",
+                "label": "Sharpness",
+                "format": "number",
+                "section": "measurements",
+                "decimals": 2,
+                "order": 5
+              },
+              {
+                "path": "classification.ranked",
+                "label": "Top labels",
+                "format": "array",
+                "section": "classification",
+                "order": 1,
+                "maxItems": 3,
+                "itemLabelPath": "label",
+                "itemValuePath": "score",
+                "itemValueFormat": "percentage",
+                "itemValueScale": "fraction",
+                "itemValueDecimals": 1,
+                "emptyText": "Classification not run"
+              },
+              {
+                "path": "segmentation.model.id",
+                "label": "Segmentation model",
+                "format": "string",
+                "section": "assets",
+                "order": 1,
+                "emptyText": "Segmentation completed"
+              },
+              {
+                "path": "image",
+                "label": "Captured image",
+                "format": "asset",
+                "section": "assets",
+                "order": 2,
+                "emptyText": "Image summary unavailable"
+              },
+              {
+                "path": "segmentation.mask",
+                "label": "Mask asset",
+                "format": "asset",
+                "section": "assets",
+                "order": 3,
+                "emptyText": "Mask summary unavailable"
+              }
+            ]
+          },
+          "error": null
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+name,label,__version,site,block,column,row,plant_code,geometry,status,registered_on,last_observed
+0ede576e-04a4-4266-8450-6d9a8cd24164,Tyson-A-C1-R2,1,Tyson,A,1,2,Tyson-A-C1-R2,38.5242 -90.5582 0 5,dead,2026-08-28,
+7376ad33-c362-40d9-b657-be0a14649131,Tyson-A-C1-R1,1,Tyson,A,1,1,Tyson-A-C1-R1,38.5241 -90.5581 0 5,active,2026-08-28,
+e0c90aef-d892-416c-9145-695c3dc2b0c6,Shaw-B-C1-R2,1,Shaw,B,1,2,Shaw-B-C1-R2,38.4732 -90.2752 0 5,active,2026-08-28,
+b9e83bfe-97d6-4b9f-ac1c-f04b83c0ffaa,Shaw-B-C1-R1,1,Shaw,B,1,1,Shaw-B-C1-R1,38.4731 -90.2751 0 5,active,2026-08-28,
+faf5d2ca-4f28-46e0-a381-c212cd176691,Shaw-A-C2-R2,1,Shaw,A,2,2,Shaw-A-C2-R2,38.4724 -90.2744 0 5,missing,2026-08-28,
+d34478e1-9079-4f39-b178-5dafc75388fc,Shaw-A-C2-R1,1,Shaw,A,2,1,Shaw-A-C2-R1,38.4723 -90.2743 0 5,active,2026-08-28,
+760eb8cf-5db3-4583-b452-032b5460efcd,Shaw-A-C1-R2,1,Shaw,A,1,2,Shaw-A-C1-R2,38.4722 -90.2742 0 5,active,2026-08-28,
+76367266-49d0-4c17-be97-77dde60fccd0,Shaw-A-C1-R1,1,Shaw,A,1,1,Shaw-A-C1-R1,38.4721 -90.2741 0 5,active,2026-08-28,

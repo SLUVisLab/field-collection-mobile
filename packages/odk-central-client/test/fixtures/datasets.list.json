@@ -1,0 +1,10 @@
+[
+    {
+        "name": "plants",
+        "createdAt": "2026-08-28T04:58:29.374Z",
+        "projectId": 1,
+        "approvalRequired": false,
+        "ownerOnly": false,
+        "deletedAt": null
+    }
+]

@@ -1,0 +1,247 @@
+{
+  "generatedAt": "2026-08-26T19:47:24.157Z",
+  "verdict": "GREEN",
+  "android": {
+    "phases": [
+      {
+        "phase": "initial",
+        "ok": true,
+        "checks": {
+          "webAssemblyAvailable": true,
+          "loadFormOk": true,
+          "calculateUpdated": true,
+          "relevantUpdated": true,
+          "constraintApplied": true,
+          "serializationHasFixture": true,
+          "mediaSeamLogicalReference": true
+        },
+        "latencySummary": {
+          "initialize": {
+            "minMs": 366,
+            "maxMs": 366,
+            "avgMs": 366,
+            "samples": 1
+          },
+          "loadForm": {
+            "minMs": 176,
+            "maxMs": 176,
+            "avgMs": 176,
+            "samples": 1
+          },
+          "getSnapshot": {
+            "minMs": 57,
+            "maxMs": 60,
+            "avgMs": 59,
+            "samples": 2
+          },
+          "setValue": {
+            "minMs": 43,
+            "maxMs": 112,
+            "avgMs": 82,
+            "samples": 5
+          },
+          "serialize": {
+            "minMs": 136,
+            "maxMs": 136,
+            "avgMs": 136,
+            "samples": 1
+          },
+          "inspectMediaSeam": {
+            "minMs": 2,
+            "maxMs": 2,
+            "avgMs": 2,
+            "samples": 1
+          },
+          "addRepeat": {
+            "minMs": 38,
+            "maxMs": 38,
+            "avgMs": 38,
+            "samples": 1
+          }
+        }
+      },
+      {
+        "phase": "remount",
+        "ok": true,
+        "checks": {
+          "webAssemblyAvailable": true,
+          "loadFormOk": true,
+          "calculateUpdated": true,
+          "relevantUpdated": true,
+          "constraintApplied": true,
+          "serializationHasFixture": true,
+          "mediaSeamLogicalReference": true
+        },
+        "latencySummary": {
+          "initialize": {
+            "minMs": 255,
+            "maxMs": 255,
+            "avgMs": 255,
+            "samples": 1
+          },
+          "loadForm": {
+            "minMs": 37,
+            "maxMs": 37,
+            "avgMs": 37,
+            "samples": 1
+          },
+          "getSnapshot": {
+            "minMs": 8,
+            "maxMs": 57,
+            "avgMs": 33,
+            "samples": 2
+          },
+          "setValue": {
+            "minMs": 35,
+            "maxMs": 85,
+            "avgMs": 50,
+            "samples": 5
+          },
+          "serialize": {
+            "minMs": 50,
+            "maxMs": 50,
+            "avgMs": 50,
+            "samples": 1
+          },
+          "inspectMediaSeam": {
+            "minMs": 8,
+            "maxMs": 8,
+            "avgMs": 8,
+            "samples": 1
+          },
+          "addRepeat": {
+            "minMs": 22,
+            "maxMs": 22,
+            "avgMs": 22,
+            "samples": 1
+          }
+        }
+      }
+    ]
+  },
+  "ios": {
+    "status": "PASS",
+    "phases": [
+      {
+        "phase": "initial",
+        "ok": true,
+        "checks": {
+          "webAssemblyAvailable": true,
+          "loadFormOk": true,
+          "calculateUpdated": true,
+          "relevantUpdated": true,
+          "constraintApplied": true,
+          "serializationHasFixture": true,
+          "mediaSeamLogicalReference": true
+        },
+        "latencySummary": {
+          "initialize": {
+            "minMs": 14057,
+            "maxMs": 14057,
+            "avgMs": 14057,
+            "samples": 1
+          },
+          "loadForm": {
+            "minMs": 91,
+            "maxMs": 91,
+            "avgMs": 91,
+            "samples": 1
+          },
+          "getSnapshot": {
+            "minMs": 2,
+            "maxMs": 4,
+            "avgMs": 3,
+            "samples": 2
+          },
+          "setValue": {
+            "minMs": 3,
+            "maxMs": 302,
+            "avgMs": 64,
+            "samples": 5
+          },
+          "serialize": {
+            "minMs": 6,
+            "maxMs": 6,
+            "avgMs": 6,
+            "samples": 1
+          },
+          "inspectMediaSeam": {
+            "minMs": 1,
+            "maxMs": 1,
+            "avgMs": 1,
+            "samples": 1
+          },
+          "addRepeat": {
+            "minMs": 11,
+            "maxMs": 11,
+            "avgMs": 11,
+            "samples": 1
+          }
+        }
+      },
+      {
+        "phase": "remount",
+        "ok": true,
+        "checks": {
+          "webAssemblyAvailable": true,
+          "loadFormOk": true,
+          "calculateUpdated": true,
+          "relevantUpdated": true,
+          "constraintApplied": true,
+          "serializationHasFixture": true,
+          "mediaSeamLogicalReference": true
+        },
+        "latencySummary": {
+          "initialize": {
+            "minMs": 3677,
+            "maxMs": 3677,
+            "avgMs": 3677,
+            "samples": 1
+          },
+          "loadForm": {
+            "minMs": 193,
+            "maxMs": 193,
+            "avgMs": 193,
+            "samples": 1
+          },
+          "getSnapshot": {
+            "minMs": 2,
+            "maxMs": 68,
+            "avgMs": 35,
+            "samples": 2
+          },
+          "setValue": {
+            "minMs": 6,
+            "maxMs": 135,
+            "avgMs": 51,
+            "samples": 5
+          },
+          "serialize": {
+            "minMs": 18,
+            "maxMs": 18,
+            "avgMs": 18,
+            "samples": 1
+          },
+          "inspectMediaSeam": {
+            "minMs": 7,
+            "maxMs": 7,
+            "avgMs": 7,
+            "samples": 1
+          },
+          "addRepeat": {
+            "minMs": 4,
+            "maxMs": 4,
+            "avgMs": 4,
+            "samples": 1
+          }
+        }
+      }
+    ],
+    "evidence": [
+      "Build Succeeded",
+      "M24_RUNTIME_SUMMARY initial ok:true",
+      "M24_RUNTIME_SUMMARY remount ok:true"
+    ]
+  },
+  "recommendation": "Proceed to M3 with WebViewXFormsHost, keeping the sidecar-local crypto.randomUUID shim until upstream/runtime support removes the need."
+}

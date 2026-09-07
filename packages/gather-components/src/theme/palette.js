@@ -1,0 +1,58 @@
+export const GATHER_PALETTE = Object.freeze({
+  neutral: Object.freeze({
+    white: '#ffffff',
+    black: '#000000',
+    blackTransparent: '#00000099',
+    50: '#f6f8fa',
+    lightText: '#f0f6fc',
+    lightMuted: '#b1bac4',
+    100: '#eaeef2',
+    200: '#d0d7de',
+    300: '#afb8c1',
+    400: '#8c959f',
+    500: '#6e7781',
+    600: '#57606a',
+    700: '#424a53',
+    800: '#24292f',
+    900: '#1f2328',
+    950: '#0d1117',
+  }),
+  primary: Object.freeze({
+    50: '#ddf4ff',
+    300: '#79b8ff',
+    400: '#58a6ff',
+    500: '#2f81f7',
+    600: '#0a66c2',
+    700: '#0757b8',
+    800: '#054b8e',
+  }),
+  field: Object.freeze({
+    50: '#dafbe1',
+    400: '#56d364',
+    500: '#3fb950',
+    600: '#137333',
+    700: '#0d5c29',
+  }),
+  danger: Object.freeze({
+    50: '#ffebe9',
+    300: '#ffa198',
+    400: '#ff7b72',
+    600: '#b4232d',
+    700: '#8f1621',
+  }),
+  warning: Object.freeze({
+    50: '#fff8c5',
+    400: '#e3b341',
+    600: '#9a6700',
+  }),
+  dark: Object.freeze({
+    900: '#161b22',
+    800: '#21262d',
+    700: '#30363d',
+    danger: '#490202',
+    warning: '#3b2b00',
+    selection: '#0d419d',
+  }),
+});
+
+export const palette = GATHER_PALETTE;

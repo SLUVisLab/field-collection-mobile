@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml">
+  <h:head>
+    <h:title>M1 Fixture</h:title>
+    <model>
+      <instance>
+        <data id="m1_fixture">
+          <name/>
+          <age/>
+          <double_age/>
+          <show_note/>
+          <note_text/>
+        </data>
+      </instance>
+      <bind nodeset="/data/name" type="string" required="true()"/>
+      <bind nodeset="/data/age" type="int" constraint=". &gt;= 0"/>
+      <bind nodeset="/data/double_age" type="int" calculate="/data/age * 2"/>
+      <bind nodeset="/data/show_note" type="string" calculate="if(/data/age &gt;= 18, 'yes', 'no')"/>
+      <bind nodeset="/data/note_text" type="string" relevant="/data/show_note = 'yes'"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/data/name">
+      <label>Name</label>
+    </input>
+    <input ref="/data/age">
+      <label>Age</label>
+    </input>
+    <input ref="/data/double_age">
+      <label>Double Age</label>
+    </input>
+    <input ref="/data/note_text">
+      <label>Note</label>
+    </input>
+  </h:body>
+</h:html>
+

@@ -1,0 +1,91 @@
+{
+  "summary": {
+    "platform": "android",
+    "hermes": true,
+    "durationMs": 3888,
+    "form": {
+      "formId": "silphium_flower_survey_entities",
+      "version": "20260827222256"
+    },
+    "selectedUuid": "5b9b3132-8120-458a-bbea-36995e54d61f",
+    "oldStatus": "active",
+    "newStatus": "missing",
+    "baseVersion": "1",
+    "expectedNewVersion": "2",
+    "observation": {
+      "flower_head_count": 7,
+      "plant_height_cm": 12.5
+    },
+    "entity": {
+      "block": "<entity dataset=\"plants\" update=\"1\" baseVersion=\"1\" trunkVersion=\"\" branchId=\"\" id=\"5b9b3132-8120-458a-bbea-36995e54d61f\"/>",
+      "id": "5b9b3132-8120-458a-bbea-36995e54d61f",
+      "update": "1",
+      "baseVersion": "1"
+    },
+    "submitResult": {
+      "status": 201,
+      "message": "full submission upload was successful!",
+      "instanceId": "uuid:80c69482-95d5-42da-8e92-b892dbf319fe"
+    },
+    "checks": {
+      "formLoaded": true,
+      "entityUpdateBlock": true,
+      "entityIdIsSelectedUuid": true,
+      "baseVersionFromCsv": true,
+      "measurementNotInEntityBlock": true,
+      "statusIsChanged": true,
+      "submitSucceeded": true
+    },
+    "stepOutcomes": [
+      {
+        "name": "listForms",
+        "ok": true
+      },
+      {
+        "name": "getFormManifest",
+        "ok": true
+      },
+      {
+        "name": "downloadPlantsCsv",
+        "ok": true
+      },
+      {
+        "name": "downloadForm",
+        "ok": true
+      },
+      {
+        "name": "loadFormWithResources",
+        "ok": true
+      },
+      {
+        "name": "selectEntity",
+        "ok": true
+      },
+      {
+        "name": "setStatus",
+        "ok": true
+      },
+      {
+        "name": "setFlowerCount",
+        "ok": true
+      },
+      {
+        "name": "setHeight",
+        "ok": true
+      },
+      {
+        "name": "refreshSnapshot",
+        "ok": true
+      },
+      {
+        "name": "serialize",
+        "ok": true
+      },
+      {
+        "name": "submitObservation",
+        "ok": true
+      }
+    ],
+    "ok": true
+  }
+}
