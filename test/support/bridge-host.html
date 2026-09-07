@@ -5,7 +5,11 @@
 // protocol. Nothing here is Gather-specific except the composition it renders.
 const out = [];
 const say = (m) => { out.push(m); document.getElementById('log').textContent = out.join('\n'); };
-const R = { ready: false, catalog: null, actions: [], log: out };
+// `inbound` is every message type the renderer sent, in order. It is how a
+// test can assert the renderer never asked the host to change the Tool:
+// running a composition produces data-model changes and actions, never
+// document edits, and the only way to see that is to watch the whole channel.
+const R = { ready: false, catalog: null, actions: [], inbound: [], log: out };
 window.__result = R;
 
 const params = new URLSearchParams(location.search);
@@ -23,6 +27,7 @@ window.addEventListener('message', (event) => {
   if (event.source !== frame.contentWindow) return;
   const message = event.data;
   if (!message || typeof message !== 'object') return;
+  R.inbound.push(message.type);
   say('<- ' + message.type + (message.type === 'SEND_TO_SERVER' ? ' ' + (message.payload?.action?.name ?? '') : ''));
   if (message.type === 'RENDERER_READY') { R.ready = true; send({ type: 'GET_CATALOG' }); }
   if (message.type === 'A2UI_CATALOG') R.catalog = message.payload;

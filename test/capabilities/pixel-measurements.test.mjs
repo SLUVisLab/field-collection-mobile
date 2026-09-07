@@ -13,8 +13,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import cv from '@techstark/opencv-js';
-
+import { loadOpenCv } from '../../apps/renderer/src/preview/web/openCvModule.js';
 import {
   imageMeasurementsFromMats,
   maskMatOf,
@@ -22,7 +21,11 @@ import {
   openCvReady,
 } from '../../apps/renderer/src/preview/web/openCvWebMeasurementAdapter.js';
 
+// Both: `openCvReady` is what the adapter waits on internally, and the shared
+// module is where these tests get `cv` to build their fixtures. It is one load —
+// the module memoises it — so this is not two OpenCVs.
 await openCvReady();
+const cv = await loadOpenCv();
 
 /** A single-channel mask Mat, foreground 255, from a predicate. */
 const maskMat = ({ width, height, isForeground }) => {

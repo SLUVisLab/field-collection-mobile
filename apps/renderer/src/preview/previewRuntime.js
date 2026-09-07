@@ -124,7 +124,7 @@ const previewClassify = async ({ image, model }) => {
 
 /**
  * Measurements are **real**, and are OpenCV's — the same library and the same
- * version the device uses (4.12.0), through `@techstark/opencv-js` instead of
+ * version the device uses (4.12.0), through the build in `vendor/opencv` instead of
  * `react-native-fast-opencv`. The mask being measured may have come from a
  * sample image, which the ledger records separately: two different claims, and
  * collapsing them is how a preview starts lying.

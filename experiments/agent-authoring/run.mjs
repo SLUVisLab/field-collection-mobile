@@ -10,9 +10,15 @@
  *
  *   node gates/agent-authoring/run.mjs [outputFile]
  *
- * Needs gemini.env (gitignored). The key is typed into the Composer's own
- * Settings and stays in that browser profile; it never enters the repo or an
- * image.
+ * The renderer and the agent key are *deployment* configuration now — the
+ * editor's config.json is generated at container start — so this gate reads
+ * what the deployment supplies rather than driving Settings. It used to click
+ * a renderer option by display name and broke silently when that name became
+ * configurable, which is exactly the class of failure this gate exists to
+ * catch elsewhere.
+ *
+ * If the deployment supplies no key, gemini.env (gitignored) is typed into the
+ * Composer's own Settings instead; it never enters the repo or an image.
  */
 import { chromium } from 'playwright-core';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -36,30 +42,50 @@ const keyFrom = (path) => {
   return key;
 };
 
-const key = keyFrom(fileURLToPath(new URL('../../gemini.env', import.meta.url)));
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 const page = await browser.newPage({ viewport: { width: 1500, height: 1000 } });
 
-// --- settings: renderer + key ----------------------------------------------
-await page.goto(`${EDITOR}/settings`, { waitUntil: 'domcontentloaded' });
-await page.waitForTimeout(1800);
+// --- what the deployment already provides ----------------------------------
+//
+// `default` is the entry upstream selects on launch, so a deployment pointing
+// it at this renderer needs no clicking. Assert that rather than assume it: an
+// agent authoring against the A2UI sample catalog would produce a plausible
+// document full of components Gather cannot run.
+const config = await fetch(`${EDITOR}/config.json`).then((response) => {
+  if (!response.ok) throw new Error(`the editor serves no config.json (${response.status})`);
+  return response.json();
+});
+const configured = config.renderers?.default?.rendererUrl ?? '';
+if (!configured.startsWith(RENDERER)) {
+  console.error(
+    `The editor's default renderer is ${configured || '(none)'}, not ${RENDERER}. ` +
+      'Set EDITOR_RENDERER_URL for this deployment; this gate will not silently ' +
+      'author against a different catalog.'
+  );
+  await browser.close();
+  process.exit(1);
+}
+console.log(`renderer: ${configured} (from the deployment's config.json)`);
 
-await page.click('#renderer-select');
-await page.waitForTimeout(400);
-await page.click('mat-option:has-text("Gather renderer (local)")');
-await page.waitForTimeout(600);
-
-await page.click('button[aria-label="Add Gemini API key"]');
-await page.waitForTimeout(800);
-await page.fill('#api-key-name-input', 'Smoke test');
-await page.fill('#api-key-value-input', key);
-await page.click('mat-dialog-container button:has-text("Add")');
-await page.waitForTimeout(1200);
-console.log('settings: renderer selected, key added');
+// The agent key likewise. Only fall back to gemini.env when the deployment
+// supplies none, so a developer without the file can still run this against a
+// keyed deployment.
+if (config.apiKeys?.default?.apiKey) {
+  console.log('agent key: supplied by the deployment');
+} else {
+  const key = keyFrom(fileURLToPath(new URL('../../gemini.env', import.meta.url)));
+  await page.goto(`${EDITOR}/settings`, { waitUntil: 'domcontentloaded' });
+  await page.click('button[aria-label="Add Gemini API key"]');
+  await page.fill('#api-key-name-input', 'Smoke test');
+  await page.fill('#api-key-value-input', key);
+  await page.click('mat-dialog-container button:has-text("Add")');
+  await page.waitForFunction(() => !document.querySelector('mat-dialog-container'), null, { timeout: 15000 });
+  console.log('agent key: taken from gemini.env');
+}
 
 // --- ask the agent ----------------------------------------------------------
 await page.goto(`${EDITOR}/`, { waitUntil: 'domcontentloaded' });
-await page.waitForTimeout(6000);
+await page.waitForSelector('textarea', { timeout: 60000 }).catch(() => {});
 
 const before = await page.evaluate(() => window.monaco?.editor?.getModels?.()[0]?.getValue() ?? '');
 const composer = await page.$('textarea');
@@ -98,13 +124,21 @@ for (let tick = 0; tick < 150; tick += 1) {
     settled = now;
   }
 }
-if (!looksComplete(settled)) {
-  console.error('\nThe agent produced no complete document. Transcript follows.');
-}
+const authored = looksComplete(settled);
 
 const chat = await page.evaluate(() => document.body.innerText.slice(0, 1200));
 writeFileSync(OUT, settled);
-console.log(`\nauthored document written to ${OUT} (${settled.length} chars)`);
+console.log(`\n${authored ? 'authored' : 'UNCHANGED starting'} document written to ${OUT} (${settled.length} chars)`);
 console.log('\n--- chat transcript (head) ---');
 console.log(chat.split('\n').filter((l) => l.trim()).slice(0, 25).join('\n'));
 await browser.close();
+
+// Exiting 0 here used to write out whatever the editor happened to hold —
+// which, when the agent fails, is the untouched starting stub. A sweep then
+// recorded a pass for a run that authored nothing. The transcript above says
+// what went wrong; the exit code has to say that something did.
+if (!authored) {
+  console.error('\nThe agent produced no complete document — see the transcript above.');
+  process.exit(1);
+}
+console.log('\nAgent authoring green');

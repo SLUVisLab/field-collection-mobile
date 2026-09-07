@@ -8,20 +8,19 @@
     "apps/*"
   ],
   "scripts": {
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "npm run test:packages && npm run test:app",
+    "test:packages": "for p in odk-xforms-host odk-xforms-react odk-xforms-webview odk-central-client gather-storage gather-catalog gather-components gather-capabilities gather-hashing gather-models; do (cd packages/$p && node --test $(find test -name '*.test.mjs' -not -path '*/live/*')) || exit 1; done",
+    "test:app": "node --test $(find test -name '*.test.mjs' -not -path '*/live/*' -not -path '*/integration/*' -not -path '*/rehearsal/*')",
+    "test:integration": "playwright test test/integration",
+    "test:rehearsal": "playwright test test/rehearsal",
+    "experiment:agent-authoring": "node experiments/agent-authoring/run.mjs",
     "start": "EXPO_NO_TYPESCRIPT_SETUP=1 expo start",
     "android": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:android",
     "ios": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:ios",
     "web": "EXPO_NO_TYPESCRIPT_SETUP=1 expo start --web",
     "run:android": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:android",
     "run:ios": "EXPO_NO_TYPESCRIPT_SETUP=1 expo run:ios",
-    "test:packages": "for p in odk-xforms-host odk-xforms-react odk-xforms-webview odk-central-client gather-storage gather-catalog gather-components gather-capabilities gather-hashing gather-models; do (cd packages/$p && node --test $(find test -name '*.test.mjs' -not -path '*/live/*')) || exit 1; done",
-    "test:app": "node --test $(find test -name '*.test.mjs' -not -path '*/live/*')",
-    "test:unit": "npm run test:packages && npm run test:app",
-    "gate:composer-bridge": "node gates/composer-bridge/run.mjs",
-    "gate:function-browser": "node gates/function-browser/run.mjs",
-    "gate:gather-package": "node gates/gather-package/run.mjs",
-    "gate:model-lab": "node gates/model-lab/run.mjs",
-    "gate:tool-preview": "node gates/tool-preview/run.mjs",
     "postinstall": "patch-package"
   },
   "dependencies": {
@@ -59,6 +58,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.0",
+    "@playwright/test": "^1.63.0",
     "patch-package": "8.0.0",
     "playwright-core": "^1.63.0",
     "postinstall-postinstall": "2.1.0"

@@ -8,8 +8,14 @@
  *
  * ```text
  * device    react-native-fast-opencv   OpenCV 4.12.0
- * browser   @techstark/opencv-js       OpenCV 4.12.0
+ * browser   vendor/opencv              OpenCV 4.12.0, built here
  * ```
+ *
+ * The browser half used to be `@techstark/opencv-js`, which forced the renderer
+ * to grant `'unsafe-eval'`: Embind builds its invokers with `new Function`
+ * unless Emscripten is told otherwise at compile time. `tools/opencv-build`
+ * tells it otherwise. Same OpenCV version, same call sequence, same numbers —
+ * the parity claim above is unchanged by where the bytes come from.
  *
  * which is the pattern inference already uses — `onnxruntime-react-native` and
  * `onnxruntime-web`, one library family, two bindings, one set of numbers.
@@ -22,15 +28,23 @@
  * What is *not* shared is decoding: the device reads files through
  * `decodeRgbFile`, the browser draws to a canvas. Only that differs.
  */
-import cv from '@techstark/opencv-js';
+import { loadOpenCv } from './openCvModule.js';
 
-/** OpenCV.js initialises its WASM asynchronously; every entry point waits. */
+/**
+ * The OpenCV namespace, `null` until the module has loaded.
+ *
+ * It is module-scope rather than threaded through every function so that the
+ * measurement helpers below stay synchronous — they are the arithmetic, and
+ * they read better as arithmetic. Everything reachable from outside this file
+ * awaits `whenReady()` first, which is what makes that safe.
+ */
+let cv = null;
+
+/** OpenCV loads lazily and initialises its WASM asynchronously; entry points wait. */
 let ready = null;
 const whenReady = () => {
-  ready ??= new Promise((resolve) => {
-    if (cv.Mat) return resolve();
-    cv.onRuntimeInitialized = () => resolve();
-    return undefined;
+  ready ??= loadOpenCv().then((loaded) => {
+    cv = loaded;
   });
   return ready;
 };

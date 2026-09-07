@@ -20,9 +20,19 @@ WORKDIR /app
 # Workspaces are copied whole before `npm ci`, because the lockfile references
 # every workspace and the install fails if one is absent. Copying manifests
 # alone would mean re-listing each new package here forever.
+#
+# The renderer's own sources are the exception, and they are copied *after* the
+# install instead. Only its `package.json` is needed to satisfy the lockfile,
+# and having the whole app here meant that editing one line of renderer source
+# invalidated this layer and reinstalled 639 packages — measured at 38.8s of a
+# 110s rebuild, on the file that changes most often.
+#
+# `packages/` still precedes the install, so editing a shared package does pay
+# that cost. That is the less frequent case and the trade keeps this from
+# becoming a list of every workspace.
 COPY package.json package-lock.json ./
 COPY packages packages
-COPY apps/renderer apps/renderer
+COPY apps/renderer/package.json apps/renderer/package.json
 COPY patches patches
 # `--ignore-scripts` skips the root `postinstall`, so patch-package is invoked
 # explicitly. `@a2ui/web_core@0.9.1` publishes no `./v0_9/catalog`,
@@ -32,6 +42,8 @@ COPY patches patches
 # reach those subpaths today; it would build without this line and break the
 # first time it does.
 RUN npm ci --ignore-scripts && npx patch-package
+
+COPY apps/renderer apps/renderer
 
 # The renderer's reach into the app tree, as a set of module boundaries. Since
 # the preview runs real inference it now shares the app's model executor, so

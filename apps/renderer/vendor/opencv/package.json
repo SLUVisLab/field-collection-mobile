@@ -1,0 +1,4 @@
+{
+  "//": "OpenCV emits a classic script. apps/renderer is \"type\": \"module\", which would make Node parse this .js as ESM and fail on the glue's undeclared `Module` assignment. This marker scopes just this directory back to CommonJS so `createRequire` can load it. The browser reaches the same file through a <script> tag and is unaffected.",
+  "type": "commonjs"
+}

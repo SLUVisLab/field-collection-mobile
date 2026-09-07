@@ -11,23 +11,22 @@
 #                                   own bytes to hash them, and a sample chosen
 #                                   in the preview arrives as a data: URI
 #
-# `'unsafe-eval'` — PENDING A DECISION, added 2026-09-06.
+# `'unsafe-eval'` — RESOLVED 2026-09-06, and no longer granted.
 #
-# OpenCV.js needs it, and `wasm-unsafe-eval` is not enough. `@techstark/opencv-js`
-# is ~10.8MB of JavaScript (not a separate .wasm) whose Embind layer builds the
-# `cv.Mat` / `cv.findContours` surface with `new Function` — `createNamedFunction`
-# and `craftInvokerFunction`. That is how Embind works, not an incidental call,
-# so it cannot be patched around; avoiding it means an OpenCV built with
-# `-sDYNAMIC_EXECUTION=0`, which is a custom emsdk build.
+# It was here for OpenCV. `@techstark/opencv-js` is ~10.8MB of JavaScript whose
+# Embind layer builds the `cv.Mat` / `cv.findContours` surface with
+# `new Function`, which is how Embind works rather than an incidental call — so
+# it could not be patched around at the bundler or the application.
 #
-# This is a real loosening of a directive this deployment deliberately kept
-# narrow, and it is here because Capability parity needs OpenCV in the browser:
-# five of Gather's eight Capabilities could not be authored without it. The
-# alternative measured against it was reimplementing OpenCV by hand, which was
-# tried and got contour lengths wrong.
+# It could be removed at the compiler. Emscripten's `-sDYNAMIC_EXECUTION=0`
+# selects Embind's closure-based invokers, and `tools/opencv-build/` now builds
+# OpenCV 4.12.0 that way, trimmed to `core` and `imgproc`. The result is 138KB
+# of glue and a 3.0MB `.wasm` that evaluates no strings at all — asserted inside
+# that build and again by test/capabilities/opencv-build.test.mjs against the
+# committed bytes.
 #
-# Not settled. Either accept it for the renderer origin, or invest in a trimmed
-# OpenCV build. See docs/ and the commit that introduced this.
+# So the directive this deployment deliberately kept narrow is narrow again,
+# and Capability parity still has real OpenCV in the browser.
 #
 # `'wasm-unsafe-eval'` is what lets ONNX Runtime Web compile its WASM backend.
 # It is the narrow directive for exactly that: WebAssembly compilation is
@@ -58,7 +57,7 @@ server {
   root /usr/share/nginx/html;
   index index.html;
 
-  add_header Content-Security-Policy "default-src 'self'; img-src 'self' https://placehold.co data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'wasm-unsafe-eval' 'unsafe-eval'; connect-src 'self' data: blob:; frame-ancestors https://a2ui-project.github.io ${RENDERER_FRAME_ANCESTORS}" always;
+  add_header Content-Security-Policy "default-src 'self'; img-src 'self' https://placehold.co data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self' data: blob:; frame-ancestors https://a2ui-project.github.io ${RENDERER_FRAME_ANCESTORS}" always;
   add_header X-Content-Type-Options nosniff always;
   add_header Referrer-Policy no-referrer always;
 

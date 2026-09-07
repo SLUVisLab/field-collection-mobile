@@ -64,3 +64,9 @@ apps/renderer/public/models.json
 apps/renderer/public/capabilities.json
 apps/renderer/public/authoring/
 apps/renderer/public/models/
+# Copied from the committed vendor/opencv by scripts/copy-opencv.mjs.
+apps/renderer/public/opencv/
+
+# Playwright run artifacts: traces and screenshots retained on failure.
+test-results/
+playwright-report/
